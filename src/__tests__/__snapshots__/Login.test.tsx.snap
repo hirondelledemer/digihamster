@@ -1,0 +1,188 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Login renders a heading 1`] = `
+<div>
+  <style
+    data-mantine-styles="classes"
+  >
+    @media (max-width: 35.99375em) {.mantine-visible-from-xs {display: none !important;}}@media (min-width: 36em) {.mantine-hidden-from-xs {display: none !important;}}@media (max-width: 47.99375em) {.mantine-visible-from-sm {display: none !important;}}@media (min-width: 48em) {.mantine-hidden-from-sm {display: none !important;}}@media (max-width: 61.99375em) {.mantine-visible-from-md {display: none !important;}}@media (min-width: 62em) {.mantine-hidden-from-md {display: none !important;}}@media (max-width: 74.99375em) {.mantine-visible-from-lg {display: none !important;}}@media (min-width: 75em) {.mantine-hidden-from-lg {display: none !important;}}@media (max-width: 87.99375em) {.mantine-visible-from-xl {display: none !important;}}@media (min-width: 88em) {.mantine-hidden-from-xl {display: none !important;}}
+  </style>
+  <style
+    data-mantine-styles="inline"
+  >
+    :root{--app-shell-header-height:calc(3.75rem * var(--mantine-scale));--app-shell-header-offset:calc(3.75rem * var(--mantine-scale));--app-shell-padding:var(--mantine-spacing-md);}@media(min-width: 62em){:root{--app-shell-header-height:calc(4.375rem * var(--mantine-scale));--app-shell-header-offset:calc(4.375rem * var(--mantine-scale));}}@media(min-width: 75em){:root{--app-shell-header-height:calc(5rem * var(--mantine-scale));--app-shell-header-offset:calc(5rem * var(--mantine-scale));}}
+  </style>
+  <div
+    class="m-89ab340 mantine-AppShell-root"
+    data-resizing="true"
+    style="--app-shell-transition-duration: 200ms; --app-shell-transition-timing-function: ease;"
+  >
+    <header
+      class="m-3b16f56b mantine-AppShell-header right-scroll-bar-position"
+      data-with-border="true"
+      style="--app-shell-header-z-index: 100;"
+    >
+      <div
+        class="m-4081bf90 mantine-Group-root"
+        style="--group-gap: var(--mantine-spacing-md); --group-align: center; --group-justify: flex-start; --group-wrap: wrap; height: 100%;"
+      >
+        <button
+          class="mantine-focus-auto m-fea6bf1a mantine-Burger-root m-87cf2631 mantine-UnstyledButton-root mantine-hidden-from-sm"
+          data-size="sm"
+          style="--burger-size: var(--burger-size-sm);"
+          type="button"
+        >
+          <div
+            class="m-d4fb9cad mantine-Burger-burger"
+            data-reduce-motion="true"
+          />
+        </button>
+      </div>
+    </header>
+    <main
+      class="m-8983817 mantine-AppShell-main"
+    >
+      <div
+        class="m-1b7284a3 mantine-Paper-root"
+        data-with-border="true"
+        style="--paper-radius: var(--mantine-radius-md);"
+      >
+        <form>
+          <div
+            class="m-6d731127 mantine-Stack-root"
+            style="--stack-gap: var(--mantine-spacing-md); --stack-align: stretch; --stack-justify: flex-start;"
+          >
+            <div
+              class="m-46b77525 mantine-InputWrapper-root mantine-TextInput-root"
+            >
+              <label
+                class="m-8fdc1311 mantine-InputWrapper-label mantine-TextInput-label"
+                data-required="true"
+                for="mantine-hmq4syada"
+                id="mantine-hmq4syada-label"
+              >
+                Email
+                <span
+                  aria-hidden="true"
+                  class="m-78a94662 mantine-InputWrapper-required mantine-TextInput-required"
+                >
+                   *
+                </span>
+              </label>
+              <div
+                class="m-6c018570 mantine-Input-wrapper mantine-TextInput-wrapper"
+                data-variant="default"
+                style="--input-radius: var(--mantine-radius-md);"
+              >
+                <input
+                  aria-invalid="false"
+                  class="m-8fb7ebe7 mantine-Input-input mantine-TextInput-input"
+                  data-variant="default"
+                  id="mantine-hmq4syada"
+                  placeholder="hello@mantine.dev"
+                  required=""
+                  value=""
+                />
+              </div>
+            </div>
+            <div
+              class="m-f61ca620 mantine-PasswordInput-root m-46b77525 mantine-InputWrapper-root mantine-PasswordInput-root"
+            >
+              <label
+                class="m-8fdc1311 mantine-InputWrapper-label mantine-PasswordInput-label"
+                data-required="true"
+                for="mantine-rkdbm2ybu"
+                id="mantine-rkdbm2ybu-label"
+              >
+                Password
+                <span
+                  aria-hidden="true"
+                  class="m-78a94662 mantine-InputWrapper-required mantine-PasswordInput-required"
+                >
+                   *
+                </span>
+              </label>
+              <div
+                class="m-6c018570 mantine-Input-wrapper mantine-PasswordInput-wrapper"
+                data-variant="default"
+                data-with-right-section="true"
+                style="--input-radius: var(--mantine-radius-md); --input-left-section-pointer-events: none; --input-right-section-pointer-events: all;"
+              >
+                <div
+                  class="m-ccf8da4c m-8fb7ebe7 mantine-Input-input mantine-PasswordInput-input"
+                  data-variant="default"
+                >
+                  <input
+                    autocomplete="off"
+                    class="m-f2d85dd2 mantine-PasswordInput-innerInput"
+                    id="mantine-rkdbm2ybu"
+                    placeholder="Your password"
+                    required=""
+                    type="password"
+                    value=""
+                  />
+                </div>
+                <div
+                  class="m-82577fc2 mantine-Input-section mantine-PasswordInput-section"
+                  data-position="right"
+                >
+                  <button
+                    aria-hidden="true"
+                    class="mantine-focus-auto mantine-active m-b1072d44 mantine-PasswordInput-visibilityToggle m-8d3f4000 mantine-ActionIcon-root m-87cf2631 mantine-UnstyledButton-root"
+                    data-variant="subtle"
+                    style="--ai-radius: var(--mantine-radius-md); --ai-bg: transparent; --ai-hover: var(--mantine-color-gray-light-hover); --ai-color: var(--mantine-color-gray-light-color); --ai-bd: calc(0.0625rem * var(--mantine-scale)) solid transparent;"
+                    tabindex="-1"
+                    type="button"
+                  >
+                    <svg
+                      fill="none"
+                      viewBox="0 0 15 15"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        clip-rule="evenodd"
+                        d="M7.5 11C4.80285 11 2.52952 9.62184 1.09622 7.50001C2.52952 5.37816 4.80285 4 7.5 4C10.1971 4 12.4705 5.37816 13.9038 7.50001C12.4705 9.62183 10.1971 11 7.5 11ZM7.5 3C4.30786 3 1.65639 4.70638 0.0760002 7.23501C-0.0253338 7.39715 -0.0253334 7.60288 0.0760014 7.76501C1.65639 10.2936 4.30786 12 7.5 12C10.6921 12 13.3436 10.2936 14.924 7.76501C15.0253 7.60288 15.0253 7.39715 14.924 7.23501C13.3436 4.70638 10.6921 3 7.5 3ZM7.5 9.5C8.60457 9.5 9.5 8.60457 9.5 7.5C9.5 6.39543 8.60457 5.5 7.5 5.5C6.39543 5.5 5.5 6.39543 5.5 7.5C5.5 8.60457 6.39543 9.5 7.5 9.5Z"
+                        fill="currentColor"
+                        fill-rule="evenodd"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="m-4081bf90 mantine-Group-root"
+            style="--group-gap: var(--mantine-spacing-md); --group-align: center; --group-justify: space-between; --group-wrap: wrap;"
+          >
+            <button
+              class="mantine-focus-auto mantine-active m-77c9d27d mantine-Button-root m-87cf2631 mantine-UnstyledButton-root"
+              style="--button-radius: var(--mantine-radius-xl); --button-color: var(--mantine-color-white);"
+              type="submit"
+            >
+              <span
+                aria-hidden="true"
+                class="m-a25b86ee mantine-Button-loader"
+              >
+                <span
+                  class="m-b34414df m-5ae2e3c mantine-Loader-root"
+                  style="--loader-size: calc(var(--button-height) / 1.8); --loader-color: var(--button-color);"
+                />
+              </span>
+              <span
+                class="m-80f1301b mantine-Button-inner"
+              >
+                <span
+                  class="m-811560b9 mantine-Button-label"
+                >
+                  Login
+                </span>
+              </span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </main>
+  </div>
+</div>
+`;
