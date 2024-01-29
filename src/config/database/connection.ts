@@ -1,48 +1,12 @@
-// import { MongoClient } from "mongodb";
-// import mongoose from "mongoose";
-
-// const uriDev = process.env.MONGO_URI_DEV;
-// const uri = process.env.MONGO_URI;
-// const options = {
-//   //   useUnifiedTopology: true,
-//   //   useNewUrlParser: true,
-// };
-
-// let client;
-// let clientPromise;
-
-// if (!process.env.MONGO_URI) {
-//   throw new Error("Please add your Mongo URI to .env.local");
-// }
-
-// if (process.env.NODE_ENV === "development") {
-//   // In development mode, use a global variable so that the value
-//   // is preserved across module reloads caused by HMR (Hot Module Replacement).
-//   //   if (!global._mongoClientPromise) {
-//   //     client = new MongoClient(uri, options);
-//   //     global._mongoClientPromise = client.connect();
-//   //   }
-//   //   clientPromise = global._mongoClientPromise;
-
-//   client = new MongoClient(uriDev!, options);
-//   clientPromise = client.connect();
-// } else {
-//   // In production mode, it's best to not use a global variable.
-//   client = new MongoClient(uri!, options);
-//   clientPromise = client.connect();
-// }
-
-// export const connectMongo = async () => mongoose.connect(uri!);
-
-// // Export a module-scoped MongoClient promise. By doing this in a
-// // separate module, the client
-// export default clientPromise;
-
 import mongoose from "mongoose";
 
 export async function connect() {
   try {
-    mongoose.connect(process.env.MONGO_URI!);
+    const mongoUri =
+      process.env.NODE_ENV === "development"
+        ? process.env.MONGO_URI_DEV!
+        : process.env.MONGO_URI!;
+    mongoose.connect(mongoUri);
     const connection = mongoose.connection;
 
     connection.on("connected", () => {

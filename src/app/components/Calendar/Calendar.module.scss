@@ -1,0 +1,20 @@
+
+.slot {
+  border: none !important;
+}
+
+.day {
+  background-color: #1a1b1e;
+}
+
+.today {
+  background-color: #2c2e33;
+}
+
+.group {
+  min-height: 40px;
+  display: flex;
+  flex-flow: column nowrap;
+  border: 1px solid #373a40;
+}
+

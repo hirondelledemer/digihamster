@@ -1,11 +1,10 @@
 "use client";
 import { AppShell, Burger, Group } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import Login from "../components/Login/Login";
+import { Home as HomeComp } from "../components/Home/Home";
 
 export default function SignupPage() {
   const [opened, { toggle }] = useDisclosure();
-  // return null;
 
   return (
     <AppShell header={{ height: { base: 60, md: 70, lg: 80 } }} padding="md">
@@ -15,7 +14,7 @@ export default function SignupPage() {
         </Group>
       </AppShell.Header>
       <AppShell.Main>
-        <Login />
+        <HomeComp />
       </AppShell.Main>
     </AppShell>
   );
