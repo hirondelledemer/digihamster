@@ -1,6 +1,6 @@
 import { connect } from "@/config/database/connection";
 import { getDataFromToken } from "@/app/helpers/getDataFromToken";
-import Task from "@/models/task";
+import Task, { ITask } from "@/models/task";
 import User from "@/models/user";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -30,20 +30,13 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     // Extract user ID from the authentication token
-    console.log(1, "here");
     const userId: string = await getDataFromToken(request);
-    console.log(2, userId);
     const reqBody = await request.json();
-    console.log(3, reqBody);
     const args = reqBody;
-    console.log(4, args);
     const user = await User.findOne({ _id: userId }).select("-password");
-    console.log(5, user);
     const tasks = await Task.find({ userId: user.id });
-    console.log(6, tasks);
 
     const projectId = args.projectId || user.defaultProjectId;
-    console.log(7, projectId);
 
     const task = new Task({
       userId: user.id,
@@ -65,16 +58,10 @@ export async function POST(request: NextRequest) {
           }
         : null,
     });
-    console.log(8, task);
 
     const savedTask = await task.save();
-    console.log(9, savedTask);
 
-    return NextResponse.json({
-      message: "Task created successfully",
-      success: true,
-      savedTask,
-    });
+    return NextResponse.json<ITask>(savedTask);
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 400 });
   }

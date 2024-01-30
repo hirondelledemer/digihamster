@@ -35,8 +35,6 @@ const CalendarToolbar: FC<CalendarToolbarProps> = ({
     ["W", () => onView("week")],
   ]);
 
-  console.log(testId, onNavigate, label, onView);
-
   return (
     <Group data-testid={testId}>
       <div>

@@ -15,6 +15,7 @@ import {
   View,
 } from "react-big-calendar";
 import moment from "moment";
+import { filter } from "remeda";
 import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
 
 import "react-big-calendar/lib/addons/dragAndDrop/styles.scss";
@@ -95,8 +96,6 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
         },
       }));
       setEvents([...events, ...entries]);
-
-      console.log(journalEntriesResponse);
     };
 
     fetchData();
@@ -142,9 +141,15 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
     []
   );
 
-  const customEvent = ({ event }: { event: Event }) => (
-    <CalendarEvent event={event} />
-  );
+  const handleDeleteEvent = (eventId: string) => {
+    setEvents((e) => {
+      return filter<Event>((event) => event.resource.id !== eventId)(e);
+    });
+  };
+
+  const customEvent = ({ event }: { event: Event }) => {
+    return <CalendarEvent event={event} onDelete={handleDeleteEvent} />;
+  };
 
   const cutomDate = (props: any) => {
     return <div className={style.event}>{props.label}</div>;
@@ -161,7 +166,6 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
     end: stringOrDate;
     isAllDay?: boolean;
   }) => {
-    console.log("updating event", event);
     axios.patch("/api/tasks/events", {
       taskId: event.resource.id,
       event: {
@@ -208,8 +212,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
   const newEvent = async (event: SlotInfo) => {
     const eventName = prompt("Name:", "New Event");
     if (!!eventName && !!eventName.length) {
-      console.log("creating event");
-      const response = await axios.post("/api/tasks/events", {
+      const response = await axios.post<ITask>("/api/tasks/events", {
         title: eventName,
         event: {
           allDay: event.slots.length == 1,
@@ -217,17 +220,21 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
           endAt: new Date(event.end).getTime(),
         },
       });
-      console.log("response", response);
+
       setEvents([
         ...events,
         {
-          start: new Date(event.start),
-          end: new Date(event.end),
-          title: eventName,
-          allDay: event.slots.length == 1,
+          start: response.data.event
+            ? new Date(response.data.event.startAt!)
+            : undefined,
+          end: response.data.event
+            ? new Date(response.data.event.endAt!)
+            : undefined,
+          title: response.data.title,
+          allDay: response.data.event ? response.data.event.allDay : false,
           resource: {
-            id: undefined, // todo: figure out how to get an id
-            completed: false,
+            id: response.data._id,
+            completed: response.data.completed,
           },
         },
       ]);

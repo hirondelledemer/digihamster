@@ -8,6 +8,7 @@ import axios from "axios";
 export interface CalendarEventProps {
   testId?: string;
   event: Event;
+  onDelete(eventId: string): void;
 }
 
 export const eventPropGetter = () => ({
@@ -17,15 +18,16 @@ export const eventPropGetter = () => ({
 const CalendarEvent: FC<CalendarEventProps> = ({
   testId,
   event,
+  onDelete,
 }): JSX.Element | null => {
-  const [deleted, setDeleted] = useState<boolean>(false);
   const [completed, setCompleted] = useState<boolean>(event.resource.completed);
-  const handleDeleteClick = () => {
-    setDeleted(true);
-    axios.patch("/api/tasks/events", {
+
+  const handleDeleteClick = async () => {
+    await axios.patch("/api/tasks/events", {
       taskId: event.resource.id,
       deleted: true,
     });
+    onDelete(event.resource.id);
   };
 
   const handleCompleteClick = () => {
@@ -36,10 +38,7 @@ const CalendarEvent: FC<CalendarEventProps> = ({
     });
   };
 
-  if (deleted) {
-    return null;
-  }
-
+  console.log("CalendarEvent", event);
   return (
     <Paper
       data-testid={testId}

@@ -17,5 +17,7 @@ const JournalEntrySchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const JournalEntry = mongoose.model("journalEntries", JournalEntrySchema);
+const JournalEntry =
+  mongoose.models.JournalEntry ||
+  mongoose.model("JournalEntry", JournalEntrySchema);
 export default JournalEntry;
