@@ -4,12 +4,12 @@ import { Container, Drawer, Grid } from "@mantine/core";
 import React, { useCallback, useEffect, useState } from "react";
 import { Views } from "react-big-calendar";
 import Calendar from "../Calendar";
+import JournalEntryForm from "../JournalEntryForm";
 
 // import { Views } from "react-big-calendar";
 // import Calendar from "src/components/Calendar";
 // import Habits from "src/components/Habits";
 // import { Container, Drawer, Grid } from "@mantine/core";
-// import JournalEntryForm from "src/components/JournalEntryForm";
 // import ActiveNotes from "src/components/ActiveNotes";
 // import ActiveTasksList from "src/components/ActiveTasksList";
 
@@ -37,7 +37,9 @@ export const Home = (): JSX.Element => {
             <Grid.Col>
               <Calendar view={Views.WORK_WEEK} />
             </Grid.Col>
-            <Grid.Col>{"<JournalEntryForm />"}</Grid.Col>
+            <Grid.Col>
+              <JournalEntryForm />
+            </Grid.Col>
           </Grid>
         </Grid.Col>
         <Grid.Col span="auto">
