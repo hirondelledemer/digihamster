@@ -38,28 +38,31 @@ const CalendarEvent: FC<CalendarEventProps> = ({
     });
   };
 
-  console.log("CalendarEvent", event);
   return (
     <Paper
       data-testid={testId}
       style={{ height: "100%", backgroundColor: "transparent" }}
     >
-      <Text td={completed ? "line-through" : undefined}>{event.title}</Text>
+      <Text size="xs" td={completed ? "line-through" : undefined}>
+        {event.title}
+      </Text>
       <div className={style.actions}>
         <ActionIcon
           onClick={handleDeleteClick}
           title="Delete"
           size="xs"
-          variant="subtile"
+          variant="default"
+          color="gray"
         >
-          <IconTrash style={{ width: "70%", height: "70%" }} stroke={1.5} />
+          <IconTrash style={{ width: "70%", height: "70%" }} />
         </ActionIcon>
         {!completed && (
           <ActionIcon
             onClick={handleCompleteClick}
             title="Complete"
             size="xs"
-            variant="subtile"
+            variant="default"
+            color="gray"
           >
             <IconCheck style={{ width: "70%", height: "70%" }} />
           </ActionIcon>

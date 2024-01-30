@@ -6,6 +6,7 @@
   font-style: italic;
   padding-left: 4px;
   background: #1a1b1ecc;
+  min-height: 100px;
 
   &:hover {
     border: 1px solid #373A40 !important;
@@ -19,6 +20,9 @@
 .actions {
   display: flex;
   visibility: hidden;
+  float: right;
+  margin-right: 4px;
+  margin-top: -14px;
   & >*:first-child {
       margin-right: 4px;
   }

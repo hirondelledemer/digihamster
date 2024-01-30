@@ -245,6 +245,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
     setDraggedEvent(event);
   };
 
+  // todo: test this component
   return (
     <DnDropCalendar
       selectable

@@ -35,7 +35,7 @@ export const Home = (): JSX.Element => {
         <Grid.Col span={6}>
           <Grid>
             <Grid.Col>
-              <Calendar view={Views.DAY} />
+              <Calendar view={Views.WORK_WEEK} />
             </Grid.Col>
             <Grid.Col>{"<JournalEntryForm />"}</Grid.Col>
           </Grid>
