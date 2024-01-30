@@ -235,7 +235,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
   };
 
   const handleDragStart = (event: Event) => {
-    // setDraggedEvent(event);
+    setDraggedEvent(event);
   };
 
   return (

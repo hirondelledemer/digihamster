@@ -49,7 +49,7 @@ const CalendarEvent: FC<CalendarEventProps> = ({
       <div className={style.actions}>
         <ActionIcon
           onClick={handleDeleteClick}
-          title="Edit"
+          title="Delete"
           size="xs"
           variant="subtile"
         >
