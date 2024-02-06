@@ -15,7 +15,7 @@ const MinimalNote: FC<MinimalNoteProps> = ({
   note,
   editable = false,
   onSubmit,
-}): JSX.Element => {
+}): JSX.Element | null => {
   const { editor } = useRte({
     value: note,
     editable,
@@ -31,6 +31,10 @@ const MinimalNote: FC<MinimalNoteProps> = ({
   useEffect(() => {
     editor?.commands.setContent(note);
   }, [note]);
+
+  if (!editor) {
+    return null;
+  }
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
     if (!onSubmit || !editor) {

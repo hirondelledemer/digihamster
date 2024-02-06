@@ -1,31 +1,27 @@
-import { now } from 'lodash';
-import CalendarToolbar, {
-  CalendarToolbarProps,
-} from './CalendarToolbar';
-import { getCalendarToolbarTestkit } from './CalendarToolbar.testkit';
-import { render } from 'src/utils/tests/render';
+import { now } from "@/app/utils/date/date";
+import CalendarToolbar, { CalendarToolbarProps } from "./CalendarToolbar";
+import { getCalendarToolbarTestkit } from "./CalendarToolbar.testkit";
+import { render } from "@/config/utils/test-utils";
 
-describe('CalendarToolbar', () => {
+describe("CalendarToolbar", () => {
   const defaultProps: CalendarToolbarProps = {
     onNavigate: jest.fn(),
-    label: 'Label',
+    label: "Label",
     onView: jest.fn(),
     date: new Date(now()),
-    view: 'day',
+    view: "day",
     views: [],
     localizer: { messages: {} },
   };
   const renderComponent = (props = defaultProps) =>
-    getCalendarToolbarTestkit(
-      render(<CalendarToolbar {...props} />).container,
-    );
+    getCalendarToolbarTestkit(render(<CalendarToolbar {...props} />).container);
 
-  it('should render CalendarToolbar', () => {
+  it("should render CalendarToolbar", () => {
     const wrapper = renderComponent();
     expect(wrapper.getComponent()).not.toBe(null);
   });
 
-  describe('hot keys', () => {
+  describe("hot keys", () => {
     /*
       currently react-big-calendar supports "week", "month", "day" and "work_week"
       since "work_week" is not used as is, "today" view is coded as "work_week"
@@ -38,7 +34,7 @@ describe('CalendarToolbar', () => {
         onView: onViewSpy,
       });
       wrapper.pressT();
-      expect(onViewSpy).toHaveBeenCalledWith('work_week');
+      expect(onViewSpy).toHaveBeenCalledWith("work_week");
     });
 
     it('should show "day" when "D" is pressed', () => {
@@ -49,7 +45,7 @@ describe('CalendarToolbar', () => {
         onView: onViewSpy,
       });
       wrapper.pressD();
-      expect(onViewSpy).toHaveBeenCalledWith('day');
+      expect(onViewSpy).toHaveBeenCalledWith("day");
     });
 
     it('should show "week" when "W" is pressed', () => {
@@ -60,7 +56,7 @@ describe('CalendarToolbar', () => {
         onView: onViewSpy,
       });
       wrapper.pressW();
-      expect(onViewSpy).toHaveBeenCalledWith('week');
+      expect(onViewSpy).toHaveBeenCalledWith("week");
     });
   });
 });

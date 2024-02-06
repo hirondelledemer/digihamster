@@ -1,6 +1,6 @@
-import React, { FC } from 'react';
-import { RichTextEditor as RichTextEditorMantine } from '@mantine/tiptap';
-import { Editor } from '@tiptap/react';
+import React, { FC } from "react";
+import { RichTextEditor } from "@mantine/tiptap";
+import { Editor } from "@tiptap/react";
 
 export interface RichTextEditorProps {
   testId?: string;
@@ -9,9 +9,9 @@ export interface RichTextEditorProps {
   showActions?: boolean;
 }
 
-export const textareaTestId = 'textarea-testid';
+export const textareaTestId = "textarea-testid";
 
-const RichTextEditor: FC<RichTextEditorProps> = ({
+const RichTextEditorM: FC<RichTextEditorProps> = ({
   testId,
   editor,
   onKeyDown,
@@ -23,40 +23,40 @@ const RichTextEditor: FC<RichTextEditorProps> = ({
 
   return (
     <div data-testid={testId}>
-      <RichTextEditorMantine editor={editor}>
+      <RichTextEditor editor={editor}>
         {showActions && (
-          <RichTextEditorMantine.Toolbar sticky stickyOffset={60}>
-            <RichTextEditorMantine.ControlsGroup>
-              <RichTextEditorMantine.Bold />
-              <RichTextEditorMantine.Italic />
-              <RichTextEditorMantine.Underline />
-              <RichTextEditorMantine.Strikethrough />
-              <RichTextEditorMantine.ClearFormatting />
-              <RichTextEditorMantine.Highlight />
-              <RichTextEditorMantine.Code />
-            </RichTextEditorMantine.ControlsGroup>
+          <RichTextEditor.Toolbar sticky stickyOffset={60}>
+            <RichTextEditor.ControlsGroup>
+              <RichTextEditor.Bold />
+              <RichTextEditor.Italic />
+              <RichTextEditor.Underline />
+              <RichTextEditor.Strikethrough />
+              <RichTextEditor.ClearFormatting />
+              <RichTextEditor.Highlight />
+              <RichTextEditor.Code />
+            </RichTextEditor.ControlsGroup>
 
-            <RichTextEditorMantine.ControlsGroup>
-              <RichTextEditorMantine.Blockquote />
-              <RichTextEditorMantine.Hr />
-              <RichTextEditorMantine.BulletList />
-              <RichTextEditorMantine.OrderedList />
-            </RichTextEditorMantine.ControlsGroup>
+            <RichTextEditor.ControlsGroup>
+              <RichTextEditor.Blockquote />
+              <RichTextEditor.Hr />
+              <RichTextEditor.BulletList />
+              <RichTextEditor.OrderedList />
+            </RichTextEditor.ControlsGroup>
 
-            <RichTextEditorMantine.ControlsGroup>
-              <RichTextEditorMantine.Link />
-              <RichTextEditorMantine.Unlink />
-            </RichTextEditorMantine.ControlsGroup>
-          </RichTextEditorMantine.Toolbar>
+            {/* <RichTextEditor.ControlsGroup> */}
+            {/* <RichTextEditor.Link />
+              <RichTextEditor.Unlink /> */}
+            {/* </RichTextEditor.ControlsGroup> */}
+          </RichTextEditor.Toolbar>
         )}
 
-        <RichTextEditorMantine.Content
+        <RichTextEditor.Content
           data-testid={textareaTestId}
           onKeyDown={onKeyDown}
         />
-      </RichTextEditorMantine>
+      </RichTextEditor>
     </div>
   );
 };
 
-export default RichTextEditor;
+export default RichTextEditorM;
