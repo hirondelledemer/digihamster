@@ -1,98 +1,34 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useState } from "react";
 import RichTextEditor from "../RichTextEditor";
 import { Button, Group, Stack } from "@mantine/core";
 import { useRte } from "@/app/utils/rte/rte-hook";
 import axios from "axios";
 import { IJournalEntry } from "@/models/entry";
+import useJournalEntries from "@/app/utils/hooks/use-entry";
 
-export interface JournalEntryFormParams {
-  title: string;
-  note: string;
-  id?: string;
-}
-
-interface CommonProps {
+export interface JournalEntryFormProps {
   testId?: string;
-  onSubmitDone?(response: IJournalEntry): void;
 }
-
-interface JournalEntryFormPropsEdit extends CommonProps {
-  editMode: true;
-  initialValues: {
-    id: string;
-    title: string;
-    note: string;
-  };
-}
-
-interface JournalEntryFormPropsNew extends CommonProps {
-  editMode?: false;
-}
-
-export type JournalEntryFormProps =
-  | JournalEntryFormPropsEdit
-  | JournalEntryFormPropsNew;
 
 export const rteTestId = "JournalEntryForm-rte-testId";
 
-// todo: rename to smth more general
 const JournalEntryForm: FC<JournalEntryFormProps> = ({
   testId,
-  onSubmitDone,
-  ...restProps
 }): JSX.Element | null => {
   const [loading, setLoading] = useState<boolean>(false);
   const { editor, getRteValue } = useRte({
-    value: restProps.editMode ? restProps.initialValues.note : "",
+    value: "",
     editable: true,
   });
 
-  // useEffect(() => {
-  //   if (restProps.editMode) {
-  //     editor?.commands.setContent(restProps.initialValues.note);
-  //   } else {
-  //     editor?.commands.clearContent();
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [restProps.editMode, editor?.commands]);
+  const { setData } = useJournalEntries();
 
   if (!editor) {
     return null;
   }
 
-  const onDone = (entry: IJournalEntry) => {
-    editor?.commands.setContent("");
-    if (onSubmitDone) {
-      onSubmitDone(entry);
-    }
-  };
-
   const handleSubmit = async () => {
     const { title, content: note, tags } = getRteValue();
-
-    if (restProps.editMode) {
-      // editJournalEntry({
-      //   variables: {
-      //     title,
-      //     note,
-      //     id: restProps.editMode ? restProps.initialValues.id : "",
-      //     tags: tags as string[],
-      //   },
-      // }).then(
-      //   (
-      //     response: FetchResult<
-      //       EditJournalEntry,
-      //       Record<string, any>,
-      //       Record<string, any>
-      //     >
-      //   ) => {
-      //     if (response.data && response.data.updateJournalEntry) {
-      //       onDone(response.data.updateJournalEntry);
-      //     }
-      //   }
-      // );
-      return;
-    }
     setLoading(true);
     const response = await axios.post<IJournalEntry, { data: IJournalEntry }>(
       "/api/entries",
@@ -102,7 +38,8 @@ const JournalEntryForm: FC<JournalEntryFormProps> = ({
         tags: tags,
       }
     );
-    onDone(response.data);
+    setData((d) => [...d, response.data]);
+    console.log("updating", response.data);
     setLoading(false);
   };
 
@@ -112,9 +49,8 @@ const JournalEntryForm: FC<JournalEntryFormProps> = ({
     }
   };
 
-  const submitButtonDisabled = restProps.editMode
-    ? restProps.initialValues.note === editor?.getHTML()
-    : !editor?.getHTML().length || editor?.getHTML() === "<p></p>";
+  const submitButtonDisabled =
+    !editor?.getHTML().length || editor?.getHTML() === "<p></p>";
 
   return (
     <div data-testid={testId}>
@@ -131,13 +67,8 @@ const JournalEntryForm: FC<JournalEntryFormProps> = ({
             loading={loading}
             onClick={handleSubmit}
           >
-            {restProps.editMode ? "Save" : "Create"}
+            Create
           </Button>
-          {/* {restProps.editMode && (
-            <Button color="red" onClick={handleDelete}>
-              Delete
-            </Button>
-          )} */}
         </Group>
       </Stack>
     </div>

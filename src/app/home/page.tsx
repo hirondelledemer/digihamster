@@ -2,6 +2,7 @@
 import { AppShell, Burger, Group } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { Home as HomeComp } from "../components/Home/Home";
+import { EntriesContextProvider } from "../utils/hooks/use-entry";
 
 export default function SignupPage() {
   const [opened, { toggle }] = useDisclosure();
@@ -14,7 +15,9 @@ export default function SignupPage() {
         </Group>
       </AppShell.Header>
       <AppShell.Main>
-        <HomeComp />
+        <EntriesContextProvider>
+          <HomeComp />
+        </EntriesContextProvider>
       </AppShell.Main>
     </AppShell>
   );

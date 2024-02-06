@@ -32,7 +32,7 @@ import axios from "axios";
 import CalendarEvent from "../CalendarEvent";
 import { eventPropGetter } from "../CalendarEvent/CalendarEvent";
 import { ITask } from "@/models/task";
-import { IJournalEntry } from "@/models/entry";
+import useJournalEntries from "@/app/utils/hooks/use-entry";
 
 export const now = () => new Date();
 
@@ -50,20 +50,12 @@ interface PlannerProps {
   view: View;
 }
 
-//todo: find out how to use it?
-// export const getStaticProps = (async () => {
-//   console.log("jere");
-//   const res = await fetch("/api/tasks/events");
-//   const events = await res.json();
-//   return { props: { events } };
-// }) satisfies GetStaticProps<{
-//   events: Events;
-// }>;
-
 // todo: test this component
 export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
   const [events, setEvents] = useState<Event[]>([]);
   const [_draggedEvent, setDraggedEvent] = useState<Event | null>(null);
+
+  const { data: journalEntries } = useJournalEntries();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -71,9 +63,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
       const eventsResponse = await axios.get<{ data: ITask[] }>(
         "/api/tasks/events"
       );
-      const journalEntriesResponse = await axios.get<{ data: IJournalEntry[] }>(
-        "/api/entries"
-      );
+
       const events = eventsResponse.data.data.map((task) => ({
         start: task.event ? new Date(task.event.startAt!) : undefined,
         end: task.event ? new Date(task.event.endAt!) : undefined,
@@ -84,7 +74,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
           completed: task.completed,
         },
       }));
-      const entries = journalEntriesResponse.data.data.map((entry) => ({
+      const entries = journalEntries.map((entry) => ({
         start: entry.createdAt ? new Date(entry.createdAt) : undefined,
         title: entry.title,
         allDay: false,
@@ -99,7 +89,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
     };
 
     fetchData();
-  }, []);
+  }, [journalEntries]);
 
   const customSlotPropGetter = useCallback(
     () => ({
