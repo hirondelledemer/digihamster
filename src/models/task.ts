@@ -1,19 +1,32 @@
 import mongoose from "mongoose";
+import { Taggable, TimeStamps } from "./shared-types";
+
+interface TaskEvent {
+  allDay: boolean;
+  startAt?: number;
+  endAt?: number;
+}
+
+export interface ITask extends mongoose.Document, Taggable, TimeStamps {
+  title: string;
+  description: string;
+  completed: boolean;
+  isActive: boolean;
+  deleted: boolean;
+  projectId: string;
+  estimate: number;
+  sortOrder: number;
+  event: TaskEvent | null;
+  completedAt: number;
+  activatedAt: number;
+  parentTaskId: string;
+}
 
 const TaskSchema = new mongoose.Schema(
   {
-    userId: {
-      type: mongoose.Types.ObjectId,
-      ref: "User",
-      require: [true, "Each task must be linked to a user"],
-    },
-    title: {
-      type: String,
-      required: [true, "Please task tilr"],
-    },
-    description: {
-      type: String,
-    },
+    title: { type: String, required: true },
+    description: { type: String, required: false },
+    userId: { type: String, required: true },
     completed: { type: Boolean, required: true },
     isActive: { type: Boolean, required: true },
     deleted: { type: Boolean, required: true },
@@ -29,5 +42,5 @@ const TaskSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports =
-  mongoose.models.Phonebook || mongoose.model("Task", TaskSchema);
+const Task = mongoose.models.Task || mongoose.model<ITask>("Task", TaskSchema);
+export default Task;

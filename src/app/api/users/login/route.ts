@@ -44,6 +44,7 @@ export async function POST(request: NextRequest) {
       expiresIn: "1d",
     });
 
+    console.log("here", user);
     // Create a JSON response indicating successful login
     const response = NextResponse.json({
       message: "Login successful",

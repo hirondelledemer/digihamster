@@ -5,6 +5,7 @@ import Login from "../components/Login/Login";
 
 export default function SignupPage() {
   const [opened, { toggle }] = useDisclosure();
+  // return null;
 
   return (
     <AppShell header={{ height: { base: 60, md: 70, lg: 80 } }} padding="md">
