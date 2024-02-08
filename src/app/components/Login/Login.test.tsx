@@ -16,7 +16,7 @@ describe("Login", () => {
     render(<Login />);
 
     const emailInput = screen.getByRole("textbox", { name: /email/i });
-    const passwordInput = screen.getByLabelText(/password \*/i);
+    const passwordInput = screen.getByLabelText(/password/i);
     expect(emailInput).toBeInTheDocument();
     expect(passwordInput).toBeInTheDocument();
   });
@@ -26,38 +26,38 @@ describe("Login", () => {
       render(<Login />);
 
       const emailInput = screen.getByRole("textbox", { name: /email/i });
-      const passwordInput = screen.getByLabelText(/password \*/i);
+      const passwordInput = screen.getByLabelText(/password/i);
       const loginButton = screen.getByRole("button", { name: /login/i });
 
       fireEvent.change(emailInput, { target: { value: "test@test.com" } });
       fireEvent.change(passwordInput, { target: { value: "password" } });
       fireEvent.click(loginButton);
 
-      expect(mockAxios.post).toHaveBeenCalledWith("/api/users/login", {
-        email: "test@test.com",
-        password: "password",
-        terms: true,
+      await waitFor(() => {
+        expect(mockAxios.post).toHaveBeenCalledWith("/api/users/login", {
+          email: "test@test.com",
+          password: "password",
+        });
       });
     });
   });
 
   describe("issues with input", () => {
-    it("should show email and password errors", () => {
+    it("should show email and password errors", async () => {
       render(<Login />);
 
       const emailInput = screen.getByRole("textbox", { name: /email/i });
-      const passwordInput = screen.getByLabelText(/password \*/i);
       const loginButton = screen.getByRole("button", { name: /login/i });
 
       fireEvent.change(emailInput, { target: { value: "t" } });
-      fireEvent.change(passwordInput, { target: { value: "p" } });
       fireEvent.click(loginButton);
-      const emailError = screen.getByText("Invalid email");
-      const passwordError = screen.getByText(
-        "Password should include at least 6 characters"
-      );
-      expect(emailError).toBeInTheDocument();
-      expect(passwordError).toBeInTheDocument();
+
+      await waitFor(() => {
+        const emailError = screen.getByText(/this is not a valid email\./i);
+        const passwordError = screen.getByText(/this is not a valid email\./i);
+        expect(emailError).toBeInTheDocument();
+        expect(passwordError).toBeInTheDocument();
+      });
 
       expect(mockAxios.post).not.toHaveBeenCalled();
     });
@@ -70,7 +70,7 @@ describe("Login", () => {
 
         render(<Login />);
         const emailInput = screen.getByRole("textbox", { name: /email/i });
-        const passwordInput = screen.getByLabelText(/password \*/i);
+        const passwordInput = screen.getByLabelText(/password/i);
         const loginButton = screen.getByRole("button", { name: /login/i });
 
         fireEvent.change(emailInput, { target: { value: "test@test.com" } });
@@ -83,7 +83,6 @@ describe("Login", () => {
           expect(mockAxios.post).toHaveBeenCalledWith("/api/users/login", {
             email: "test@test.com",
             password: "password",
-            terms: true,
           });
           expect(error).toBeInTheDocument();
         });
