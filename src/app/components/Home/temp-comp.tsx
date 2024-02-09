@@ -8,7 +8,7 @@ import Calendar from "../Calendar";
 export const Temp = (): JSX.Element => {
   return (
     <div>
-      <Calendar view={Views.DAY} />
+      <Calendar view={Views.AGENDA} />
     </div>
   );
 };

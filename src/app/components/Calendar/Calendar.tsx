@@ -121,9 +121,8 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
       views: {
         month: true,
         week: true,
-        agenda: true,
+        agenda: Today,
         day: true,
-        work_week: Today,
       },
     }),
     []

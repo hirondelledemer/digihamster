@@ -15,6 +15,7 @@ import {
   IconSquareLetterW,
 } from "@tabler/icons-react";
 import { IconSquareLetterA } from "@tabler/icons-react";
+import { format } from "date-fns";
 
 export interface CalendarToolbarProps extends ToolbarProps {
   testId?: string;
@@ -29,9 +30,11 @@ const CalendarToolbar: FC<CalendarToolbarProps> = ({
   onNavigate,
   label,
   onView,
+  date,
+  view,
 }): JSX.Element => {
   return (
-    <div data-testid={testId} className="flex justify-between">
+    <div data-testid={testId} className="flex justify-between align-center">
       <div>
         <div>
           <Button
@@ -57,7 +60,7 @@ const CalendarToolbar: FC<CalendarToolbarProps> = ({
           </Button>
         </div>
       </div>
-      <div>{label}</div>
+      <div>{view === "agenda" ? format(date, "EEEE MMM dd") : label}</div>
       <div>
         <div>
           {/* todo: fix month style */}
@@ -70,11 +73,7 @@ const CalendarToolbar: FC<CalendarToolbarProps> = ({
           <Button variant="ghost" size="icon" onClick={() => onView("day")}>
             <IconSquareLetterD />
           </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => onView("work_week")}
-          >
+          <Button variant="ghost" size="icon" onClick={() => onView("agenda")}>
             <IconSquareLetterA />
           </Button>
         </div>
