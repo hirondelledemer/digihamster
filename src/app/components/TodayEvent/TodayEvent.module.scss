@@ -1,17 +1,14 @@
-
-
-// todo: make strike acroos task component
-.taskContainer {
+.container {
     position: relative;  
 }
 
 
-.taskContainer:after {
+.container:after {
     position: absolute;
     left: 0;
     top: 50%;
     height: 1px;
-    background: #c00;
+    background: rgb(161, 161, 170);
     content: "";
     width: 100%;
     display: block;

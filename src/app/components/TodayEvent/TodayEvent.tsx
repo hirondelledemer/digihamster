@@ -6,6 +6,8 @@ import { Checkbox } from "../ui/checkbox";
 import axios from "axios";
 import { ITask } from "@/models/task";
 import useEvents from "@/app/utils/hooks/use-events";
+import { cn } from "../utils";
+import styles from "./TodayEvent.module.scss";
 
 export interface TodayEventProps {
   testId?: string;
@@ -48,9 +50,11 @@ const TodayEvent: FC<TodayEventProps> = ({
 
   return (
     <div
-      className={`grid grid-cols-3 gap-4 italic mt-4 ${
-        completed && "line-through text-muted-foreground"
-      }`}
+      className={cn([
+        "grid grid-cols-3 gap-4 italic mt-4",
+        completed ? "text-muted-foreground" : "",
+        completed ? styles.container : "",
+      ])}
       data-testid={testId}
     >
       {allDay ? (
@@ -67,7 +71,11 @@ const TodayEvent: FC<TodayEventProps> = ({
       )}
       <div>{title}</div>
       <div className="flex justify-end self-center">
-        <Checkbox checked={completed} onCheckedChange={handleCompleteClick} />
+        <Checkbox
+          checked={completed}
+          onCheckedChange={handleCompleteClick}
+          variant={completed ? "secondary" : "default"}
+        />
       </div>
     </div>
   );
