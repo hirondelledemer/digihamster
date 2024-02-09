@@ -1,3 +1,4 @@
+"use client";
 import React, { FC, useState } from "react";
 import RichTextEditor from "../RichTextEditor";
 import { Button, Group, Stack } from "@mantine/core";

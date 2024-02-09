@@ -9,20 +9,20 @@ import {
   useState,
 } from "react";
 import axios from "axios";
-import { IJournalEntry } from "@/models/entry";
+import { ITask } from "@/models/task";
 
-export const EntriesContext = createContext<{
-  data: IJournalEntry[];
-  setData: Dispatch<SetStateAction<IJournalEntry[]>>;
+export const EventsContext = createContext<{
+  data: ITask[];
+  setData: Dispatch<SetStateAction<ITask[]>>;
 }>({
   data: [],
   setData: () => {},
 });
 
-const { Provider } = EntriesContext;
+const { Provider } = EventsContext;
 
-export const EntriesContextProvider = ({ children }: any) => {
-  const [data, setData] = useState<IJournalEntry[]>([]);
+export const EventsContextProvider = ({ children }: any) => {
+  const [data, setData] = useState<ITask[]>([]);
   // todo: look into utilising this
   const [error, setError] = useState<unknown>(null);
   const [loading, setLoading] = useState(false);
@@ -31,10 +31,10 @@ export const EntriesContextProvider = ({ children }: any) => {
     (async function () {
       try {
         setLoading(true);
-        const journalEntriesResponse = await axios.get<{
-          data: IJournalEntry[];
-        }>("/api/entries");
-        setData(journalEntriesResponse.data.data);
+        const eventsResponse = await axios.get<{
+          data: ITask[];
+        }>("/api/tasks/events");
+        setData(eventsResponse.data.data);
       } catch (err) {
         setError(err);
       } finally {
@@ -46,8 +46,8 @@ export const EntriesContextProvider = ({ children }: any) => {
   return <Provider value={{ data, setData }}>{children}</Provider>;
 };
 
-export default function useJournalEntries() {
-  const { data, setData } = useContext(EntriesContext);
+export default function useEvents() {
+  const { data, setData } = useContext(EventsContext);
 
   return { data, setData };
 }

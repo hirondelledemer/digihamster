@@ -2,10 +2,12 @@ import React, { useState } from "react";
 import { Navigate, Event, View } from "react-big-calendar";
 import * as dates from "date-arithmetic";
 import TodayEvent from "../TodayEvent";
-import { Button, Collapse, Space, Spoiler, Stack, Text } from "@mantine/core";
+import { Collapse, Spoiler, Stack, Text } from "@mantine/core";
 import { IconChevronDown } from "@tabler/icons-react";
 import MinimalNote from "../MinimalNote";
+import { Button } from "../ui/button";
 
+// todo: make this component server side
 export const todayEvent = "Today-today-event-test-id";
 export const upcomingEventsTestId = "Today-upcoming-events-test-id";
 export interface TodayProps {
@@ -70,7 +72,6 @@ function Today({ localizer, events, date }: TodayProps) {
 
   return (
     <>
-      <Space h="xl" />
       <Stack gap="xs">
         {!allDayEvents.length && !regularEvents.length && (
           <Text>There are not events today.</Text>
@@ -79,14 +80,10 @@ function Today({ localizer, events, date }: TodayProps) {
         {regularEvents.sort(sortByTime).map(getTodayEventComp)}
         {!!upcomingEvents.length && (
           <Button
-            rightSection={<IconChevronDown />}
-            variant="subtle"
-            color="dark"
-            radius="xs"
-            size="xs"
             onClick={() => toggleUpcomingEvents((opened: boolean) => !opened)}
           >
             Upcoming Events
+            <IconChevronDown />
           </Button>
         )}
         <Collapse in={upcomingEventsOpened}>
