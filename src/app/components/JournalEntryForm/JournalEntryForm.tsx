@@ -1,11 +1,11 @@
 "use client";
 import React, { FC, useState } from "react";
 import RichTextEditor from "../RichTextEditor";
-import { Button, Group, Stack } from "@mantine/core";
 import { useRte } from "@/app/utils/rte/rte-hook";
 import axios from "axios";
 import { IJournalEntry } from "@/models/entry";
 import useJournalEntries from "@/app/utils/hooks/use-entry";
+import { Button } from "../ui/button";
 
 export interface JournalEntryFormProps {
   testId?: string;
@@ -55,23 +55,19 @@ const JournalEntryForm: FC<JournalEntryFormProps> = ({
 
   return (
     <div data-testid={testId}>
-      <Stack>
-        <RichTextEditor
-          testId={rteTestId}
-          editor={editor}
-          onKeyDown={handleKeyDown}
-          showActions
-        />
-        <Group>
-          <Button
-            disabled={submitButtonDisabled}
-            loading={loading}
-            onClick={handleSubmit}
-          >
-            Create
-          </Button>
-        </Group>
-      </Stack>
+      <RichTextEditor
+        testId={rteTestId}
+        editor={editor}
+        onKeyDown={handleKeyDown}
+        // showActions
+      />
+      <Button
+        disabled={submitButtonDisabled || loading}
+        onClick={handleSubmit}
+        className="mt-4"
+      >
+        Create
+      </Button>
     </div>
   );
 };

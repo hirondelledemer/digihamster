@@ -19,7 +19,9 @@ export const Home = (): JSX.Element => {
           </ResizablePanel>
           <ResizableHandle />
           <ResizablePanel defaultSize={30}>
-            <JournalEntryForm />
+            <div className="m-6">
+              <JournalEntryForm />
+            </div>
           </ResizablePanel>
         </ResizablePanelGroup>
       </ResizablePanel>
