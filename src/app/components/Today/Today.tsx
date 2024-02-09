@@ -2,10 +2,14 @@ import React, { useState } from "react";
 import { Navigate, Event, View } from "react-big-calendar";
 import * as dates from "date-arithmetic";
 import TodayEvent from "../TodayEvent";
-import { Collapse, Spoiler, Stack, Text } from "@mantine/core";
 import { IconChevronDown } from "@tabler/icons-react";
 import MinimalNote from "../MinimalNote";
 import { Button } from "../ui/button";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "../ui/collapsible";
 
 // todo: make this component server side
 export const todayEvent = "Today-today-event-test-id";
@@ -46,16 +50,14 @@ function Today({ localizer, events, date }: TodayProps) {
   );
 
   const getTodayEventComp = (event: Event) => {
+    // todo: check how note is being shown
     return event.resource.type === "journal" ? (
-      <Spoiler
-        key={event.resource.id}
-        maxHeight={30}
-        hideLabel="hide"
-        showLabel="show"
-        data-testid={upcomingEventsTestId}
-      >
-        <MinimalNote note={event.resource.note} />
-      </Spoiler>
+      <Collapsible>
+        <CollapsibleTrigger>Show note</CollapsibleTrigger>
+        <CollapsibleContent>
+          <MinimalNote note={event.resource.note} />
+        </CollapsibleContent>
+      </Collapsible>
     ) : (
       <TodayEvent
         key={event.resource.id}
@@ -72,36 +74,47 @@ function Today({ localizer, events, date }: TodayProps) {
 
   return (
     <>
-      <Stack gap="xs">
-        {!allDayEvents.length && !regularEvents.length && (
-          <Text>There are not events today.</Text>
-        )}
+      <div className="flex flex-col">
+        {!allDayEvents.length &&
+          !regularEvents.length &&
+          "There are not events today."}
         {allDayEvents.map(getTodayEventComp)}
         {regularEvents.sort(sortByTime).map(getTodayEventComp)}
-        {!!upcomingEvents.length && (
+        {/* {!!upcomingEvents.length && (
           <Button
             onClick={() => toggleUpcomingEvents((opened: boolean) => !opened)}
           >
             Upcoming Events
             <IconChevronDown />
           </Button>
+        )} */}
+
+        {!!upcomingEvents.length && (
+          <Collapsible>
+            <CollapsibleTrigger>
+              <Button variant="ghost" className="mt-6">
+                Upcoming Events
+                <IconChevronDown />
+              </Button>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              {upcomingEvents.sort(sortByTime).map((event: Event) => (
+                <TodayEvent
+                  key={event.resource.id}
+                  testId={todayEvent}
+                  start={event.start}
+                  end={event.end}
+                  allDay={event.allDay}
+                  title={event.title || ""}
+                  id={event.resource.id}
+                  showDate
+                  completed={event.resource.completed}
+                />
+              ))}
+            </CollapsibleContent>
+          </Collapsible>
         )}
-        <Collapse in={upcomingEventsOpened}>
-          {upcomingEvents.sort(sortByTime).map((event: Event) => (
-            <TodayEvent
-              key={event.resource.id}
-              testId={todayEvent}
-              start={event.start}
-              end={event.end}
-              allDay={event.allDay}
-              title={event.title || ""}
-              id={event.resource.id}
-              showDate
-              completed={event.resource.completed}
-            />
-          ))}
-        </Collapse>
-      </Stack>
+      </div>
     </>
   );
 }
