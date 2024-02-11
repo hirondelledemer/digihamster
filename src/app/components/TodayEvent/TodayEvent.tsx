@@ -64,7 +64,7 @@ const TodayEvent: FC<TodayEventProps> = ({
           {start && showDate && <div>{format(start, "MMM d, EEEEE")}</div>}
           {start && end && (
             <div>
-              {lightFormat(start, "H:MM")}-{lightFormat(end, "H:MM")}
+              {lightFormat(start, "H:mm")}-{lightFormat(end, "H:mm")}
             </div>
           )}
         </div>

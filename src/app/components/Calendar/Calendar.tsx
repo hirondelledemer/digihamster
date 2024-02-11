@@ -73,7 +73,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
         },
       }));
       const entriesResolved = journalEntriesData.map((entry) => ({
-        start: entry.createdAt ? new Date(entry.createdAt) : undefined,
+        start: new Date(entry.createdAt),
         title: entry.title,
         allDay: false,
         resource: {

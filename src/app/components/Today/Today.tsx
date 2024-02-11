@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Navigate, Event, View } from "react-big-calendar";
 import * as dates from "date-arithmetic";
 import TodayEvent from "../TodayEvent";
@@ -9,6 +9,8 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "../ui/collapsible";
+import { cn } from "../utils";
+import { lightFormat } from "date-fns";
 
 // todo: make this component server side
 export const todayEvent = "Today-today-event-test-id";
@@ -47,14 +49,25 @@ function Today({ localizer, events, date }: TodayProps) {
   );
 
   const getTodayEventComp = (event: Event) => {
-    // todo: check how note is being shown
     return event.resource.type === "journal" ? (
-      <Collapsible key={event.resource.id}>
-        <CollapsibleTrigger>Show note</CollapsibleTrigger>
-        <CollapsibleContent>
-          <MinimalNote note={event.resource.note} />
-        </CollapsibleContent>
-      </Collapsible>
+      <div
+        key={event.resource.id}
+        className={cn([
+          "grid grid-cols-3 gap-4 italic mt-4 text-muted-foreground",
+        ])}
+      >
+        <div>{event.start ? lightFormat(event.start, "H:mm") : "???"}</div>
+        <div className="col-span-2">
+          <Collapsible>
+            <CollapsibleTrigger className="italic">
+              {event.title || "-"}
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <MinimalNote note={event.resource.note} />
+            </CollapsibleContent>
+          </Collapsible>
+        </div>
+      </div>
     ) : (
       <TodayEvent
         key={event.resource.id}
