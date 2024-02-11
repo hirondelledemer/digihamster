@@ -1,11 +1,18 @@
-import React, { useState } from "react";
+import React from "react";
 import { Navigate, Event, View } from "react-big-calendar";
 import * as dates from "date-arithmetic";
 import TodayEvent from "../TodayEvent";
-import { Button, Collapse, Space, Spoiler, Stack, Text } from "@mantine/core";
 import { IconChevronDown } from "@tabler/icons-react";
 import MinimalNote from "../MinimalNote";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "../ui/collapsible";
+import { cn } from "../utils";
+import { lightFormat } from "date-fns";
 
+// todo: make this component server side
 export const todayEvent = "Today-today-event-test-id";
 export const upcomingEventsTestId = "Today-upcoming-events-test-id";
 export interface TodayProps {
@@ -19,8 +26,6 @@ export interface TodayProps {
 }
 
 function Today({ localizer, events, date }: TodayProps) {
-  const [upcomingEventsOpened, toggleUpcomingEvents] = useState<boolean>(false);
-
   const max = localizer.endOf(date, "day");
   const min = localizer.startOf(date, "day");
 
@@ -45,15 +50,24 @@ function Today({ localizer, events, date }: TodayProps) {
 
   const getTodayEventComp = (event: Event) => {
     return event.resource.type === "journal" ? (
-      <Spoiler
+      <div
         key={event.resource.id}
-        maxHeight={30}
-        hideLabel="hide"
-        showLabel="show"
-        data-testid={upcomingEventsTestId}
+        className={cn([
+          "grid grid-cols-3 gap-4 italic mt-4 text-muted-foreground",
+        ])}
       >
-        <MinimalNote note={event.resource.note} />
-      </Spoiler>
+        <div>{event.start ? lightFormat(event.start, "H:mm") : "???"}</div>
+        <div className="col-span-2">
+          <Collapsible>
+            <CollapsibleTrigger className="italic">
+              {event.title || "-"}
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <MinimalNote note={event.resource.note} />
+            </CollapsibleContent>
+          </Collapsible>
+        </div>
+      </div>
     ) : (
       <TodayEvent
         key={event.resource.id}
@@ -70,41 +84,39 @@ function Today({ localizer, events, date }: TodayProps) {
 
   return (
     <>
-      <Space h="xl" />
-      <Stack gap="xs">
-        {!allDayEvents.length && !regularEvents.length && (
-          <Text>There are not events today.</Text>
-        )}
+      <div className="flex flex-col">
+        {!allDayEvents.length &&
+          !regularEvents.length &&
+          "There are not events today."}
         {allDayEvents.map(getTodayEventComp)}
         {regularEvents.sort(sortByTime).map(getTodayEventComp)}
+
         {!!upcomingEvents.length && (
-          <Button
-            rightSection={<IconChevronDown />}
-            variant="subtle"
-            color="dark"
-            radius="xs"
-            size="xs"
-            onClick={() => toggleUpcomingEvents((opened: boolean) => !opened)}
-          >
-            Upcoming Events
-          </Button>
+          <Collapsible>
+            <CollapsibleTrigger>
+              <div className="flex mt-6">
+                Upcoming Events
+                <IconChevronDown />
+              </div>
+            </CollapsibleTrigger>
+            <CollapsibleContent data-testid={upcomingEventsTestId}>
+              {upcomingEvents.sort(sortByTime).map((event: Event) => (
+                <TodayEvent
+                  key={event.resource.id}
+                  testId={todayEvent}
+                  start={event.start}
+                  end={event.end}
+                  allDay={event.allDay}
+                  title={event.title || ""}
+                  id={event.resource.id}
+                  showDate
+                  completed={event.resource.completed}
+                />
+              ))}
+            </CollapsibleContent>
+          </Collapsible>
         )}
-        <Collapse in={upcomingEventsOpened}>
-          {upcomingEvents.sort(sortByTime).map((event: Event) => (
-            <TodayEvent
-              key={event.resource.id}
-              testId={todayEvent}
-              start={event.start}
-              end={event.end}
-              allDay={event.allDay}
-              title={event.title || ""}
-              id={event.resource.id}
-              showDate
-              completed={event.resource.completed}
-            />
-          ))}
-        </Collapse>
-      </Stack>
+      </div>
     </>
   );
 }

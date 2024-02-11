@@ -1,9 +1,9 @@
 import React, { FC, useState } from "react";
 import style from "./CalendarEvent.module.scss";
-import { ActionIcon, Paper, Text } from "@mantine/core";
 import { Event } from "react-big-calendar";
 import { IconCheck, IconTrash } from "@tabler/icons-react";
 import axios from "axios";
+import { Button } from "../ui/button";
 
 export interface CalendarEventProps {
   testId?: string;
@@ -20,6 +20,7 @@ const CalendarEvent: FC<CalendarEventProps> = ({
   event,
   onDelete,
 }): JSX.Element | null => {
+  // todo: fix with hook
   const [completed, setCompleted] = useState<boolean>(event.resource.completed);
 
   const handleDeleteClick = async () => {
@@ -39,36 +40,36 @@ const CalendarEvent: FC<CalendarEventProps> = ({
   };
 
   return (
-    <Paper
+    <div
       data-testid={testId}
-      style={{ height: "100%", backgroundColor: "transparent" }}
+      className={`h-full p-1 ${
+        completed ? "text-muted-foreground line-through" : ""
+      }`}
     >
-      <Text size="xs" td={completed ? "line-through" : undefined}>
-        {event.title}
-      </Text>
+      {event.title}
       <div className={style.actions}>
-        <ActionIcon
+        <Button
           onClick={handleDeleteClick}
           title="Delete"
-          size="xs"
-          variant="default"
-          color="gray"
+          size="icon"
+          variant="ghost"
+          className="h-5 w-5"
         >
-          <IconTrash style={{ width: "70%", height: "70%" }} />
-        </ActionIcon>
+          <IconTrash style={{ width: "60%", height: "60%" }} />
+        </Button>
         {!completed && (
-          <ActionIcon
+          <Button
             onClick={handleCompleteClick}
             title="Complete"
-            size="xs"
-            variant="default"
-            color="gray"
+            size="icon"
+            variant="ghost"
+            className="h-5 w-5"
           >
-            <IconCheck style={{ width: "70%", height: "70%" }} />
-          </ActionIcon>
+            <IconCheck style={{ width: "60%", height: "60%" }} />
+          </Button>
         )}
       </div>
-    </Paper>
+    </div>
   );
 };
 

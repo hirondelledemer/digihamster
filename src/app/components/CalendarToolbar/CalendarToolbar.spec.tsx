@@ -13,6 +13,7 @@ describe("CalendarToolbar", () => {
     views: [],
     localizer: { messages: {} },
   };
+
   const renderComponent = (props = defaultProps) =>
     getCalendarToolbarTestkit(render(<CalendarToolbar {...props} />).container);
 
@@ -22,19 +23,15 @@ describe("CalendarToolbar", () => {
   });
 
   describe("hot keys", () => {
-    /*
-      currently react-big-calendar supports "week", "month", "day" and "work_week"
-      since "work_week" is not used as is, "today" view is coded as "work_week"
-    */
-    it('should show "today view" when "T" is pressed', () => {
+    it('should show "today view" when "A" is pressed', () => {
       const onViewSpy = jest.fn();
 
       const wrapper = renderComponent({
         ...defaultProps,
         onView: onViewSpy,
       });
-      wrapper.pressT();
-      expect(onViewSpy).toHaveBeenCalledWith("work_week");
+      wrapper.pressA();
+      expect(onViewSpy).toHaveBeenCalledWith("agenda");
     });
 
     it('should show "day" when "D" is pressed', () => {
@@ -57,6 +54,17 @@ describe("CalendarToolbar", () => {
       });
       wrapper.pressW();
       expect(onViewSpy).toHaveBeenCalledWith("week");
+    });
+
+    it('should navigate to "today" when "t" is pressed', () => {
+      const onNavigateSpy = jest.fn();
+
+      const wrapper = renderComponent({
+        ...defaultProps,
+        onNavigate: onNavigateSpy,
+      });
+      wrapper.pressT();
+      expect(onNavigateSpy).toHaveBeenCalledWith("TODAY");
     });
   });
 });

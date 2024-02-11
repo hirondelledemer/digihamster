@@ -13,3 +13,34 @@ Object.defineProperty(window, "matchMedia", {
     dispatchEvent: jest.fn(),
   }),
 });
+
+class ClipboardEventMock extends Event {
+  clipboardData: {
+    getData: jest.Mock<any, any>;
+    setData: jest.Mock<any, any>;
+  };
+  constructor(type: string, eventInitDict: EventInit | undefined) {
+    super(type, eventInitDict);
+    this.clipboardData = {
+      getData: jest.fn(),
+      setData: jest.fn(),
+    };
+  }
+}
+
+class DragEventMock extends Event {
+  // clipboardData: {
+  //   getData: jest.Mock<any, any>;
+  //   setData: jest.Mock<any, any>;
+  // };
+  constructor(type: string, eventInitDict: EventInit | undefined) {
+    super(type, eventInitDict);
+    // this.clipboardData = {
+    //   getData: jest.fn(),
+    //   setData: jest.fn(),
+    // };
+  }
+}
+
+window.ClipboardEvent = ClipboardEventMock as any;
+window.DragEvent = DragEventMock as any;

@@ -1,4 +1,4 @@
-import { render } from "@/config/utils/test-utils";
+import { render, waitFor } from "@/config/utils/test-utils";
 import { CalendarEventProps } from "./CalendarEvent";
 import CalendarEvent from "./CalendarEvent";
 import { getCalendarEventTestkit } from "./CalendarEvent.testkit";
@@ -13,6 +13,7 @@ describe("CalendarEvent", () => {
         id: "event1",
       },
     },
+    onDelete: jest.fn(),
   };
 
   afterEach(() => {
@@ -40,20 +41,26 @@ describe("CalendarEvent", () => {
       expect(wrapper.getEventTextIsStriked()).toBe(true);
     });
 
-    it('should send "delete" request', () => {
-      const wrapper = renderComponent();
+    it('should send "delete" request', async () => {
+      mockAxios.patch.mockResolvedValueOnce({ data: {} });
+      const onDeleteSpy = jest.fn();
+      const props: CalendarEventProps = {
+        ...defaultProps,
+        onDelete: onDeleteSpy,
+      };
+
+      const wrapper = renderComponent(props);
+
       wrapper.clickDeleteButton();
+
       expect(mockAxios.patch).toHaveBeenCalledWith("/api/tasks/events", {
         deleted: true,
         taskId: "event1",
       });
-      /*
-       this is a mistake. 
-       Currently "delete event does delete CalendarEvent content, but component itself still remains"
-      */
-      expect(wrapper.getComponent()).toBeInTheDocument();
-      expect(wrapper.completeButtonExists()).toBe(false);
-      expect(wrapper.deleteButtonExists()).toBe(false);
+
+      await waitFor(() => {
+        expect(onDeleteSpy).toHaveBeenCalled();
+      });
     });
   });
 
@@ -66,7 +73,9 @@ describe("CalendarEvent", () => {
           id: "event1",
         },
       },
+      onDelete: jest.fn(),
     };
+
     it("renders completed Calendar event", () => {
       const wrapper = renderComponent(props);
       expect(wrapper.getEventTextIsStriked()).toBe(true);

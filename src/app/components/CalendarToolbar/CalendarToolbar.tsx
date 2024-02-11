@@ -1,5 +1,11 @@
-import { ActionIcon, Group } from "@mantine/core";
-import { useHotkeys } from "@mantine/hooks";
+import React, { FC } from "react";
+import {
+  Navigate,
+  NavigateAction,
+  ToolbarProps,
+  View,
+} from "react-big-calendar";
+import { Button } from "../ui/button";
 import {
   IconArrowBigLeft,
   IconArrowBigRight,
@@ -8,13 +14,9 @@ import {
   IconSquareLetterT,
   IconSquareLetterW,
 } from "@tabler/icons-react";
-import React, { FC } from "react";
-import {
-  Navigate,
-  NavigateAction,
-  ToolbarProps,
-  View,
-} from "react-big-calendar";
+import { IconSquareLetterA } from "@tabler/icons-react";
+import { format } from "date-fns";
+import useHotKeys from "@/app/utils/hooks/use-hotkeys";
 
 export interface CalendarToolbarProps extends ToolbarProps {
   testId?: string;
@@ -23,87 +25,67 @@ export interface CalendarToolbarProps extends ToolbarProps {
   onView(view: View): void;
 }
 
+// todo: make this component server
 const CalendarToolbar: FC<CalendarToolbarProps> = ({
   testId,
   onNavigate,
   label,
   onView,
+  date,
+  view,
 }): JSX.Element => {
-  useHotkeys([
-    ["T", () => onView("work_week")],
-    ["D", () => onView("day")],
-    ["W", () => onView("week")],
-  ]);
+  useHotKeys(["t"], () => onNavigate(Navigate.TODAY));
+  useHotKeys(["d"], () => onView("day"));
+  useHotKeys(["w"], () => onView("week"));
+  useHotKeys(["a"], () => onView("agenda"));
+  useHotKeys(["m"], () => onView("month"));
 
   return (
-    <Group data-testid={testId}>
+    <div data-testid={testId} className="flex justify-between align-center">
       <div>
-        <Group>
-          <ActionIcon
-            size="sm"
-            variant="transparent"
-            color="gray"
+        <div>
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={() => onNavigate(Navigate.PREVIOUS)}
           >
             <IconArrowBigLeft size={18} />
-          </ActionIcon>
-          <ActionIcon
-            size="sm"
-            variant="transparent"
-            color="gray"
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={() => onNavigate(Navigate.TODAY)}
           >
             <IconSquareLetterT size={18} />
-          </ActionIcon>
-          <ActionIcon
-            size="sm"
-            variant="transparent"
-            color="gray"
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={() => onNavigate(Navigate.NEXT)}
           >
             <IconArrowBigRight size={18} />
-          </ActionIcon>
-        </Group>
+          </Button>
+        </div>
       </div>
-      <div>{label}</div>
+      <div>{view === "agenda" ? format(date, "EEEE MMM dd") : label}</div>
       <div>
-        <Group>
+        <div>
           {/* todo: fix month style */}
-          <ActionIcon
-            size="sm"
-            variant="transparent"
-            color="gray"
-            onClick={() => onView("month")}
-          >
+          <Button variant="ghost" size="icon" onClick={() => onView("month")}>
             <IconSquareLetterM />
-          </ActionIcon>
-          <ActionIcon
-            size="sm"
-            variant="transparent"
-            color="gray"
-            onClick={() => onView("week")}
-          >
+          </Button>
+          <Button variant="ghost" size="icon" onClick={() => onView("week")}>
             <IconSquareLetterW />
-          </ActionIcon>
-          <ActionIcon
-            size="sm"
-            variant="transparent"
-            color="gray"
-            onClick={() => onView("day")}
-          >
+          </Button>
+          <Button variant="ghost" size="icon" onClick={() => onView("day")}>
             <IconSquareLetterD />
-          </ActionIcon>
-          <ActionIcon
-            size="sm"
-            variant="transparent"
-            color="gray"
-            onClick={() => onView("work_week")}
-          >
-            <IconSquareLetterT />
-          </ActionIcon>
-        </Group>
+          </Button>
+          <Button variant="ghost" size="icon" onClick={() => onView("agenda")}>
+            <IconSquareLetterA />
+          </Button>
+        </div>
       </div>
-    </Group>
+    </div>
   );
 };
 

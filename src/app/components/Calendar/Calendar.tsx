@@ -1,3 +1,4 @@
+"use client";
 import React, {
   useEffect,
   useState,
@@ -33,6 +34,7 @@ import CalendarEvent from "../CalendarEvent";
 import { eventPropGetter } from "../CalendarEvent/CalendarEvent";
 import { ITask } from "@/models/task";
 import useJournalEntries from "@/app/utils/hooks/use-entry";
+import useEvents from "@/app/utils/hooks/use-events";
 
 export const now = () => new Date();
 
@@ -55,16 +57,12 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
   const [events, setEvents] = useState<Event[]>([]);
   const [_draggedEvent, setDraggedEvent] = useState<Event | null>(null);
 
-  const { data: journalEntries } = useJournalEntries();
+  const { data: journalEntriesData } = useJournalEntries();
+  const { data: eventsData } = useEvents();
 
   useEffect(() => {
     const fetchData = async () => {
-      // todo: is this a good idea to leave {data: [...]}
-      const eventsResponse = await axios.get<{ data: ITask[] }>(
-        "/api/tasks/events"
-      );
-
-      const events = eventsResponse.data.data.map((task) => ({
+      const eventsResolved = eventsData.map((task) => ({
         start: task.event ? new Date(task.event.startAt!) : undefined,
         end: task.event ? new Date(task.event.endAt!) : undefined,
         title: task.title,
@@ -74,22 +72,22 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
           completed: task.completed,
         },
       }));
-      const entries = journalEntries.map((entry) => ({
-        start: entry.createdAt ? new Date(entry.createdAt) : undefined,
+      const entriesResolved = journalEntriesData.map((entry) => ({
+        start: new Date(entry.createdAt),
         title: entry.title,
         allDay: false,
         resource: {
           type: "journal",
-          id: entry.id,
+          id: entry._id,
           title: entry.title,
           note: entry.note,
         },
       }));
-      setEvents([...events, ...entries]);
+      setEvents([...eventsResolved, ...entriesResolved]);
     };
 
     fetchData();
-  }, [journalEntries]);
+  }, [journalEntriesData, eventsData]);
 
   const customSlotPropGetter = useCallback(
     () => ({
@@ -123,9 +121,8 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
       views: {
         month: true,
         week: true,
-        agenda: true,
+        agenda: Today,
         day: true,
-        work_week: Today,
       },
     }),
     []

@@ -1,6 +1,13 @@
-import { Checkbox, Loader, SimpleGrid, Text } from "@mantine/core";
+"use client";
+
 import { lightFormat, format } from "date-fns";
-import React, { ChangeEvent, FC, ReactNode } from "react";
+import React, { FC, ReactNode } from "react";
+import { Checkbox } from "../ui/checkbox";
+import axios from "axios";
+import { ITask } from "@/models/task";
+import useEvents from "@/app/utils/hooks/use-events";
+import { cn } from "../utils";
+import styles from "./TodayEvent.module.scss";
 
 export interface TodayEventProps {
   testId?: string;
@@ -23,55 +30,54 @@ const TodayEvent: FC<TodayEventProps> = ({
   id,
   showDate,
 }): JSX.Element => {
-  // const [updateEvent, { loading }] = useMutation<
-  //   UpdateTask,
-  //   UpdateTaskVariables
-  // >(MUTATION_UPDATE_TASK);
-  // const refetchQueries = useRefetchQueries();
-  const handleCompleteClick = (event: ChangeEvent<HTMLInputElement>) => {
-    console.log("updating event");
-    // updateEvent({
-    //   variables: {
-    //     id: id,
-    //     completed: event.target.checked,
-    //   },
-    //   refetchQueries,
-    // });
+  const { setData } = useEvents();
+
+  const handleCompleteClick = async (val: boolean) => {
+    await axios.patch<ITask, { data: ITask }>("/api/tasks/events", {
+      taskId: id,
+      completed: val,
+    });
+
+    setData((events) => {
+      const newEvents = [...events];
+      const eventToUpdate = newEvents.find((e) => e._id === id);
+      if (eventToUpdate) {
+        eventToUpdate.completed = val;
+      }
+      return newEvents;
+    });
   };
-  if (allDay) {
-    return (
-      <SimpleGrid cols={3} data-testid={testId}>
-        <Text>All Day</Text>
-        <div>{title}</div>
-        <div>
-          {/* {loading ? (
-            <Loader size="sm" />
-          ) : ( */}
-          <Checkbox checked={completed} onChange={handleCompleteClick} />
-          {/* )} */}
-        </div>
-      </SimpleGrid>
-    );
-  }
+
   return (
-    <SimpleGrid cols={3} data-testid={testId}>
-      <div>
-        {start && showDate && <div>{format(start, "MMM d, EEEEE")}</div>}
-        {start && end && (
-          <div>
-            {lightFormat(start, "H:MM")}-{lightFormat(end, "H:MM")}
-          </div>
-        )}
-      </div>
+    <div
+      className={cn([
+        "grid grid-cols-3 gap-4 italic mt-4",
+        completed ? "text-muted-foreground" : "",
+        completed ? styles.container : "",
+      ])}
+      data-testid={testId}
+    >
+      {allDay ? (
+        <div className="flex">All Day</div>
+      ) : (
+        <div className="flex">
+          {start && showDate && <div>{format(start, "MMM d, EEEEE")}</div>}
+          {start && end && (
+            <div>
+              {lightFormat(start, "H:mm")}-{lightFormat(end, "H:mm")}
+            </div>
+          )}
+        </div>
+      )}
       <div>{title}</div>
-      <div>
-        {/* {loading ? (
-          <Loader size="sm" />
-        ) : ( */}
-        <Checkbox checked={completed} onChange={handleCompleteClick} />
-        {/* )} */}
+      <div className="flex justify-end self-center">
+        <Checkbox
+          checked={completed}
+          onCheckedChange={handleCompleteClick}
+          variant={completed ? "secondary" : "default"}
+        />
       </div>
-    </SimpleGrid>
+    </div>
   );
 };
 

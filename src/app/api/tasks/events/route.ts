@@ -8,13 +8,12 @@ connect();
 
 export async function GET(request: NextRequest) {
   try {
-    console.log("patch");
     // Extract user ID from the authentication token
     const userId = await getDataFromToken(request);
 
     // Find the user in the database based on the user ID
     const tasks = await Task.find({
-      userId: userId,
+      userId,
       event: { $ne: null },
       deleted: false,
     });
