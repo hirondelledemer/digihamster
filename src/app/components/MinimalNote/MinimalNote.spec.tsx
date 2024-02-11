@@ -2,13 +2,12 @@ import { render } from "@/config/utils/test-utils";
 import MinimalNote, { MinimalNoteProps } from "./MinimalNote";
 import { getMinimalNoteTestkit } from "./MinimalNote.testkit";
 
-// todo: fix. there is smth wrong with rte
-describe.skip("MinimalNote", () => {
+describe("MinimalNote", () => {
   const defaultProps: MinimalNoteProps = {
     note: "note",
   };
   const renderComponent = (props = defaultProps) =>
-    getMinimalNoteTestkit(render(<div>test</div>).container);
+    getMinimalNoteTestkit(render(<MinimalNote {...props} />).container);
 
   it("should render MinimalNote", () => {
     const wrapper = renderComponent();
