@@ -34,6 +34,7 @@ const CalendarToolbar: FC<CalendarToolbarProps> = ({
   date,
   view,
 }): JSX.Element => {
+  // todo: typing in rte trigers these: fix
   useHotKeys(["t"], () => onNavigate(Navigate.TODAY));
   useHotKeys(["d"], () => onView("day"));
   useHotKeys(["w"], () => onView("week"));

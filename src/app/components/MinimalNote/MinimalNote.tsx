@@ -1,3 +1,4 @@
+"use client";
 import React, { FC, useEffect } from "react";
 import RichTextEditor from "../RichTextEditor";
 import { useRte } from "@/app/utils/rte/rte-hook";
