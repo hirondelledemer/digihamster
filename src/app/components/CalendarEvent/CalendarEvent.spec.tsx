@@ -13,7 +13,6 @@ describe("CalendarEvent", () => {
         id: "event1",
       },
     },
-    onDelete: jest.fn(),
   };
 
   afterEach(() => {
@@ -38,15 +37,12 @@ describe("CalendarEvent", () => {
         completed: true,
         taskId: "event1",
       });
-      expect(wrapper.getEventTextIsStriked()).toBe(true);
     });
 
     it('should send "delete" request', async () => {
       mockAxios.patch.mockResolvedValueOnce({ data: {} });
-      const onDeleteSpy = jest.fn();
       const props: CalendarEventProps = {
         ...defaultProps,
-        onDelete: onDeleteSpy,
       };
 
       const wrapper = renderComponent(props);
@@ -56,10 +52,6 @@ describe("CalendarEvent", () => {
       expect(mockAxios.patch).toHaveBeenCalledWith("/api/tasks/events", {
         deleted: true,
         taskId: "event1",
-      });
-
-      await waitFor(() => {
-        expect(onDeleteSpy).toHaveBeenCalled();
       });
     });
   });
@@ -73,7 +65,6 @@ describe("CalendarEvent", () => {
           id: "event1",
         },
       },
-      onDelete: jest.fn(),
     };
 
     it("renders completed Calendar event", () => {

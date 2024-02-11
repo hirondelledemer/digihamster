@@ -116,14 +116,8 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
     []
   );
 
-  const handleDeleteEvent = (eventId: string) => {
-    setEventsData((e) => {
-      return filter<ITask>((event) => event._id !== eventId)(e);
-    });
-  };
-
   const customEvent = ({ event }: { event: Event }) => {
-    return <CalendarEvent event={event} onDelete={handleDeleteEvent} />;
+    return <CalendarEvent event={event} />;
   };
 
   const cutomDate = (props: any) => {
