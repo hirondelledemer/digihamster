@@ -99,7 +99,7 @@ function Today({ localizer, events, date }: TodayProps) {
                 <IconChevronDown />
               </div>
             </CollapsibleTrigger>
-            <CollapsibleContent>
+            <CollapsibleContent data-testid={upcomingEventsTestId}>
               {upcomingEvents.sort(sortByTime).map((event: Event) => (
                 <TodayEvent
                   key={event.resource.id}

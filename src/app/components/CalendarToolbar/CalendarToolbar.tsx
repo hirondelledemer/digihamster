@@ -16,6 +16,7 @@ import {
 } from "@tabler/icons-react";
 import { IconSquareLetterA } from "@tabler/icons-react";
 import { format } from "date-fns";
+import useHotKeys from "@/app/utils/hooks/use-hotkeys";
 
 export interface CalendarToolbarProps extends ToolbarProps {
   testId?: string;
@@ -33,6 +34,12 @@ const CalendarToolbar: FC<CalendarToolbarProps> = ({
   date,
   view,
 }): JSX.Element => {
+  useHotKeys(["t"], () => onNavigate(Navigate.TODAY));
+  useHotKeys(["d"], () => onView("day"));
+  useHotKeys(["w"], () => onView("week"));
+  useHotKeys(["a"], () => onView("agenda"));
+  useHotKeys(["m"], () => onView("month"));
+
   return (
     <div data-testid={testId} className="flex justify-between align-center">
       <div>

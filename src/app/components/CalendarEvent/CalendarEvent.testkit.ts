@@ -2,8 +2,7 @@ import { fireEvent, within } from "@/config/utils/test-utils";
 
 export const getCalendarEventTestkit = (component: HTMLElement) => {
   const getEventTextIsStriked = () =>
-    within(component).getByText(/event/i).style.textDecoration ===
-    "line-through";
+    within(component).getByText(/event/i).className.includes("line-through");
 
   const getCompleteButton = () =>
     within(component).getByRole("button", {

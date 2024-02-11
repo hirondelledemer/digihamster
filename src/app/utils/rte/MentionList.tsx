@@ -40,6 +40,7 @@ export const MentionList = forwardRef(
 
     const handleAddTag = async (title: string) => {
       // todo: handle error
+      console.log("jere");
       const response = await axios.post<any, { data: ITag }>("/api/tags", {
         title,
         color:
@@ -48,6 +49,7 @@ export const MentionList = forwardRef(
             : COLORS_V2[getRandomInt(COLORS_V2.length)],
       });
 
+      console.log("jere again");
       command({
         id: `${response.data._id}:${response.data.color}`,
         label: response.data.title,

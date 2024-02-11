@@ -20,6 +20,7 @@ const CalendarEvent: FC<CalendarEventProps> = ({
   event,
   onDelete,
 }): JSX.Element | null => {
+  // todo: fix with hook
   const [completed, setCompleted] = useState<boolean>(event.resource.completed);
 
   const handleDeleteClick = async () => {
@@ -39,7 +40,12 @@ const CalendarEvent: FC<CalendarEventProps> = ({
   };
 
   return (
-    <div data-testid={testId} className="h-full p-1">
+    <div
+      data-testid={testId}
+      className={`h-full p-1 ${
+        completed ? "text-muted-foreground line-through" : ""
+      }`}
+    >
       {event.title}
       <div className={style.actions}>
         <Button

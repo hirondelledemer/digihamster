@@ -1,23 +1,26 @@
-import { fireEvent } from '@testing-library/react';
+import { fireEvent } from "@testing-library/react";
 
-export const getCalendarToolbarTestkit = (
-  component: HTMLElement,
-) => ({
+export const getCalendarToolbarTestkit = (component: HTMLElement) => ({
   getComponent: () => component,
-  pressT: () =>
+  pressA: () =>
     fireEvent.keyDown(component, {
-      key: 't',
-      code: 'KeyT',
+      key: "a",
+      code: "KeyA",
       charCode: 84,
     }),
   pressD: () =>
     fireEvent.keyDown(component, {
-      key: 'd',
-      code: 'KeyD',
+      key: "d",
+      code: "KeyD",
     }),
   pressW: () =>
     fireEvent.keyDown(component, {
-      key: 'w',
-      code: 'KeyW',
+      key: "w",
+      code: "KeyW",
+    }),
+  pressT: () =>
+    fireEvent.keyDown(component, {
+      key: "t",
+      code: "KeyT",
     }),
 });

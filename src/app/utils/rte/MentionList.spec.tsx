@@ -1,51 +1,57 @@
-import { MentionList, MentionListProps } from './MentionList';
-import { getMentionListTestkit } from './MentionList.testkit';
-import { renderWithMockedProvider } from '../tests/render';
-import { act, waitFor } from '@testing-library/react';
-import {
-  buildCreateTagMutationMock,
-  buildGetTagsMutationMock,
-  data,
-} from './MentionList.mocks';
-import React from 'react';
-import { MockedResponse } from '@apollo/client/testing';
+import { MentionList, MentionListProps } from "./MentionList";
+import { getMentionListTestkit } from "./MentionList.testkit";
+import React from "react";
+import { act, render, waitFor } from "@/config/utils/test-utils";
+import MockAxios from "jest-mock-axios";
+import { COLORS_V2 } from "../consts/colors";
 
-jest.mock('../common/random-int', () => ({
+jest.mock("../common/random-int", () => ({
   getRandomInt: () => 0,
 }));
 
-describe('MentionList', () => {
+describe("MentionList", () => {
+  afterEach(() => {
+    MockAxios.reset();
+  });
   const defaultProps: MentionListProps = {
     command: jest.fn(),
-    query: '',
+    query: "",
   };
-  const renderComponent = (
-    props = defaultProps,
-    mocks: MockedResponse[] = [],
-  ) =>
-    getMentionListTestkit(
-      renderWithMockedProvider(<MentionList {...props} />, [
-        buildGetTagsMutationMock(),
-        ...mocks,
-      ]).container,
-    );
+  const renderComponent = (props = defaultProps) =>
+    getMentionListTestkit(render(<MentionList {...props} />).container);
 
-  it('should render MentionList', () => {
+  it("should render MentionList", () => {
     const wrapper = renderComponent();
     expect(wrapper.getComponent()).not.toBe(null);
   });
 
-  it('should show tags', async () => {
+  it("should show tags", async () => {
+    MockAxios.get.mockResolvedValueOnce({
+      data: [
+        { _id: "tag1", title: "Tag 1", color: COLORS_V2[0] },
+        { _id: "tag2", title: "Tag 2", color: COLORS_V2[2] },
+      ],
+    });
+
     const wrapper = renderComponent();
+
     await waitFor(() => {
-      expect(wrapper.getComponent().textContent).toBe(
-        '@media (max-width: 35.99375em) {.mantine-visible-from-xs {display: none !important;}}@media (min-width: 36em) {.mantine-hidden-from-xs {display: none !important;}}@media (max-width: 47.99375em) {.mantine-visible-from-sm {display: none !important;}}@media (min-width: 48em) {.mantine-hidden-from-sm {display: none !important;}}@media (max-width: 61.99375em) {.mantine-visible-from-md {display: none !important;}}@media (min-width: 62em) {.mantine-hidden-from-md {display: none !important;}}@media (max-width: 74.99375em) {.mantine-visible-from-lg {display: none !important;}}@media (min-width: 75em) {.mantine-hidden-from-lg {display: none !important;}}@media (max-width: 87.99375em) {.mantine-visible-from-xl {display: none !important;}}@media (min-width: 88em) {.mantine-hidden-from-xl {display: none !important;}}Tag 1Tag 2Tag 3',
-      );
+      expect(wrapper.getComponent().textContent).toBe("Tag 1Tag 2");
     });
   });
 
-  describe('selecting tag', () => {
-    it('should select tag', async () => {
+  describe("selecting tag", () => {
+    it("should select tag", async () => {
+      const tags = [
+        { _id: "tag1", title: "Tag 1", color: COLORS_V2[0] },
+        { _id: "tag2", title: "Tag 2", color: COLORS_V2[1] },
+        { _id: "tag3", title: "Tag 3", color: COLORS_V2[2] },
+      ];
+
+      MockAxios.get.mockResolvedValueOnce({
+        data: tags,
+      });
+
       const ref = React.createRef();
       const command = jest.fn();
       const wrapper = renderComponent({
@@ -55,82 +61,78 @@ describe('MentionList', () => {
       } as any);
 
       await waitFor(() => {
-        expect(wrapper.getComponent().textContent).toContain(
-          'Tag 1Tag 2Tag 3',
-        );
+        expect(wrapper.getComponent().textContent).toContain("Tag 1Tag 2");
       });
 
       act(() => {
         (ref.current as any).onKeyDown({
-          event: { key: 'ArrowDown' },
+          event: { key: "ArrowDown" },
         });
       });
-      (ref.current as any).onKeyDown({ event: { key: 'Enter' } });
+      (ref.current as any).onKeyDown({ event: { key: "Enter" } });
 
       expect(command).toHaveBeenCalledWith({
-        id: `${data.tags[1].id}:${data.tags[1].color}`,
-        label: data.tags[1].title,
+        id: `${tags[1]._id}:${tags[1].color}`,
+        label: tags[1].title,
       });
     });
 
-    it('should create new tag', async () => {
-      const query = 'new';
-      const callback = jest.fn();
+    it("should create new tag", async () => {
+      const query = "new";
       const ref = React.createRef();
       const command = jest.fn();
+      MockAxios.post.mockResolvedValueOnce({
+        data: {
+          _id: "newTag1",
+          color: "#F06595",
+          title: "new",
+        },
+      });
 
-      const wrapper = renderComponent(
-        {
-          ...defaultProps,
-          query,
-          ref,
-          command,
-        } as any,
-        [
-          buildCreateTagMutationMock({
-            variables: {
-              title: query,
-              color: '#F06595',
-            },
-            callback,
-          }),
-        ],
-      );
+      const wrapper = renderComponent({
+        ...defaultProps,
+        query,
+        ref,
+        command,
+      } as any);
 
       await waitFor(() => {
         expect(wrapper.getCreateButton()).toBeInTheDocument();
       });
 
       act(() => {
-        (ref.current as any).onKeyDown({ event: { key: 'Enter' } });
+        (ref.current as any).onKeyDown({ event: { key: "Enter" } });
       });
 
       await waitFor(() => {
-        expect(callback).toHaveBeenCalled();
+        expect(MockAxios.post).toHaveBeenCalledWith("/api/tags", {
+          color: "#ADB5BD",
+          title: "new",
+        });
         expect(command).toHaveBeenCalledWith({
-          id: 'newTag1:#F06595',
-          label: 'new',
+          id: "newTag1:#F06595",
+          label: "new",
         });
       });
     });
   });
 
-  describe('filtering', () => {
-    describe('tag exists by query', () => {
-      const query = 'Tag 1';
-      it('should show tags filtered by query', async () => {
+  describe("filtering", () => {
+    describe("tag exists by query", () => {
+      const query = "Tag 1";
+      it("should show tags filtered by query", async () => {
         const wrapper = renderComponent({
           ...defaultProps,
           query,
         });
         await waitFor(() => {
-          expect(wrapper.getComponent()).toHaveTextContent('Tag 1');
+          expect(wrapper.getComponent()).toHaveTextContent("Tag 1");
         });
       });
     });
 
-    describe('tag does not exists by query', () => {
-      const query = 'new';
+    describe("tag does not exists by query", () => {
+      const query = "new";
       it('should show show "create button"', async () => {
         const wrapper = renderComponent({
           ...defaultProps,
