@@ -55,38 +55,33 @@ interface PlannerProps {
 // todo: test this component
 export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
   const [events, setEvents] = useState<Event[]>([]);
-  const [_draggedEvent, setDraggedEvent] = useState<Event | null>(null);
 
   const { data: journalEntriesData } = useJournalEntries();
   const { data: eventsData } = useEvents();
 
   useEffect(() => {
-    const fetchData = async () => {
-      const eventsResolved = eventsData.map((task) => ({
-        start: task.event ? new Date(task.event.startAt!) : undefined,
-        end: task.event ? new Date(task.event.endAt!) : undefined,
-        title: task.title,
-        allDay: task.event ? task.event.allDay : false,
-        resource: {
-          id: task._id,
-          completed: task.completed,
-        },
-      }));
-      const entriesResolved = journalEntriesData.map((entry) => ({
-        start: new Date(entry.createdAt),
+    const eventsResolved = eventsData.map((task) => ({
+      start: task.event ? new Date(task.event.startAt!) : undefined,
+      end: task.event ? new Date(task.event.endAt!) : undefined,
+      title: task.title,
+      allDay: task.event ? task.event.allDay : false,
+      resource: {
+        id: task._id,
+        completed: task.completed,
+      },
+    }));
+    const entriesResolved = journalEntriesData.map((entry) => ({
+      start: new Date(entry.createdAt),
+      title: entry.title,
+      allDay: false,
+      resource: {
+        type: "journal",
+        id: entry._id,
         title: entry.title,
-        allDay: false,
-        resource: {
-          type: "journal",
-          id: entry._id,
-          title: entry.title,
-          note: entry.note,
-        },
-      }));
-      setEvents([...eventsResolved, ...entriesResolved]);
-    };
-
-    fetchData();
+        note: entry.note,
+      },
+    }));
+    setEvents([...eventsResolved, ...entriesResolved]);
   }, [journalEntriesData, eventsData]);
 
   const customSlotPropGetter = useCallback(
@@ -228,10 +223,6 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
     }
   };
 
-  const handleDragStart = (event: Event) => {
-    setDraggedEvent(event);
-  };
-
   // todo: test this component
   return (
     <DnDropCalendar
@@ -257,7 +248,6 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
       eventPropGetter={eventPropGetter}
       min={dates.add(dates.startOf(new Date(2015, 17, 1), "day"), +6, "hours")}
       views={views}
-      handleDragStart={handleDragStart}
       slotPropGetter={customSlotPropGetter}
       dayPropGetter={customDayPropGetter}
       slotGroupPropGetter={customGroupGetter}
