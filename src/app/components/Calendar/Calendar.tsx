@@ -30,6 +30,7 @@ import { eventPropGetter } from "../CalendarEvent/CalendarEvent";
 import { ITask } from "@/models/task";
 import useJournalEntries from "@/app/utils/hooks/use-entry";
 import useEvents from "@/app/utils/hooks/use-events";
+import { updateObjById } from "@/app/utils/common/update-array";
 
 export const now = () => new Date();
 
@@ -52,7 +53,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
   const { data: journalEntriesData } = useJournalEntries();
   const { data: eventsData, setData: setEventsData } = useEvents();
 
-  const eventsResolved = eventsData.map((task) => ({
+  const eventsResolved = eventsData.map<Event>((task) => ({
     start: task.event ? new Date(task.event.startAt!) : undefined,
     end: task.event ? new Date(task.event.endAt!) : undefined,
     title: task.title,
@@ -63,7 +64,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
     },
   }));
 
-  const entriesResolved = journalEntriesData.map((entry) => ({
+  const entriesResolved = journalEntriesData.map<Event>((entry) => ({
     start: new Date(entry.createdAt),
     title: entry.title,
     allDay: false,
@@ -124,7 +125,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
     return <div className={style.event}>{props.label}</div>;
   };
 
-  const moveEvent = async ({
+  const moveEvent = ({
     event,
     start,
     end,
@@ -135,7 +136,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
     end: stringOrDate;
     isAllDay?: boolean;
   }) => {
-    await axios.patch("/api/tasks/events", {
+    axios.patch("/api/tasks/events", {
       taskId: event.resource.id,
       event: {
         allDay: isAllDay || false,
@@ -144,19 +145,15 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
       },
     });
 
-    setEventsData((e) => {
-      const newEvents = [...e];
-      const eventIndex = newEvents.findIndex(
-        (e) => event.resource.id === e._id
-      );
-      const updatedEvent = newEvents[eventIndex];
-      if (updatedEvent.event) {
-        updatedEvent.event.allDay = isAllDay || false;
-        updatedEvent.event.startAt = new Date(start).getTime();
-        updatedEvent.event.endAt = new Date(end).getTime();
-      }
-      return newEvents;
-    });
+    setEventsData((e) =>
+      updateObjById<ITask>(e, event.resource.id, {
+        event: {
+          allDay: isAllDay || false,
+          startAt: new Date(start).getTime(),
+          endAt: new Date(end).getTime(),
+        },
+      })
+    );
   };
 
   const resizeEvent = ({
@@ -175,18 +172,16 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
         endAt: new Date(end).getTime(),
       },
     });
-    setEventsData((e) => {
-      const newEvents = [...e];
-      const eventIndex = newEvents.findIndex(
-        (e) => event.resource.id === e._id
-      );
-      const updatedEvent = newEvents[eventIndex];
-      if (updatedEvent.event) {
-        updatedEvent.event.startAt = new Date(start).getTime();
-        updatedEvent.event.endAt = new Date(end).getTime();
-      }
-      return newEvents;
-    });
+
+    setEventsData((e) =>
+      updateObjById<ITask>(e, event.resource.id, {
+        event: {
+          allDay: false,
+          startAt: new Date(start).getTime(),
+          endAt: new Date(end).getTime(),
+        },
+      })
+    );
   };
 
   const newEvent = async (event: SlotInfo) => {

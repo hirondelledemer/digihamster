@@ -8,7 +8,7 @@ import axios from "axios";
 import { Button } from "../ui/button";
 import useEvents from "@/app/utils/hooks/use-events";
 import { ITask } from "@/models/task";
-import { ObjectId } from "mongoose";
+import { updateObjById } from "@/app/utils/common/update-array";
 
 export interface CalendarEventProps {
   testId?: string;
@@ -18,17 +18,6 @@ export interface CalendarEventProps {
 export const eventPropGetter = () => ({
   className: style.event,
 });
-
-// todo: extract
-function update<T extends { _id: ObjectId }>(
-  arr: T[],
-  id: ObjectId,
-  updatedData: Partial<T>
-) {
-  return arr.map((item) =>
-    item._id === id ? { ...item, ...updatedData } : item
-  );
-}
 
 const CalendarEvent: FC<CalendarEventProps> = ({
   testId,
@@ -45,7 +34,9 @@ const CalendarEvent: FC<CalendarEventProps> = ({
 
   const handleCompleteClick = () => {
     setData((events) => {
-      return update<ITask>(events, event.resource.id, { completed: true });
+      return updateObjById<ITask>(events, event.resource.id, {
+        completed: true,
+      });
     });
     axios.patch("/api/tasks/events", {
       taskId: event.resource.id,
