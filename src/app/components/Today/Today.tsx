@@ -4,7 +4,6 @@ import * as dates from "date-arithmetic";
 import TodayEvent from "../TodayEvent";
 import { IconChevronDown } from "@tabler/icons-react";
 import MinimalNote from "../MinimalNote";
-import { Button } from "../ui/button";
 import {
   Collapsible,
   CollapsibleContent,
@@ -25,8 +24,6 @@ export interface TodayProps {
 }
 
 function Today({ localizer, events, date }: TodayProps) {
-  const [upcomingEventsOpened, toggleUpcomingEvents] = useState<boolean>(false);
-
   const max = localizer.endOf(date, "day");
   const min = localizer.startOf(date, "day");
 
@@ -52,7 +49,7 @@ function Today({ localizer, events, date }: TodayProps) {
   const getTodayEventComp = (event: Event) => {
     // todo: check how note is being shown
     return event.resource.type === "journal" ? (
-      <Collapsible>
+      <Collapsible key={event.resource.id}>
         <CollapsibleTrigger>Show note</CollapsibleTrigger>
         <CollapsibleContent>
           <MinimalNote note={event.resource.note} />
@@ -80,22 +77,14 @@ function Today({ localizer, events, date }: TodayProps) {
           "There are not events today."}
         {allDayEvents.map(getTodayEventComp)}
         {regularEvents.sort(sortByTime).map(getTodayEventComp)}
-        {/* {!!upcomingEvents.length && (
-          <Button
-            onClick={() => toggleUpcomingEvents((opened: boolean) => !opened)}
-          >
-            Upcoming Events
-            <IconChevronDown />
-          </Button>
-        )} */}
 
         {!!upcomingEvents.length && (
           <Collapsible>
             <CollapsibleTrigger>
-              <Button variant="ghost" className="mt-6">
+              <div className="flex mt-6">
                 Upcoming Events
                 <IconChevronDown />
-              </Button>
+              </div>
             </CollapsibleTrigger>
             <CollapsibleContent>
               {upcomingEvents.sort(sortByTime).map((event: Event) => (

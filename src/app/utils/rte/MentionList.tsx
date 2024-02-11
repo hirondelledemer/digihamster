@@ -1,17 +1,16 @@
-// import { useLazyQuery } from "@apollo/client";
-import { Badge, Button, Paper, Popover } from "@mantine/core";
 import React, {
   forwardRef,
   useEffect,
   useImperativeHandle,
   useState,
 } from "react";
-import { GetTags } from "./__generated__/GetTags";
-// import { QUERY_GET_TAGS } from './MentionList.queries';
 import { COLORS_V2, colorMapper } from "../consts/colors";
-import { Tag } from "./__generated__/Tag";
 import { getRandomInt } from "../common/random-int";
-// import { useCreateTagMutation } from "../tags/use-create-tag-mutation";
+import axios from "axios";
+import { ITag } from "@/models/tag";
+import { Card, CardContent } from "@/app/components/ui/card";
+import { Button } from "@/app/components/ui/button";
+import { Badge } from "@/app/components/ui/badge";
 
 export interface MentionListProps {
   command: any;
@@ -21,27 +20,38 @@ export interface MentionListProps {
 export const MentionList = forwardRef(
   ({ command, query }: MentionListProps, ref) => {
     const [selectedIndex, setSelectedIndex] = useState(0);
+    const [tags, setTags] = useState<ITag[]>([]);
 
-    // const [createTag] = useCreateTagMutation();
+    useEffect(() => {
+      (async function () {
+        try {
+          const tagsResponse = await axios.get<ITag[]>("/api/tags");
+          setTags(tagsResponse.data);
+        } catch (err) {
+          // setError(err);
+          //todo: show error
+        }
+      })();
+    }, []);
 
-    // const [getTags, { data }] = useLazyQuery<GetTags>(QUERY_GET_TAGS);
+    useEffect(() => {
+      setSelectedIndex(0);
+    }, [tags]);
 
-    const handleAddTag = (title: string) => {
-      console.log("handle add tag");
-      // createTag({
-      //   variables: {
-      //     title,
-      //     color:
-      //       data && data.tags.length < COLORS_V2.length
-      //         ? COLORS_V2[data.tags.length]
-      //         : COLORS_V2[getRandomInt(COLORS_V2.length)],
-      //   },
-      // }).then((response) => {
-      //   command({
-      //     id: `${response.data?.createTag?.id}:${response.data?.createTag?.color}`,
-      //     label: response.data?.createTag?.title,
-      //   });
-      // });
+    const handleAddTag = async (title: string) => {
+      // todo: handle error
+      const response = await axios.post<any, { data: ITag }>("/api/tags", {
+        title,
+        color:
+          tags.length < COLORS_V2.length
+            ? COLORS_V2[tags.length]
+            : COLORS_V2[getRandomInt(COLORS_V2.length)],
+      });
+
+      command({
+        id: `${response.data._id}:${response.data.color}`,
+        label: response.data.title,
+      });
     };
 
     useImperativeHandle(ref, () => ({
@@ -65,17 +75,16 @@ export const MentionList = forwardRef(
       },
     }));
 
-    // const items = (data?.tags || [])
-    //   .filter((tag) => tag.title.toLowerCase().startsWith(query.toLowerCase()))
-    //   .slice(0, 5);
-    const items: any = [];
+    const items = tags
+      .filter((tag) => tag.title.toLowerCase().startsWith(query.toLowerCase()))
+      .slice(0, 5);
 
     const selectItem = (index: number) => {
       const item = items[index];
 
       if (item) {
         command({
-          id: `${item.id}:${item.color}`,
+          id: `${item._id}:${item.color}`,
           label: item.title,
         });
       } else {
@@ -95,36 +104,26 @@ export const MentionList = forwardRef(
       selectItem(selectedIndex);
     };
 
-    // useEffect(() => {
-    //   setSelectedIndex(0);
-    // }, [data?.tags]);
-
-    // useEffect(() => {
-    //   getTags();
-    // }, []);
-
     return (
-      <div>
-        <Popover opened>
-          <Paper shadow="xs" p="xs" withBorder>
-            {items.length ? (
-              items.map((tag: Tag, index: number) => (
-                <div key={tag.id}>
-                  <Badge
-                    variant={selectedIndex === index ? "filled" : "outline"}
-                    onClick={() => selectItem(index)}
-                    color={colorMapper[tag.color]}
-                  >
-                    {tag.title}
-                  </Badge>
-                </div>
-              ))
-            ) : (
-              <Button>{`Create"${query}"`}</Button>
-            )}
-          </Paper>
-        </Popover>
-      </div>
+      <Card>
+        <CardContent className="py-2 px-4">
+          {items.length ? (
+            items.map((tag: ITag, index: number) => (
+              <div key={tag._id}>
+                <Badge
+                  variant={selectedIndex === index ? "default" : "outline"}
+                  onClick={() => selectItem(index)}
+                  color={colorMapper[tag.color]}
+                >
+                  {tag.title}
+                </Badge>
+              </div>
+            ))
+          ) : (
+            <Button>{`Create"${query}"`}</Button>
+          )}
+        </CardContent>
+      </Card>
     );
   }
 );

@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { MantineProvider } from "@mantine/core";
 import "./globals.css";
 import { Inter as FontSans } from "next/font/google";
 import { cn } from "./components/utils";
@@ -27,11 +26,9 @@ export default function RootLayout({
           fontSans.variable
         )}
       >
-        <MantineProvider defaultColorScheme="dark" forceColorScheme="dark">
-          <ThemeProvider attribute="class" defaultTheme="dark">
-            {children}
-          </ThemeProvider>
-        </MantineProvider>
+        <ThemeProvider attribute="class" defaultTheme="dark">
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );

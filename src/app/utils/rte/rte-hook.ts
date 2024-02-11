@@ -1,9 +1,6 @@
 import { JSONContent, useEditor } from "@tiptap/react";
-import Highlight from "@tiptap/extension-highlight";
-import Underline from "@tiptap/extension-underline";
-import Link from "@tiptap/extension-link";
+import Mention from "@tiptap/extension-mention";
 import StarterKit from "@tiptap/starter-kit";
-import { Mention } from "@tiptap/extension-mention";
 import { suggestionsConfig } from "./suggestions";
 import { reduce } from "remeda";
 import styles from "./rte-hook.module.scss";
@@ -17,10 +14,7 @@ export function useRte({
 }) {
   const editor = useEditor({
     extensions: [
-      Underline,
-      Link,
       StarterKit,
-      Highlight,
       Mention.configure({
         HTMLAttributes: {
           class: styles.tag,
@@ -31,9 +25,10 @@ export function useRte({
     editorProps: {
       attributes: {
         class:
-          "flex min-h-[60px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50",
+          "min-h-[60px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50",
       },
     },
+
     content: value,
     editable,
   });
@@ -54,6 +49,7 @@ export function useRte({
     }
 
     const value = editor.getHTML() || "";
+
     const title = value.startsWith("<p><br></p>")
       ? ""
       : value.split("</p>")[0].replace("<p>", "");

@@ -31,6 +31,7 @@ const JournalEntryForm: FC<JournalEntryFormProps> = ({
   const handleSubmit = async () => {
     const { title, content: note, tags } = getRteValue();
     setLoading(true);
+    editor?.commands.setContent("");
     const response = await axios.post<IJournalEntry, { data: IJournalEntry }>(
       "/api/entries",
       {
@@ -40,7 +41,6 @@ const JournalEntryForm: FC<JournalEntryFormProps> = ({
       }
     );
     setData((d) => [...d, response.data]);
-    console.log("updating", response.data);
     setLoading(false);
   };
 
