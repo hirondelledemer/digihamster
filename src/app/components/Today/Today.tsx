@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { Navigate, Event, View } from "react-big-calendar";
 import * as dates from "date-arithmetic";

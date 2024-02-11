@@ -1,3 +1,5 @@
+"use client";
+
 import { useCallback, useEffect, useLayoutEffect, useRef } from "react";
 
 const useHotKeys = (

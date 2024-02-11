@@ -1,11 +1,6 @@
 "use client";
-import React, {
-  useEffect,
-  useState,
-  FunctionComponent,
-  useMemo,
-  useCallback,
-} from "react";
+
+import React, { FunctionComponent, useMemo, useCallback } from "react";
 
 import {
   Calendar,
@@ -54,35 +49,33 @@ interface PlannerProps {
 
 // todo: test this component
 export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
-  const [events, setEvents] = useState<Event[]>([]);
-
   const { data: journalEntriesData } = useJournalEntries();
-  const { data: eventsData } = useEvents();
+  const { data: eventsData, setData: setEventsData } = useEvents();
 
-  useEffect(() => {
-    const eventsResolved = eventsData.map((task) => ({
-      start: task.event ? new Date(task.event.startAt!) : undefined,
-      end: task.event ? new Date(task.event.endAt!) : undefined,
-      title: task.title,
-      allDay: task.event ? task.event.allDay : false,
-      resource: {
-        id: task._id,
-        completed: task.completed,
-      },
-    }));
-    const entriesResolved = journalEntriesData.map((entry) => ({
-      start: new Date(entry.createdAt),
+  const eventsResolved = eventsData.map((task) => ({
+    start: task.event ? new Date(task.event.startAt!) : undefined,
+    end: task.event ? new Date(task.event.endAt!) : undefined,
+    title: task.title,
+    allDay: task.event ? task.event.allDay : false,
+    resource: {
+      id: task._id,
+      completed: task.completed,
+    },
+  }));
+
+  const entriesResolved = journalEntriesData.map((entry) => ({
+    start: new Date(entry.createdAt),
+    title: entry.title,
+    allDay: false,
+    resource: {
+      type: "journal",
+      id: entry._id,
       title: entry.title,
-      allDay: false,
-      resource: {
-        type: "journal",
-        id: entry._id,
-        title: entry.title,
-        note: entry.note,
-      },
-    }));
-    setEvents([...eventsResolved, ...entriesResolved]);
-  }, [journalEntriesData, eventsData]);
+      note: entry.note,
+    },
+  }));
+
+  const events = [...eventsResolved, ...entriesResolved];
 
   const customSlotPropGetter = useCallback(
     () => ({
@@ -124,8 +117,8 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
   );
 
   const handleDeleteEvent = (eventId: string) => {
-    setEvents((e) => {
-      return filter<Event>((event) => event.resource.id !== eventId)(e);
+    setEventsData((e) => {
+      return filter<ITask>((event) => event._id !== eventId)(e);
     });
   };
 
@@ -137,7 +130,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
     return <div className={style.event}>{props.label}</div>;
   };
 
-  const moveEvent = ({
+  const moveEvent = async ({
     event,
     start,
     end,
@@ -148,7 +141,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
     end: stringOrDate;
     isAllDay?: boolean;
   }) => {
-    axios.patch("/api/tasks/events", {
+    await axios.patch("/api/tasks/events", {
       taskId: event.resource.id,
       event: {
         allDay: isAllDay || false,
@@ -156,14 +149,20 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
         endAt: new Date(end).getTime(),
       },
     });
-    const newEvents = [...events];
-    const eventIndex = newEvents.findIndex(
-      (e) => event.resource.id === e.resource.id
-    );
-    newEvents[eventIndex].allDay = isAllDay || false;
-    newEvents[eventIndex].start = new Date(start);
-    newEvents[eventIndex].end = new Date(end);
-    setEvents(newEvents); // todo: make it prettier
+
+    setEventsData((e) => {
+      const newEvents = [...e];
+      const eventIndex = newEvents.findIndex(
+        (e) => event.resource.id === e._id
+      );
+      const updatedEvent = newEvents[eventIndex];
+      if (updatedEvent.event) {
+        updatedEvent.event.allDay = isAllDay || false;
+        updatedEvent.event.startAt = new Date(start).getTime();
+        updatedEvent.event.endAt = new Date(end).getTime();
+      }
+      return newEvents;
+    });
   };
 
   const resizeEvent = ({
@@ -182,13 +181,18 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
         endAt: new Date(end).getTime(),
       },
     });
-    const newEvents = [...events];
-    const eventIndex = newEvents.findIndex(
-      (e) => event.resource.id === e.resource.id
-    );
-    newEvents[eventIndex].start = new Date(start);
-    newEvents[eventIndex].end = new Date(end);
-    setEvents(newEvents); // todo: make it prettier
+    setEventsData((e) => {
+      const newEvents = [...e];
+      const eventIndex = newEvents.findIndex(
+        (e) => event.resource.id === e._id
+      );
+      const updatedEvent = newEvents[eventIndex];
+      if (updatedEvent.event) {
+        updatedEvent.event.startAt = new Date(start).getTime();
+        updatedEvent.event.endAt = new Date(end).getTime();
+      }
+      return newEvents;
+    });
   };
 
   const newEvent = async (event: SlotInfo) => {
@@ -203,23 +207,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
         },
       });
 
-      setEvents([
-        ...events,
-        {
-          start: response.data.event
-            ? new Date(response.data.event.startAt!)
-            : undefined,
-          end: response.data.event
-            ? new Date(response.data.event.endAt!)
-            : undefined,
-          title: response.data.title,
-          allDay: response.data.event ? response.data.event.allDay : false,
-          resource: {
-            id: response.data._id,
-            completed: response.data.completed,
-          },
-        },
-      ]);
+      setEventsData((e) => [...e, response.data]);
     }
   };
 

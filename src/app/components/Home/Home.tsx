@@ -5,7 +5,7 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "../ui/resizable";
-import Temp from "./temp-comp";
+import Calendar from "../Calendar";
 
 export const Home = (): JSX.Element => {
   return (
@@ -14,7 +14,7 @@ export const Home = (): JSX.Element => {
         <ResizablePanelGroup direction="vertical">
           <ResizablePanel style={{ overflow: "auto" }}>
             <div className="p-6">
-              <Temp />
+              <Calendar view={"agenda"} />
             </div>
           </ResizablePanel>
           <ResizableHandle />

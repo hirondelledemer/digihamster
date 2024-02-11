@@ -1,3 +1,4 @@
+"use client"; // todo: i don't this this component has to be client
 import React, { FC, useState } from "react";
 import style from "./CalendarEvent.module.scss";
 import { Event } from "react-big-calendar";
