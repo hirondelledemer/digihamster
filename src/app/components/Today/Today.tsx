@@ -14,7 +14,6 @@ import {
 import { cn } from "../utils";
 import { lightFormat } from "date-fns";
 
-// todo: make this component server side
 export const todayEvent = "Today-today-event-test-id";
 export const upcomingEventsTestId = "Today-upcoming-events-test-id";
 export interface TodayProps {
