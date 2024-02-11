@@ -1,39 +1,52 @@
-"use client"; // todo: i don't this this component has to be client
-import React, { FC, useState } from "react";
+"use client";
+
+import React, { FC } from "react";
 import style from "./CalendarEvent.module.scss";
 import { Event } from "react-big-calendar";
 import { IconCheck, IconTrash } from "@tabler/icons-react";
 import axios from "axios";
 import { Button } from "../ui/button";
+import useEvents from "@/app/utils/hooks/use-events";
+import { ITask } from "@/models/task";
+import { ObjectId } from "mongoose";
 
 export interface CalendarEventProps {
   testId?: string;
   event: Event;
-  onDelete(eventId: string): void;
 }
 
 export const eventPropGetter = () => ({
   className: style.event,
 });
 
+// todo: extract
+function update<T extends { _id: ObjectId }>(
+  arr: T[],
+  id: ObjectId,
+  updatedData: Partial<T>
+) {
+  return arr.map((item) =>
+    item._id === id ? { ...item, ...updatedData } : item
+  );
+}
+
 const CalendarEvent: FC<CalendarEventProps> = ({
   testId,
   event,
-  onDelete,
 }): JSX.Element | null => {
-  // todo: fix with hook
-  const [completed, setCompleted] = useState<boolean>(event.resource.completed);
-
+  const { setData } = useEvents();
   const handleDeleteClick = async () => {
     await axios.patch("/api/tasks/events", {
       taskId: event.resource.id,
       deleted: true,
     });
-    onDelete(event.resource.id);
+    setData((events) => events.filter((e) => e._id !== event.resource.id));
   };
 
   const handleCompleteClick = () => {
-    setCompleted(true);
+    setData((events) => {
+      return update<ITask>(events, event.resource.id, { completed: true });
+    });
     axios.patch("/api/tasks/events", {
       taskId: event.resource.id,
       completed: true,
@@ -44,7 +57,7 @@ const CalendarEvent: FC<CalendarEventProps> = ({
     <div
       data-testid={testId}
       className={`h-full p-1 ${
-        completed ? "text-muted-foreground line-through" : ""
+        event.resource.completed ? "text-muted-foreground line-through" : ""
       }`}
     >
       {event.title}
@@ -58,7 +71,7 @@ const CalendarEvent: FC<CalendarEventProps> = ({
         >
           <IconTrash style={{ width: "60%", height: "60%" }} />
         </Button>
-        {!completed && (
+        {!event.resource.completed && (
           <Button
             onClick={handleCompleteClick}
             title="Complete"

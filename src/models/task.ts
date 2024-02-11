@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { ObjectId } from "mongoose";
 import { Taggable, TimeStamps } from "./shared-types";
 
 interface TaskEvent {
@@ -8,6 +8,7 @@ interface TaskEvent {
 }
 
 export interface ITask extends mongoose.Document, Taggable, TimeStamps {
+  _id: ObjectId;
   title: string;
   description: string;
   completed: boolean;
