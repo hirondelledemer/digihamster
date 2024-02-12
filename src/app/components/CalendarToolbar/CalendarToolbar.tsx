@@ -25,7 +25,6 @@ export interface CalendarToolbarProps extends ToolbarProps {
   onView(view: View): void;
 }
 
-// todo: make this component server
 const CalendarToolbar: FC<CalendarToolbarProps> = ({
   testId,
   onNavigate,
@@ -34,12 +33,13 @@ const CalendarToolbar: FC<CalendarToolbarProps> = ({
   date,
   view,
 }): JSX.Element => {
-  // todo: typing in rte trigers these: fix
-  useHotKeys(["t"], () => onNavigate(Navigate.TODAY));
-  useHotKeys(["d"], () => onView("day"));
-  useHotKeys(["w"], () => onView("week"));
-  useHotKeys(["a"], () => onView("agenda"));
-  useHotKeys(["m"], () => onView("month"));
+  useHotKeys([
+    ["T", () => onNavigate(Navigate.TODAY)],
+    ["D", () => onView("day")],
+    ["W", () => onView("week")],
+    ["A", () => onView("agenda")],
+    ["M", () => onView("month")],
+  ]);
 
   return (
     <div data-testid={testId} className="flex justify-between align-center">
