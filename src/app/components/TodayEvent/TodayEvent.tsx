@@ -8,6 +8,8 @@ import { ITask } from "@/models/task";
 import useEvents from "@/app/utils/hooks/use-events";
 import { cn } from "../utils";
 import styles from "./TodayEvent.module.scss";
+import { updateObjById } from "@/app/utils/common/update-array";
+import { ObjectId } from "mongoose";
 
 export interface TodayEventProps {
   testId?: string;
@@ -16,7 +18,7 @@ export interface TodayEventProps {
   title: ReactNode | string;
   completed: boolean;
   allDay?: boolean;
-  id: string;
+  id: ObjectId;
   showDate?: boolean;
 }
 
@@ -38,14 +40,7 @@ const TodayEvent: FC<TodayEventProps> = ({
       completed: val,
     });
 
-    setData((events) => {
-      const newEvents = [...events];
-      const eventToUpdate = newEvents.find((e) => e._id === id);
-      if (eventToUpdate) {
-        eventToUpdate.completed = val;
-      }
-      return newEvents;
-    });
+    setData((events) => updateObjById<ITask>(events, id, { completed: val }));
   };
 
   return (
