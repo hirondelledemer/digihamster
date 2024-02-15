@@ -5,7 +5,17 @@ on:
   pull_request:
     branches: [main, master]
 jobs:
-  test:
+ test-unit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Upgrade Yarn
+        run: yarn upgrade
+      - name: Install modules
+        run: yarn
+      - name: Run tests
+        run: yarn test
+  test-e2e:
     timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
