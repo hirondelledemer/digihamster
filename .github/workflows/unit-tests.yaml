@@ -1,11 +1,11 @@
-name: unit tests
+name: Unit Tests
 on: push
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: smth
+      - name: Upgrade Yarn
         run: yarn upgrade
       - name: Install modules
         run: yarn
