@@ -95,6 +95,7 @@ describe("JournalEntryForm", () => {
         expect(toastSpy).toHaveBeenCalledWith({
           description: '{"data":{}}',
           title: "Error",
+          variant: "destructive",
         });
       });
     });
