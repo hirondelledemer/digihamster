@@ -5,12 +5,21 @@ import { getJournalEntryFormTestkit } from "./JournalEntryForm.testkit";
 import { render } from "@/config/utils/test-utils";
 import MockAxios from "jest-mock-axios";
 
+import * as toastHook from "../ui/use-toast";
+jest.mock("../ui/use-toast");
+const mockUseToast = jest.mocked(toastHook.useToast);
+
 describe("JournalEntryForm", () => {
+  const toastSpy = jest.fn();
   const defaultProps: JournalEntryFormProps = {};
   const renderComponent = (props: JournalEntryFormProps = defaultProps) =>
     getJournalEntryFormTestkit(
       render(<JournalEntryForm {...props} />).container
     );
+
+  beforeEach(() => {
+    mockUseToast.mockReturnValue({ toast: toastSpy } as any);
+  });
 
   afterEach(() => {
     MockAxios.reset();
@@ -41,6 +50,7 @@ describe("JournalEntryForm", () => {
 
   it("should submit entry", async () => {
     const newText = "<p>test</p><p>note</p>";
+    MockAxios.post.mockResolvedValueOnce({ data: {} });
 
     const wrapper = renderComponent(defaultProps);
     act(() => {
@@ -55,6 +65,37 @@ describe("JournalEntryForm", () => {
         note: newText,
         tags: [],
         title: "test",
+      });
+      expect(toastSpy).toHaveBeenCalledWith({
+        title: "Success",
+        description: "Note has been submitted",
+      });
+    });
+  });
+
+  describe("error", () => {
+    it("should show an error", async () => {
+      const newText = "<p>test</p><p>note</p>";
+      MockAxios.post.mockRejectedValueOnce({ data: {} });
+
+      const wrapper = renderComponent(defaultProps);
+      act(() => {
+        wrapper.getTextarea().enterValue(newText);
+      });
+      await waitFor(() => {
+        expect(wrapper.getSubmitButton()).not.toBeDisabled();
+      });
+      wrapper.clickButton();
+      await waitFor(() => {
+        expect(MockAxios.post).toHaveBeenCalledWith("/api/entries", {
+          note: newText,
+          tags: [],
+          title: "test",
+        });
+        expect(toastSpy).toHaveBeenCalledWith({
+          description: '{"data":{}}',
+          title: "Error",
+        });
       });
     });
   });
