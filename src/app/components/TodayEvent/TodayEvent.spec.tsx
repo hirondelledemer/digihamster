@@ -3,7 +3,6 @@ import TodayEvent, { TodayEventProps } from "./TodayEvent";
 import { getTodayEventTestkit } from "./TodayEvent.testkit";
 import { render } from "@/config/utils/test-utils";
 import mockAxios from "jest-mock-axios";
-jest.mock("../../utils/date/date");
 
 describe("TodayEvent", () => {
   afterEach(() => {
@@ -69,7 +68,7 @@ describe("TodayEvent", () => {
 
     it("should show label with time", () => {
       const wrapper = renderComponent(props);
-      expect(wrapper.getTimeLabel("3:00-9:13")).toBeInTheDocument();
+      expect(wrapper.getTimeLabel("0:00-6:13")).toBeInTheDocument();
     });
 
     it("should show title", () => {
