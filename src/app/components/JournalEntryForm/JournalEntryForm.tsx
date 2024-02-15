@@ -6,6 +6,7 @@ import axios from "axios";
 import { IJournalEntry } from "@/models/entry";
 import useJournalEntries from "@/app/utils/hooks/use-entry";
 import { Button } from "../ui/button";
+import { useToast } from "@/app/components/ui/use-toast";
 
 export interface JournalEntryFormProps {
   testId?: string;
@@ -16,6 +17,7 @@ export const rteTestId = "JournalEntryForm-rte-testId";
 const JournalEntryForm: FC<JournalEntryFormProps> = ({
   testId,
 }): JSX.Element | null => {
+  const { toast } = useToast();
   const [loading, setLoading] = useState<boolean>(false);
   const { editor, getRteValue } = useRte({
     value: "",
@@ -31,17 +33,29 @@ const JournalEntryForm: FC<JournalEntryFormProps> = ({
   const handleSubmit = async () => {
     const { title, content: note, tags } = getRteValue();
     setLoading(true);
-    editor?.commands.setContent("");
-    const response = await axios.post<IJournalEntry, { data: IJournalEntry }>(
-      "/api/entries",
-      {
-        title: title,
-        note: note,
-        tags: tags,
-      }
-    );
-    setData((d) => [...d, response.data]);
-    setLoading(false);
+    try {
+      const response = await axios.post<IJournalEntry, { data: IJournalEntry }>(
+        "/api/entries",
+        {
+          title: title,
+          note: note,
+          tags: tags,
+        }
+      );
+      toast({
+        title: "Success",
+        description: "Note has been submitted",
+      });
+      editor?.commands.setContent("");
+      setData((d) => [...d, response.data]);
+    } catch (e) {
+      toast({
+        title: "Error",
+        description: JSON.stringify(e),
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
@@ -59,7 +73,6 @@ const JournalEntryForm: FC<JournalEntryFormProps> = ({
         testId={rteTestId}
         editor={editor}
         onKeyDown={handleKeyDown}
-        // showActions
       />
       <Button
         disabled={submitButtonDisabled || loading}

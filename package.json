@@ -20,6 +20,7 @@
     "@radix-ui/react-popover": "^1.0.7",
     "@radix-ui/react-scroll-area": "^1.0.5",
     "@radix-ui/react-slot": "^1.0.2",
+    "@radix-ui/react-toast": "^1.1.5",
     "@tabler/core": "^1.0.0-beta20",
     "@tabler/icons": "^2.46.0",
     "@tabler/icons-react": "^2.46.0",
@@ -49,6 +50,7 @@
     "react-resizable-panels": "^2.0.3",
     "remeda": "^1.38.0",
     "sass": "^1.70.0",
+    "sonner": "^1.4.0",
     "tailwind-merge": "^2.2.1",
     "tailwindcss-animate": "^1.0.7",
     "zod": "^3.22.4"

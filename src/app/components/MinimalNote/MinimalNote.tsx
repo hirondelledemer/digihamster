@@ -2,6 +2,7 @@
 import React, { FC, useEffect } from "react";
 import RichTextEditor from "../RichTextEditor";
 import { useRte } from "@/app/utils/rte/rte-hook";
+import { useToast } from "../ui/use-toast";
 
 interface RegularProps {
   editable?: false;
@@ -28,6 +29,7 @@ const MinimalNote: FC<MinimalNoteProps | MinimalNoteEditableProps> = ({
   note,
   ...restProps
 }): JSX.Element | null => {
+  const { toast } = useToast();
   const { editor } = useRte({
     value: note,
     editable: isEditable(restProps),
@@ -49,11 +51,18 @@ const MinimalNote: FC<MinimalNoteProps | MinimalNoteEditableProps> = ({
   }
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-    if ((isEditable(restProps) && !restProps.onSubmit) || !editor) {
-      throw Error("cannot submit note");
+    if (!editor) {
+      toast({
+        title: "Error",
+        description: "Cannot submit the note: Editor not found",
+      });
     }
     if (event.key === "Enter" && event.ctrlKey && isEditable(restProps)) {
       restProps.onSubmit(editor?.getHTML());
+      toast({
+        title: "Success",
+        description: "Note submitted",
+      });
     }
   };
 
