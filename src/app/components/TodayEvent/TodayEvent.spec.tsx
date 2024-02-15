@@ -1,7 +1,9 @@
+import { ObjectId } from "mongoose";
 import TodayEvent, { TodayEventProps } from "./TodayEvent";
 import { getTodayEventTestkit } from "./TodayEvent.testkit";
 import { render } from "@/config/utils/test-utils";
 import mockAxios from "jest-mock-axios";
+jest.mock("../../utils/date/date");
 
 describe("TodayEvent", () => {
   afterEach(() => {
@@ -11,7 +13,7 @@ describe("TodayEvent", () => {
   const defaultProps: TodayEventProps = {
     title: "Title",
     completed: false,
-    id: "event1",
+    id: "event1" as unknown as ObjectId,
   };
   const renderComponent = (props = defaultProps) =>
     getTodayEventTestkit(render(<TodayEvent {...props} />).container);
@@ -26,7 +28,7 @@ describe("TodayEvent", () => {
       title: "Title",
       completed: false,
       allDay: true,
-      id: "event1",
+      id: "event1" as unknown as ObjectId,
     };
 
     it("should show label all day", () => {
@@ -60,7 +62,7 @@ describe("TodayEvent", () => {
       title: "Title",
       completed: false,
       allDay: false,
-      id: "event1",
+      id: "event1" as unknown as ObjectId,
       start: new Date(0),
       end: new Date(800000000),
     };
@@ -86,7 +88,7 @@ describe("TodayEvent", () => {
       title: "Title",
       completed: true,
       allDay: false,
-      id: "event1",
+      id: "event1" as unknown as ObjectId,
       start: new Date(0),
       end: new Date(800000000),
     };
