@@ -52,6 +52,7 @@ const JournalEntryForm: FC<JournalEntryFormProps> = ({
       toast({
         title: "Error",
         description: JSON.stringify(e),
+        variant: "destructive",
       });
     } finally {
       setLoading(false);
