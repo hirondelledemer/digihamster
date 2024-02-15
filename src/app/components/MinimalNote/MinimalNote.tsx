@@ -7,42 +7,50 @@ import { useRte } from "@/app/utils/rte/rte-hook";
 export interface MinimalNoteProps {
   testId?: string;
   note: string;
-  editable?: boolean;
-  onSubmit?(value: string): void;
+  editable?: false;
+}
+export interface MinimalNoteEditableProps {
+  testId?: string;
+  note: string;
+  editable: true;
+  onSubmit(value: string): void;
 }
 
-const MinimalNote: FC<MinimalNoteProps> = ({
+// todo: remove
+const isEditable = (props: MinimalNoteProps | MinimalNoteEditableProps) =>
+  props.editable || false;
+
+const MinimalNote: FC<MinimalNoteProps | MinimalNoteEditableProps> = ({
   testId,
   note,
-  editable = false,
-  onSubmit,
+  ...restProps
 }): JSX.Element | null => {
   const { editor } = useRte({
     value: note,
-    editable,
+    editable: restProps.editable || false,
   });
 
   useEffect(() => {
-    editor?.setEditable(editable);
-    if (editable) {
+    editor?.setEditable(restProps.editable || false);
+    if (restProps.editable) {
       editor?.commands.focus("end");
     }
-  }, [editable]);
+  }, [editor, restProps.editable]);
 
   useEffect(() => {
     editor?.commands.setContent(note);
-  }, [note]);
+  }, [editor, note]);
 
   if (!editor) {
     return null;
   }
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-    if (!onSubmit || !editor) {
+    if ((restProps.editable && !restProps.onSubmit) || !editor) {
       throw Error("cannot submit note");
     }
-    if (event.key === "Enter" && event.ctrlKey) {
-      onSubmit(editor?.getHTML());
+    if (event.key === "Enter" && event.ctrlKey && restProps.editable) {
+      restProps.onSubmit(editor?.getHTML());
     }
   };
 
