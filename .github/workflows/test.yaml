@@ -16,7 +16,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: log
-        run: echo running on branch ${GITHUB_REF##*/} ${{ toJson(github.event) }}
+        run: echo running on branch ${GITHUB_REF##*/}
+      - name: Print inputs
+        run: |
+        echo 'Inputs: ${{ toJson(github.event) }}'
       - name: Upgrade Yarn
         run: yarn upgrade
       - name: Install modules
