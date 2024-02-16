@@ -2,7 +2,7 @@ name: Tests
 on: push
 jobs:
   unit-tests:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
       - name: Upgrade Yarn
@@ -13,7 +13,7 @@ jobs:
         run: yarn test
   run-e2e:
     timeout-minutes: 60
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
