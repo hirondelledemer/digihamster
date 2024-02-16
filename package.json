@@ -9,7 +9,7 @@
     "lint": "next lint",
     "test": "TZ=UTC jest",
     "test:watch": "jest --watch",
-    "test:e2e": "npx playwright test",
+    "test:e2e": "BASE_URL=http://127.0.0.1:3000 && npx playwright test",
     "test:e2e-r": "npx playwright test && npx playwright show-report"
   },
   "dependencies": {
