@@ -15,8 +15,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Install dependencies
-        run: npx playwright install
+      - name: Upgrade Yarn
+        run: yarn upgrade
+      - name: Install modules
+        run: yarn
       - name: Run tests
         run: npx playwright test
         env:
