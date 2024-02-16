@@ -43,7 +43,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
-     - uses: aaimio/vercel-preview-url-action@v2.2.0
+      - uses: aaimio/vercel-preview-url-action@v2.2.0
         id: vercel_preview_url
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
