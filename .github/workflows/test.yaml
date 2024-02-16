@@ -30,4 +30,4 @@ jobs:
       - name: Run tests
         run: npx playwright test
         env:
-          BASE_URL: ${{ github.event.deployment_status.environment_url }}
+          BASE_URL: digihamster-git-${GITHUB_REF##*/}-hirondelledemers-projects.vercel.app
