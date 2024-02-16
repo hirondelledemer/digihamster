@@ -44,7 +44,7 @@ jobs:
         with:
           node-version: 18
       - name: Install dependencies
-        run: yarn ci
+        run: yarn install --frizen-lockfile
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
       - name: Run Playwright tests
