@@ -24,7 +24,7 @@ jobs:
       - name: Print url
         run: echo $BASE_URL
         env:
-          BASE_URL: ${{ join(['digihamster-git', ${GITHUB_REF##*/}, 'hirondelledemers-projects.vercel.app'], '-') }}
+          BASE_URL: ${GITHUB_REF##*/}
       - name: Upgrade Yarn
         run: yarn upgrade
       - name: Install modules
@@ -34,7 +34,7 @@ jobs:
       - name: Run tests
         run: npx playwright test
         env:
-          BASE_URL: digihamster-git-${GITHUB_REF##*/}-hirondelledemers-projects.vercel.app
+          BASE_URL: aaa
   test_setup:
     name: Test setup
     runs-on: ubuntu-latest
