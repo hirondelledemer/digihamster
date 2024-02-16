@@ -24,6 +24,6 @@ jobs:
       - name: Run tests
         run: npx playwright test
       - name: log
-        run: echo "${{ github.event }}"
+        run: echo running on branch ${GITHUB_REF##*/} ${github.event}
         env:
           BASE_URL: ${{ github.event.deployment_status.environment_url }}
