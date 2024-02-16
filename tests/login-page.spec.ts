@@ -1,51 +1,67 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, Page } from "@playwright/test";
 
 test.describe("error cases", () => {
   test.describe("happy path", () => {
     test("user logs in", async ({ page }) => {
-      await page.goto("/");
+      const driver = getDriver({ page });
+
+      await driver.goto(driver.urls.base);
       await expect(page).toHaveScreenshot("login-page.png");
 
-      const emailInput = page.getByPlaceholder("email");
-      const passwordInput = page.getByPlaceholder("password");
-      const loginButton = page.getByRole("button", { name: "Login" });
+      await driver.fillEmail(driver.vals.email);
+      await driver.fillPassword(driver.vals.password);
+      await driver.clickLogin();
 
-      await emailInput.fill("test@test.com");
-      await passwordInput.fill("testtest");
-      await loginButton.click();
-
-      await expect(page).toHaveURL("/profile");
+      await expect(page).toHaveURL(driver.urls.profile);
       await expect(page).toHaveScreenshot("profile-page.png");
     });
   });
 
   test.describe("errors", () => {
     test("user does not exists", async ({ page }) => {
-      await page.goto("/");
-      const emailInput = page.getByPlaceholder("email");
-      const passwordInput = page.getByPlaceholder("password");
-      const loginButton = page.getByRole("button", { name: "Login" });
+      const driver = getDriver({ page });
 
-      await emailInput.fill("incorrect@user.com");
-      await passwordInput.fill("testtest");
-      await loginButton.click();
+      await driver.goto(driver.urls.base);
+      await driver.fillEmail("incorrect@user.com");
+      await driver.fillPassword(driver.vals.password);
+      await driver.clickLogin();
 
-      await expect(page).toHaveURL("/login");
+      await expect(page).toHaveURL(driver.urls.login);
       await expect(page).toHaveScreenshot("login-error-no-user.png");
     });
 
     test("password is incorrect", async ({ page }) => {
-      await page.goto("/");
-      const emailInput = page.getByPlaceholder("email");
-      const passwordInput = page.getByPlaceholder("password");
-      const loginButton = page.getByRole("button", { name: "Login" });
+      const driver = getDriver({ page });
+      await driver.goto(driver.urls.base);
 
-      await emailInput.fill("test@test.com");
-      await passwordInput.fill("incorrect");
-      await loginButton.click();
+      await driver.fillEmail(driver.vals.email);
+      await driver.fillPassword("incorrect");
+      await driver.clickLogin();
 
-      await expect(page).toHaveURL("/login");
+      await expect(page).toHaveURL(driver.urls.login);
       await expect(page).toHaveScreenshot("login-error-bad-password.png");
     });
   });
 });
+
+const getDriver = ({ page }: { page: Page }) => {
+  const emailInput = page.getByPlaceholder("email");
+  const passwordInput = page.getByPlaceholder("password");
+  const loginButton = page.getByRole("button", { name: "Login" });
+
+  return {
+    fillEmail: (email: string) => emailInput.fill(email),
+    fillPassword: (password: string) => passwordInput.fill(password),
+    clickLogin: () => loginButton.click(),
+    goto: (location: string) => page.goto(location),
+    vals: {
+      email: "test@test.com",
+      password: "testtest",
+    },
+    urls: {
+      login: "/login",
+      profile: "/profile",
+      base: "/",
+    },
+  };
+};
