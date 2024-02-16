@@ -60,8 +60,6 @@ jobs:
       - name: Install playwright
         run: npx playwright install
       - name: Run tests
-        run: npx playwright test
+        run: npx playwright test && npx playwright show-report
         env:
           BASE_URL: "https://${{ steps.vercel_preview_url.outputs.preview_url }}"
-      - name: Show Report
-        run: npx playwright show-report
