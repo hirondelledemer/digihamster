@@ -15,14 +15,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: log
+        run: echo running on branch ${GITHUB_REF##*/} ${{ toJson(github.event) }}
       - name: Upgrade Yarn
         run: yarn upgrade
       - name: Install modules
         run: yarn
       - name: Install playwright
         run: npx playwright install
-      - name: log
-        run: echo running on branch ${GITHUB_REF##*/} ${{ github.event }}
       - name: Run tests
         run: npx playwright test
         env:
