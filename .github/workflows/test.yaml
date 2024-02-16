@@ -23,7 +23,7 @@ jobs:
         run: npx playwright install
       - name: Run tests
         run: npx playwright test
-        run: 
-          echo github.event
+      - name: log
+        run: echo "${{ github.event }}"
         env:
           BASE_URL: ${{ github.event.deployment_status.environment_url }}
