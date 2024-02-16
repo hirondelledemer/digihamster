@@ -17,12 +17,14 @@ export const configureSnapshotPath =
 
 test.beforeEach(configureSnapshotPath());
 
+// dummy
 test.describe("error cases", () => {
   test.describe("happy path", () => {
     test("user logs in", async ({ page }) => {
       const { vals, urls, ...driver } = getDriver({ page });
 
       await driver.goto(urls.base);
+
       await expect(page).toHaveScreenshot("login-page.png");
 
       await driver.fillEmail(vals.email);
