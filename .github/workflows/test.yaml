@@ -23,8 +23,9 @@ jobs:
           JSON: ${{ toJSON(github.event) }}
       - name: Print url
         run: echo $BASE_URL
+        key: ${GITHUB_REF##*/}
         env:
-          BASE_URL: digihamster-git-${{ GITHUB_REF##*/ }}-hirondelledemers-projects.vercel.app
+          BASE_URL: digihamster-git-{key}-hirondelledemers-projects.vercel.app
       - name: Upgrade Yarn
         run: yarn upgrade
       - name: Install modules
