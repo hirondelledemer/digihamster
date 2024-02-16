@@ -43,12 +43,18 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
+     - uses: aaimio/vercel-preview-url-action@v2.2.0
+        id: vercel_preview_url
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Install dependencies
         run: yarn install --frizen-lockfile
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
       - name: Run Playwright tests
         run: npx playwright test
+        env:
+          BASE_URL: ${{ steps.vercel_preview_url.outputs.vercel_preview_url }}
       - uses: actions/upload-artifact@v3
         if: always()
         with:
