@@ -53,3 +53,13 @@ jobs:
           vercel_project_id: "prj_D9UUsAV40srtIBckUgkhdFE7Ty6T"
       - name: Get URL
         run: echo "https://${{ steps.vercel_preview_url.outputs.preview_url }}"
+      - name: Upgrade Yarn
+        run: yarn upgrade
+      - name: Install modules
+        run: yarn
+      - name: Install playwright
+        run: npx playwright install
+      - name: Run tests
+        run: npx playwright test
+        env:
+          BASE_URL: "https://${{ steps.vercel_preview_url.outputs.preview_url }}"
