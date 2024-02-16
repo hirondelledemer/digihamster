@@ -11,31 +11,7 @@ jobs:
         run: yarn
       - name: Run tests
         run: yarn test
-  run-e2es:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: log
-        run: echo running on branch ${GITHUB_REF##*/}
-      - name: Print inputs
-        run: echo $JSON
-        env:
-          JSON: ${{ toJSON(github.event) }}
-      - name: Print url
-        run: echo $BASE_URL
-        env:
-          BASE_URL: ${GITHUB_REF##*/}
-      - name: Upgrade Yarn
-        run: yarn upgrade
-      - name: Install modules
-        run: yarn
-      - name: Install playwright
-        run: npx playwright install
-      - name: Run tests
-        run: npx playwright test
-        env:
-          BASE_URL: aaa
-  test:
+  run-e2e:
     timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
