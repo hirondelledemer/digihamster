@@ -5,14 +5,12 @@ import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 connect();
-// Calls the connect function to establish a connection to the database.
 
 export async function POST(request: NextRequest) {
   try {
     const reqBody = await request.json();
     const { email, password } = reqBody;
 
-    //check if user exists
     const user = await User.findOne({ email });
 
     if (!user) {
@@ -39,12 +37,11 @@ export async function POST(request: NextRequest) {
       email: user.email,
     };
 
-    // Create a token with expiration of 1 day
+    // Create a token with expiration of 30 days
     const token = await jwt.sign(tokenData, process.env.TOKEN_SECRET!, {
-      expiresIn: "1d",
+      expiresIn: "30d",
     });
 
-    console.log("here", user);
     // Create a JSON response indicating successful login
     const response = NextResponse.json({
       message: "Login successful",
