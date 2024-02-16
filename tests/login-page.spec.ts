@@ -17,7 +17,6 @@ export const configureSnapshotPath =
 
 test.beforeEach(configureSnapshotPath());
 
-// dummy
 test.describe("error cases", () => {
   test.describe("happy path", () => {
     test("user logs in", async ({ page }) => {
