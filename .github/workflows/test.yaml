@@ -19,6 +19,8 @@ jobs:
         run: yarn upgrade
       - name: Install modules
         run: yarn
+      - name: Install playwright
+        run: npx playwright install
       - name: Run tests
         run: npx playwright test
         env:
