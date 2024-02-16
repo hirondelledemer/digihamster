@@ -3,42 +3,42 @@ import { test, expect, Page } from "@playwright/test";
 test.describe("error cases", () => {
   test.describe("happy path", () => {
     test("user logs in", async ({ page }) => {
-      const driver = getDriver({ page });
+      const { vals, urls, ...driver } = getDriver({ page });
 
-      await driver.goto(driver.urls.base);
+      await driver.goto(urls.base);
       await expect(page).toHaveScreenshot("login-page.png");
 
-      await driver.fillEmail(driver.vals.email);
-      await driver.fillPassword(driver.vals.password);
+      await driver.fillEmail(vals.email);
+      await driver.fillPassword(vals.password);
       await driver.clickLogin();
 
-      await expect(page).toHaveURL(driver.urls.profile);
+      await expect(page).toHaveURL(urls.profile);
       await expect(page).toHaveScreenshot("profile-page.png");
     });
   });
 
   test.describe("errors", () => {
     test("user does not exists", async ({ page }) => {
-      const driver = getDriver({ page });
+      const { vals, urls, ...driver } = getDriver({ page });
 
-      await driver.goto(driver.urls.base);
+      await driver.goto(urls.base);
       await driver.fillEmail("incorrect@user.com");
-      await driver.fillPassword(driver.vals.password);
+      await driver.fillPassword(vals.password);
       await driver.clickLogin();
 
-      await expect(page).toHaveURL(driver.urls.login);
+      await expect(page).toHaveURL(urls.login);
       await expect(page).toHaveScreenshot("login-error-no-user.png");
     });
 
     test("password is incorrect", async ({ page }) => {
-      const driver = getDriver({ page });
-      await driver.goto(driver.urls.base);
+      const { vals, urls, ...driver } = getDriver({ page });
+      await driver.goto(urls.base);
 
-      await driver.fillEmail(driver.vals.email);
+      await driver.fillEmail(vals.email);
       await driver.fillPassword("incorrect");
       await driver.clickLogin();
 
-      await expect(page).toHaveURL(driver.urls.login);
+      await expect(page).toHaveURL(urls.login);
       await expect(page).toHaveScreenshot("login-error-bad-password.png");
     });
   });
