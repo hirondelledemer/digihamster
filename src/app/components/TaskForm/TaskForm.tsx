@@ -20,11 +20,9 @@ import {
   SelectItem,
 } from "../ui/select";
 import { Button } from "../ui/button";
+import { Project } from "@/models/project";
 
 export const minimalNoteTestId = "TaskForm-minimal-note-testId";
-export interface TaskFormProps {
-  testId?: string;
-}
 
 const FormSchema = z.object({
   title: z.string().min(1, { message: "This field has to be filled." }),
@@ -33,7 +31,16 @@ const FormSchema = z.object({
   project: z.string().min(1, { message: "This field has to be filled." }),
 });
 
-const TaskForm: FC<TaskFormProps> = ({ testId }): JSX.Element => {
+export interface TaskFormProps {
+  testId?: string;
+  initialValues?: z.infer<typeof FormSchema>;
+  projects: Project[];
+}
+const TaskForm: FC<TaskFormProps> = ({
+  testId,
+  initialValues,
+  projects,
+}): JSX.Element => {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -42,6 +49,7 @@ const TaskForm: FC<TaskFormProps> = ({ testId }): JSX.Element => {
       eta: 0,
       // todo: set default project
       project: "",
+      ...initialValues,
     },
   });
 
@@ -109,6 +117,7 @@ const TaskForm: FC<TaskFormProps> = ({ testId }): JSX.Element => {
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value}
+                  value={field.value}
                 >
                   <FormControl>
                     <SelectTrigger>
@@ -117,7 +126,15 @@ const TaskForm: FC<TaskFormProps> = ({ testId }): JSX.Element => {
                   </FormControl>
                   {/* todo: populate with projects */}
                   <SelectContent>
-                    <SelectItem value="m@example.com">m@example.com</SelectItem>
+                    {projects.map((project) => (
+                      <SelectItem
+                        key={project._id as unknown as string}
+                        value={project._id as unknown as string}
+                      >
+                        {project.title}
+                      </SelectItem>
+                    ))}
+
                     <SelectItem value="m@google.com">m@google.com</SelectItem>
                     <SelectItem value="m@support.com">m@support.com</SelectItem>
                   </SelectContent>
