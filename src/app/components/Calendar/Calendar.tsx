@@ -1,6 +1,11 @@
 "use client";
 
-import React, { FunctionComponent, useMemo, useCallback } from "react";
+import React, {
+  FunctionComponent,
+  useMemo,
+  useCallback,
+  useState,
+} from "react";
 
 import {
   Calendar,
@@ -11,7 +16,6 @@ import {
   View,
 } from "react-big-calendar";
 import moment from "moment";
-import { filter } from "remeda";
 import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
 
 import "react-big-calendar/lib/addons/dragAndDrop/styles.scss";
@@ -31,6 +35,23 @@ import { ITask } from "@/models/task";
 import useJournalEntries from "@/app/utils/hooks/use-entry";
 import useEvents from "@/app/utils/hooks/use-events";
 import { updateObjById } from "@/app/utils/common/update-array";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+} from "../ui/drawer";
+import { Button } from "../ui/button";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "../ui/sheet";
 
 export const now = () => new Date();
 
@@ -44,12 +65,13 @@ moment.locale("ko", {
 const DnDropCalendar = withDragAndDrop(Calendar as any);
 const localizer = momentLocalizer(moment); // or glo
 
-interface PlannerProps {
+export interface PlannerProps {
   view: View;
 }
 
 // todo: test this component
 export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
+  const [eventFormIsOpen, setEventFormOpen] = useState<boolean>(false);
   const { data: journalEntriesData } = useJournalEntries();
   const { data: eventsData, setData: setEventsData } = useEvents();
 
@@ -185,6 +207,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
   };
 
   const newEvent = async (event: SlotInfo) => {
+    setEventFormOpen(true);
     const eventName = prompt("Name:", "New Event");
     if (!!eventName && !!eventName.length) {
       const response = await axios.post<ITask>("/api/tasks/events", {
@@ -202,33 +225,50 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
 
   // todo: test this component
   return (
-    <DnDropCalendar
-      selectable
-      localizer={localizer}
-      events={events}
-      onEventDrop={moveEvent}
-      resizable
-      showMultiDayTimes
-      onEventResize={resizeEvent}
-      onSelectSlot={newEvent}
-      defaultView={view}
-      popup
-      formats={{ eventTimeRangeFormat: () => "" }}
-      components={{
-        event: customEvent,
-        agenda: {
-          date: cutomDate,
-          time: cutomDate,
-        },
-        toolbar: CalendarToolbar,
-      }}
-      eventPropGetter={eventPropGetter}
-      min={dates.add(dates.startOf(new Date(2015, 17, 1), "day"), +6, "hours")}
-      views={views}
-      slotPropGetter={customSlotPropGetter}
-      dayPropGetter={customDayPropGetter}
-      slotGroupPropGetter={customGroupGetter}
-    />
+    <>
+      <Sheet open={eventFormIsOpen}>
+        <SheetContent side="left">
+          <SheetHeader>
+            <SheetTitle>Are you absolutely sure?</SheetTitle>
+            <SheetDescription>
+              This action cannot be undone. This will permanently delete your
+              account and remove your data from our servers.
+            </SheetDescription>
+          </SheetHeader>
+        </SheetContent>
+      </Sheet>
+      <DnDropCalendar
+        selectable
+        localizer={localizer}
+        events={events}
+        onEventDrop={moveEvent}
+        resizable
+        showMultiDayTimes
+        onEventResize={resizeEvent}
+        onSelectSlot={newEvent}
+        defaultView={view}
+        popup
+        formats={{ eventTimeRangeFormat: () => "" }}
+        components={{
+          event: customEvent,
+          agenda: {
+            date: cutomDate,
+            time: cutomDate,
+          },
+          toolbar: CalendarToolbar,
+        }}
+        eventPropGetter={eventPropGetter}
+        min={dates.add(
+          dates.startOf(new Date(2015, 17, 1), "day"),
+          +6,
+          "hours"
+        )}
+        views={views}
+        slotPropGetter={customSlotPropGetter}
+        dayPropGetter={customDayPropGetter}
+        slotGroupPropGetter={customGroupGetter}
+      />
+    </>
   );
 };
 
