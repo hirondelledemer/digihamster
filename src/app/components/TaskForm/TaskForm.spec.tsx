@@ -27,6 +27,23 @@ describe("TaskForm", () => {
     expect(wrapper.getCreateButtonExists()).toBe(true);
   });
 
+  describe("showEta is false", () => {
+    const props: TaskFormProps = {
+      ...defaultProps,
+      showEta: false,
+    };
+
+    it("should show all fields exept eta", () => {
+      const wrapper = renderComponent(props);
+      expect(wrapper.getComponent()).not.toBe(null);
+      expect(wrapper.getTitleInputExists()).toBe(true);
+      expect(wrapper.getDesriptionInputExists()).toBe(true);
+      expect(wrapper.getETAFieldExists()).toBe(false);
+      expect(wrapper.getProjectFieldExists()).toBe(true);
+      expect(wrapper.getCreateButtonExists()).toBe(true);
+    });
+  });
+
   it("shows initial values", () => {
     const props: TaskFormProps = {
       ...defaultProps,
