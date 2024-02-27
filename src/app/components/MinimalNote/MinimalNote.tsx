@@ -9,6 +9,7 @@ interface RegularProps {
 }
 interface EditableProps {
   editable: true;
+  forForm: boolean;
   onSubmit(value: string): void;
 }
 interface CommonProps {
@@ -29,18 +30,23 @@ const MinimalNote: FC<MinimalNoteProps | MinimalNoteEditableProps> = ({
   note,
   ...restProps
 }): JSX.Element | null => {
+  const editable = isEditable(restProps) ? restProps.editable : false;
+  const forForm = isEditable(restProps) ? restProps.forForm : false;
+
   const { toast } = useToast();
   const { editor } = useRte({
     value: note,
-    editable: isEditable(restProps),
+    editable: editable,
   });
 
   useEffect(() => {
-    editor?.setEditable(isEditable(restProps));
-    if (restProps.editable) {
+    editor?.setEditable(editable);
+
+    if (editable && !forForm) {
+      console.log("setting focus", editable, forForm);
       editor?.commands.focus("end");
     }
-  }, [editor, restProps]);
+  }, [editor, editable, forForm]);
 
   useEffect(() => {
     editor?.commands.setContent(note);

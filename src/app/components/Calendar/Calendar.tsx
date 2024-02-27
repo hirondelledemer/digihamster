@@ -52,6 +52,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "../ui/sheet";
+import TaskForm from "../TaskForm";
 
 export const now = () => new Date();
 
@@ -229,10 +230,14 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
       <Sheet open={eventFormIsOpen}>
         <SheetContent side="left">
           <SheetHeader>
-            <SheetTitle>Are you absolutely sure?</SheetTitle>
+            <SheetTitle>Create Event</SheetTitle>
             <SheetDescription>
-              This action cannot be undone. This will permanently delete your
-              account and remove your data from our servers.
+              <TaskForm
+                projects={[]}
+                onSubmit={(data) => {
+                  console.log("here", data);
+                }}
+              />
             </SheetDescription>
           </SheetHeader>
         </SheetContent>
