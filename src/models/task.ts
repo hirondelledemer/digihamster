@@ -7,7 +7,7 @@ interface TaskEvent {
   endAt?: number;
 }
 
-export interface ITask extends mongoose.Document, Taggable, TimeStamps {
+export interface Task extends Taggable, TimeStamps {
   _id: ObjectId;
   title: string;
   description: string;
@@ -22,6 +22,8 @@ export interface ITask extends mongoose.Document, Taggable, TimeStamps {
   activatedAt: number;
   parentTaskId: string;
 }
+
+export type ITask = mongoose.Document & Task;
 
 const TaskSchema = new mongoose.Schema(
   {

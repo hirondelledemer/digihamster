@@ -37,11 +37,13 @@ const FormSchema = z.object({
   project: z.string().min(1, { message: "This field has to be filled." }),
 });
 
+export type FormValues = z.infer<typeof FormSchema>;
+
 export interface TaskFormProps {
   testId?: string;
-  initialValues?: z.infer<typeof FormSchema>;
+  initialValues?: FormValues;
   projects: Project[];
-  onSubmit(values: z.infer<typeof FormSchema>): void;
+  onSubmit(values: FormValues): void;
   showEta?: boolean;
 }
 const TaskForm: FC<TaskFormProps> = ({
@@ -51,7 +53,7 @@ const TaskForm: FC<TaskFormProps> = ({
   onSubmit,
   showEta = true,
 }): JSX.Element => {
-  const form = useForm<z.infer<typeof FormSchema>>({
+  const form = useForm<FormValues>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       title: "",

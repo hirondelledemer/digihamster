@@ -31,20 +31,10 @@ import axios from "axios";
 
 import CalendarEvent from "../CalendarEvent";
 import { eventPropGetter } from "../CalendarEvent/CalendarEvent";
-import { ITask } from "@/models/task";
+import { Task } from "@/models/task";
 import useJournalEntries from "@/app/utils/hooks/use-entry";
 import useEvents from "@/app/utils/hooks/use-events";
 import { updateObjById } from "@/app/utils/common/update-array";
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-} from "../ui/drawer";
-import { Button } from "../ui/button";
 import {
   Sheet,
   SheetContent,
@@ -53,6 +43,7 @@ import {
   SheetTitle,
 } from "../ui/sheet";
 import TaskForm from "../TaskForm";
+import { FormValues } from "../TaskForm/TaskForm";
 
 export const now = () => new Date();
 
@@ -71,8 +62,11 @@ export interface PlannerProps {
 }
 
 // todo: test this component
+// not sure how to test it with jest. maybe e2e is needed
 export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
-  const [eventFormIsOpen, setEventFormOpen] = useState<boolean>(false);
+  const [eventInCreationData, setEventInCreationData] =
+    useState<SlotInfo | null>(null);
+
   const { data: journalEntriesData } = useJournalEntries();
   const { data: eventsData, setData: setEventsData } = useEvents();
 
@@ -169,7 +163,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
     });
 
     setEventsData((e) =>
-      updateObjById<ITask>(e, event.resource.id, {
+      updateObjById<Task>(e, event.resource.id, {
         event: {
           allDay: isAllDay || false,
           startAt: new Date(start).getTime(),
@@ -197,7 +191,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
     });
 
     setEventsData((e) =>
-      updateObjById<ITask>(e, event.resource.id, {
+      updateObjById<Task>(e, event.resource.id, {
         event: {
           allDay: false,
           startAt: new Date(start).getTime(),
@@ -207,37 +201,42 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
     );
   };
 
-  const newEvent = async (event: SlotInfo) => {
-    setEventFormOpen(true);
-    const eventName = prompt("Name:", "New Event");
-    if (!!eventName && !!eventName.length) {
-      const response = await axios.post<ITask>("/api/tasks/events", {
-        title: eventName,
-        event: {
-          allDay: event.slots.length == 1,
-          startAt: new Date(event.start).getTime(),
-          endAt: new Date(event.end).getTime(),
-        },
-      });
+  const openEventForm = (event: SlotInfo) => {
+    setEventInCreationData(event);
+  };
 
-      setEventsData((e) => [...e, response.data]);
-    }
+  const newEvent = async (data: FormValues) => {
+    // todo: add error handler
+    // todo: add optimistic response
+    const response = await axios.post<Task>("/api/tasks/events", {
+      title: data.title,
+      desciption: data.description.content,
+      project: data.project,
+      tags: data.description.tags,
+      event: {
+        allDay: eventInCreationData!.slots.length == 1,
+        startAt: new Date(eventInCreationData!.start).getTime(),
+        endAt: new Date(eventInCreationData!.end).getTime(),
+      },
+    });
+
+    setEventsData((e) => [...e, response.data]);
+
+    setEventInCreationData(null);
   };
 
   // todo: test this component
   return (
     <>
-      <Sheet open={eventFormIsOpen}>
-        <SheetContent side="left">
+      <Sheet open={!!eventInCreationData}>
+        <SheetContent
+          side="left"
+          onCloseClick={() => setEventInCreationData(null)}
+        >
           <SheetHeader>
             <SheetTitle>Create Event</SheetTitle>
             <SheetDescription>
-              <TaskForm
-                projects={[]}
-                onSubmit={(data) => {
-                  console.log("here", data);
-                }}
-              />
+              <TaskForm projects={[]} onSubmit={newEvent} showEta={false} />
             </SheetDescription>
           </SheetHeader>
         </SheetContent>
@@ -250,7 +249,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
         resizable
         showMultiDayTimes
         onEventResize={resizeEvent}
-        onSelectSlot={newEvent}
+        onSelectSlot={openEventForm}
         defaultView={view}
         popup
         formats={{ eventTimeRangeFormat: () => "" }}
