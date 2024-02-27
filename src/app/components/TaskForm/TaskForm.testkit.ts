@@ -17,7 +17,8 @@ export const getTaskFormTestkit = (component: HTMLElement) => ({
     fireEvent.change(input, { target: { value } });
   },
 
-  getETAFieldExists: () => within(component).getAllByRole("group").length === 1,
+  getETAFieldExists: () =>
+    within(component).queryAllByRole("group").length === 1,
   getEtaSelectedByName: (name: string) =>
     within(component)
       .getByRole("radio", { name })
