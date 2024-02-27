@@ -14,22 +14,17 @@ export const getTaskFormTestkit = (component: HTMLElement) => ({
       .getAttribute("value"),
   setTitle: (value: string) => {
     const input = within(component).getByRole("textbox", { name: /title/i });
-
-    // if (!input) {
-    //   throw new Error("title input was not found");
-    // }
     fireEvent.change(input, { target: { value } });
   },
 
-  getETAFieldExists: () =>
-    within(component).getAllByRole("spinbutton", { name: /ETA/i }).length === 1,
-  getEtaInputValue: () =>
+  getETAFieldExists: () => within(component).getAllByRole("group").length === 1,
+  getEtaSelectedByName: (name: string) =>
     within(component)
-      .getByRole("spinbutton", { name: /ETA/i })
-      .getAttribute("value"),
-  setEta: (value: number) => {
-    const input = within(component).getByRole("spinbutton", { name: /ETA/i });
-    fireEvent.change(input, { target: { value } });
+      .getByRole("radio", { name })
+      .getAttribute("data-state") === "on",
+  setEta: (name: string) => {
+    const input = within(component).getByRole("radio", { name });
+    fireEvent.click(input);
   },
 
   getProjectFieldExists: () =>

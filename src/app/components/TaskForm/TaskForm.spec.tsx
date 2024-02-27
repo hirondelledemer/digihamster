@@ -42,11 +42,17 @@ describe("TaskForm", () => {
       },
     };
     const wrapper = renderComponent(props);
+
     expect(wrapper.getTitleInputValue()).toBe(props.initialValues!.title);
     expect(wrapper.getDescriptionInputValue()).toBe(
       props.initialValues!.description.content
     );
-    expect(wrapper.getEtaInputValue()).toBe(`${props.initialValues!.eta}`);
+
+    expect(wrapper.getEtaSelectedByName("eta-0")).toBe(false);
+    expect(wrapper.getEtaSelectedByName("eta-1")).toBe(true);
+    expect(wrapper.getEtaSelectedByName("eta-2")).toBe(false);
+    expect(wrapper.getEtaSelectedByName("eta-3")).toBe(false);
+    expect(wrapper.getEtaSelectedByName("eta-4")).toBe(false);
     expect(wrapper.getProjectInputValue()).toBe(props.projects[0].title);
   });
 
@@ -76,7 +82,7 @@ describe("TaskForm", () => {
     const wrapper = renderComponent(props);
     wrapper.setTitle(newTitle);
     wrapper.setDescription(newDescription);
-    wrapper.setEta(2);
+    wrapper.setEta("eta-2");
 
     wrapper.clickCreateButton();
     await waitFor(() => {
