@@ -21,6 +21,8 @@ import {
 import { Button } from "../ui/button";
 import { Project } from "@/models/project";
 import RteFormField from "../RteFormField";
+import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
+import { IconComet, IconStar, IconStars } from "@tabler/icons-react";
 
 export const minimalNoteTestId = "TaskForm-minimal-note-testId";
 
@@ -85,7 +87,7 @@ const TaskForm: FC<TaskFormProps> = ({
             )}
           />
 
-          {/* todo: redo to toggle */}
+          {/* // todo:  complete creating, add editing, revaiew calendar and make it optimistic where is matters */}
           <FormField
             control={form.control}
             name="eta"
@@ -93,14 +95,33 @@ const TaskForm: FC<TaskFormProps> = ({
               <FormItem>
                 <FormLabel>ETA</FormLabel>
                 <FormControl>
-                  <Input
-                    type="number"
-                    placeholder="ETA"
-                    {...field}
-                    onChange={(event) =>
-                      field.onChange(Number(event.target.value))
-                    }
-                  />
+                  <ToggleGroup
+                    type="single"
+                    className="justify-start"
+                    value={field.value.toString()}
+                    onValueChange={(value) => {
+                      field.onChange(Number(value));
+                    }}
+                  >
+                    <ToggleGroupItem value="0" aria-label="eta-0">
+                      <IconComet className="h-4 w-4" color="#65a30d" />
+                    </ToggleGroupItem>
+                    <ToggleGroupItem value="1" aria-label="eta-1">
+                      <IconStar className="h-4 w-4" color="#0284c7" />
+                    </ToggleGroupItem>
+                    <ToggleGroupItem value="2" aria-label="eta-2">
+                      <IconStar className="h-4 w-4" color="#0284c7" />
+                      <IconStar className="h-4 w-4" color="#0284c7" />
+                    </ToggleGroupItem>
+                    <ToggleGroupItem value="3" aria-label="eta-3">
+                      <IconStar className="h-4 w-4" color="#0284c7" />
+                      <IconStar className="h-4 w-4" color="#0284c7" />
+                      <IconStar className="h-4 w-4" color="#0284c7" />
+                    </ToggleGroupItem>
+                    <ToggleGroupItem value="4" aria-label="eta-4">
+                      <IconStars className="h-4 w-4" color="#e11d48" />
+                    </ToggleGroupItem>
+                  </ToggleGroup>
                 </FormControl>
                 <FormMessage />
               </FormItem>
