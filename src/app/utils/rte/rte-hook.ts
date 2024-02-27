@@ -5,6 +5,12 @@ import { suggestionsConfig } from "./suggestions";
 import { reduce } from "remeda";
 import styles from "./rte-hook.module.scss";
 
+export interface RteValue {
+  title: string;
+  content: string;
+  tags: string[];
+}
+
 export function useRte({
   value,
   editable,
@@ -33,7 +39,7 @@ export function useRte({
     editable,
   });
 
-  const getRteValue = () => {
+  const getRteValue: () => RteValue = () => {
     const defaultValue = {
       title: "",
       content: "",

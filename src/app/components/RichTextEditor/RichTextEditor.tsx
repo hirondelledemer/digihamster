@@ -2,13 +2,12 @@
 
 import React, { FC } from "react";
 import { EditorContent, Editor } from "@tiptap/react";
-import { cn } from "../utils";
 
 export interface RichTextEditorProps {
   testId?: string;
   editor: Editor | null;
   onKeyDown?(event: React.KeyboardEvent<HTMLDivElement>): void;
-  // showActions?: boolean;
+  onBlur(): void;
 }
 
 export const textareaTestId = "textarea-testid";
@@ -16,9 +15,8 @@ export const textareaTestId = "textarea-testid";
 const RichTextEditorM: FC<RichTextEditorProps> = ({
   testId,
   editor,
-  // todo: fix
   onKeyDown,
-  // showActions,
+  onBlur,
 }): JSX.Element => {
   if (!editor) {
     return <div>Error: editor not provided</div>;
@@ -26,7 +24,7 @@ const RichTextEditorM: FC<RichTextEditorProps> = ({
 
   return (
     <div data-testid={testId}>
-      <EditorContent editor={editor} onKeyDown={onKeyDown} />
+      <EditorContent editor={editor} onKeyDown={onKeyDown} onBlur={onBlur} />
     </div>
   );
 };

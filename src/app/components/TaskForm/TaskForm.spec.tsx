@@ -1,8 +1,7 @@
-import { render, screen, act, waitFor } from "@testing-library/react";
+import { render, waitFor } from "@testing-library/react";
 import TaskForm, { TaskFormProps } from "./TaskForm";
 import { getTaskFormTestkit } from "./TaskForm.testkit";
 import { ObjectId } from "mongoose";
-// import { act } from "react-dom/test-utils";
 
 describe("TaskForm", () => {
   const defaultProps: TaskFormProps = {
@@ -33,7 +32,11 @@ describe("TaskForm", () => {
       ...defaultProps,
       initialValues: {
         title: "title",
-        description: "desription",
+        description: {
+          title: "title",
+          content: "content",
+          tags: [],
+        },
         eta: 1,
         project: "project1",
       },
@@ -41,32 +44,52 @@ describe("TaskForm", () => {
     const wrapper = renderComponent(props);
     expect(wrapper.getTitleInputValue()).toBe(props.initialValues!.title);
     expect(wrapper.getDescriptionInputValue()).toBe(
-      props.initialValues!.description
+      props.initialValues!.description.content
     );
     expect(wrapper.getEtaInputValue()).toBe(`${props.initialValues!.eta}`);
     expect(wrapper.getProjectInputValue()).toBe(props.projects[0].title);
   });
 
-  it.only("submits form", async () => {
+  // for some reason testing-library does not allow to select cobobox
+  // heve project value is set as initial
+  // todo: test this case in e2e
+
+  it("submits form", async () => {
     const onSubmitSpy = jest.fn();
+    const newTitle = "new title";
+    const newDescription = "new desc";
+
     const props: TaskFormProps = {
       ...defaultProps,
       onSubmit: onSubmitSpy,
+      initialValues: {
+        title: "",
+        description: {
+          title: "",
+          content: "",
+          tags: [],
+        },
+        eta: 0,
+        project: defaultProps.projects[0]._id as unknown as string,
+      },
     };
-    // act(() => {
     const wrapper = renderComponent(props);
-    wrapper.setTitle("new title");
-    // wrapper.setDescription("new desc");
+    wrapper.setTitle(newTitle);
+    wrapper.setDescription(newDescription);
     wrapper.setEta(2);
-    wrapper.setProject(props.projects[0]._id as unknown as string);
-    // console.log(wrapper.getOptionAt());
-    expect(wrapper.optionExists("Project 1")).toBe(true);
-    wrapper.clickOption("Project 1");
-    screen.logTestingPlaygroundURL();
+
     wrapper.clickCreateButton();
     await waitFor(() => {
-      expect(onSubmitSpy).toHaveBeenCalledWith({});
+      expect(onSubmitSpy).toHaveBeenCalledWith({
+        description: {
+          content: `<p>${newDescription}</p>`,
+          tags: [],
+          title: newDescription,
+        },
+        eta: 2,
+        project: "project1",
+        title: newTitle,
+      });
     });
-    // });
   });
 });
