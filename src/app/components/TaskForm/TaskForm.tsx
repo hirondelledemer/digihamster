@@ -29,17 +29,24 @@ const FormSchema = z.object({
   description: z.string(),
   eta: z.number(),
   project: z.string().min(1, { message: "This field has to be filled." }),
+
+  // title: z.any(),
+  // description: z.any(),
+  // eta: z.any(),
+  // project: z.any(),
 });
 
 export interface TaskFormProps {
   testId?: string;
   initialValues?: z.infer<typeof FormSchema>;
   projects: Project[];
+  onSubmit(values: z.infer<typeof FormSchema>): void;
 }
 const TaskForm: FC<TaskFormProps> = ({
   testId,
   initialValues,
   projects,
+  onSubmit,
 }): JSX.Element => {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -53,13 +60,18 @@ const TaskForm: FC<TaskFormProps> = ({
     },
   });
 
-  const onSubmit = () => {};
+  const handleSubmit = (values: any) => {
+    console.log(values);
+    onSubmit(values);
+  };
+
+  // console.log(form);
 
   return (
     <div data-testid={testId}>
       <Form {...form}>
         <form
-          onSubmit={form.handleSubmit(onSubmit)}
+          onSubmit={form.handleSubmit(handleSubmit)}
           className="w-2/3 space-y-6"
         >
           <FormField
@@ -75,24 +87,7 @@ const TaskForm: FC<TaskFormProps> = ({
               </FormItem>
             )}
           />
-          <FormField
-            control={form.control}
-            name="description"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Description</FormLabel>
-                <FormControl>
-                  <MinimalNote
-                    testId={minimalNoteTestId}
-                    editable
-                    note={field.value}
-                    onSubmit={() => {}} // fix
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+
           {/* todo: redo to toggle */}
           <FormField
             control={form.control}
@@ -101,7 +96,14 @@ const TaskForm: FC<TaskFormProps> = ({
               <FormItem>
                 <FormLabel>ETA</FormLabel>
                 <FormControl>
-                  <Input type="number" placeholder="ETA" {...field} />
+                  <Input
+                    type="number"
+                    placeholder="ETA"
+                    {...field}
+                    onChange={(event) =>
+                      field.onChange(Number(event.target.value))
+                    }
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -130,6 +132,7 @@ const TaskForm: FC<TaskFormProps> = ({
                       <SelectItem
                         key={project._id as unknown as string}
                         value={project._id as unknown as string}
+                        role="option"
                       >
                         {project.title}
                       </SelectItem>
@@ -139,6 +142,25 @@ const TaskForm: FC<TaskFormProps> = ({
                     <SelectItem value="m@support.com">m@support.com</SelectItem>
                   </SelectContent>
                 </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="description"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Description</FormLabel>
+                <FormControl>
+                  <MinimalNote
+                    testId={minimalNoteTestId}
+                    editable
+                    note={field.value}
+                    onSubmit={() => {}} // fix
+                    forForm
+                  />
+                </FormControl>
                 <FormMessage />
               </FormItem>
             )}
