@@ -9,11 +9,11 @@ import {
   useState,
 } from "react";
 import axios from "axios";
-import { ITask } from "@/models/task";
+import { Task } from "@/models/task";
 
 export const EventsContext = createContext<{
-  data: ITask[];
-  setData: Dispatch<SetStateAction<ITask[]>>;
+  data: Task[];
+  setData: Dispatch<SetStateAction<Task[]>>;
 }>({
   data: [],
   setData: () => {},
@@ -22,7 +22,7 @@ export const EventsContext = createContext<{
 const { Provider } = EventsContext;
 
 export const EventsContextProvider = ({ children }: any) => {
-  const [data, setData] = useState<ITask[]>([]);
+  const [data, setData] = useState<Task[]>([]);
   // todo: look into utilising this
   const [error, setError] = useState<unknown>(null);
   const [loading, setLoading] = useState(false);
@@ -32,7 +32,7 @@ export const EventsContextProvider = ({ children }: any) => {
       try {
         setLoading(true);
         const eventsResponse = await axios.get<{
-          data: ITask[];
+          data: Task[];
         }>("/api/tasks/events");
         setData(eventsResponse.data.data);
       } catch (err) {
