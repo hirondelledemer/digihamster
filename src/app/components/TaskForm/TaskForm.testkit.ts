@@ -37,21 +37,10 @@ export const getTaskFormTestkit = (component: HTMLElement) => ({
     1,
   getProjectInputValue: () =>
     within(component).getByRole("combobox", { name: /project/i }).textContent,
+  //todo: for some reason this does not work
   setProject: (value: string) => {
     const input = within(component).getByRole("combobox", { name: /project/i });
-    fireEvent.click(input);
-    // console.log("jere");
-    // screen.logTestingPlaygroundURL();
-    // const option = within(component).getAllByRole("option");
-    // fireEvent.click(option[0]);
-    // fireEvent.change(input, { target: { value } });
-  },
-
-  optionExists: (optionLabel: string) =>
-    within(component).getAllByText(optionLabel).length === 1,
-  clickOption: (optionLabel: string) => {
-    const option = within(component).getByText(optionLabel);
-    fireEvent.click(option);
+    fireEvent.click(input, { target: { value } });
   },
 
   getCreateButtonExists: () =>
@@ -67,8 +56,11 @@ export const getTaskFormTestkit = (component: HTMLElement) => ({
     getMinimalNoteTestkit(within(component).getByTestId(minimalNoteTestId))
       .getTextarea()
       .getTextarea()?.textContent,
-  setDescription: (value: string) =>
-    getMinimalNoteTestkit(within(component).getByTestId(minimalNoteTestId))
-      .getTextarea()
-      .enterValue(value),
+  setDescription: (value: string) => {
+    const input = getMinimalNoteTestkit(
+      within(component).getByTestId(minimalNoteTestId)
+    );
+    input.getTextarea().enterValue(value);
+    input.getTextarea().blur();
+  },
 });

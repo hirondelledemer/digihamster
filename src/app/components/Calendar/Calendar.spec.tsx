@@ -1,4 +1,4 @@
-import { render, screen } from "@/config/utils/test-utils";
+import { render } from "@/config/utils/test-utils";
 import { getCalendarTestkit } from "./Calendar.testkit";
 import Calendar, { PlannerProps } from "./Calendar";
 
@@ -10,7 +10,6 @@ describe("Calendar", () => {
   it("should render", () => {
     const wrapper = renderComponent();
 
-    screen.logTestingPlaygroundURL();
     wrapper.clickEventSlot();
     expect(wrapper.getComponent()).toBeInTheDocument();
   });

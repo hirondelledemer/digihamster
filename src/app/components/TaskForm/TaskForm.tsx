@@ -11,7 +11,6 @@ import {
   FormMessage,
 } from "../ui/form";
 import { Input } from "../ui/input";
-import MinimalNote from "../MinimalNote";
 import {
   Select,
   SelectTrigger,
@@ -21,19 +20,19 @@ import {
 } from "../ui/select";
 import { Button } from "../ui/button";
 import { Project } from "@/models/project";
+import RteFormField from "../RteFormField";
 
 export const minimalNoteTestId = "TaskForm-minimal-note-testId";
 
 const FormSchema = z.object({
   title: z.string().min(1, { message: "This field has to be filled." }),
-  description: z.string(),
+  description: z.object({
+    title: z.string(),
+    content: z.string(),
+    tags: z.array(z.string()),
+  }),
   eta: z.number(),
   project: z.string().min(1, { message: "This field has to be filled." }),
-
-  // title: z.any(),
-  // description: z.any(),
-  // eta: z.any(),
-  // project: z.any(),
 });
 
 export interface TaskFormProps {
@@ -52,7 +51,11 @@ const TaskForm: FC<TaskFormProps> = ({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       title: "",
-      description: "",
+      description: {
+        title: "",
+        content: "",
+        tags: [],
+      },
       eta: 0,
       // todo: set default project
       project: "",
@@ -61,19 +64,13 @@ const TaskForm: FC<TaskFormProps> = ({
   });
 
   const handleSubmit = (values: any) => {
-    console.log(values);
     onSubmit(values);
   };
-
-  // console.log(form);
 
   return (
     <div data-testid={testId}>
       <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(handleSubmit)}
-          className="w-2/3 space-y-6"
-        >
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
           <FormField
             control={form.control}
             name="title"
@@ -153,12 +150,10 @@ const TaskForm: FC<TaskFormProps> = ({
               <FormItem>
                 <FormLabel>Description</FormLabel>
                 <FormControl>
-                  <MinimalNote
+                  <RteFormField
                     testId={minimalNoteTestId}
-                    editable
-                    note={field.value}
-                    onSubmit={() => {}} // fix
-                    forForm
+                    value={field.value.content}
+                    onChange={field.onChange}
                   />
                 </FormControl>
                 <FormMessage />
