@@ -207,22 +207,47 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
 
   const newEvent = async (data: FormValues) => {
     // todo: add error handler
-    // todo: add optimistic response
-    const response = await axios.post<Task>("/api/tasks/events", {
+
+    type FieldsRequired =
+      | "title"
+      | "description"
+      | "projectId"
+      | "tags"
+      | "event";
+
+    const taskData: Pick<Task, FieldsRequired> = {
       title: data.title,
-      desciption: data.description.content,
-      project: data.project,
+      description: data.description.content,
+      projectId: data.project,
       tags: data.description.tags,
       event: {
         allDay: eventInCreationData!.slots.length == 1,
         startAt: new Date(eventInCreationData!.start).getTime(),
         endAt: new Date(eventInCreationData!.end).getTime(),
       },
-    });
+    };
+    const tempId = "temp-id";
 
-    setEventsData((e) => [...e, response.data]);
-
+    const tempTask: Task = {
+      _id: tempId,
+      completed: false,
+      isActive: false,
+      deleted: false,
+      estimate: 0,
+      sortOrder: null,
+      completedAt: 0,
+      activatedAt: 0,
+      parentTaskId: null,
+      createdAt: 0,
+      updatedAt: 0,
+      ...taskData,
+    };
+    setEventsData((e) => [...e, tempTask]);
     setEventInCreationData(null);
+
+    const response = await axios.post<Task>("/api/tasks/events", taskData);
+
+    setEventsData((e) => updateObjById<Task>(e, tempId, response.data));
   };
 
   // todo: test this component

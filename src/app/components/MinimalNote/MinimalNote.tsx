@@ -43,7 +43,6 @@ const MinimalNote: FC<MinimalNoteProps | MinimalNoteEditableProps> = ({
     editor?.setEditable(editable);
 
     if (editable && !forForm) {
-      console.log("setting focus", editable, forForm);
       editor?.commands.focus("end");
     }
   }, [editor, editable, forForm]);

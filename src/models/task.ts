@@ -1,4 +1,4 @@
-import mongoose, { ObjectId } from "mongoose";
+import mongoose from "mongoose";
 import { Taggable, TimeStamps } from "./shared-types";
 
 interface TaskEvent {
@@ -8,7 +8,7 @@ interface TaskEvent {
 }
 
 export interface Task extends Taggable, TimeStamps {
-  _id: ObjectId;
+  _id: string;
   title: string;
   description: string;
   completed: boolean;
@@ -16,14 +16,14 @@ export interface Task extends Taggable, TimeStamps {
   deleted: boolean;
   projectId: string;
   estimate: number;
-  sortOrder: number;
+  sortOrder: number | null;
   event: TaskEvent | null;
   completedAt: number;
   activatedAt: number;
-  parentTaskId: string;
+  parentTaskId: string | null;
 }
 
-export type ITask = mongoose.Document & Task;
+export type ITask = Task & mongoose.Document<string> & Task;
 
 const TaskSchema = new mongoose.Schema(
   {

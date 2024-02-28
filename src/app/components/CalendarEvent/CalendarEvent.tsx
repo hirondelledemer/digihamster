@@ -7,7 +7,7 @@ import { IconCheck, IconTrash } from "@tabler/icons-react";
 import axios from "axios";
 import { Button } from "../ui/button";
 import useEvents from "@/app/utils/hooks/use-events";
-import { ITask } from "@/models/task";
+import { Task } from "@/models/task";
 import { updateObjById } from "@/app/utils/common/update-array";
 
 export interface CalendarEventProps {
@@ -34,7 +34,7 @@ const CalendarEvent: FC<CalendarEventProps> = ({
 
   const handleCompleteClick = () => {
     setData((events) => {
-      return updateObjById<ITask>(events, event.resource.id, {
+      return updateObjById<Task>(events, event.resource.id, {
         completed: true,
       });
     });

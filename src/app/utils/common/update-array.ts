@@ -1,11 +1,9 @@
-import { ObjectId } from "mongoose";
-
-export function updateObjById<T extends { _id: ObjectId }>(
+export function updateObjById<T extends { _id: string }>(
   arr: T[],
-  id: ObjectId,
+  id: string,
   updatedData: Partial<T>
 ) {
   return arr.map((item) =>
-    item._id === id ? { ...item, ...updatedData } : item
+    item._id.toString() === id ? { ...item, ...updatedData } : item
   );
 }

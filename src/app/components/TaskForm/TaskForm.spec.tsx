@@ -1,12 +1,11 @@
 import { render, waitFor } from "@testing-library/react";
 import TaskForm, { TaskFormProps } from "./TaskForm";
 import { getTaskFormTestkit } from "./TaskForm.testkit";
-import { ObjectId } from "mongoose";
 
 describe("TaskForm", () => {
   const defaultProps: TaskFormProps = {
     projects: [1, 2].map((n) => ({
-      _id: `project${n}` as unknown as ObjectId,
+      _id: `project${n}`,
       title: `Project ${n}`,
       deleted: false,
       color: "",
