@@ -7,7 +7,7 @@ export interface RichTextEditorProps {
   testId?: string;
   editor: Editor | null;
   onKeyDown?(event: React.KeyboardEvent<HTMLDivElement>): void;
-  onBlur(): void;
+  onBlur?(): void;
 }
 
 export const textareaTestId = "textarea-testid";

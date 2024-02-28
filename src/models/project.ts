@@ -1,16 +1,15 @@
 import * as mongoose from "mongoose";
-import { ObjectId } from "mongoose";
 
 const Schema = mongoose.Schema;
 
 export interface Project {
-  _id: ObjectId;
+  _id: string;
   title: string;
   deleted: boolean;
   color: string;
   order: number;
 }
-export type IProject = Project & mongoose.Document;
+export type IProject = Project & mongoose.Document<string>;
 
 const ProjectSchema = new Schema(
   {

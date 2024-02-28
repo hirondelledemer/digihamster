@@ -4,12 +4,11 @@ import { lightFormat, format } from "date-fns";
 import React, { FC, ReactNode } from "react";
 import { Checkbox } from "../ui/checkbox";
 import axios from "axios";
-import { ITask } from "@/models/task";
+import { Task } from "@/models/task";
 import useEvents from "@/app/utils/hooks/use-events";
 import { cn } from "../utils";
 import styles from "./TodayEvent.module.scss";
 import { updateObjById } from "@/app/utils/common/update-array";
-import { ObjectId } from "mongoose";
 
 export interface TodayEventProps {
   testId?: string;
@@ -18,7 +17,7 @@ export interface TodayEventProps {
   title: ReactNode | string;
   completed: boolean;
   allDay?: boolean;
-  id: ObjectId;
+  id: string;
   showDate?: boolean;
 }
 
@@ -35,12 +34,12 @@ const TodayEvent: FC<TodayEventProps> = ({
   const { setData } = useEvents();
 
   const handleCompleteClick = async (val: boolean) => {
-    await axios.patch<ITask, { data: ITask }>("/api/tasks/events", {
+    await axios.patch<Task, { data: Task }>("/api/tasks/events", {
       taskId: id,
       completed: val,
     });
 
-    setData((events) => updateObjById<ITask>(events, id, { completed: val }));
+    setData((events) => updateObjById<Task>(events, id, { completed: val }));
   };
 
   return (

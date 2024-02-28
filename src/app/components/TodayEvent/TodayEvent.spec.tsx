@@ -1,4 +1,3 @@
-import { ObjectId } from "mongoose";
 import TodayEvent, { TodayEventProps } from "./TodayEvent";
 import { getTodayEventTestkit } from "./TodayEvent.testkit";
 import { render } from "@/config/utils/test-utils";
@@ -12,7 +11,7 @@ describe("TodayEvent", () => {
   const defaultProps: TodayEventProps = {
     title: "Title",
     completed: false,
-    id: "event1" as unknown as ObjectId,
+    id: "event1",
   };
   const renderComponent = (props = defaultProps) =>
     getTodayEventTestkit(render(<TodayEvent {...props} />).container);
@@ -27,7 +26,7 @@ describe("TodayEvent", () => {
       title: "Title",
       completed: false,
       allDay: true,
-      id: "event1" as unknown as ObjectId,
+      id: "event1",
     };
 
     it("should show label all day", () => {
@@ -61,7 +60,7 @@ describe("TodayEvent", () => {
       title: "Title",
       completed: false,
       allDay: false,
-      id: "event1" as unknown as ObjectId,
+      id: "event1",
       start: new Date(0),
       end: new Date(800000000),
     };
@@ -87,7 +86,7 @@ describe("TodayEvent", () => {
       title: "Title",
       completed: true,
       allDay: false,
-      id: "event1" as unknown as ObjectId,
+      id: "event1",
       start: new Date(0),
       end: new Date(800000000),
     };
