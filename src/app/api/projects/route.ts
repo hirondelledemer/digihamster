@@ -13,11 +13,10 @@ export async function GET(request: NextRequest) {
     const projects = await Project.find({
       userId,
     });
-
     const user = await User.findOne({ _id: userId }).select("-password");
 
     const defaultProject = projects.find(
-      (p) => p._id === user.defaultProjectId
+      (p) => p._id.toString() === user.defaultProjectId
     );
 
     return NextResponse.json({
