@@ -1,20 +1,35 @@
 import { render, waitFor } from "@testing-library/react";
 import TaskForm, { TaskFormProps } from "./TaskForm";
 import { getTaskFormTestkit } from "./TaskForm.testkit";
+import { ProjectsContext } from "@/app/utils/hooks/use-projects";
 
 describe("TaskForm", () => {
   const defaultProps: TaskFormProps = {
-    projects: [1, 2].map((n) => ({
-      _id: `project${n}`,
-      title: `Project ${n}`,
-      deleted: false,
-      color: "",
-      order: 0,
-    })),
     onSubmit: jest.fn(),
   };
+
+  const projects = [1, 2].map((n) => ({
+    _id: `project${n}`,
+    title: `Project ${n}`,
+    deleted: false,
+    color: "",
+    order: 0,
+  }));
+
   const renderComponent = (props = defaultProps) =>
-    getTaskFormTestkit(render(<TaskForm {...props} />).container);
+    getTaskFormTestkit(
+      render(
+        <ProjectsContext.Provider
+          value={{
+            data: projects,
+            loading: false,
+            setData: jest.fn(),
+          }}
+        >
+          <TaskForm {...props} />
+        </ProjectsContext.Provider>
+      ).container
+    );
 
   it("shows all the inputs", () => {
     const wrapper = renderComponent();
@@ -69,7 +84,7 @@ describe("TaskForm", () => {
     expect(wrapper.getEtaSelectedByName("eta-2")).toBe(false);
     expect(wrapper.getEtaSelectedByName("eta-3")).toBe(false);
     expect(wrapper.getEtaSelectedByName("eta-4")).toBe(false);
-    expect(wrapper.getProjectInputValue()).toBe(props.projects[0].title);
+    expect(wrapper.getProjectInputValue()).toBe(projects[0].title);
   });
 
   // for some reason testing-library does not allow to select cobobox
@@ -92,7 +107,7 @@ describe("TaskForm", () => {
           tags: [],
         },
         eta: 0,
-        project: defaultProps.projects[0]._id as unknown as string,
+        project: projects[0]._id as unknown as string,
       },
     };
     const wrapper = renderComponent(props);
