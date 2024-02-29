@@ -51,7 +51,7 @@ const TaskForm: FC<TaskFormProps> = ({
   onSubmit,
   showEta = true,
 }): JSX.Element => {
-  const { data: projects } = useProjects();
+  const { data: projects, defaultProject } = useProjects();
   const form = useForm<FormValues>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -62,8 +62,7 @@ const TaskForm: FC<TaskFormProps> = ({
         tags: [],
       },
       eta: 0,
-      // todo: set default project
-      project: "",
+      project: defaultProject?._id,
       ...initialValues,
     },
   });

@@ -14,13 +14,13 @@ import { useToast } from "@/app/components/ui/use-toast";
 
 export const ProjectsContext = createContext<{
   data: Project[];
+  defaultProject?: Project;
   setData: Dispatch<SetStateAction<Project[]>>;
   error?: unknown;
   loading: boolean;
 }>({
   data: [],
   setData: () => {},
-  error: undefined,
   loading: false,
 });
 
@@ -28,6 +28,7 @@ const { Provider } = ProjectsContext;
 
 export const ProjectsContextProvider = ({ children }: any) => {
   const [data, setData] = useState<Project[]>([]);
+  const [defaultProject, setDefaultProject] = useState<Project>();
   const [error, setError] = useState<unknown>(null);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
@@ -36,8 +37,12 @@ export const ProjectsContextProvider = ({ children }: any) => {
     (async function () {
       try {
         setLoading(true);
-        const eventsResponse = await axios.get<Project[]>("/api/projects");
-        setData(eventsResponse.data);
+        const eventsResponse = await axios.get<{
+          projects: Project[];
+          defaultProject: Project;
+        }>("/api/projects");
+        setData(eventsResponse.data.projects);
+        setDefaultProject(eventsResponse.data.defaultProject);
       } catch (err) {
         setError(err);
         toast({
@@ -52,12 +57,14 @@ export const ProjectsContextProvider = ({ children }: any) => {
   }, [toast]);
 
   return (
-    <Provider value={{ data, setData, error, loading }}>{children}</Provider>
+    <Provider value={{ data, setData, error, loading, defaultProject }}>
+      {children}
+    </Provider>
   );
 };
 
 export default function useProjects() {
-  const { data, setData } = useContext(ProjectsContext);
+  const { data, setData, defaultProject } = useContext(ProjectsContext);
 
-  return { data, setData };
+  return { data, setData, defaultProject };
 }
