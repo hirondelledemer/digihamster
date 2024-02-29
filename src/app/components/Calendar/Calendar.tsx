@@ -275,7 +275,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
           <SheetHeader>
             <SheetTitle>Create Event</SheetTitle>
             <SheetDescription>
-              <TaskForm projects={[]} onSubmit={newEvent} showEta={false} />
+              <TaskForm onSubmit={newEvent} showEta={false} />
             </SheetDescription>
           </SheetHeader>
         </SheetContent>

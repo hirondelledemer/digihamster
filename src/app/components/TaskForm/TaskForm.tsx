@@ -19,10 +19,10 @@ import {
   SelectItem,
 } from "../ui/select";
 import { Button } from "../ui/button";
-import { Project } from "@/models/project";
 import RteFormField from "../RteFormField";
 import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
 import { IconComet, IconStar, IconStars } from "@tabler/icons-react";
+import useProjects from "@/app/utils/hooks/use-projects";
 
 export const minimalNoteTestId = "TaskForm-minimal-note-testId";
 
@@ -42,17 +42,16 @@ export type FormValues = z.infer<typeof FormSchema>;
 export interface TaskFormProps {
   testId?: string;
   initialValues?: FormValues;
-  projects: Project[];
   onSubmit(values: FormValues): void;
   showEta?: boolean;
 }
 const TaskForm: FC<TaskFormProps> = ({
   testId,
   initialValues,
-  projects,
   onSubmit,
   showEta = true,
 }): JSX.Element => {
+  const { data: projects } = useProjects();
   const form = useForm<FormValues>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -150,7 +149,6 @@ const TaskForm: FC<TaskFormProps> = ({
                       <SelectValue placeholder="Select Project" />
                     </SelectTrigger>
                   </FormControl>
-                  {/* todo: populate with projects */}
                   <SelectContent>
                     {projects.map((project) => (
                       <SelectItem
@@ -161,9 +159,6 @@ const TaskForm: FC<TaskFormProps> = ({
                         {project.title}
                       </SelectItem>
                     ))}
-
-                    <SelectItem value="m@google.com">m@google.com</SelectItem>
-                    <SelectItem value="m@support.com">m@support.com</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />
