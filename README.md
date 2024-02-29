@@ -38,6 +38,7 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/deploym
 https://medium.com/@Rushabh_/next-js-demystified-user-authentication-with-nextjs-mongodb-2a0e1e697526
 
 tasks:
-add storybook
-add e2e test
-run tests on PR
+calendar - error handling
+use-events
+add time to event form
+add projects

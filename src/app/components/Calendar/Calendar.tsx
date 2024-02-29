@@ -44,6 +44,7 @@ import {
 } from "../ui/sheet";
 import TaskForm from "../TaskForm";
 import { FormValues } from "../TaskForm/TaskForm";
+import { useToast } from "../ui/use-toast";
 
 export const now = () => new Date();
 
@@ -66,6 +67,8 @@ export interface PlannerProps {
 export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
   const [eventInCreationData, setEventInCreationData] =
     useState<SlotInfo | null>(null);
+
+  const { toast } = useToast();
 
   const { data: journalEntriesData } = useJournalEntries();
   const { data: eventsData, setData: setEventsData } = useEvents();
@@ -245,9 +248,20 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
     setEventsData((e) => [...e, tempTask]);
     setEventInCreationData(null);
 
-    const response = await axios.post<Task>("/api/tasks/events", taskData);
-
-    setEventsData((e) => updateObjById<Task>(e, tempId, response.data));
+    try {
+      const response = await axios.post<Task>("/api/tasks/events", taskData);
+      setEventsData((e) => updateObjById<Task>(e, tempId, response.data));
+      toast({
+        title: "Success",
+        description: "Event has been created",
+      });
+    } catch (e) {
+      toast({
+        title: "Error",
+        description: JSON.stringify(e),
+        variant: "destructive",
+      });
+    }
   };
 
   // todo: test this component
