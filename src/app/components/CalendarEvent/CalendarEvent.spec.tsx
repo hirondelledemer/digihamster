@@ -1,4 +1,4 @@
-import { render, waitFor } from "@/config/utils/test-utils";
+import { render } from "@/config/utils/test-utils";
 import { CalendarEventProps } from "./CalendarEvent";
 import CalendarEvent from "./CalendarEvent";
 import { getCalendarEventTestkit } from "./CalendarEvent.testkit";
