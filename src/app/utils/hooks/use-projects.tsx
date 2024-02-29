@@ -9,12 +9,12 @@ import {
   useState,
 } from "react";
 import axios from "axios";
-import { Task } from "@/models/task";
+import { Project } from "@/models/project";
 import { useToast } from "@/app/components/ui/use-toast";
 
-export const EventsContext = createContext<{
-  data: Task[];
-  setData: Dispatch<SetStateAction<Task[]>>;
+export const ProjectsContext = createContext<{
+  data: Project[];
+  setData: Dispatch<SetStateAction<Project[]>>;
   error?: unknown;
   loading: boolean;
 }>({
@@ -24,10 +24,10 @@ export const EventsContext = createContext<{
   loading: false,
 });
 
-const { Provider } = EventsContext;
+const { Provider } = ProjectsContext;
 
-export const EventsContextProvider = ({ children }: any) => {
-  const [data, setData] = useState<Task[]>([]);
+export const ProjectsContextProvider = ({ children }: any) => {
+  const [data, setData] = useState<Project[]>([]);
   const [error, setError] = useState<unknown>(null);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
@@ -36,15 +36,13 @@ export const EventsContextProvider = ({ children }: any) => {
     (async function () {
       try {
         setLoading(true);
-        const eventsResponse = await axios.get<{
-          data: Task[];
-        }>("/api/tasks/events");
-        setData(eventsResponse.data.data);
+        const eventsResponse = await axios.get<Project[]>("/api/projects");
+        setData(eventsResponse.data);
       } catch (err) {
         setError(err);
         toast({
           title: "Error",
-          description: "error while getting events",
+          description: "error while getting projects",
           variant: "destructive",
         });
       } finally {
@@ -58,8 +56,8 @@ export const EventsContextProvider = ({ children }: any) => {
   );
 };
 
-export default function useEvents() {
-  const { data, setData } = useContext(EventsContext);
+export default function useProjects() {
+  const { data, setData } = useContext(ProjectsContext);
 
   return { data, setData };
 }
