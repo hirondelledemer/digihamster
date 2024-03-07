@@ -8,6 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "../ui/card";
+import MinimalNote from "../MinimalNote";
 
 export const titleTestId = "TaskCard-title-testid";
 
@@ -33,7 +34,11 @@ const TaskCard: FC<TaskCardProps> = ({
             <div style={{ color: project?.color }}>{project?.title}</div>
           </CardDescription>
         </CardHeader>
-        {task.description && <CardContent>{task.description}</CardContent>}
+        {task.description && (
+          <CardContent className="px-4 text-xs">
+            <MinimalNote note={task.description} />
+          </CardContent>
+        )}
       </Card>
     </div>
   );

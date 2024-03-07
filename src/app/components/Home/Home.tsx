@@ -7,13 +7,15 @@ import {
 } from "../ui/resizable";
 import Calendar from "../Calendar";
 import ActiveTaskList from "../ActiveTaskList";
+import CommandTool from "../CommandTool";
 
 export const Home = (): JSX.Element => {
   return (
     <ResizablePanelGroup direction="horizontal" className="rounded-lg border">
       <ResizablePanel>
         <ResizablePanelGroup direction="vertical">
-          <ResizablePanel style={{ overflow: "auto" }}>
+          <ResizablePanel>
+            <CommandTool />
             <div className="p-6">
               <Calendar view={"agenda"} />
             </div>
@@ -28,7 +30,7 @@ export const Home = (): JSX.Element => {
       </ResizablePanel>
       <ResizableHandle />
       <ResizablePanel>
-        <div className="flex h-[200px] p-6">
+        <div className="flex p-6 pb-12">
           <ActiveTaskList />
         </div>
       </ResizablePanel>
