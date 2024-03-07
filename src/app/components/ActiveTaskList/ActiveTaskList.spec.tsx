@@ -7,7 +7,6 @@ import { TasksContext } from "@/app/utils/hooks/use-tasks";
 
 describe("ActiveTaskList", () => {
   const tasks = generateListOfTasks(3);
-  console.log(tasks);
   const defaultProps: ActiveTaskListProps = {};
 
   const renderComponent = (props = defaultProps) =>
