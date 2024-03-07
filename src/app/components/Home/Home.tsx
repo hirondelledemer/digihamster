@@ -6,6 +6,7 @@ import {
   ResizablePanelGroup,
 } from "../ui/resizable";
 import Calendar from "../Calendar";
+import ActiveTaskList from "../ActiveTaskList";
 
 export const Home = (): JSX.Element => {
   return (
@@ -27,8 +28,8 @@ export const Home = (): JSX.Element => {
       </ResizablePanel>
       <ResizableHandle />
       <ResizablePanel>
-        <div className="flex h-[200px] items-center justify-center p-6">
-          here
+        <div className="flex h-[200px] p-6">
+          <ActiveTaskList />
         </div>
       </ResizablePanel>
     </ResizablePanelGroup>

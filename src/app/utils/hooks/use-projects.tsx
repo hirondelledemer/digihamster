@@ -37,12 +37,12 @@ export const ProjectsContextProvider = ({ children }: any) => {
     (async function () {
       try {
         setLoading(true);
-        const eventsResponse = await axios.get<{
+        const projectsResponse = await axios.get<{
           projects: Project[];
           defaultProject: Project;
         }>("/api/projects");
-        setData(eventsResponse.data.projects);
-        setDefaultProject(eventsResponse.data.defaultProject);
+        setData(projectsResponse.data.projects);
+        setDefaultProject(projectsResponse.data.defaultProject);
       } catch (err) {
         setError(err);
         toast({
