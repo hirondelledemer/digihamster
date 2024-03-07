@@ -1,14 +1,14 @@
-import { render, screen } from "@testing-library/react";
+import { render } from "@testing-library/react";
 import ActiveTaskList, { ActiveTaskListProps } from "./ActiveTaskList";
 import { getActiveTaskListTestkit } from "./ActiveTaskList.testkit";
 import { generateListOfTasks } from "@/app/utils/mocks/task";
 import { ProjectsContext } from "@/app/utils/hooks/use-projects";
+import { TasksContext } from "@/app/utils/hooks/use-tasks";
 
 describe("ActiveTaskList", () => {
   const tasks = generateListOfTasks(3);
-  const defaultProps: ActiveTaskListProps = {
-    tasks,
-  };
+  console.log(tasks);
+  const defaultProps: ActiveTaskListProps = {};
 
   const renderComponent = (props = defaultProps) =>
     getActiveTaskListTestkit(
@@ -28,7 +28,15 @@ describe("ActiveTaskList", () => {
             setData: jest.fn(),
           }}
         >
-          <ActiveTaskList {...props} />
+          <TasksContext.Provider
+            value={{
+              data: tasks,
+              loading: false,
+              setData: jest.fn(),
+            }}
+          >
+            <ActiveTaskList {...props} />
+          </TasksContext.Provider>
         </ProjectsContext.Provider>
       ).container
     );
@@ -36,7 +44,9 @@ describe("ActiveTaskList", () => {
   it("renders 3 tasks", () => {
     const wrapper = renderComponent();
     expect(wrapper.getComponent()).not.toBe(null);
-    screen.logTestingPlaygroundURL();
     expect(wrapper.getTasksCount()).toBe(3);
+    expect(wrapper.getTaskTitleAt(0)).toBe(tasks[0].title);
+    expect(wrapper.getTaskTitleAt(1)).toBe(tasks[1].title);
+    expect(wrapper.getTaskTitleAt(2)).toBe(tasks[2].title);
   });
 });

@@ -24,8 +24,8 @@ export const generateTask: (propertes?: Partial<Task>) => Task = (
   };
 };
 
-export const generateListOfTasks: (index: number) => Task[] = (index) => {
-  return Array(index).map((_v, i) => ({
+export const generateListOfTasks: (count: number) => Task[] = (count) => {
+  return [...Array(count)].map((_v, i) => ({
     _id: `task${i}`,
     title: `Task ${i}`,
     description: `task description ${i}`,

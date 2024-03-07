@@ -9,6 +9,8 @@ import {
   CardTitle,
 } from "../ui/card";
 
+export const titleTestId = "TaskCard-title-testid";
+
 export interface TaskCardProps {
   testId?: string;
   className?: string;
@@ -26,7 +28,7 @@ const TaskCard: FC<TaskCardProps> = ({
     <div data-testid={testId} className={className}>
       <Card className="w-[350px] p-0 rounded-md">
         <CardHeader className="p-4">
-          <CardTitle>{task.title}</CardTitle>
+          <CardTitle data-testid={titleTestId}>{task.title}</CardTitle>
           <CardDescription>
             <div style={{ color: project?.color }}>{project?.title}</div>
           </CardDescription>
