@@ -17,7 +17,12 @@ const ActiveTaskList: FC<ActiveTaskListProps> = ({ testId }): JSX.Element => {
   return (
     <div data-testid={testId}>
       {tasks.map((task) => (
-        <TaskCard key={task._id} testId={taskTestId} task={task} />
+        <TaskCard
+          key={task._id}
+          testId={taskTestId}
+          task={task}
+          className="mb-4"
+        />
       ))}
     </div>
   );
