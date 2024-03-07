@@ -2,13 +2,16 @@ import { Home as HomeComp } from "../components/Home/Home";
 import { EntriesContextProvider } from "../utils/hooks/use-entry";
 import { EventsContextProvider } from "../utils/hooks/use-events";
 import { ProjectsContextProvider } from "../utils/hooks/use-projects";
+import { TasksContextProvider } from "../utils/hooks/use-tasks";
 
 export default function SignupPage() {
   return (
     <EntriesContextProvider>
       <EventsContextProvider>
         <ProjectsContextProvider>
-          <HomeComp />
+          <TasksContextProvider>
+            <HomeComp />
+          </TasksContextProvider>
         </ProjectsContextProvider>
       </EventsContextProvider>
     </EntriesContextProvider>
