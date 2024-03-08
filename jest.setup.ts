@@ -42,5 +42,19 @@ class DragEventMock extends Event {
   }
 }
 
+window.DOMRect = {
+  fromRect: () => ({
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
+    width: 0,
+    height: 0,
+    x: 0,
+    y: 0,
+    toJSON: () => {},
+  }),
+} as any;
+
 window.ClipboardEvent = ClipboardEventMock as any;
 window.DragEvent = DragEventMock as any;

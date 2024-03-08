@@ -40,7 +40,6 @@ const TaskCard: FC<TaskCardProps> = ({
 
   const project = projects.find((p) => p._id === task.projectId);
 
-  // todo: test edit task
   // show completed task differently
   // show completed tasks at the bottom
   // test commandtool
