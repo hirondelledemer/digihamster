@@ -1,15 +1,18 @@
 import { render } from "@testing-library/react";
 import ActiveTaskList, { ActiveTaskListProps } from "./ActiveTaskList";
 import { getActiveTaskListTestkit } from "./ActiveTaskList.testkit";
-import { generateListOfTasks } from "@/app/utils/mocks/task";
+import {
+  generateCustomTasksList,
+  generateListOfTasks,
+} from "@/app/utils/mocks/task";
 import { ProjectsContext } from "@/app/utils/hooks/use-projects";
 import { TasksContext } from "@/app/utils/hooks/use-tasks";
 
 describe("ActiveTaskList", () => {
-  const tasks = generateListOfTasks(3);
+  const defaultTasks = generateListOfTasks(3);
   const defaultProps: ActiveTaskListProps = {};
 
-  const renderComponent = (props = defaultProps) =>
+  const renderComponent = (props = defaultProps, tasks = defaultTasks) =>
     getActiveTaskListTestkit(
       render(
         <ProjectsContext.Provider
@@ -44,8 +47,20 @@ describe("ActiveTaskList", () => {
     const wrapper = renderComponent();
     expect(wrapper.getComponent()).not.toBe(null);
     expect(wrapper.getTasksCount()).toBe(3);
-    expect(wrapper.getTaskTitleAt(0)).toBe(tasks[0].title);
-    expect(wrapper.getTaskTitleAt(1)).toBe(tasks[1].title);
-    expect(wrapper.getTaskTitleAt(2)).toBe(tasks[2].title);
+    expect(wrapper.getTaskTitleAt(0)).toBe(defaultTasks[0].title);
+    expect(wrapper.getTaskTitleAt(1)).toBe(defaultTasks[1].title);
+    expect(wrapper.getTaskTitleAt(2)).toBe(defaultTasks[2].title);
+  });
+
+  it('should render tasks in order "not completed" -> "completed"', () => {
+    const tasks = generateCustomTasksList([
+      { completed: false },
+      { completed: true },
+      { completed: false },
+    ]);
+    const wrapper = renderComponent(defaultProps, tasks);
+    expect(wrapper.getTaskTitleAt(0)).toBe(defaultTasks[0].title);
+    expect(wrapper.getTaskTitleAt(1)).toBe(defaultTasks[2].title);
+    expect(wrapper.getTaskTitleAt(2)).toBe(defaultTasks[1].title);
   });
 });

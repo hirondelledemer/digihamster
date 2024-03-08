@@ -20,14 +20,18 @@ const ActiveTaskList: FC<ActiveTaskListProps> = ({ testId }): JSX.Element => {
     <div data-testid={testId}>
       <ScrollArea className="h-screen">
         <div className="pr-6">
-          {tasks.map((task) => (
-            <TaskCard
-              key={task._id}
-              testId={taskTestId}
-              task={task}
-              className="mb-4"
-            />
-          ))}
+          {tasks
+            .sort((a, b) =>
+              a.completed === b.completed ? 0 : a.completed ? 1 : -1
+            )
+            .map((task) => (
+              <TaskCard
+                key={task._id}
+                testId={taskTestId}
+                task={task}
+                className="mb-4"
+              />
+            ))}
         </div>
       </ScrollArea>
     </div>
