@@ -59,6 +59,15 @@ describe("TaskCard", () => {
         taskId: defaultTask._id,
       });
     });
+
+    it("should show task as without opacity and full info", () => {
+      const wrapper = renderComponent();
+      expect(wrapper.cardIsFaded()).toBe(false);
+      expect(wrapper.cardTextIsStriked()).toBe(false);
+      expect(wrapper.getComponent().textContent).toBe(
+        "Task 1Project 1task description"
+      );
+    });
   });
 
   describe("task is completed", () => {
@@ -73,6 +82,13 @@ describe("TaskCard", () => {
         completed: false,
         taskId: defaultTask._id,
       });
+    });
+
+    it("should show task as with opacity and limited info", () => {
+      const wrapper = renderComponent(props);
+      expect(wrapper.cardIsFaded()).toBe(true);
+      expect(wrapper.cardTextIsStriked()).toBe(true);
+      expect(wrapper.getComponent().textContent).toBe("Task 1");
     });
   });
 });
