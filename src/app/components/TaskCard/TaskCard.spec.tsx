@@ -1,6 +1,7 @@
 import TaskCard, { TaskCardProps } from "./TaskCard";
 import { getTaskCardTestkit } from "./TaskCard.testkit";
 import { ProjectsContext } from "@/app/utils/hooks/use-projects";
+import { TasksContext, TasksContextValues } from "@/app/utils/hooks/use-tasks";
 import { generateTask } from "@/app/utils/mocks/task";
 import { render } from "@/config/utils/test-utils";
 import mockAxios from "jest-mock-axios";
@@ -15,7 +16,16 @@ describe("TaskCard", () => {
     task: defaultTask,
   };
 
-  const renderComponent = (props = defaultProps) =>
+  const defaultTasksContextValues: TasksContextValues = {
+    data: [],
+    loading: false,
+    setData: jest.fn(),
+  };
+
+  const renderComponent = (
+    props = defaultProps,
+    tasksContextValues = defaultTasksContextValues
+  ) =>
     getTaskCardTestkit(
       render(
         <ProjectsContext.Provider
@@ -33,7 +43,9 @@ describe("TaskCard", () => {
             setData: jest.fn(),
           }}
         >
-          <TaskCard {...props} />
+          <TasksContext.Provider value={tasksContextValues}>
+            <TaskCard {...props} />
+          </TasksContext.Provider>
         </ProjectsContext.Provider>
       ).container
     );
@@ -52,12 +64,18 @@ describe("TaskCard", () => {
 
   describe("task is not completed", () => {
     it("should complete the task", async () => {
-      const wrapper = renderComponent();
+      const setTasksMock = jest.fn();
+      const tasksContextValues: TasksContextValues = {
+        ...defaultTasksContextValues,
+        setData: setTasksMock,
+      };
+      const wrapper = renderComponent(defaultProps, tasksContextValues);
       wrapper.clickComplete();
       expect(mockAxios.patch).toHaveBeenCalledWith("/api/tasks/events", {
         completed: true,
         taskId: defaultTask._id,
       });
+      expect(setTasksMock).toHaveBeenCalled();
     });
 
     it("should show task as without opacity and full info", () => {
@@ -75,7 +93,8 @@ describe("TaskCard", () => {
     const props: TaskCardProps = {
       task,
     };
-    it("should complete the task", async () => {
+
+    it("should undo the task", async () => {
       const wrapper = renderComponent(props);
       wrapper.clickUndo();
       expect(mockAxios.patch).toHaveBeenCalledWith("/api/tasks/events", {

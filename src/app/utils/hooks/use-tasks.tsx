@@ -12,12 +12,13 @@ import axios from "axios";
 import { Task } from "@/models/task";
 import { useToast } from "@/app/components/ui/use-toast";
 
-export const TasksContext = createContext<{
+export interface TasksContextValues {
   data: Task[];
   setData: Dispatch<SetStateAction<Task[]>>;
   error?: unknown;
   loading: boolean;
-}>({
+}
+export const TasksContext = createContext<TasksContextValues>({
   data: [],
   setData: () => {},
   error: undefined,
