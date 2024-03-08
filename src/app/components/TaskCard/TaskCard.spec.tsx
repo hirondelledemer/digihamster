@@ -58,7 +58,7 @@ describe("TaskCard", () => {
   it("shows task title, project name, description, tags", () => {
     const wrapper = renderComponent();
     expect(wrapper.getComponent().textContent).toBe(
-      "Task 1Project 1task description"
+      "Task 1Project 1task description 1"
     );
   });
 
@@ -78,18 +78,18 @@ describe("TaskCard", () => {
       expect(setTasksMock).toHaveBeenCalled();
     });
 
-    it("should show task as without opacity and full info", () => {
+    it("should show task without opacity and full info", () => {
       const wrapper = renderComponent();
       expect(wrapper.cardIsFaded()).toBe(false);
       expect(wrapper.cardTextIsStriked()).toBe(false);
       expect(wrapper.getComponent().textContent).toBe(
-        "Task 1Project 1task description"
+        "Task 1Project 1task description 1"
       );
     });
   });
 
   describe("task is completed", () => {
-    const task = generateTask({ completed: true });
+    const task = generateTask(1, { completed: true });
     const props: TaskCardProps = {
       task,
     };
