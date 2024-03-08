@@ -1,8 +1,8 @@
-import { render, screen, waitFor } from "@testing-library/react";
 import TaskCard, { TaskCardProps } from "./TaskCard";
 import { getTaskCardTestkit } from "./TaskCard.testkit";
 import { ProjectsContext } from "@/app/utils/hooks/use-projects";
 import { generateTask } from "@/app/utils/mocks/task";
+import { render } from "@/config/utils/test-utils";
 import mockAxios from "jest-mock-axios";
 
 describe("TaskCard", () => {

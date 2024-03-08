@@ -13,7 +13,6 @@ import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
-  ContextMenuShortcut,
   ContextMenuTrigger,
 } from "../ui/context-menu";
 import axios from "axios";
