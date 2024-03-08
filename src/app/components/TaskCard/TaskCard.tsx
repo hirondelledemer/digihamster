@@ -21,6 +21,7 @@ import { updateObjById } from "@/app/utils/common/update-array";
 import { useToast } from "../ui/use-toast";
 
 export const titleTestId = "TaskCard-title-testid";
+export const cardTestId = "TaskCard-card-testid";
 
 export interface TaskCardProps {
   testId?: string;
@@ -71,14 +72,21 @@ const TaskCard: FC<TaskCardProps> = ({
     <div data-testid={testId} className={className}>
       <ContextMenu>
         <ContextMenuTrigger>
-          <Card className="w-[350px] p-0 rounded-md">
+          <Card
+            data-testid={cardTestId}
+            className={`w-[350px] p-0 rounded-md ${
+              task.completed ? "opacity-40 line-through" : ""
+            }`}
+          >
             <CardHeader className="p-4">
               <CardTitle data-testid={titleTestId}>{task.title}</CardTitle>
-              <CardDescription>
-                <div style={{ color: project?.color }}>{project?.title}</div>
-              </CardDescription>
+              {!task.completed && (
+                <CardDescription>
+                  <div style={{ color: project?.color }}>{project?.title}</div>
+                </CardDescription>
+              )}
             </CardHeader>
-            {task.description && (
+            {task.description && !task.completed && (
               <CardContent className="px-4 text-xs">
                 <MinimalNote note={task.description} />
               </CardContent>

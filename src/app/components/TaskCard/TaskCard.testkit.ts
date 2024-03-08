@@ -1,5 +1,5 @@
 import { fireEvent, within, screen } from "@/config/utils/test-utils";
-import { titleTestId } from "./TaskCard";
+import { cardTestId, titleTestId } from "./TaskCard";
 
 export const getTaskCardTestkit = (component: HTMLElement) => {
   const openContextMenu = () => {
@@ -19,5 +19,13 @@ export const getTaskCardTestkit = (component: HTMLElement) => {
       const completeButton = screen.getByText("Undo");
       fireEvent.click(completeButton);
     },
+    cardIsFaded: () =>
+      within(component)
+        .getByTestId(cardTestId)
+        .className.includes("opacity-40"),
+    cardTextIsStriked: () =>
+      within(component)
+        .getByTestId(cardTestId)
+        .className.includes("line-through"),
   };
 };
