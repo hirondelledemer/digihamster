@@ -1,13 +1,18 @@
-import { render } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import TaskCard, { TaskCardProps } from "./TaskCard";
 import { getTaskCardTestkit } from "./TaskCard.testkit";
 import { ProjectsContext } from "@/app/utils/hooks/use-projects";
 import { generateTask } from "@/app/utils/mocks/task";
+import mockAxios from "jest-mock-axios";
 
 describe("TaskCard", () => {
-  const task = generateTask();
+  afterEach(() => {
+    mockAxios.reset();
+  });
+
+  const defaultTask = generateTask();
   const defaultProps: TaskCardProps = {
-    task,
+    task: defaultTask,
   };
 
   const renderComponent = (props = defaultProps) =>
@@ -43,5 +48,31 @@ describe("TaskCard", () => {
     expect(wrapper.getComponent().textContent).toBe(
       "Task 1Project 1task description"
     );
+  });
+
+  describe("task is not completed", () => {
+    it("should complete the task", async () => {
+      const wrapper = renderComponent();
+      wrapper.clickComplete();
+      expect(mockAxios.patch).toHaveBeenCalledWith("/api/tasks/events", {
+        completed: true,
+        taskId: defaultTask._id,
+      });
+    });
+  });
+
+  describe("task is completed", () => {
+    const task = generateTask({ completed: true });
+    const props: TaskCardProps = {
+      task,
+    };
+    it("should complete the task", async () => {
+      const wrapper = renderComponent(props);
+      wrapper.clickUndo();
+      expect(mockAxios.patch).toHaveBeenCalledWith("/api/tasks/events", {
+        completed: false,
+        taskId: defaultTask._id,
+      });
+    });
   });
 });
