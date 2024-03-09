@@ -1,6 +1,3 @@
-// import React, { FC } from 'react';
-// import style from './CommandTool.module.scss';
-
 "use client";
 
 import { FC, useState } from "react";

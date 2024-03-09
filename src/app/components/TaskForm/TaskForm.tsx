@@ -27,22 +27,14 @@ import useProjects from "@/app/utils/hooks/use-projects";
 export const minimalNoteTestId = "TaskForm-minimal-note-testId";
 
 const FormSchema = z.object({
-  // title: z.string().min(1, { message: "This field has to be filled." }),
-  // description: z.object({
-  //   title: z.string(),
-  //   content: z.string(),
-  //   tags: z.array(z.string()),
-  // }),
-  // eta: z.number(),
-  // project: z.string().min(1, { message: "This field has to be filled." }),
-  title: z.any(),
+  title: z.string().min(1, { message: "This field has to be filled." }),
   description: z.object({
-    title: z.any(),
-    content: z.any(),
-    tags: z.any(),
+    title: z.string(),
+    content: z.string(),
+    tags: z.array(z.string()),
   }),
-  eta: z.any(),
-  project: z.any(),
+  eta: z.number(),
+  project: z.string().min(1, { message: "This field has to be filled." }),
 });
 
 export type FormValues = z.infer<typeof FormSchema>;
