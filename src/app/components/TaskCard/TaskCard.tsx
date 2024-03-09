@@ -40,16 +40,19 @@ const TaskCard: FC<TaskCardProps> = ({
 
   const project = projects.find((p) => p._id === task.projectId);
 
-  const editTask = async (completed: boolean) => {
+  const editTask = async (props: {
+    completed?: boolean;
+    isActive?: boolean;
+  }) => {
     try {
       setTasksData((t) =>
         updateObjById<Task>(t, task._id, {
-          completed,
+          ...props,
         })
       );
       await axios.patch("/api/tasks/events", {
         taskId: task._id,
-        completed,
+        ...props,
       });
       toast({
         title: "Success",
@@ -93,15 +96,24 @@ const TaskCard: FC<TaskCardProps> = ({
         </ContextMenuTrigger>
         <ContextMenuContent className="w-64">
           {task.completed && (
-            <ContextMenuItem inset onClick={() => editTask(false)}>
+            <ContextMenuItem
+              inset
+              onClick={() => editTask({ completed: false })}
+            >
               Undo
             </ContextMenuItem>
           )}
           {!task.completed && (
-            <ContextMenuItem inset onClick={() => editTask(true)}>
+            <ContextMenuItem
+              inset
+              onClick={() => editTask({ completed: true })}
+            >
               Complete
             </ContextMenuItem>
           )}
+          <ContextMenuItem inset onClick={() => editTask({ isActive: false })}>
+            Deactivate
+          </ContextMenuItem>
         </ContextMenuContent>
       </ContextMenu>
     </div>

@@ -14,6 +14,11 @@ export const getTaskCardTestkit = (component: HTMLElement) => {
       const completeButton = screen.getByText("Complete");
       fireEvent.click(completeButton);
     },
+    clickDeactivate: () => {
+      openContextMenu();
+      const completeButton = screen.getByText("Deactivate");
+      fireEvent.click(completeButton);
+    },
     clickUndo: () => {
       openContextMenu();
       const completeButton = screen.getByText("Undo");

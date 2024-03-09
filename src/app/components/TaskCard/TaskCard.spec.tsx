@@ -62,6 +62,15 @@ describe("TaskCard", () => {
     );
   });
 
+  it("should deactivate task", () => {
+    const wrapper = renderComponent(defaultProps);
+    wrapper.clickDeactivate();
+    expect(mockAxios.patch).toHaveBeenCalledWith("/api/tasks/events", {
+      isActive: false,
+      taskId: defaultTask._id,
+    });
+  });
+
   describe("task is not completed", () => {
     it("should complete the task", async () => {
       const setTasksMock = jest.fn();
