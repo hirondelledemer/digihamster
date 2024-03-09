@@ -3,7 +3,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { FC, useState } from "react";
 import {
   CommandDialog,
   CommandEmpty,
@@ -28,17 +28,11 @@ import axios from "axios";
 import { updateObjById } from "@/app/utils/common/update-array";
 import { useToast } from "../ui/use-toast";
 
-// export interface CommandToolProps {
-//   testId?: string;
-// }
+export interface CommandToolProps {
+  testId?: string;
+}
 
-// const CommandTool: FC<CommandToolProps> = ({ testId }): JSX.Element => {
-//   return <div data-testid={testId}>CommandTool</div>;
-// };
-
-// export default CommandTool;
-
-function CommandTool() {
+const CommandTool: FC<CommandToolProps> = (): JSX.Element => {
   const [open, setOpen] = useState<boolean>(false);
   const [taskFormOpen, setTaskFormOpen] = useState<boolean>(false);
   useHotKeys([["mod+K", () => setOpen((open) => !open)]]);
@@ -124,6 +118,6 @@ function CommandTool() {
       </CommandDialog>
     </>
   );
-}
+};
 
 export default CommandTool;
