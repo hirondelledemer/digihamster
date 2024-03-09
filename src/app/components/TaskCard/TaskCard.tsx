@@ -75,7 +75,9 @@ const TaskCard: FC<TaskCardProps> = ({
             }`}
           >
             <CardHeader className="p-4">
-              <CardTitle data-testid={titleTestId}>{task.title}</CardTitle>
+              <CardTitle data-testid={titleTestId} className="font-normal">
+                {task.title}
+              </CardTitle>
               {!task.completed && (
                 <CardDescription>
                   <div style={{ color: project?.color }}>{project?.title}</div>
