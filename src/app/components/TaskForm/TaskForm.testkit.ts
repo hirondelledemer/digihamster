@@ -1,7 +1,6 @@
-import { within, fireEvent, screen } from "@testing-library/react";
+import { within, fireEvent } from "@testing-library/react";
 import { getMinimalNoteTestkit } from "../MinimalNote/MinimalNote.testkit";
 import { minimalNoteTestId } from "./TaskForm";
-import { default as fe } from "@testing-library/user-event";
 
 export const getTaskFormTestkit = (component: HTMLElement) => ({
   getComponent: () => component,

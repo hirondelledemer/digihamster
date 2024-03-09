@@ -27,14 +27,22 @@ import useProjects from "@/app/utils/hooks/use-projects";
 export const minimalNoteTestId = "TaskForm-minimal-note-testId";
 
 const FormSchema = z.object({
-  title: z.string().min(1, { message: "This field has to be filled." }),
+  // title: z.string().min(1, { message: "This field has to be filled." }),
+  // description: z.object({
+  //   title: z.string(),
+  //   content: z.string(),
+  //   tags: z.array(z.string()),
+  // }),
+  // eta: z.number(),
+  // project: z.string().min(1, { message: "This field has to be filled." }),
+  title: z.any(),
   description: z.object({
-    title: z.string(),
-    content: z.string(),
-    tags: z.array(z.string()),
+    title: z.any(),
+    content: z.any(),
+    tags: z.any(),
   }),
-  eta: z.number(),
-  project: z.string().min(1, { message: "This field has to be filled." }),
+  eta: z.any(),
+  project: z.any(),
 });
 
 export type FormValues = z.infer<typeof FormSchema>;
@@ -89,7 +97,6 @@ const TaskForm: FC<TaskFormProps> = ({
             )}
           />
 
-          {/* // todo:  complete creating, add editing, revaiew calendar and make it optimistic where is matters */}
           {showEta && (
             <FormField
               control={form.control}

@@ -14,6 +14,12 @@ Object.defineProperty(window, "matchMedia", {
   }),
 });
 
+class ResizeObserver {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+}
+
 class ClipboardEventMock extends Event {
   clipboardData: {
     getData: jest.Mock<any, any>;
@@ -58,3 +64,4 @@ window.DOMRect = {
 
 window.ClipboardEvent = ClipboardEventMock as any;
 window.DragEvent = DragEventMock as any;
+window.ResizeObserver = ResizeObserver;

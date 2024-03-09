@@ -40,8 +40,6 @@ const TaskCard: FC<TaskCardProps> = ({
 
   const project = projects.find((p) => p._id === task.projectId);
 
-  // test commandtool
-
   const editTask = async (completed: boolean) => {
     try {
       setTasksData((t) =>
