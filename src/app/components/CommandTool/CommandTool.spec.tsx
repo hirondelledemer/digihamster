@@ -48,10 +48,6 @@ describe("CommandTool", () => {
     expect(wrapper.getComponent()).not.toBe(null);
   });
 
-  // todo: close sheet by esc
-  // rename form to "Create Active Task"
-  // todo: create not active task
-
   it("should create active task", async () => {
     const wrapper = renderComponent();
     act(() => {
@@ -78,6 +74,39 @@ describe("CommandTool", () => {
         description: "<p>new desc</p>",
         estimate: 2,
         isActive: true,
+        projectId: "project1",
+        tags: [],
+        title: "new task title",
+      });
+    });
+  });
+
+  it("should create regular task", async () => {
+    const wrapper = renderComponent();
+    act(() => {
+      wrapper.pressCmdK();
+    });
+    expect(wrapper.commandToolOpen()).toBe(true);
+
+    act(() => {
+      wrapper.clickCreateTask();
+    });
+
+    expect(wrapper.taskFormIsOpen()).toBe(true);
+
+    wrapper.enterTitle("new task title");
+    wrapper.enterDescription("new desc");
+    wrapper.enterEta("eta-2");
+
+    act(() => {
+      wrapper.submitTaskForm();
+    });
+
+    await waitFor(() => {
+      expect(mockAxios.post).toHaveBeenCalledWith("/api/tasks/events", {
+        description: "<p>new desc</p>",
+        estimate: 2,
+        isActive: false,
         projectId: "project1",
         tags: [],
         title: "new task title",
