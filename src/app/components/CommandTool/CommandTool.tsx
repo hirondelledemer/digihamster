@@ -37,7 +37,10 @@ export const taskFormTestId = "CommandTool-task-form-testid";
 
 const CommandTool: FC<CommandToolProps> = (): JSX.Element => {
   const [open, setOpen] = useState<boolean>(false);
-  const [taskFormOpen, setTaskFormOpen] = useState<boolean>(false);
+  const [taskFormOpen, setTaskFormOpen] = useState<{
+    isOpen: boolean;
+    isActive: boolean;
+  }>({ isOpen: false, isActive: false });
   useHotKeys([["mod+K", () => setOpen((open) => !open)]]);
   const { setData: setTasksData } = useTasks();
   const { toast } = useToast();
@@ -56,7 +59,7 @@ const CommandTool: FC<CommandToolProps> = (): JSX.Element => {
       description: data.description.content,
       projectId: data.project,
       tags: data.description.tags,
-      isActive: true,
+      isActive: taskFormOpen.isActive,
       estimate: data.eta,
     };
     const tempId = "temp-id";
@@ -75,7 +78,7 @@ const CommandTool: FC<CommandToolProps> = (): JSX.Element => {
       ...taskData,
     };
     setTasksData((e) => [...e, tempTask]);
-    setTaskFormOpen(false);
+    setTaskFormOpen({ isActive: false, isOpen: false });
     setOpen(false);
 
     try {
@@ -96,8 +99,16 @@ const CommandTool: FC<CommandToolProps> = (): JSX.Element => {
 
   return (
     <>
-      <Sheet open={taskFormOpen}>
-        <SheetContent side="left" onCloseClick={() => setTaskFormOpen(false)}>
+      <Sheet open={taskFormOpen.isOpen}>
+        <SheetContent
+          side="left"
+          onCloseClick={() =>
+            setTaskFormOpen({ isActive: false, isOpen: false })
+          }
+          onEscapeKeyDown={() =>
+            setTaskFormOpen({ isActive: false, isOpen: false })
+          }
+        >
           <SheetHeader>
             <SheetTitle>Create Task</SheetTitle>
             <SheetDescription>
@@ -115,8 +126,17 @@ const CommandTool: FC<CommandToolProps> = (): JSX.Element => {
         <CommandList>
           <CommandEmpty>No results found.</CommandEmpty>
           <CommandGroup heading="Suggestions">
-            <CommandItem onSelect={() => setTaskFormOpen(true)}>
+            <CommandItem
+              onSelect={() => setTaskFormOpen({ isOpen: true, isActive: true })}
+            >
               Create Active Task
+            </CommandItem>
+            <CommandItem
+              onSelect={() =>
+                setTaskFormOpen({ isOpen: true, isActive: false })
+              }
+            >
+              Create Task
             </CommandItem>
           </CommandGroup>
         </CommandList>

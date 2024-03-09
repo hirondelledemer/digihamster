@@ -15,7 +15,11 @@ export const getCommandToolTestkit = (component: HTMLElement) => ({
   clickCreateActiveTask: () => {
     fireEvent.click(screen.getByText("Create Active Task"));
   },
+  clickCreateTask: () => {
+    fireEvent.click(screen.getByText("Create Task"));
+  },
   taskFormIsOpen: () => screen.queryAllByTestId(taskFormTestId).length === 1,
+
   enterTitle: (value: string) =>
     getTaskFormTestkit(screen.getByTestId(taskFormTestId)).setTitle(value),
   enterDescription: (value: string) =>
