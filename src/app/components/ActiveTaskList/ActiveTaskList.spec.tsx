@@ -1,15 +1,17 @@
 import { render } from "@testing-library/react";
 import ActiveTaskList, { ActiveTaskListProps } from "./ActiveTaskList";
 import { getActiveTaskListTestkit } from "./ActiveTaskList.testkit";
-import {
-  generateCustomTasksList,
-  generateListOfTasks,
-} from "@/app/utils/mocks/task";
+import { generateCustomTasksList } from "@/app/utils/mocks/task";
 import { ProjectsContext } from "@/app/utils/hooks/use-projects";
 import { TasksContext } from "@/app/utils/hooks/use-tasks";
 
 describe("ActiveTaskList", () => {
-  const defaultTasks = generateListOfTasks(3);
+  const defaultTasks = generateCustomTasksList([
+    { isActive: true },
+    { isActive: true },
+    { isActive: true },
+    { isActive: false },
+  ]);
   const defaultProps: ActiveTaskListProps = {};
 
   const renderComponent = (props = defaultProps, tasks = defaultTasks) =>
@@ -43,7 +45,7 @@ describe("ActiveTaskList", () => {
       ).container
     );
 
-  it("renders 3 tasks", () => {
+  it("renders active tasks tasks", () => {
     const wrapper = renderComponent();
     expect(wrapper.getComponent()).not.toBe(null);
     expect(wrapper.getTasksCount()).toBe(3);
