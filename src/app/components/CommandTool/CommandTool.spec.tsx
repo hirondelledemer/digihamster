@@ -2,8 +2,10 @@ import { render, act, waitFor } from "@testing-library/react";
 import CommandTool, { CommandToolProps } from "./CommandTool";
 import { getCommandToolTestkit } from "./CommandTool.testkit";
 import mockAxios from "jest-mock-axios";
-import { ProjectsContext } from "@/app/utils/hooks/use-projects";
-import { TasksContext } from "@/app/utils/hooks/use-tasks";
+import {
+  wrapWithProjectsProvider,
+  wrapWithTasksProvider,
+} from "@/app/utils/tests/wraps";
 
 describe("CommandTool", () => {
   afterEach(() => {
@@ -14,10 +16,10 @@ describe("CommandTool", () => {
   const renderComponent = (props = defaultProps) =>
     getCommandToolTestkit(
       render(
-        //todo: extract as utils for tests
-        <ProjectsContext.Provider
-          value={{
-            data: [],
+        wrapWithProjectsProvider(
+          wrapWithTasksProvider(<CommandTool {...props} />, { data: [] }),
+          {
+            projects: [],
             defaultProject: {
               _id: "project1",
               title: "Project",
@@ -25,20 +27,8 @@ describe("CommandTool", () => {
               deleted: false,
               order: 1,
             },
-            loading: false,
-            setData: jest.fn(),
-          }}
-        >
-          <TasksContext.Provider
-            value={{
-              data: [],
-              loading: false,
-              setData: jest.fn(),
-            }}
-          >
-            <CommandTool {...props} />
-          </TasksContext.Provider>
-        </ProjectsContext.Provider>
+          }
+        )
       ).container
     );
 
