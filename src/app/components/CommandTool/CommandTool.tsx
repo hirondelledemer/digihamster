@@ -32,6 +32,9 @@ export interface CommandToolProps {
   testId?: string;
 }
 
+export const commandToolTestId = "CommandTool-command-testid";
+export const taskFormTestId = "CommandTool-task-form-testid";
+
 const CommandTool: FC<CommandToolProps> = (): JSX.Element => {
   const [open, setOpen] = useState<boolean>(false);
   const [taskFormOpen, setTaskFormOpen] = useState<boolean>(false);
@@ -40,8 +43,6 @@ const CommandTool: FC<CommandToolProps> = (): JSX.Element => {
   const { toast } = useToast();
 
   const createNewTask = async (data: FormValues) => {
-    // todo: add error handler
-
     type FieldsRequired =
       | "title"
       | "description"
@@ -98,14 +99,18 @@ const CommandTool: FC<CommandToolProps> = (): JSX.Element => {
       <Sheet open={taskFormOpen}>
         <SheetContent side="left" onCloseClick={() => setTaskFormOpen(false)}>
           <SheetHeader>
-            <SheetTitle>Create Event</SheetTitle>
+            <SheetTitle>Create Task</SheetTitle>
             <SheetDescription>
-              <TaskForm onSubmit={createNewTask} />
+              <TaskForm testId={taskFormTestId} onSubmit={createNewTask} />
             </SheetDescription>
           </SheetHeader>
         </SheetContent>
       </Sheet>
-      <CommandDialog open={open} onOpenChange={setOpen}>
+      <CommandDialog
+        data-testid={commandToolTestId}
+        open={open}
+        onOpenChange={setOpen}
+      >
         <CommandInput placeholder="Type a command or search..." />
         <CommandList>
           <CommandEmpty>No results found.</CommandEmpty>
