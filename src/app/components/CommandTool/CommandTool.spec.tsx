@@ -5,7 +5,6 @@ import mockAxios from "jest-mock-axios";
 import { ProjectsContext } from "@/app/utils/hooks/use-projects";
 import { TasksContext } from "@/app/utils/hooks/use-tasks";
 
-// todo show fetch only active tasks
 describe("CommandTool", () => {
   afterEach(() => {
     mockAxios.reset();
