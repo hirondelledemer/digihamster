@@ -14,7 +14,7 @@ export const Home = (): JSX.Element => {
     <ResizablePanelGroup direction="horizontal" className="rounded-lg border">
       <ResizablePanel>
         <ResizablePanelGroup direction="vertical">
-          <ResizablePanel>
+          <ResizablePanel style={{ overflow: "auto" }}>
             <CommandTool />
             <div className="p-6">
               <Calendar view={"agenda"} />
