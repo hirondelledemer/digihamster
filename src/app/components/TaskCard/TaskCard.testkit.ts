@@ -64,8 +64,6 @@ export const getTaskCardTestkit = (component: HTMLElement) => {
         screen.getByTestId(taskFormTestId)
       ).getProjectInputValue(),
     submitForm: () =>
-      getTaskFormTestkit(
-        screen.getByTestId(taskFormTestId)
-      ).clickCreateButton(),
+      getTaskFormTestkit(screen.getByTestId(taskFormTestId)).clickEditButton(),
   };
 };

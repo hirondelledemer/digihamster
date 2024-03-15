@@ -90,6 +90,7 @@ const TaskCard: FC<TaskCardProps> = ({
             <SheetDescription>
               <TaskForm
                 testId={taskFormTestId}
+                editMode
                 onSubmit={(data: FormValues) =>
                   editTask({
                     title: data.title,

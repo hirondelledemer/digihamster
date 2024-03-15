@@ -117,4 +117,16 @@ describe("TaskForm", () => {
       });
     });
   });
+
+  describe("editMode", () => {
+    it("should show edit mode", () => {
+      const props: TaskFormProps = {
+        ...defaultProps,
+        editMode: true,
+      };
+      const wrapper = renderComponent(props);
+      expect(wrapper.getCreateButtonExists()).toBe(false);
+      expect(wrapper.getEditButtonExists()).toBe(true);
+    });
+  });
 });

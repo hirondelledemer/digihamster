@@ -40,12 +40,15 @@ export interface TaskFormProps {
   initialValues?: FormValues;
   onSubmit(values: FormValues): void;
   showEta?: boolean;
+  editMode?: boolean;
 }
+
 const TaskForm: FC<TaskFormProps> = ({
   testId,
   initialValues,
   onSubmit,
   showEta = true,
+  editMode,
 }): JSX.Element => {
   const { data: projects, defaultProject } = useProjects();
   const form = useForm<FormValues>({
@@ -168,7 +171,7 @@ const TaskForm: FC<TaskFormProps> = ({
               </FormItem>
             )}
           />
-          <Button type="submit">Create</Button>
+          <Button type="submit">{editMode ? "Edit" : "Create"}</Button>
         </form>
       </Form>
     </div>

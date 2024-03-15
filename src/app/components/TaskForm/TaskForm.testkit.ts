@@ -39,9 +39,17 @@ export const getTaskFormTestkit = (component: HTMLElement) => ({
   },
 
   getCreateButtonExists: () =>
-    within(component).getAllByRole("button", { name: /create/i }).length === 1,
+    within(component).queryAllByRole("button", { name: /create/i }).length ===
+    1,
   clickCreateButton: () => {
     const button = within(component).getByRole("button", { name: /create/i });
+    fireEvent.click(button);
+  },
+
+  getEditButtonExists: () =>
+    within(component).getAllByRole("button", { name: /edit/i }).length === 1,
+  clickEditButton: () => {
+    const button = within(component).getByRole("button", { name: /edit/i });
     fireEvent.click(button);
   },
 
