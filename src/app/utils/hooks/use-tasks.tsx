@@ -57,7 +57,7 @@ export const TasksContextProvider = ({ children }: any) => {
   );
 };
 
-export default function useEvents() {
+export default function useTasks() {
   const { data, setData } = useContext(TasksContext);
 
   return { data, setData };
