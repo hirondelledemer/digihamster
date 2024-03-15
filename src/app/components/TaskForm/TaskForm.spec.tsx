@@ -63,11 +63,7 @@ describe("TaskForm", () => {
       ...defaultProps,
       initialValues: {
         title: "title",
-        description: {
-          title: "title",
-          content: "content",
-          tags: [],
-        },
+        description: "content",
         eta: 1,
         project: "project1",
       },
@@ -76,7 +72,7 @@ describe("TaskForm", () => {
 
     expect(wrapper.getTitleInputValue()).toBe(props.initialValues!.title);
     expect(wrapper.getDescriptionInputValue()).toBe(
-      props.initialValues!.description.content
+      props.initialValues!.description
     );
 
     expect(wrapper.getEtaSelectedByName("eta-0")).toBe(false);
@@ -101,28 +97,20 @@ describe("TaskForm", () => {
       onSubmit: onSubmitSpy,
       initialValues: {
         title: "",
-        description: {
-          title: "",
-          content: "",
-          tags: [],
-        },
+        description: "",
         eta: 0,
         project: projects[0]._id as unknown as string,
       },
     };
     const wrapper = renderComponent(props);
     wrapper.setTitle(newTitle);
-    wrapper.setDescription(newDescription);
+    await wrapper.setDescription(newDescription);
     wrapper.setEta("eta-2");
 
     wrapper.clickCreateButton();
     await waitFor(() => {
       expect(onSubmitSpy).toHaveBeenCalledWith({
-        description: {
-          content: `<p>${newDescription}</p>`,
-          tags: [],
-          title: newDescription,
-        },
+        description: newDescription,
         eta: 2,
         project: "project1",
         title: newTitle,

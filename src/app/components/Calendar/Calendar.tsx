@@ -209,20 +209,12 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
   };
 
   const newEvent = async (data: FormValues) => {
-    // todo: add error handler
-
-    type FieldsRequired =
-      | "title"
-      | "description"
-      | "projectId"
-      | "tags"
-      | "event";
+    type FieldsRequired = "title" | "description" | "projectId" | "event";
 
     const taskData: Pick<Task, FieldsRequired> = {
       title: data.title,
-      description: data.description.content,
+      description: data.description,
       projectId: data.project,
-      tags: data.description.tags,
       event: {
         allDay: eventInCreationData!.slots.length == 1,
         startAt: new Date(eventInCreationData!.start).getTime(),
@@ -243,6 +235,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
       parentTaskId: null,
       createdAt: 0,
       updatedAt: 0,
+      tags: [],
       ...taskData,
     };
     setEventsData((e) => [...e, tempTask]);

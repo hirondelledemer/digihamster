@@ -1,4 +1,4 @@
-import { render, act, waitFor } from "@testing-library/react";
+import { render, act, waitFor, screen } from "@testing-library/react";
 import CommandTool, { CommandToolProps } from "./CommandTool";
 import { getCommandToolTestkit } from "./CommandTool.testkit";
 import mockAxios from "jest-mock-axios";
@@ -51,7 +51,7 @@ describe("CommandTool", () => {
     expect(wrapper.taskFormIsOpen()).toBe(true);
 
     wrapper.enterTitle("new task title");
-    wrapper.enterDescription("new desc");
+    await wrapper.enterDescription("new desc");
     wrapper.enterEta("eta-2");
 
     act(() => {
@@ -60,11 +60,10 @@ describe("CommandTool", () => {
 
     await waitFor(() => {
       expect(mockAxios.post).toHaveBeenCalledWith("/api/tasks/events", {
-        description: "<p>new desc</p>",
+        description: "new desc",
         estimate: 2,
         isActive: true,
         projectId: "project1",
-        tags: [],
         title: "new task title",
       });
     });
@@ -84,7 +83,7 @@ describe("CommandTool", () => {
     expect(wrapper.taskFormIsOpen()).toBe(true);
 
     wrapper.enterTitle("new task title");
-    wrapper.enterDescription("new desc");
+    await wrapper.enterDescription("new desc");
     wrapper.enterEta("eta-2");
 
     act(() => {
@@ -93,11 +92,10 @@ describe("CommandTool", () => {
 
     await waitFor(() => {
       expect(mockAxios.post).toHaveBeenCalledWith("/api/tasks/events", {
-        description: "<p>new desc</p>",
+        description: "new desc",
         estimate: 2,
         isActive: false,
         projectId: "project1",
-        tags: [],
         title: "new task title",
       });
     });

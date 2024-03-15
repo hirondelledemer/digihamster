@@ -1,6 +1,6 @@
 import { within, fireEvent } from "@testing-library/react";
-import { getMinimalNoteTestkit } from "../MinimalNote/MinimalNote.testkit";
-import { minimalNoteTestId } from "./TaskForm";
+
+import userEvent, { UserEvent } from "@testing-library/user-event";
 
 export const getTaskFormTestkit = (component: HTMLElement) => ({
   getComponent: () => component,
@@ -46,16 +46,15 @@ export const getTaskFormTestkit = (component: HTMLElement) => ({
   },
 
   getDesriptionInputExists: () =>
-    within(component).getAllByTestId(minimalNoteTestId).length === 1,
+    within(component).getAllByRole("textbox", { name: /description/i })
+      .length === 1,
   getDescriptionInputValue: () =>
-    getMinimalNoteTestkit(within(component).getByTestId(minimalNoteTestId))
-      .getTextarea()
-      .getTextarea()?.textContent,
+    within(component).getByRole("textbox", { name: /description/i }).innerHTML,
   setDescription: (value: string) => {
-    const input = getMinimalNoteTestkit(
-      within(component).getByTestId(minimalNoteTestId)
-    );
-    input.getTextarea().enterValue(value);
-    input.getTextarea().blur();
+    const input = within(component).getByRole("textbox", {
+      name: /description/i,
+    });
+
+    return userEvent.type(input, value);
   },
 });

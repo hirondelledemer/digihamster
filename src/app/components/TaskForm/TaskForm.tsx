@@ -19,20 +19,16 @@ import {
   SelectItem,
 } from "../ui/select";
 import { Button } from "../ui/button";
-import RteFormField from "../RteFormField";
 import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
 import { IconComet, IconStar, IconStars } from "@tabler/icons-react";
 import useProjects from "@/app/utils/hooks/use-projects";
+import { Textarea } from "../ui/textarea";
 
 export const minimalNoteTestId = "TaskForm-minimal-note-testId";
 
 const FormSchema = z.object({
   title: z.string().min(1, { message: "This field has to be filled." }),
-  description: z.object({
-    title: z.string(),
-    content: z.string(),
-    tags: z.array(z.string()),
-  }),
+  description: z.string(),
   eta: z.number(),
   project: z.string().min(1, { message: "This field has to be filled." }),
 });
@@ -56,11 +52,7 @@ const TaskForm: FC<TaskFormProps> = ({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       title: "",
-      description: {
-        title: "",
-        content: "",
-        tags: [],
-      },
+      description: "",
       eta: 0,
       project: defaultProject?._id,
       ...initialValues,
@@ -170,11 +162,7 @@ const TaskForm: FC<TaskFormProps> = ({
               <FormItem>
                 <FormLabel>Description</FormLabel>
                 <FormControl>
-                  <RteFormField
-                    testId={minimalNoteTestId}
-                    value={field.value.content}
-                    onChange={field.onChange}
-                  />
+                  <Textarea placeholder="description" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

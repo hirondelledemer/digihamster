@@ -47,15 +47,13 @@ const CommandTool: FC<CommandToolProps> = (): JSX.Element => {
       | "title"
       | "description"
       | "projectId"
-      | "tags"
       | "isActive"
       | "estimate";
 
     const taskData: Pick<Task, FieldsRequired> = {
       title: data.title,
-      description: data.description.content,
+      description: data.description,
       projectId: data.project,
-      tags: data.description.tags,
       isActive: taskFormOpen.isActive,
       estimate: data.eta,
     };
@@ -72,6 +70,7 @@ const CommandTool: FC<CommandToolProps> = (): JSX.Element => {
       createdAt: 0,
       updatedAt: 0,
       event: null,
+      tags: [],
       ...taskData,
     };
     setTasksData((e) => [...e, tempTask]);
