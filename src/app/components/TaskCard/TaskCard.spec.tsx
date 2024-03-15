@@ -3,7 +3,8 @@ import { getTaskCardTestkit } from "./TaskCard.testkit";
 import { ProjectsContext } from "@/app/utils/hooks/use-projects";
 import { TasksContext, TasksContextValues } from "@/app/utils/hooks/use-tasks";
 import { generateTask } from "@/app/utils/mocks/task";
-import { render } from "@/config/utils/test-utils";
+import { render, act } from "@/config/utils/test-utils";
+
 import mockAxios from "jest-mock-axios";
 
 describe("TaskCard", () => {
@@ -68,6 +69,36 @@ describe("TaskCard", () => {
     expect(mockAxios.patch).toHaveBeenCalledWith("/api/tasks/events", {
       isActive: false,
       taskId: defaultTask._id,
+    });
+  });
+
+  it("should open task form", () => {
+    const wrapper = renderComponent(defaultProps);
+    wrapper.clickEdit();
+    expect(wrapper.taskFormIsOpen()).toBe(true);
+    expect(wrapper.getTaskFormTitleValue()).toBe(defaultProps.task.title);
+    expect(wrapper.getTaskFormDescriptionValue()).toBe(
+      defaultProps.task.description
+    );
+    expect(wrapper.getTaskFormEtaValue("eta-0")).toBe(true);
+    expect(wrapper.getTaskFormProjectValue()).toBe("Project 1");
+  });
+
+  it("should edit task", async () => {
+    const wrapper = renderComponent(defaultProps);
+    wrapper.clickEdit();
+    wrapper.enterTitle("new title");
+    await act(async () => {
+      await wrapper.enterDescription("new desc");
+      wrapper.setEta("eta-3");
+      wrapper.submitForm();
+    });
+    expect(mockAxios.patch).toHaveBeenCalledWith("/api/tasks/events", {
+      description: "task description 1new desc",
+      estimate: 3,
+      projectId: "project1",
+      taskId: "task1",
+      title: "new title",
     });
   });
 

@@ -1,5 +1,6 @@
 import { fireEvent, within, screen } from "@/config/utils/test-utils";
-import { cardTestId, titleTestId } from "./TaskCard";
+import { cardTestId, taskFormTestId, titleTestId } from "./TaskCard";
+import { getTaskFormTestkit } from "../TaskForm/TaskForm.testkit";
 
 export const getTaskCardTestkit = (component: HTMLElement) => {
   const openContextMenu = () => {
@@ -24,6 +25,10 @@ export const getTaskCardTestkit = (component: HTMLElement) => {
       const completeButton = screen.getByText("Undo");
       fireEvent.click(completeButton);
     },
+    clickEdit: () => {
+      openContextMenu();
+      fireEvent.click(screen.getByText("Edit"));
+    },
     cardIsFaded: () =>
       within(component)
         .getByTestId(cardTestId)
@@ -32,5 +37,35 @@ export const getTaskCardTestkit = (component: HTMLElement) => {
       within(component)
         .getByTestId(cardTestId)
         .className.includes("line-through"),
+
+    taskFormIsOpen: () => screen.queryAllByTestId(taskFormTestId).length === 1,
+    getTaskFormTitleValue: () =>
+      getTaskFormTestkit(
+        screen.getByTestId(taskFormTestId)
+      ).getTitleInputValue(),
+    enterTitle: (value: string) =>
+      getTaskFormTestkit(screen.getByTestId(taskFormTestId)).setTitle(value),
+    getTaskFormDescriptionValue: () =>
+      getTaskFormTestkit(
+        screen.getByTestId(taskFormTestId)
+      ).getDescriptionInputValue(),
+    enterDescription: (value: string) =>
+      getTaskFormTestkit(screen.getByTestId(taskFormTestId)).setDescription(
+        value
+      ),
+    getTaskFormEtaValue: (name: string) =>
+      getTaskFormTestkit(
+        screen.getByTestId(taskFormTestId)
+      ).getEtaSelectedByName(name),
+    setEta: (value: string) =>
+      getTaskFormTestkit(screen.getByTestId(taskFormTestId)).setEta(value),
+    getTaskFormProjectValue: () =>
+      getTaskFormTestkit(
+        screen.getByTestId(taskFormTestId)
+      ).getProjectInputValue(),
+    submitForm: () =>
+      getTaskFormTestkit(
+        screen.getByTestId(taskFormTestId)
+      ).clickCreateButton(),
   };
 };
