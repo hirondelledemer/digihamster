@@ -65,6 +65,7 @@ describe("CommandTool", () => {
         isActive: true,
         projectId: "project1",
         title: "new task title",
+        deadline: null,
       });
     });
   });
@@ -97,6 +98,7 @@ describe("CommandTool", () => {
         isActive: false,
         projectId: "project1",
         title: "new task title",
+        deadline: null,
       });
     });
   });

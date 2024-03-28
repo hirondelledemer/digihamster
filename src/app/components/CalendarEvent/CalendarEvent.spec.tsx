@@ -22,6 +22,11 @@ describe("CalendarEvent", () => {
   const renderComponent = (props = defaultProps) =>
     getCalendarEventTestkit(render(<CalendarEvent {...props} />).container);
 
+  it("should not show deadline tag", () => {
+    const wrapper = renderComponent();
+    expect(wrapper.deadlineLabelExists()).toBe(false);
+  });
+
   describe("event is not completed", () => {
     it('should  show "complete" and "delete" buttons', () => {
       const wrapper = renderComponent();
@@ -75,6 +80,24 @@ describe("CalendarEvent", () => {
     it('should not show "complete" button', () => {
       const wrapper = renderComponent(props);
       expect(wrapper.completeButtonExists()).toBe(false);
+    });
+  });
+
+  describe("event is a tasks with a deadline", () => {
+    const props: CalendarEventProps = {
+      event: {
+        title: "Event",
+        resource: {
+          completed: false,
+          id: "event1",
+          type: "deadline",
+        },
+      },
+    };
+
+    it("should show deadline tag", () => {
+      const wrapper = renderComponent(props);
+      expect(wrapper.deadlineLabelExists()).toBe(true);
     });
   });
 });

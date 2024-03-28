@@ -9,7 +9,7 @@ export const generateTask: (i?: number, properties?: Partial<Task>) => Task = (
     title: `Task ${i}`,
     description: `task description ${i}`,
     completed: false,
-    isActive: true,
+    isActive: false,
     deleted: false,
     projectId: "project1",
     estimate: 0,
@@ -21,6 +21,7 @@ export const generateTask: (i?: number, properties?: Partial<Task>) => Task = (
     tags: ["tag1", "tag2"],
     createdAt: 0,
     updatedAt: 0,
+    deadline: null,
     ...properties,
   };
 };

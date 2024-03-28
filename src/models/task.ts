@@ -21,6 +21,7 @@ export interface Task extends Taggable, TimeStamps {
   completedAt: number;
   activatedAt: number;
   parentTaskId: string | null;
+  deadline: number | null;
 }
 
 export type ITask = Task & mongoose.Document<string> & Task;
@@ -40,6 +41,7 @@ const TaskSchema = new mongoose.Schema(
     activatedAt: { type: Number },
     completedAt: { type: Number },
     parentTaskId: { type: String },
+    deadline: { type: Number },
     tags: { type: [String] },
   },
   { timestamps: true }

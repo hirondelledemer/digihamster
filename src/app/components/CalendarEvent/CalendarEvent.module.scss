@@ -17,6 +17,15 @@
   }
 }
 
+.eventWithDeadline {
+  @extend .event;
+  background: #2B1B1E;
+
+  &:hover {
+    border: 1px solid #511B1E !important;
+  }
+}
+
 .actions {
   display: flex;
   visibility: hidden;

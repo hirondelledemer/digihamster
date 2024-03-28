@@ -1,4 +1,4 @@
-import { render, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import TaskForm, { TaskFormProps } from "./TaskForm";
 import { getTaskFormTestkit } from "./TaskForm.testkit";
 import { ProjectsContext } from "@/app/utils/hooks/use-projects";
@@ -39,6 +39,7 @@ describe("TaskForm", () => {
     expect(wrapper.getETAFieldExists()).toBe(true);
     expect(wrapper.getProjectFieldExists()).toBe(true);
     expect(wrapper.getCreateButtonExists()).toBe(true);
+    expect(wrapper.getDeadlineButtonExists()).toBe(true);
   });
 
   describe("showEta is false", () => {
@@ -55,6 +56,25 @@ describe("TaskForm", () => {
       expect(wrapper.getETAFieldExists()).toBe(false);
       expect(wrapper.getProjectFieldExists()).toBe(true);
       expect(wrapper.getCreateButtonExists()).toBe(true);
+      expect(wrapper.getDeadlineButtonExists()).toBe(true);
+    });
+  });
+
+  describe("showDeadline is false", () => {
+    const props: TaskFormProps = {
+      ...defaultProps,
+      showDeadline: false,
+    };
+
+    it("should show all fields exept eta", () => {
+      const wrapper = renderComponent(props);
+      expect(wrapper.getComponent()).not.toBe(null);
+      expect(wrapper.getTitleInputExists()).toBe(true);
+      expect(wrapper.getDesriptionInputExists()).toBe(true);
+      expect(wrapper.getETAFieldExists()).toBe(true);
+      expect(wrapper.getProjectFieldExists()).toBe(true);
+      expect(wrapper.getCreateButtonExists()).toBe(true);
+      expect(wrapper.getDeadlineButtonExists()).toBe(false);
     });
   });
 
@@ -100,6 +120,7 @@ describe("TaskForm", () => {
         description: "",
         eta: 0,
         project: projects[0]._id as unknown as string,
+        deadline: null,
       },
     };
     const wrapper = renderComponent(props);
@@ -114,6 +135,7 @@ describe("TaskForm", () => {
         eta: 2,
         project: "project1",
         title: newTitle,
+        deadline: null,
       });
     });
   });

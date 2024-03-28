@@ -48,7 +48,8 @@ const CommandTool: FC<CommandToolProps> = (): JSX.Element => {
       | "description"
       | "projectId"
       | "isActive"
-      | "estimate";
+      | "estimate"
+      | "deadline";
 
     const taskData: Pick<Task, FieldsRequired> = {
       title: data.title,
@@ -56,6 +57,7 @@ const CommandTool: FC<CommandToolProps> = (): JSX.Element => {
       projectId: data.project,
       isActive: taskFormOpen.isActive,
       estimate: data.eta,
+      deadline: data.deadline,
     };
     const tempId = "temp-id";
 

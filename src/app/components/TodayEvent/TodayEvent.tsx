@@ -9,6 +9,7 @@ import useEvents from "@/app/utils/hooks/use-events";
 import { cn } from "../utils";
 import styles from "./TodayEvent.module.scss";
 import { updateObjById } from "@/app/utils/common/update-array";
+import { Badge } from "../ui/badge";
 
 export interface TodayEventProps {
   testId?: string;
@@ -19,6 +20,7 @@ export interface TodayEventProps {
   allDay?: boolean;
   id: string;
   showDate?: boolean;
+  type: "deadline" | "event";
 }
 
 const TodayEvent: FC<TodayEventProps> = ({
@@ -30,6 +32,7 @@ const TodayEvent: FC<TodayEventProps> = ({
   completed,
   id,
   showDate,
+  type,
 }): JSX.Element => {
   const { setData } = useEvents();
 
@@ -63,7 +66,18 @@ const TodayEvent: FC<TodayEventProps> = ({
           )}
         </div>
       )}
-      <div>{title}</div>
+      <div>
+        {title}
+        {type === "deadline" && (
+          <Badge
+            className="ml-4"
+            variant={completed ? "secondary" : "destructive"}
+          >
+            Deadline
+          </Badge>
+        )}
+      </div>
+
       <div className="flex justify-end self-center">
         <Checkbox
           checked={completed}

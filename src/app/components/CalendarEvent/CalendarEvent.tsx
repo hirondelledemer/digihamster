@@ -9,15 +9,31 @@ import { Button } from "../ui/button";
 import useEvents from "@/app/utils/hooks/use-events";
 import { Task } from "@/models/task";
 import { updateObjById } from "@/app/utils/common/update-array";
+import { Badge } from "../ui/badge";
+
+export interface CalendarEventType extends Event {
+  resource: {
+    id: string;
+    completed?: boolean;
+    type: "event" | "deadline" | "journal";
+    note?: string;
+    title?: string;
+  };
+}
 
 export interface CalendarEventProps {
   testId?: string;
-  event: Event;
+  event: CalendarEventType;
 }
 
-export const eventPropGetter = () => ({
-  className: style.event,
-});
+export const eventPropGetter = (event: Event) => {
+  return {
+    className:
+      event.resource.type === "deadline"
+        ? style.eventWithDeadline
+        : style.event,
+  };
+};
 
 const CalendarEvent: FC<CalendarEventProps> = ({
   testId,
@@ -52,6 +68,11 @@ const CalendarEvent: FC<CalendarEventProps> = ({
       }`}
     >
       {event.title}
+      {event.resource.type === "deadline" && (
+        <div>
+          <Badge variant="destructive">Deadline</Badge>
+        </div>
+      )}
       <div className={style.actions}>
         <Button
           onClick={handleDeleteClick}
