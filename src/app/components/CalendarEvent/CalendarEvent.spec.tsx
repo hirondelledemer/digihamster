@@ -76,5 +76,7 @@ describe("CalendarEvent", () => {
       const wrapper = renderComponent(props);
       expect(wrapper.completeButtonExists()).toBe(false);
     });
+
+    it("should show deadline if event has deadline");
   });
 });
