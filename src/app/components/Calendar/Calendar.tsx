@@ -73,16 +73,33 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
   const { data: journalEntriesData } = useJournalEntries();
   const { data: eventsData, setData: setEventsData } = useEvents();
 
-  const eventsResolved = eventsData.map<Event>((task) => ({
-    start: task.event ? new Date(task.event.startAt!) : undefined,
-    end: task.event ? new Date(task.event.endAt!) : undefined,
-    title: task.title,
-    allDay: task.event ? task.event.allDay : false,
-    resource: {
-      id: task._id,
-      completed: task.completed,
-    },
-  }));
+  //todo: clean this:
+  const eventsResolved = eventsData.map<Event>((task) => {
+    if (task.event) {
+      return {
+        start: new Date(task.event.startAt!),
+        end: new Date(task.event.endAt!),
+        title: task.title,
+        allDay: task.event ? task.event.allDay : false,
+        resource: {
+          id: task._id,
+          completed: task.completed,
+        },
+      };
+    }
+
+    return {
+      start: task.deadline ? new Date(task.deadline) : undefined,
+      end: task.deadline ? new Date(task.deadline) : undefined,
+      title: task.title,
+      allDay: false,
+      resource: {
+        id: task._id,
+        completed: task.completed,
+        type: "deadline",
+      },
+    };
+  });
 
   const entriesResolved = journalEntriesData.map<Event>((entry) => ({
     start: new Date(entry.createdAt),

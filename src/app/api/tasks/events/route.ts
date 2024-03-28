@@ -14,9 +14,8 @@ export async function GET(request: NextRequest) {
     // Find the user in the database based on the user ID
     const tasks = await Task.find({
       userId,
-      event: { $ne: null },
-      deadline: { $ne: null },
       deleted: false,
+      $or: [{ event: { $ne: null } }, { deadline: { $ne: null } }],
     });
     return NextResponse.json({
       message: "Tasks found",
