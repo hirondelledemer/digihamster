@@ -58,9 +58,11 @@ const CalendarEvent: FC<CalendarEventProps> = ({
       }`}
     >
       {event.title}
-      <div>
-        <Badge variant="destructive">Deadline</Badge>
-      </div>
+      {event.resource.type === "deadline" && (
+        <div>
+          <Badge variant="destructive">Deadline</Badge>
+        </div>
+      )}
       <div className={style.actions}>
         <Button
           onClick={handleDeleteClick}

@@ -21,6 +21,9 @@ export const getCalendarEventTestkit = (component: HTMLElement) => {
       name: /delete/i,
     }) !== null;
 
+  const deadlineLabelExists = () =>
+    within(component).queryAllByText("Deadline").length === 1;
+
   const clickCompleteButton = () => fireEvent.click(getCompleteButton());
   const clickDeleteButton = () => fireEvent.click(getDeleteButton());
 
@@ -33,5 +36,7 @@ export const getCalendarEventTestkit = (component: HTMLElement) => {
 
     deleteButtonExists,
     clickDeleteButton,
+
+    deadlineLabelExists,
   };
 };
