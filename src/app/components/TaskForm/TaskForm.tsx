@@ -183,7 +183,6 @@ const TaskForm: FC<TaskFormProps> = ({
               </FormItem>
             )}
           />
-          {/* // todo: extract names into vars */}
           {showDeadline && (
             <FormField
               control={form.control}
