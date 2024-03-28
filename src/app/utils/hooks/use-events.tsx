@@ -26,6 +26,12 @@ export const EventsContext = createContext<{
 
 const { Provider } = EventsContext;
 
+/*
+  todo: 
+  because of the tasks with the deadline, events and tasks became related (task can become an event and vice versa if deadline is set)
+  think about merging use-events and use-tasks
+*/
+
 export const EventsContextProvider = ({ children }: any) => {
   const [data, setData] = useState<Task[]>([]);
   const [error, setError] = useState<unknown>(null);

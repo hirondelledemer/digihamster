@@ -49,7 +49,7 @@ export const getTaskFormTestkit = (component: HTMLElement) => ({
   getEditButtonExists: () =>
     within(component).getAllByRole("button", { name: /save/i }).length === 1,
   clickEditButton: () => {
-    const button = within(component).getByRole("button", { name: /edit/i });
+    const button = within(component).getByRole("button", { name: /save/i });
     fireEvent.click(button);
   },
 

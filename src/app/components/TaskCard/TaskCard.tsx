@@ -5,6 +5,7 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "../ui/card";
@@ -28,6 +29,8 @@ import {
 } from "../ui/sheet";
 import TaskForm from "../TaskForm";
 import { FormValues } from "../TaskForm/TaskForm";
+import { Badge } from "../ui/badge";
+import { format } from "date-fns";
 
 export const titleTestId = "TaskCard-title-testid";
 export const cardTestId = "TaskCard-card-testid";
@@ -104,6 +107,7 @@ const TaskCard: FC<TaskCardProps> = ({
                   description: task.description,
                   eta: task.estimate,
                   project: task.projectId,
+                  deadline: task.deadline,
                 }}
               />
             </SheetDescription>
@@ -121,6 +125,11 @@ const TaskCard: FC<TaskCardProps> = ({
             <CardHeader className="p-4">
               <CardTitle data-testid={titleTestId} className="font-normal">
                 {task.title}
+                {task.deadline && (
+                  <span className="text-destructive ml-4">
+                    {format(new Date(task.deadline), "MM-dd")}
+                  </span>
+                )}
               </CardTitle>
               {!task.completed && (
                 <CardDescription>
@@ -132,6 +141,11 @@ const TaskCard: FC<TaskCardProps> = ({
               <CardContent className="px-4 text-xs">
                 <MinimalNote note={task.description} />
               </CardContent>
+            )}
+            {task.deadline && (
+              <CardFooter className="p-4">
+                <Badge variant="destructive">Deadline</Badge>
+              </CardFooter>
             )}
           </Card>
         </ContextMenuTrigger>

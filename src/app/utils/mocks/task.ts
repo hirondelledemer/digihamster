@@ -21,6 +21,7 @@ export const generateTask: (i?: number, properties?: Partial<Task>) => Task = (
     tags: ["tag1", "tag2"],
     createdAt: 0,
     updatedAt: 0,
+    deadline: null,
     ...properties,
   };
 };

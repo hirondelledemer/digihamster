@@ -5,6 +5,8 @@ import { generateCustomTasksList } from "@/app/utils/mocks/task";
 import { ProjectsContext } from "@/app/utils/hooks/use-projects";
 import { TasksContext } from "@/app/utils/hooks/use-tasks";
 
+// todo: test isActive AND tasks with deadline are shown
+
 describe("ActiveTaskList", () => {
   const defaultTasks = generateCustomTasksList([
     { isActive: true },

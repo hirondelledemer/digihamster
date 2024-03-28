@@ -120,6 +120,7 @@ describe("TaskForm", () => {
         description: "",
         eta: 0,
         project: projects[0]._id as unknown as string,
+        deadline: null,
       },
     };
     const wrapper = renderComponent(props);
@@ -134,6 +135,7 @@ describe("TaskForm", () => {
         eta: 2,
         project: "project1",
         title: newTitle,
+        deadline: null,
       });
     });
   });
