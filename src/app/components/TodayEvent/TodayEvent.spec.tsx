@@ -12,6 +12,7 @@ describe("TodayEvent", () => {
     title: "Title",
     completed: false,
     id: "event1",
+    type: "event",
   };
   const renderComponent = (props = defaultProps) =>
     getTodayEventTestkit(render(<TodayEvent {...props} />).container);
@@ -19,6 +20,25 @@ describe("TodayEvent", () => {
   it("should render TodayEvent", () => {
     const wrapper = renderComponent();
     expect(wrapper.getComponent()).not.toBe(null);
+  });
+
+  it("should should not show deadline label", () => {
+    const wrapper = renderComponent();
+    expect(wrapper.getComponent().textContent).toBe("Title");
+  });
+
+  describe("event is a task with a deadline", () => {
+    const props: TodayEventProps = {
+      title: "Title",
+      completed: false,
+      id: "event1",
+      type: "deadline",
+    };
+
+    it("should should not show deadline label", () => {
+      const wrapper = renderComponent(props);
+      expect(wrapper.getComponent().textContent).toBe("TitleDeadline");
+    });
   });
 
   describe("event is all day", () => {

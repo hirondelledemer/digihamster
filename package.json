@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "test": "TZ=UTC jest",
-    "test:watch": "jest --watch",
+    "test:watch": "TZ=UTC jest --watch",
     "test:e2e": "npx playwright test",
     "test:e2e-r": "npx playwright test && npx playwright show-report",
     "gen-comp": "node ./tools/generate-comp.js"

@@ -70,7 +70,7 @@ const TaskForm: FC<TaskFormProps> = ({
       description: "",
       eta: 0,
       project: defaultProject?._id,
-      deadline: undefined,
+      deadline: null,
       ...initialValues,
     },
   });

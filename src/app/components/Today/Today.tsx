@@ -79,6 +79,7 @@ function Today({ localizer, events, date }: TodayProps) {
         title={event.title || ""}
         id={event.resource.id}
         completed={event.resource.completed}
+        type={event.resource.type}
       />
     );
   };
@@ -112,6 +113,7 @@ function Today({ localizer, events, date }: TodayProps) {
                   id={event.resource.id}
                   showDate
                   completed={event.resource.completed}
+                  type={event.resource.type}
                 />
               ))}
             </CollapsibleContent>
