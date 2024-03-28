@@ -1,1 +1,2 @@
-export { default } from './CalendarEvent';
+export { default } from "./CalendarEvent";
+export type { CalendarEventType } from "./CalendarEvent";

@@ -11,9 +11,19 @@ import { Task } from "@/models/task";
 import { updateObjById } from "@/app/utils/common/update-array";
 import { Badge } from "../ui/badge";
 
+export interface CalendarEventType extends Event {
+  resource: {
+    id: string;
+    completed?: boolean;
+    type: "event" | "deadline" | "journal";
+    note?: string;
+    title?: string;
+  };
+}
+
 export interface CalendarEventProps {
   testId?: string;
-  event: Event;
+  event: CalendarEventType;
 }
 
 export const eventPropGetter = (event: Event) => {

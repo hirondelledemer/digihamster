@@ -10,13 +10,15 @@ import React, {
 import {
   Calendar,
   momentLocalizer,
-  Event,
   SlotInfo,
   stringOrDate,
   View,
+  Event,
 } from "react-big-calendar";
 import moment from "moment";
-import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
+import withDragAndDrop, {
+  EventInteractionArgs,
+} from "react-big-calendar/lib/addons/dragAndDrop";
 
 import "react-big-calendar/lib/addons/dragAndDrop/styles.scss";
 import "react-big-calendar/lib/css/react-big-calendar.css";
@@ -29,7 +31,7 @@ import CalendarToolbar from "../CalendarToolbar";
 import { isSameDay } from "date-fns";
 import axios from "axios";
 
-import CalendarEvent from "../CalendarEvent";
+import CalendarEvent, { CalendarEventType } from "../CalendarEvent";
 import { eventPropGetter } from "../CalendarEvent/CalendarEvent";
 import { Task } from "@/models/task";
 import useJournalEntries from "@/app/utils/hooks/use-entry";
@@ -48,7 +50,7 @@ import { useToast } from "../ui/use-toast";
 
 export const now = () => new Date();
 
-// todo: what is this?
+// todo: why is this needed
 moment.locale("ko", {
   week: {
     dow: 1,
@@ -62,6 +64,12 @@ export interface PlannerProps {
   view: View;
 }
 
+function isCalendarEvent(
+  event: Event | CalendarEventType
+): event is CalendarEventType {
+  return (event as CalendarEventType).resource !== undefined;
+}
+
 // todo: test this component
 // not sure how to test it with jest. maybe e2e is needed
 export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
@@ -73,8 +81,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
   const { data: journalEntriesData } = useJournalEntries();
   const { data: eventsData, setData: setEventsData } = useEvents();
 
-  //todo: clean this:
-  const eventsResolved = eventsData.map<Event>((task) => {
+  const eventsResolved = eventsData.map<CalendarEventType>((task) => {
     if (task.event) {
       return {
         start: new Date(task.event.startAt!),
@@ -84,6 +91,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
         resource: {
           id: task._id,
           completed: task.completed,
+          type: "event",
         },
       };
     }
@@ -101,17 +109,19 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
     };
   });
 
-  const entriesResolved = journalEntriesData.map<Event>((entry) => ({
-    start: new Date(entry.createdAt),
-    title: entry.title,
-    allDay: false,
-    resource: {
-      type: "journal",
-      id: entry._id,
+  const entriesResolved = journalEntriesData.map<CalendarEventType>(
+    (entry) => ({
+      start: new Date(entry.createdAt),
       title: entry.title,
-      note: entry.note,
-    },
-  }));
+      allDay: false,
+      resource: {
+        type: "journal",
+        id: entry._id,
+        title: entry.title,
+        note: entry.note,
+      },
+    })
+  );
 
   const events = [...eventsResolved, ...entriesResolved];
 
@@ -155,7 +165,9 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
   );
 
   const customEvent = ({ event }: { event: Event }) => {
-    return <CalendarEvent event={event} />;
+    if (isCalendarEvent(event)) {
+      return <CalendarEvent event={event} />;
+    }
   };
 
   const cutomDate = (props: any) => {
@@ -167,30 +179,27 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
     start,
     end,
     isAllDay,
-  }: {
-    event: Event;
-    start: stringOrDate;
-    end: stringOrDate;
-    isAllDay?: boolean;
-  }) => {
-    axios.patch("/api/tasks/events", {
-      taskId: event.resource.id,
-      event: {
-        allDay: isAllDay || false,
-        startAt: new Date(start).getTime(),
-        endAt: new Date(end).getTime(),
-      },
-    });
-
-    setEventsData((e) =>
-      updateObjById<Task>(e, event.resource.id, {
+  }: EventInteractionArgs<Event>) => {
+    if (isCalendarEvent(event)) {
+      axios.patch("/api/tasks/events", {
+        taskId: event.resource.id,
         event: {
           allDay: isAllDay || false,
           startAt: new Date(start).getTime(),
           endAt: new Date(end).getTime(),
         },
-      })
-    );
+      });
+
+      setEventsData((e) =>
+        updateObjById<Task>(e, event.resource.id, {
+          event: {
+            allDay: isAllDay || false,
+            startAt: new Date(start).getTime(),
+            endAt: new Date(end).getTime(),
+          },
+        })
+      );
+    }
   };
 
   const resizeEvent = ({
