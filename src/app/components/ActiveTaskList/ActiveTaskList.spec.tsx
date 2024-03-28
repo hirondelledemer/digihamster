@@ -5,14 +5,13 @@ import { generateCustomTasksList } from "@/app/utils/mocks/task";
 import { ProjectsContext } from "@/app/utils/hooks/use-projects";
 import { TasksContext } from "@/app/utils/hooks/use-tasks";
 
-// todo: test isActive AND tasks with deadline are shown
-
 describe("ActiveTaskList", () => {
   const defaultTasks = generateCustomTasksList([
     { isActive: true },
     { isActive: true },
     { isActive: true },
     { isActive: false },
+    { isActive: false, deadline: 1100000 },
   ]);
   const defaultProps: ActiveTaskListProps = {};
 
@@ -47,24 +46,28 @@ describe("ActiveTaskList", () => {
       ).container
     );
 
-  it("renders active tasks tasks", () => {
+  it("renders active tasks and tasks with deadline", () => {
     const wrapper = renderComponent();
     expect(wrapper.getComponent()).not.toBe(null);
-    expect(wrapper.getTasksCount()).toBe(3);
+    expect(wrapper.getTasksCount()).toBe(4);
     expect(wrapper.getTaskTitleAt(0)).toBe(defaultTasks[0].title);
     expect(wrapper.getTaskTitleAt(1)).toBe(defaultTasks[1].title);
     expect(wrapper.getTaskTitleAt(2)).toBe(defaultTasks[2].title);
+    expect(wrapper.getTaskTitleAt(3)).toBe(`${defaultTasks[4].title}01-01`);
   });
 
   it('should render tasks in order "not completed" -> "completed"', () => {
     const tasks = generateCustomTasksList([
-      { completed: false },
-      { completed: true },
-      { completed: false },
+      { completed: false, isActive: true },
+      { completed: true, isActive: true },
+      { completed: false, deadline: 1100000, isActive: true },
+      { completed: false, isActive: true },
     ]);
+
     const wrapper = renderComponent(defaultProps, tasks);
     expect(wrapper.getTaskTitleAt(0)).toBe(defaultTasks[0].title);
-    expect(wrapper.getTaskTitleAt(1)).toBe(defaultTasks[2].title);
-    expect(wrapper.getTaskTitleAt(2)).toBe(defaultTasks[1].title);
+    expect(wrapper.getTaskTitleAt(1)).toBe(`${defaultTasks[2].title}01-01`);
+    expect(wrapper.getTaskTitleAt(2)).toBe(defaultTasks[3].title);
+    expect(wrapper.getTaskTitleAt(3)).toBe(defaultTasks[1].title);
   });
 });

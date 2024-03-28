@@ -9,7 +9,7 @@ export const generateTask: (i?: number, properties?: Partial<Task>) => Task = (
     title: `Task ${i}`,
     description: `task description ${i}`,
     completed: false,
-    isActive: true,
+    isActive: false,
     deleted: false,
     projectId: "project1",
     estimate: 0,
