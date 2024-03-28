@@ -212,7 +212,9 @@ const TaskForm: FC<TaskFormProps> = ({
                     <PopoverContent className="w-auto p-0" align="start">
                       <Calendar
                         mode="single"
-                        selected={field.value ? new Date(field.value) : null}
+                        selected={
+                          field.value ? new Date(field.value) : undefined
+                        }
                         onSelect={(date) => {
                           console.log("aaa", date);
                           field.onChange(date ? date.getTime() : undefined);

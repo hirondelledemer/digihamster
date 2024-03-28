@@ -57,7 +57,7 @@ const CommandTool: FC<CommandToolProps> = (): JSX.Element => {
       projectId: data.project,
       isActive: taskFormOpen.isActive,
       estimate: data.eta,
-      deadline: data.deadline,
+      deadline: data.deadline || null,
     };
     const tempId = "temp-id";
 
