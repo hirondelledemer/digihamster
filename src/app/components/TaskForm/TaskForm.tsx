@@ -39,7 +39,7 @@ const FormSchema = z.object({
   title: z.string().min(1, { message: "This field has to be filled." }),
   description: z.string(),
   eta: z.number(),
-  deadline: z.union([z.number(), z.null()]),
+  deadline: z.union([z.number(), z.null(), z.undefined()]),
   project: z.string().min(1, { message: "This field has to be filled." }),
 });
 
@@ -212,9 +212,7 @@ const TaskForm: FC<TaskFormProps> = ({
                     <PopoverContent className="w-auto p-0" align="start">
                       <Calendar
                         mode="single"
-                        selected={
-                          field.value ? new Date(field.value) : undefined
-                        }
+                        selected={field.value ? new Date(field.value) : null}
                         onSelect={(date) => {
                           console.log("aaa", date);
                           field.onChange(date ? date.getTime() : undefined);
