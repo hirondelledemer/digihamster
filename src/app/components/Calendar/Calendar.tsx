@@ -235,6 +235,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
       parentTaskId: null,
       createdAt: 0,
       updatedAt: 0,
+      deadline: null,
       tags: [],
       ...taskData,
     };
@@ -268,7 +269,11 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
           <SheetHeader>
             <SheetTitle>Create Event</SheetTitle>
             <SheetDescription>
-              <TaskForm onSubmit={newEvent} showEta={false} />
+              <TaskForm
+                onSubmit={newEvent}
+                showEta={false}
+                showDeadline={false}
+              />
             </SheetDescription>
           </SheetHeader>
         </SheetContent>

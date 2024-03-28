@@ -20,9 +20,18 @@ import {
 } from "../ui/select";
 import { Button } from "../ui/button";
 import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
-import { IconComet, IconStar, IconStars } from "@tabler/icons-react";
+import {
+  IconCalendar,
+  IconComet,
+  IconStar,
+  IconStars,
+} from "@tabler/icons-react";
 import useProjects from "@/app/utils/hooks/use-projects";
 import { Textarea } from "../ui/textarea";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { cn } from "../utils";
+import { format } from "date-fns";
+import { Calendar } from "../ui/calendar";
 
 export const minimalNoteTestId = "TaskForm-minimal-note-testId";
 
@@ -30,6 +39,7 @@ const FormSchema = z.object({
   title: z.string().min(1, { message: "This field has to be filled." }),
   description: z.string(),
   eta: z.number(),
+  deadline: z.union([z.number(), z.undefined()]),
   project: z.string().min(1, { message: "This field has to be filled." }),
 });
 
@@ -40,6 +50,7 @@ export interface TaskFormProps {
   initialValues?: FormValues;
   onSubmit(values: FormValues): void;
   showEta?: boolean;
+  showDeadline?: boolean;
   editMode?: boolean;
 }
 
@@ -48,6 +59,7 @@ const TaskForm: FC<TaskFormProps> = ({
   initialValues,
   onSubmit,
   showEta = true,
+  showDeadline = true,
   editMode,
 }): JSX.Element => {
   const { data: projects, defaultProject } = useProjects();
@@ -58,6 +70,7 @@ const TaskForm: FC<TaskFormProps> = ({
       description: "",
       eta: 0,
       project: defaultProject?._id,
+      deadline: undefined,
       ...initialValues,
     },
   });
@@ -83,7 +96,6 @@ const TaskForm: FC<TaskFormProps> = ({
               </FormItem>
             )}
           />
-
           {showEta && (
             <FormField
               control={form.control}
@@ -171,7 +183,52 @@ const TaskForm: FC<TaskFormProps> = ({
               </FormItem>
             )}
           />
-          <Button type="submit">{editMode ? "Edit" : "Create"}</Button>
+          {/* // todo: extract names into vars */}
+          {showDeadline && (
+            <FormField
+              control={form.control}
+              name="deadline"
+              render={({ field }) => (
+                <FormItem className="flex flex-col">
+                  <FormLabel>Deadline</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant={"outline"}
+                          className={cn(
+                            "pl-3 text-left font-normal",
+                            !field.value && "text-muted-foreground"
+                          )}
+                        >
+                          {field.value ? (
+                            format(field.value, "yyyy-MM-dd")
+                          ) : (
+                            <span>Pick a date</span>
+                          )}
+                          <IconCalendar className="ml-auto h-4 w-4 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={
+                          field.value ? new Date(field.value) : undefined
+                        }
+                        onSelect={(date) => {
+                          console.log("aaa", date);
+                          field.onChange(date ? date.getTime() : undefined);
+                        }}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
+          <Button type="submit">{editMode ? "Save" : "Create"}</Button>
         </form>
       </Form>
     </div>

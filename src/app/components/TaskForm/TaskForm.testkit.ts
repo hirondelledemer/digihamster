@@ -47,7 +47,7 @@ export const getTaskFormTestkit = (component: HTMLElement) => ({
   },
 
   getEditButtonExists: () =>
-    within(component).getAllByRole("button", { name: /edit/i }).length === 1,
+    within(component).getAllByRole("button", { name: /save/i }).length === 1,
   clickEditButton: () => {
     const button = within(component).getByRole("button", { name: /edit/i });
     fireEvent.click(button);
@@ -62,7 +62,10 @@ export const getTaskFormTestkit = (component: HTMLElement) => ({
     const input = within(component).getByRole("textbox", {
       name: /description/i,
     });
-
     return userEvent.type(input, value);
   },
+
+  getDeadlineButtonExists: () =>
+    within(component).queryAllByRole("button", { name: /deadline/i }).length ===
+    1,
 });

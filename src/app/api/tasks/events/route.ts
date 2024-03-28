@@ -15,6 +15,7 @@ export async function GET(request: NextRequest) {
     const tasks = await Task.find({
       userId,
       event: { $ne: null },
+      deadline: { $ne: null },
       deleted: false,
     });
     return NextResponse.json({
@@ -49,6 +50,7 @@ export async function POST(request: NextRequest) {
       sortOrder: tasks.length,
       parentTaskId: args.parentTaskId,
       tags: args.tags,
+      deadline: args.deadline,
       event: args.event
         ? {
             startAt: args.event.startAt,
@@ -66,25 +68,13 @@ export async function POST(request: NextRequest) {
   }
 }
 
-//todo: type requests
-// interface ExtendedNextApiRequest extends NextRequest {
-//   body: {
-//     number_one: number;
-//     number_two: number;
-//   };
-// }
-
-//todo: ceanup, test and type
 export async function PATCH(request: NextRequest) {
   try {
     console.log("patch");
-    // Extract user ID from the authentication token
     await getDataFromToken(request);
     const reqBody = await request.json();
     const args = reqBody;
-    console.log(1, args);
     const task = await Task.findOne({ _id: args.taskId });
-    console.log(2, task);
 
     if (!task) {
       throw new Error("task does not exists");
@@ -97,6 +87,7 @@ export async function PATCH(request: NextRequest) {
         description: args.description || task.description,
         tags: args.tags || task.tags,
         estimate: args.estimate === undefined ? task.estimate : args.estimate,
+        deadline: args.estimate === undefined ? task.deadline : args.deadline,
         sortOrder:
           args.sortOrder === undefined ? task.sortOrder : args.sortOrder,
         completed:
