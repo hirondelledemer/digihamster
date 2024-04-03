@@ -73,6 +73,7 @@ const CalendarEvent: FC<CalendarEventProps> = ({
           <Badge variant="destructive">Deadline</Badge>
         </div>
       )}
+      {/* todo: redo into context events  + redo month popup */}
       <div className={style.actions}>
         <Button
           onClick={handleDeleteClick}

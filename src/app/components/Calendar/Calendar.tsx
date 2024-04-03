@@ -306,7 +306,6 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
         </SheetContent>
       </Sheet>
       <DnDropCalendar
-        className={style.lol}
         selectable
         localizer={localizer}
         events={events}
@@ -317,6 +316,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
         onSelectSlot={openEventForm}
         defaultView={view}
         popup
+        doShowMoreDrillDown
         formats={{ eventTimeRangeFormat: () => "" }}
         components={{
           event: customEvent,

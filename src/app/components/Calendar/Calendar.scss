@@ -36,3 +36,12 @@
 .rbc-label {
   font-size: 14px;
 }
+
+.rbc-month-view {
+  min-height: 60vh;
+  border: 1px solid hsl(var(--border));
+}
+
+.rbc-month-row + .rbc-month-row {
+  border-top: 1px solid hsl(var(--border));
+}
