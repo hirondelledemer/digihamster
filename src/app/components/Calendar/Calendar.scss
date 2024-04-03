@@ -1,0 +1,38 @@
+@import 'react-big-calendar/lib/sass/styles';
+@import 'react-big-calendar/lib/addons/dragAndDrop/styles';
+
+
+.rbc-time-view {
+  border: 1px solid hsl(var(--border));
+}
+  
+.rbc-header {
+  border: none;
+}
+
+.rbc-time-content {
+  border: none
+}
+
+.rbc-header {
+  border: 1px solid hsl(var(--border));
+}
+.rbc-header + .rbc-header {
+  border-left: 1px solid hsl(var(--border));
+}
+
+.rbc-day-bg + .rbc-day-bg {
+  border: 1px solid hsl(var(--border));
+}
+
+.rbc-time-header-content {
+  border-left: 1px solid hsl(var(--border));
+}
+
+.rbc-button-link {
+  font-weight: normal;
+}
+
+.rbc-label {
+  font-size: 14px;
+}

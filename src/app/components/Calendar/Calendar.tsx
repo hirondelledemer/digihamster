@@ -24,6 +24,7 @@ import "react-big-calendar/lib/addons/dragAndDrop/styles.scss";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import * as dates from "date-arithmetic";
 import style from "./Calendar.module.scss";
+import "./Calendar.scss";
 
 import Today from "../Today";
 
@@ -305,6 +306,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
         </SheetContent>
       </Sheet>
       <DnDropCalendar
+        className={style.lol}
         selectable
         localizer={localizer}
         events={events}
