@@ -10,9 +10,6 @@
   &:hover {
     border: 1px solid #373A40 !important;
     z-index: 1;
-    .actions {
-      visibility: visible;
-    }
   }
 }
 
@@ -22,15 +19,5 @@
 
   &:hover {
     border: 1px solid #511B1E !important;
-  }
-}
-
-.actions {
-  display: flex;
-  visibility: hidden;
-  float: right;
-  margin-right: 4px;
-  & >*:first-child {
-      margin-right: 4px;
   }
 }

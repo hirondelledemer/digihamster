@@ -11,6 +11,8 @@ describe("CalendarEvent", () => {
       resource: {
         completed: false,
         id: "event1",
+        type: "event",
+        title: "Event 1",
       },
     },
   };
@@ -20,7 +22,10 @@ describe("CalendarEvent", () => {
   });
 
   const renderComponent = (props = defaultProps) =>
-    getCalendarEventTestkit(render(<CalendarEvent {...props} />).container);
+    getCalendarEventTestkit(
+      render(<CalendarEvent testId="CalendarEvent-testId" {...props} />)
+        .container
+    );
 
   it("should not show deadline tag", () => {
     const wrapper = renderComponent();
@@ -68,6 +73,8 @@ describe("CalendarEvent", () => {
         resource: {
           completed: true,
           id: "event1",
+          type: "event",
+          title: "Event 1",
         },
       },
     };

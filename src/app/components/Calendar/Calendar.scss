@@ -45,3 +45,27 @@
 .rbc-month-row + .rbc-month-row {
   border-top: 1px solid hsl(var(--border));
 }
+
+.rbc-show-more {
+  color: hsl(var(--primary));
+  background: transparent;
+  &:focus {
+    color: hsl(var(--primary));
+    background: transparent;
+  }
+  &:hover {
+    color: hsl(var(--primary));
+    background: transparent;
+  }
+}
+
+.rbc-overlay {
+  font-style: italic;
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-radius: 5px;
+}
+
+.rbc-overlay-header {
+  border-bottom: 1px solid hsl(var(--border));
+}

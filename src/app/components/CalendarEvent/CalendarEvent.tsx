@@ -3,13 +3,17 @@
 import React, { FC } from "react";
 import style from "./CalendarEvent.module.scss";
 import { Event } from "react-big-calendar";
-import { IconCheck, IconTrash } from "@tabler/icons-react";
 import axios from "axios";
-import { Button } from "../ui/button";
 import useEvents from "@/app/utils/hooks/use-events";
 import { Task } from "@/models/task";
 import { updateObjById } from "@/app/utils/common/update-array";
 import { Badge } from "../ui/badge";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "../ui/context-menu";
 
 export interface CalendarEventType extends Event {
   resource: {
@@ -61,42 +65,33 @@ const CalendarEvent: FC<CalendarEventProps> = ({
   };
 
   return (
-    <div
-      data-testid={testId}
-      className={`h-full p-1 ${
-        event.resource.completed ? "text-muted-foreground line-through" : ""
-      }`}
-    >
-      {event.title}
-      {event.resource.type === "deadline" && (
-        <div>
-          <Badge variant="destructive">Deadline</Badge>
-        </div>
-      )}
-      {/* todo: redo into context events  + redo month popup */}
-      <div className={style.actions}>
-        <Button
-          onClick={handleDeleteClick}
-          title="Delete"
-          size="icon"
-          variant="ghost"
-          className="h-5 w-5"
+    <ContextMenu>
+      <ContextMenuTrigger>
+        <div
+          data-testid={testId}
+          className={`h-full p-1 ${
+            event.resource.completed ? "text-muted-foreground line-through" : ""
+          }`}
         >
-          <IconTrash style={{ width: "60%", height: "60%" }} />
-        </Button>
+          {event.title}
+          {event.resource.type === "deadline" && (
+            <div>
+              <Badge variant="destructive">Deadline</Badge>
+            </div>
+          )}
+        </div>
+      </ContextMenuTrigger>
+      <ContextMenuContent className="w-64">
+        <ContextMenuItem inset onClick={handleDeleteClick}>
+          Delete
+        </ContextMenuItem>
         {!event.resource.completed && (
-          <Button
-            onClick={handleCompleteClick}
-            title="Complete"
-            size="icon"
-            variant="ghost"
-            className="h-5 w-5"
-          >
-            <IconCheck style={{ width: "60%", height: "60%" }} />
-          </Button>
+          <ContextMenuItem inset onClick={handleCompleteClick}>
+            Complete
+          </ContextMenuItem>
         )}
-      </div>
-    </div>
+      </ContextMenuContent>
+    </ContextMenu>
   );
 };
 

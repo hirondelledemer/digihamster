@@ -1,25 +1,15 @@
-import { fireEvent, within } from "@/config/utils/test-utils";
+import { fireEvent, within, screen } from "@/config/utils/test-utils";
 
 export const getCalendarEventTestkit = (component: HTMLElement) => {
   const getEventTextIsStriked = () =>
     within(component).getByText(/event/i).className.includes("line-through");
 
-  const getCompleteButton = () =>
-    within(component).getByRole("button", {
-      name: /complete/i,
-    });
-  const getDeleteButton = () =>
-    within(component).getByRole("button", {
-      name: /delete/i,
-    });
+  const getCompleteButton = () => screen.getByText("Complete");
+  const getDeleteButton = () => screen.getByText("Delete");
   const completeButtonExists = () =>
-    within(component).queryByRole("button", {
-      name: /complete/i,
-    }) !== null;
-  const deleteButtonExists = () =>
-    within(component).queryByRole("button", {
-      name: /delete/i,
-    }) !== null;
+    screen.queryAllByText("Complete").length !== 0;
+
+  const deleteButtonExists = () => screen.queryAllByText("Delete").length !== 0;
 
   const deadlineLabelExists = () =>
     within(component).queryAllByText("Deadline").length === 1;
@@ -27,15 +17,29 @@ export const getCalendarEventTestkit = (component: HTMLElement) => {
   const clickCompleteButton = () => fireEvent.click(getCompleteButton());
   const clickDeleteButton = () => fireEvent.click(getDeleteButton());
 
+  const openContextMenu = () => {
+    const title = within(component).getByTestId("CalendarEvent-testId");
+    fireEvent.contextMenu(title);
+  };
+
   return {
     getComponent: () => component,
     getEventTextIsStriked,
 
-    completeButtonExists,
-    clickCompleteButton,
+    completeButtonExists: () => {
+      openContextMenu();
+      return completeButtonExists();
+    },
+    clickCompleteButton: () => {
+      openContextMenu();
+      clickCompleteButton();
+    },
 
     deleteButtonExists,
-    clickDeleteButton,
+    clickDeleteButton: () => {
+      openContextMenu();
+      clickDeleteButton();
+    },
 
     deadlineLabelExists,
   };
