@@ -109,7 +109,7 @@ export const MentionList = forwardRef(
         <CardContent className="py-2 px-4">
           {items.length ? (
             items.map((tag: ITag, index: number) => (
-              <div key={tag._id}>
+              <div key={tag.id}>
                 <Badge
                   variant={selectedIndex === index ? "default" : "outline"}
                   onClick={() => selectItem(index)}
