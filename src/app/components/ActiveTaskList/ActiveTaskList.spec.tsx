@@ -12,6 +12,7 @@ describe("ActiveTaskList", () => {
     { isActive: true },
     { isActive: false },
     { isActive: false, deadline: 1100000 },
+    { isActive: false, deadline: 1100000, completed: true },
   ]);
   const defaultProps: ActiveTaskListProps = {};
 
@@ -46,7 +47,7 @@ describe("ActiveTaskList", () => {
       ).container
     );
 
-  it("renders active tasks and tasks with deadline", () => {
+  it("renders active tasks and tasks with not completed tasks with deadline", () => {
     const wrapper = renderComponent();
     expect(wrapper.getComponent()).not.toBe(null);
     expect(wrapper.getTasksCount()).toBe(4);

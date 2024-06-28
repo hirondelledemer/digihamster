@@ -21,7 +21,9 @@ const ActiveTaskList: FC<ActiveTaskListProps> = ({ testId }): JSX.Element => {
       <ScrollArea className="h-screen">
         <div className="pr-6">
           {tasks
-            .filter((task) => task.isActive || task.deadline)
+            .filter(
+              (task) => task.isActive || (task.deadline && !task.completed)
+            )
             .sort((a, b) =>
               a.completed === b.completed ? 0 : a.completed ? 1 : -1
             )
