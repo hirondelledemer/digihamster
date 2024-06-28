@@ -1,4 +1,5 @@
-import { render, act, waitFor, screen } from "@testing-library/react";
+import { act } from "react";
+import { render, waitFor } from "@testing-library/react";
 import CommandTool, { CommandToolProps } from "./CommandTool";
 import { getCommandToolTestkit } from "./CommandTool.testkit";
 import mockAxios from "jest-mock-axios";
@@ -68,6 +69,22 @@ describe("CommandTool", () => {
         deadline: null,
       });
     });
+  });
+
+  it("should create task with predefined title", async () => {
+    const wrapper = renderComponent();
+    act(() => {
+      wrapper.pressCmdK();
+    });
+    expect(wrapper.commandToolOpen()).toBe(true);
+
+    act(() => {
+      wrapper.enterSearch("new task title");
+      wrapper.clickCreateActiveTask();
+    });
+
+    expect(wrapper.taskFormIsOpen()).toBe(true);
+    expect(wrapper.getTitle()).toBe("new task title");
   });
 
   it("should create regular task", async () => {

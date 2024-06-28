@@ -41,6 +41,7 @@ const CommandTool: FC<CommandToolProps> = (): JSX.Element => {
   useHotKeys([["mod+K", () => setOpen((open) => !open)]]);
   const { setData: setTasksData } = useTasks();
   const { toast } = useToast();
+  const [searchValue, setSearchValue] = useState<string>("");
 
   const createNewTask = async (data: FormValues) => {
     type FieldsRequired =
@@ -95,6 +96,12 @@ const CommandTool: FC<CommandToolProps> = (): JSX.Element => {
     }
   };
 
+  const handleFilter = (value: string, search: string): 1 | 0 => {
+    if (value.includes(search)) return 1;
+    if (value === "create active task" || value === "create task") return 1;
+    return 0;
+  };
+
   return (
     <>
       <Sheet open={taskFormOpen.isOpen}>
@@ -110,7 +117,11 @@ const CommandTool: FC<CommandToolProps> = (): JSX.Element => {
           <SheetHeader>
             <SheetTitle>Create Task</SheetTitle>
             <SheetDescription>
-              <TaskForm testId={taskFormTestId} onSubmit={createNewTask} />
+              <TaskForm
+                testId={taskFormTestId}
+                onSubmit={createNewTask}
+                initialValues={{ title: searchValue }}
+              />
             </SheetDescription>
           </SheetHeader>
         </SheetContent>
@@ -119,8 +130,13 @@ const CommandTool: FC<CommandToolProps> = (): JSX.Element => {
         data-testid={commandToolTestId}
         open={open}
         onOpenChange={setOpen}
+        filter={handleFilter}
       >
-        <CommandInput placeholder="Type a command or search..." />
+        <CommandInput
+          placeholder="Type a command or search..."
+          value={searchValue}
+          onValueChange={setSearchValue}
+        />
         <CommandList>
           <CommandEmpty>No results found.</CommandEmpty>
           <CommandGroup heading="Suggestions">

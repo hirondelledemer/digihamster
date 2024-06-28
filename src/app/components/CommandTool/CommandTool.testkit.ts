@@ -18,10 +18,17 @@ export const getCommandToolTestkit = (component: HTMLElement) => ({
   clickCreateTask: () => {
     fireEvent.click(screen.getByText("Create Task"));
   },
+  enterSearch: (value: string) => {
+    fireEvent.change(screen.getByRole("combobox"), { target: { value } });
+  },
   taskFormIsOpen: () => screen.queryAllByTestId(taskFormTestId).length === 1,
 
+
+  // task form 
   enterTitle: (value: string) =>
     getTaskFormTestkit(screen.getByTestId(taskFormTestId)).setTitle(value),
+  getTitle: () =>
+    getTaskFormTestkit(screen.getByTestId(taskFormTestId)).getTitleInputValue(),
   enterDescription: (value: string) =>
     getTaskFormTestkit(screen.getByTestId(taskFormTestId)).setDescription(
       value

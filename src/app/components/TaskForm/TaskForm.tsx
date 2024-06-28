@@ -47,7 +47,7 @@ export type FormValues = z.infer<typeof FormSchema>;
 
 export interface TaskFormProps {
   testId?: string;
-  initialValues?: FormValues;
+  initialValues?: Partial<FormValues>;
   onSubmit(values: FormValues): void;
   showEta?: boolean;
   showDeadline?: boolean;
