@@ -48,7 +48,7 @@ function Login() {
       setError(undefined);
       setLoading(true);
       await axios.post("/api/users/login", data);
-      router.push("/profile");
+      router.push("/home");
     } catch (error: any) {
       setError((error as any).response.data.error);
     } finally {
