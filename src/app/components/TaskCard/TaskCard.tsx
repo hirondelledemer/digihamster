@@ -31,6 +31,7 @@ import TaskForm from "../TaskForm";
 import { FormValues } from "../TaskForm/TaskForm";
 import { Badge } from "../ui/badge";
 import { format } from "date-fns";
+import Estimate from "../Estimate";
 
 export const titleTestId = "TaskCard-title-testid";
 export const cardTestId = "TaskCard-card-testid";
@@ -123,13 +124,19 @@ const TaskCard: FC<TaskCardProps> = ({
             }`}
           >
             <CardHeader className="p-4">
-              <CardTitle data-testid={titleTestId} className="font-normal">
-                {task.title}
-                {task.deadline && (
-                  <span className="text-destructive ml-4">
-                    {format(new Date(task.deadline), "MM-dd")}
-                  </span>
-                )}
+              <CardTitle
+                data-testid={titleTestId}
+                className="font-normal flex items-center justify-between"
+              >
+                <div>
+                  {task.title}
+                  {task.deadline && (
+                    <span className="text-destructive ml-4">
+                      {format(new Date(task.deadline), "MM-dd")}
+                    </span>
+                  )}
+                </div>
+                <Estimate estimate={task.estimate} />
               </CardTitle>
               {!task.completed && (
                 <CardDescription>
