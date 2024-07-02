@@ -71,4 +71,18 @@ describe("ActiveTaskList", () => {
     expect(wrapper.getTaskTitleAt(2)).toBe(defaultTasks[3].title);
     expect(wrapper.getTaskTitleAt(3)).toBe(defaultTasks[1].title);
   });
+
+  it("should sort tasks by estimate", () => {
+    const tasks = generateCustomTasksList([
+      { isActive: true, estimate: 3 },
+      { isActive: true, estimate: 1 },
+      { isActive: true, estimate: 2 },
+    ]);
+
+    const wrapper = renderComponent(defaultProps, tasks);
+
+    expect(wrapper.getTaskTitleAt(0)).toBe(tasks[1].title);
+    expect(wrapper.getTaskTitleAt(1)).toBe(tasks[2].title);
+    expect(wrapper.getTaskTitleAt(2)).toBe(tasks[0].title);
+  });
 });
