@@ -4,8 +4,9 @@ import { ProjectsContext } from "@/app/utils/hooks/use-projects";
 import { TasksContext, TasksContextValues } from "@/app/utils/hooks/use-tasks";
 import { generateTask } from "@/app/utils/mocks/task";
 import { render, act } from "@/config/utils/test-utils";
-
 import mockAxios from "jest-mock-axios";
+
+jest.mock("../../utils/date/date");
 
 describe("TaskCard", () => {
   afterEach(() => {
@@ -61,6 +62,11 @@ describe("TaskCard", () => {
     expect(wrapper.getComponent().textContent).toBe(
       "Task 1Project 1task description 1"
     );
+  });
+
+  it("should not show stale indicator", () => {
+    const wrapper = renderComponent();
+    expect(wrapper.staleIndicatorIsVisible()).toBe(false);
   });
 
   it("should deactivate task", () => {
@@ -148,6 +154,20 @@ describe("TaskCard", () => {
       expect(wrapper.cardIsFaded()).toBe(true);
       expect(wrapper.cardTextIsStriked()).toBe(true);
       expect(wrapper.getComponent().textContent).toBe("Task 1");
+    });
+  });
+
+  describe("task is active and stale", () => {
+    const weekInMs = 7 * 24 * 60 * 60 * 1000;
+    const dayInMs = 24 * 60 * 60 * 1000;
+
+    const props: TaskCardProps = {
+      task: generateTask(0, { activatedAt: weekInMs + dayInMs }),
+    };
+
+    it("show stale indicator", () => {
+      const wrapper = renderComponent(props);
+      expect(wrapper.staleIndicatorIsVisible()).toBe(true);
     });
   });
 });

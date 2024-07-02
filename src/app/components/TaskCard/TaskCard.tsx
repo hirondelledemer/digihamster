@@ -1,6 +1,7 @@
 import React, { FC, useState } from "react";
 import { Task } from "@/models/task";
 import useProjects from "@/app/utils/hooks/use-projects";
+import { differenceInCalendarDays } from "date-fns";
 import {
   Card,
   CardContent,
@@ -32,6 +33,8 @@ import { FormValues } from "../TaskForm/TaskForm";
 import { Badge } from "../ui/badge";
 import { format } from "date-fns";
 import Estimate from "../Estimate";
+import { now } from "@/app/utils/date/date";
+import DinosaurIcon from "../icons/DinosaurIcon";
 
 export const titleTestId = "TaskCard-title-testid";
 export const cardTestId = "TaskCard-card-testid";
@@ -55,6 +58,7 @@ const TaskCard: FC<TaskCardProps> = ({
   const [taskFormOpen, setTaskFormOpen] = useState<boolean>(false);
 
   const project = projects.find((p) => p._id === task.projectId);
+  const taskIsStale = differenceInCalendarDays(task.activatedAt, now()) > 7;
 
   const editTask = async (props: Partial<Task>) => {
     try {
@@ -136,7 +140,12 @@ const TaskCard: FC<TaskCardProps> = ({
                     </span>
                   )}
                 </div>
-                <Estimate estimate={task.estimate} />
+                <div className="flex items-center">
+                  {taskIsStale && (
+                    <DinosaurIcon className="h-4 w-4 fill-gray-200 mr-2" />
+                  )}
+                  <Estimate estimate={task.estimate} />
+                </div>
               </CardTitle>
               {!task.completed && (
                 <CardDescription>

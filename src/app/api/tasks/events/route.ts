@@ -50,6 +50,7 @@ export async function POST(request: NextRequest) {
       parentTaskId: args.parentTaskId,
       tags: args.tags,
       deadline: args.deadline,
+      activatedAt: args.isActive ? new Date() : undefined,
       event: args.event
         ? {
             startAt: args.event.startAt,

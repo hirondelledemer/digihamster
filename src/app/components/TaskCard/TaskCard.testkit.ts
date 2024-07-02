@@ -10,6 +10,7 @@ export const getTaskCardTestkit = (component: HTMLElement) => {
   return {
     getComponent: () => component,
     getTitle: () => within(component).getByTestId(titleTestId).textContent,
+    staleIndicatorIsVisible: () => within(component).queryByTestId('dinosaur-icon') !== null,
     clickComplete: () => {
       openContextMenu();
       const completeButton = screen.getByText("Complete");

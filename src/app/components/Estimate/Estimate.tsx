@@ -13,12 +13,12 @@ const Estimate: FC<EstimateProps> = ({ estimate }): JSX.Element => {
     return (
       <div className="flex">
         {[...Array(estimate)].map((_v, i) => (
-          <IconStar key={`icon-${i}`} size={10} color="gray" />
+          <IconStar key={`icon-${i}`} size={10} className="text-gray-200" />
         ))}
       </div>
     );
   }
-  return <IconStars size={18} color="gray" />;
+  return <IconStars size={18} className="text-gray-200" />;
 };
 
 export default Estimate;
