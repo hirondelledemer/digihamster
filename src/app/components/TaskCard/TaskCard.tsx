@@ -1,5 +1,5 @@
 import React, { FC, useState } from "react";
-import { Task } from "@/models/task";
+import { TaskV2 as Task } from "@/models/taskV2";
 import useProjects from "@/app/utils/hooks/use-projects";
 import { differenceInCalendarDays } from "date-fns";
 import {
@@ -73,7 +73,7 @@ const TaskCard: FC<TaskCardProps> = ({
                 editMode
                 onSubmit={(data: FormValues) =>
                   editTask(
-                    task._id,
+                    task.id,
                     {
                       title: data.title,
                       description: data.description,
@@ -146,7 +146,7 @@ const TaskCard: FC<TaskCardProps> = ({
             <ContextMenuItem
               inset
               onClick={() =>
-                editTask(task._id, { completed: false }, () =>
+                editTask(task.id, { completed: false }, () =>
                   setTaskFormOpen(false)
                 )
               }
@@ -158,7 +158,7 @@ const TaskCard: FC<TaskCardProps> = ({
             <ContextMenuItem
               inset
               onClick={() =>
-                editTask(task._id, { completed: true }, () =>
+                editTask(task.id, { completed: true }, () =>
                   setTaskFormOpen(false)
                 )
               }
@@ -169,7 +169,7 @@ const TaskCard: FC<TaskCardProps> = ({
           <ContextMenuItem
             inset
             onClick={() =>
-              editTask(task._id, { isActive: false }, () =>
+              editTask(task.id, { isActive: false }, () =>
                 setTaskFormOpen(false)
               )
             }
