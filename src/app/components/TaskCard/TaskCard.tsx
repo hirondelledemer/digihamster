@@ -17,10 +17,6 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from "../ui/context-menu";
-import axios from "axios";
-import useTasks from "@/app/utils/hooks/use-tasks";
-import { updateObjById } from "@/app/utils/common/update-array";
-import { useToast } from "../ui/use-toast";
 import {
   Sheet,
   SheetContent,
@@ -35,6 +31,7 @@ import { format } from "date-fns";
 import Estimate from "../Estimate";
 import { now } from "@/app/utils/date/date";
 import DinosaurIcon from "../icons/DinosaurIcon";
+import useEditTask from "@/app/utils/hooks/use-edit-task";
 
 export const titleTestId = "TaskCard-title-testid";
 export const cardTestId = "TaskCard-card-testid";
@@ -53,37 +50,12 @@ const TaskCard: FC<TaskCardProps> = ({
   className,
 }): JSX.Element => {
   const { data: projects } = useProjects();
-  const { setData: setTasksData } = useTasks();
-  const { toast } = useToast();
+
   const [taskFormOpen, setTaskFormOpen] = useState<boolean>(false);
+  const { editTask } = useEditTask();
 
   const project = projects.find((p) => p._id === task.projectId);
   const taskIsStale = differenceInCalendarDays(task.activatedAt, now()) > 7;
-
-  const editTask = async (props: Partial<Task>) => {
-    try {
-      setTasksData((t) =>
-        updateObjById<Task>(t, task._id, {
-          ...props,
-        })
-      );
-      setTaskFormOpen(false);
-      await axios.patch("/api/tasks/events", {
-        taskId: task._id,
-        ...props,
-      });
-      toast({
-        title: "Success",
-        description: "Task has been updated",
-      });
-    } catch (e) {
-      toast({
-        title: "Error",
-        description: JSON.stringify(e),
-        variant: "destructive",
-      });
-    }
-  };
 
   return (
     <div data-testid={testId} className={className}>
@@ -100,12 +72,16 @@ const TaskCard: FC<TaskCardProps> = ({
                 testId={taskFormTestId}
                 editMode
                 onSubmit={(data: FormValues) =>
-                  editTask({
-                    title: data.title,
-                    description: data.description,
-                    estimate: data.eta,
-                    projectId: data.project,
-                  })
+                  editTask(
+                    task._id,
+                    {
+                      title: data.title,
+                      description: data.description,
+                      estimate: data.eta,
+                      projectId: data.project,
+                    },
+                    () => setTaskFormOpen(false)
+                  )
                 }
                 initialValues={{
                   title: task.title,
@@ -169,7 +145,11 @@ const TaskCard: FC<TaskCardProps> = ({
           {task.completed && (
             <ContextMenuItem
               inset
-              onClick={() => editTask({ completed: false })}
+              onClick={() =>
+                editTask(task._id, { completed: false }, () =>
+                  setTaskFormOpen(false)
+                )
+              }
             >
               Undo
             </ContextMenuItem>
@@ -177,12 +157,23 @@ const TaskCard: FC<TaskCardProps> = ({
           {!task.completed && (
             <ContextMenuItem
               inset
-              onClick={() => editTask({ completed: true })}
+              onClick={() =>
+                editTask(task._id, { completed: true }, () =>
+                  setTaskFormOpen(false)
+                )
+              }
             >
               Complete
             </ContextMenuItem>
           )}
-          <ContextMenuItem inset onClick={() => editTask({ isActive: false })}>
+          <ContextMenuItem
+            inset
+            onClick={() =>
+              editTask(task._id, { isActive: false }, () =>
+                setTaskFormOpen(false)
+              )
+            }
+          >
             Deactivate
           </ContextMenuItem>
           <ContextMenuItem inset onClick={() => setTaskFormOpen(true)}>

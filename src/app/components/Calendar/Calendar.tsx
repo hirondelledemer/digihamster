@@ -93,6 +93,8 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
           id: task._id,
           completed: task.completed,
           type: "event",
+          description: task.description,
+          projectId: task.projectId,
         },
       };
     }
@@ -106,6 +108,8 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
         id: task._id,
         completed: task.completed,
         type: "deadline",
+        description: task.description,
+        projectId: task.projectId,
       },
     };
   });
