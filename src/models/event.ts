@@ -11,7 +11,7 @@ export interface Event extends Taggable, TimeStamps {
   allDay: boolean;
   startAt?: number;
   endAt?: number;
-  completedAt: number;
+  completedAt?: number;
 }
 
 export type IEvent = Event & mongoose.Document<string> & Event;
@@ -33,5 +33,6 @@ const EventSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const Event = mongoose.models.Event || mongoose.model<IEvent>("Event", EventSchema);
+const Event =
+  mongoose.models.Event || mongoose.model<IEvent>("Event", EventSchema);
 export default Event;

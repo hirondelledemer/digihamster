@@ -9,12 +9,12 @@ import {
   useState,
 } from "react";
 import axios from "axios";
-import { Task } from "@/models/task";
+import { Event } from "@/models/event";
 import { useToast } from "@/app/components/ui/use-toast";
 
 export const EventsContext = createContext<{
-  data: Task[];
-  setData: Dispatch<SetStateAction<Task[]>>;
+  data: Event[];
+  setData: Dispatch<SetStateAction<Event[]>>;
   error?: unknown;
   loading: boolean;
 }>({
@@ -33,7 +33,7 @@ const { Provider } = EventsContext;
 */
 
 export const EventsContextProvider = ({ children }: any) => {
-  const [data, setData] = useState<Task[]>([]);
+  const [data, setData] = useState<Event[]>([]);
   const [error, setError] = useState<unknown>(null);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
@@ -43,8 +43,8 @@ export const EventsContextProvider = ({ children }: any) => {
       try {
         setLoading(true);
         const eventsResponse = await axios.get<{
-          data: Task[];
-        }>("/api/tasks/events");
+          data: Event[];
+        }>("/api/events");
         setData(eventsResponse.data.data);
       } catch (err) {
         setError(err);

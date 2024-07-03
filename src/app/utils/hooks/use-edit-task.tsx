@@ -1,4 +1,4 @@
-import { Task } from "@/models/task";
+import { TaskV2 as Task } from "@/models/taskV2";
 import useTasks from "./use-tasks";
 import { updateObjById } from "../common/update-array";
 import axios from "axios";
@@ -19,9 +19,8 @@ const useEditTask = () => {
           ...props,
         })
       );
-      // onDone&& .setTaskFormOpen(false);
       onDone && onDone();
-      await axios.patch("/api/tasks/events", {
+      await axios.patch("/api/tasks/v2", {
         taskId,
         ...props,
       });

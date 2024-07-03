@@ -19,11 +19,11 @@ import {
 } from "../ui/sheet";
 import TaskForm from "../TaskForm";
 import { FormValues } from "../TaskForm/TaskForm";
-import { Task } from "@/models/task";
 import useTasks from "@/app/utils/hooks/use-tasks";
 import axios from "axios";
 import { updateObjById } from "@/app/utils/common/update-array";
 import { useToast } from "../ui/use-toast";
+import { TaskV2 as Task } from "@/models/taskV2";
 
 export interface CommandToolProps {
   testId?: string;
@@ -72,7 +72,6 @@ const CommandTool: FC<CommandToolProps> = (): JSX.Element => {
       parentTaskId: null,
       createdAt: 0,
       updatedAt: 0,
-      event: null,
       tags: [],
       ...taskData,
     };
@@ -81,7 +80,7 @@ const CommandTool: FC<CommandToolProps> = (): JSX.Element => {
     setOpen(false);
 
     try {
-      const response = await axios.post<Task>("/api/tasks/events", taskData);
+      const response = await axios.post<Task>("/api/tasks/v2", taskData);
       setTasksData((e) => updateObjById<Task>(e, tempId, response.data));
       toast({
         title: "Success",

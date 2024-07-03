@@ -60,7 +60,7 @@ describe("CommandTool", () => {
     });
 
     await waitFor(() => {
-      expect(mockAxios.post).toHaveBeenCalledWith("/api/tasks/events", {
+      expect(mockAxios.post).toHaveBeenCalledWith("/api/events", {
         description: "new desc",
         estimate: 2,
         isActive: true,
@@ -109,7 +109,7 @@ describe("CommandTool", () => {
     });
 
     await waitFor(() => {
-      expect(mockAxios.post).toHaveBeenCalledWith("/api/tasks/events", {
+      expect(mockAxios.post).toHaveBeenCalledWith("/api/events", {
         description: "new desc",
         estimate: 2,
         isActive: false,

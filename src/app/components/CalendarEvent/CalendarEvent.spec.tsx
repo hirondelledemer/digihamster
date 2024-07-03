@@ -43,7 +43,7 @@ describe("CalendarEvent", () => {
       const wrapper = renderComponent();
       expect(wrapper.getEventTextIsStriked()).toBe(false);
       wrapper.clickCompleteButton();
-      expect(mockAxios.patch).toHaveBeenCalledWith("/api/tasks/events", {
+      expect(mockAxios.patch).toHaveBeenCalledWith("/api/events", {
         completed: true,
         taskId: "event1",
       });
@@ -59,7 +59,7 @@ describe("CalendarEvent", () => {
 
       wrapper.clickDeleteButton();
 
-      expect(mockAxios.patch).toHaveBeenCalledWith("/api/tasks/events", {
+      expect(mockAxios.patch).toHaveBeenCalledWith("/api/events", {
         deleted: true,
         taskId: "event1",
       });

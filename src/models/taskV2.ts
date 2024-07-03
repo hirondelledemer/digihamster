@@ -1,9 +1,8 @@
 import mongoose from "mongoose";
 import { Taggable, TimeStamps } from "./shared-types";
 
-
 export interface TaskV2 extends Taggable, TimeStamps {
-  _id: string;
+  id: string;
   title: string;
   description: string;
   completed: boolean;
@@ -40,5 +39,6 @@ const TaskV2Schema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const TaskV2 = mongoose.models.TaskV2 || mongoose.model<ITaskV2>("TaskV2", TaskV2Schema);
+const TaskV2 =
+  mongoose.models.TaskV2 || mongoose.model<ITaskV2>("TaskV2", TaskV2Schema);
 export default TaskV2;

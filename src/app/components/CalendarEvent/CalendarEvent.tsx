@@ -5,7 +5,7 @@ import style from "./CalendarEvent.module.scss";
 import { Event } from "react-big-calendar";
 import axios from "axios";
 import useEvents from "@/app/utils/hooks/use-events";
-import { Task } from "@/models/task";
+import { Event as EventType } from "@/models/event";
 import { updateObjById } from "@/app/utils/common/update-array";
 import { Badge } from "../ui/badge";
 import {
@@ -63,20 +63,20 @@ const CalendarEvent: FC<CalendarEventProps> = ({
   const { editTask } = useEditTask();
 
   const handleDeleteClick = async () => {
-    await axios.patch("/api/tasks/events", {
-      taskId: event.resource.id,
+    await axios.patch("/api/events", {
+      eventId: event.resource.id,
       deleted: true,
     });
-    setData((events) => events.filter((e) => e._id !== event.resource.id));
+    setData((events) => events.filter((e) => e.id !== event.resource.id));
   };
 
   const handleCompleteClick = () => {
     setData((events) => {
-      return updateObjById<Task>(events, event.resource.id, {
+      return updateObjById<EventType>(events, event.resource.id, {
         completed: true,
       });
     });
-    axios.patch("/api/tasks/events", {
+    axios.patch("/api/events", {
       taskId: event.resource.id,
       completed: true,
     });

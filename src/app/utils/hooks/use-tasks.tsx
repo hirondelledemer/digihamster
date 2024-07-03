@@ -9,7 +9,7 @@ import {
   useState,
 } from "react";
 import axios from "axios";
-import { Task } from "@/models/task";
+import { TaskV2 as Task } from "@/models/taskV2";
 import { useToast } from "@/app/components/ui/use-toast";
 
 export interface TasksContextValues {
