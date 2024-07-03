@@ -14,10 +14,7 @@ export async function GET(request: NextRequest) {
       deleted: false,
       $or: [{ event: { $ne: null } }, { deadline: { $ne: null } }],
     });
-    return NextResponse.json({
-      message: "Event found", // todo: rethink
-      data: events,
-    });
+    return NextResponse.json(events);
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 400 });
   }
@@ -86,11 +83,7 @@ export async function PATCH(request: NextRequest) {
       }
     );
 
-    return NextResponse.json({
-      message: "Task updated successfully",
-      success: true,
-      updatedEvent,
-    });
+    return NextResponse.json(updatedEvent);
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 400 });
   }
