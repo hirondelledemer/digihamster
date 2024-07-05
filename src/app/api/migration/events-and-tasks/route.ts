@@ -47,7 +47,7 @@ export async function GET(request: NextRequest) {
           parentTaskId: task.parentTaskId,
           tags: task.tags,
           deadline: task.deadline,
-          activatedAt: task.isActive ? new Date() : undefined,
+          activatedAt: task.activatedAt,
         });
         await newTask.save();
       }
