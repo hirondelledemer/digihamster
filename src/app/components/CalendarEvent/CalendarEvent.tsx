@@ -23,7 +23,7 @@ import {
 } from "../ui/sheet";
 import TaskForm from "../TaskForm";
 import { FormValues } from "../TaskForm/TaskForm";
-import useEditTask from "@/app/utils/hooks/use-edit-task";
+import useEditEvent from "@/app/utils/hooks/use-edit-events";
 
 export interface CalendarEventType extends Event {
   title: string;
@@ -60,14 +60,14 @@ const CalendarEvent: FC<CalendarEventProps> = ({
 }): JSX.Element | null => {
   const { setData } = useEvents();
   const [taskFormOpen, setTaskFormOpen] = useState<boolean>(false);
-  const { editTask } = useEditTask();
+  const { editEvent } = useEditEvent();
 
   const handleDeleteClick = async () => {
     await axios.patch("/api/events", {
       eventId: event.resource.id,
       deleted: true,
     });
-    setData((events) => events.filter((e) => e.id !== event.resource.id));
+    setData((events) => events.filter((e) => e._id !== event.resource.id));
   };
 
   const handleCompleteClick = () => {
@@ -77,7 +77,7 @@ const CalendarEvent: FC<CalendarEventProps> = ({
       });
     });
     axios.patch("/api/events", {
-      taskId: event.resource.id,
+      eventId: event.resource.id,
       completed: true,
     });
   };
@@ -98,12 +98,11 @@ const CalendarEvent: FC<CalendarEventProps> = ({
                 testId={taskFormTestId}
                 editMode
                 onSubmit={(data: FormValues) =>
-                  editTask(
+                  editEvent(
                     event.resource.id,
                     {
                       title: data.title,
                       description: data.description,
-                      estimate: data.eta,
                       projectId: data.project,
                     },
                     () => setTaskFormOpen(false)
@@ -120,7 +119,7 @@ const CalendarEvent: FC<CalendarEventProps> = ({
         </SheetContent>
       </Sheet>
       <ContextMenu>
-        <ContextMenuTrigger>
+        <ContextMenuTrigger disabled={event.resource.type === "deadline"}>
           <div
             data-testid={testId}
             className={`h-full p-1 ${

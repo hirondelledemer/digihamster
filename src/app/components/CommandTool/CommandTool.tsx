@@ -63,7 +63,7 @@ const CommandTool: FC<CommandToolProps> = (): JSX.Element => {
     const tempId = "temp-id";
 
     const tempTask: Task = {
-      id: tempId,
+      _id: tempId,
       completed: false,
       deleted: false,
       sortOrder: null,

@@ -73,7 +73,7 @@ const TaskCard: FC<TaskCardProps> = ({
                 editMode
                 onSubmit={(data: FormValues) =>
                   editTask(
-                    task.id,
+                    task._id,
                     {
                       title: data.title,
                       description: data.description,
@@ -146,7 +146,7 @@ const TaskCard: FC<TaskCardProps> = ({
             <ContextMenuItem
               inset
               onClick={() =>
-                editTask(task.id, { completed: false }, () =>
+                editTask(task._id, { completed: false }, () =>
                   setTaskFormOpen(false)
                 )
               }
@@ -158,7 +158,7 @@ const TaskCard: FC<TaskCardProps> = ({
             <ContextMenuItem
               inset
               onClick={() =>
-                editTask(task.id, { completed: true }, () =>
+                editTask(task._id, { completed: true }, () =>
                   setTaskFormOpen(false)
                 )
               }
@@ -169,7 +169,7 @@ const TaskCard: FC<TaskCardProps> = ({
           <ContextMenuItem
             inset
             onClick={() =>
-              editTask(task.id, { isActive: false }, () =>
+              editTask(task._id, { isActive: false }, () =>
                 setTaskFormOpen(false)
               )
             }

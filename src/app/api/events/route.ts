@@ -12,9 +12,8 @@ export async function GET(request: NextRequest) {
     const events = await Event.find({
       userId,
       deleted: false,
-      $or: [{ event: { $ne: null } }, { deadline: { $ne: null } }],
     });
-    return NextResponse.json(events);
+    return NextResponse.json(events || []);
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 400 });
   }
@@ -38,9 +37,9 @@ export async function POST(request: NextRequest) {
       completed: false,
       deleted: false,
       tags: args.tags,
-      startAt: args.event.startAt,
-      endAt: args.event.endAt,
-      allDay: args.event.allDay,
+      startAt: args.startAt,
+      endAt: args.endAt,
+      allDay: args.allDay,
     });
 
     const savedEvent = await event.save();
@@ -64,7 +63,7 @@ export async function PATCH(request: NextRequest) {
     }
 
     const updatedEvent = await Event.findOneAndUpdate(
-      { _id: args.taskId },
+      { _id: args.eventId },
       {
         title: args.title || event.title,
         description: args.description || event.description,
@@ -77,9 +76,9 @@ export async function PATCH(request: NextRequest) {
           args.projectId === null
             ? undefined
             : args.projectId || event.projectId,
-        startAt: args.event.startAt || event.startAt,
-        endAt: args.event.endAt || event.endAt,
-        allDay: args.event.allDay === undefined ? event.allDay : args.allDay,
+        startAt: args.startAt || event.startAt,
+        endAt: args.endAt || event.endAt,
+        allDay: args.allDay === undefined ? event.allDay : args.allDay,
       }
     );
 

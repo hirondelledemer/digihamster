@@ -30,7 +30,7 @@ const ActiveTaskList: FC<ActiveTaskListProps> = ({ testId }): JSX.Element => {
             )
             .map((task) => (
               <TaskCard
-                key={task._id}
+                key={task.id}
                 testId={taskTestId}
                 task={task}
                 className="mb-4"

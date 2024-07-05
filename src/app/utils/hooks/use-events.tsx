@@ -42,10 +42,8 @@ export const EventsContextProvider = ({ children }: any) => {
     (async function () {
       try {
         setLoading(true);
-        const eventsResponse = await axios.get<{
-          data: Event[];
-        }>("/api/events");
-        setData(eventsResponse.data.data);
+        const eventsResponse = await axios.get<Event[]>("/api/events");
+        setData(eventsResponse.data);
       } catch (err) {
         setError(err);
         toast({

@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import { Taggable, TimeStamps } from "./shared-types";
 
 export interface TaskV2 extends Taggable, TimeStamps {
-  id: string;
+  _id: string;
   title: string;
   description: string;
   completed: boolean;

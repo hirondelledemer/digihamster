@@ -37,7 +37,7 @@ export const TasksContextProvider = ({ children }: any) => {
     (async function () {
       try {
         setLoading(true);
-        const tasksResponse = await axios.get<Task[]>("/api/tasks");
+        const tasksResponse = await axios.get<Task[]>("/api/tasks/v2");
         setData(tasksResponse.data);
       } catch (err) {
         setError(err);

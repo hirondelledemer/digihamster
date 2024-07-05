@@ -91,7 +91,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
     title: event.title,
     allDay: event.allDay,
     resource: {
-      id: event.id,
+      id: event._id,
       completed: event.completed,
       type: "event",
       description: event.description,
@@ -107,7 +107,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
       title: task.title,
       allDay: false,
       resource: {
-        id: task.id,
+        id: task._id,
         completed: task.completed,
         type: "deadline",
         description: task.description,
@@ -252,7 +252,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
     const tempId = "temp-id";
 
     const tempEvent: EventType = {
-      id: tempId,
+      _id: tempId,
       completed: false,
       deleted: false,
       completedAt: 0,
