@@ -34,7 +34,6 @@ import axios from "axios";
 
 import CalendarEvent, { CalendarEventType } from "../CalendarEvent";
 import { eventPropGetter } from "../CalendarEvent/CalendarEvent";
-import { Task } from "@/models/task";
 import useJournalEntries from "@/app/utils/hooks/use-entry";
 import useEvents from "@/app/utils/hooks/use-events";
 import { updateObjById } from "@/app/utils/common/update-array";

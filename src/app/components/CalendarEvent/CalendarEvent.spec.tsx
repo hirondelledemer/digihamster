@@ -61,7 +61,7 @@ describe("CalendarEvent", () => {
 
       expect(mockAxios.patch).toHaveBeenCalledWith("/api/events", {
         deleted: true,
-        taskId: "event1",
+        eventId: "event1",
       });
     });
   });

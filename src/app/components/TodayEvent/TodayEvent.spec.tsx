@@ -68,9 +68,9 @@ describe("TodayEvent", () => {
     it("should complete task", () => {
       const wrapper = renderComponent(props);
       wrapper.clickCheckbox();
-      expect(mockAxios.patch).toHaveBeenCalledWith("/api/tasks/events", {
+      expect(mockAxios.patch).toHaveBeenCalledWith("/api/events", {
         completed: true,
-        taskId: "event1",
+        eventId: "event1",
       });
     });
   });
