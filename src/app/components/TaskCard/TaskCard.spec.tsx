@@ -74,7 +74,7 @@ describe("TaskCard", () => {
     wrapper.clickDeactivate();
     expect(mockAxios.patch).toHaveBeenCalledWith("/api/tasks/v2", {
       isActive: false,
-      taskId: defaultTask.id,
+      taskId: defaultTask._id,
     });
   });
 
@@ -119,7 +119,7 @@ describe("TaskCard", () => {
       wrapper.clickComplete();
       expect(mockAxios.patch).toHaveBeenCalledWith("/api/tasks/v2", {
         completed: true,
-        taskId: defaultTask.id,
+        taskId: defaultTask._id,
       });
       expect(setTasksMock).toHaveBeenCalled();
     });
@@ -145,7 +145,7 @@ describe("TaskCard", () => {
       wrapper.clickUndo();
       expect(mockAxios.patch).toHaveBeenCalledWith("/api/tasks/v2", {
         completed: false,
-        taskId: defaultTask.id,
+        taskId: defaultTask._id,
       });
     });
 

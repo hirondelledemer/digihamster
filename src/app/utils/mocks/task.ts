@@ -5,7 +5,7 @@ export const generateTask: (i?: number, properties?: Partial<Task>) => Task = (
   properties
 ) => {
   return {
-    id: `task${i}`,
+    _id: `task${i}`,
     title: `Task ${i}`,
     description: `task description ${i}`,
     completed: false,

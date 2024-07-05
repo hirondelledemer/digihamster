@@ -45,7 +45,7 @@ describe("CalendarEvent", () => {
       wrapper.clickCompleteButton();
       expect(mockAxios.patch).toHaveBeenCalledWith("/api/events", {
         completed: true,
-        taskId: "event1",
+        eventId: "event1",
       });
     });
 
