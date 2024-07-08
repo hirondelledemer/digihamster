@@ -9,7 +9,7 @@ import {
   useState,
 } from "react";
 import axios from "axios";
-import { Task } from "@/models/task";
+import { TaskV2 as Task } from "@/models/taskV2";
 import { useToast } from "@/app/components/ui/use-toast";
 
 export interface TasksContextValues {
@@ -37,7 +37,7 @@ export const TasksContextProvider = ({ children }: any) => {
     (async function () {
       try {
         setLoading(true);
-        const tasksResponse = await axios.get<Task[]>("/api/tasks");
+        const tasksResponse = await axios.get<Task[]>("/api/tasks/v2");
         setData(tasksResponse.data);
       } catch (err) {
         setError(err);

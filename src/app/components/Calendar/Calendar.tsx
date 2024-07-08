@@ -34,7 +34,6 @@ import axios from "axios";
 
 import CalendarEvent, { CalendarEventType } from "../CalendarEvent";
 import { eventPropGetter } from "../CalendarEvent/CalendarEvent";
-import { Task } from "@/models/task";
 import useJournalEntries from "@/app/utils/hooks/use-entry";
 import useEvents from "@/app/utils/hooks/use-events";
 import { updateObjById } from "@/app/utils/common/update-array";
@@ -48,6 +47,8 @@ import {
 import TaskForm from "../TaskForm";
 import { FormValues } from "../TaskForm/TaskForm";
 import { useToast } from "../ui/use-toast";
+import { Event as EventType } from "@/models/event";
+import useTasks from "@/app/utils/hooks/use-tasks";
 
 export const now = () => new Date();
 
@@ -82,24 +83,28 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
   const { data: journalEntriesData } = useJournalEntries();
   const { data: eventsData, setData: setEventsData } = useEvents();
 
-  const eventsResolved = eventsData.map<CalendarEventType>((task) => {
-    if (task.event) {
-      return {
-        start: new Date(task.event.startAt!),
-        end: new Date(task.event.endAt!),
-        title: task.title,
-        allDay: task.event ? task.event.allDay : false,
-        resource: {
-          id: task._id,
-          completed: task.completed,
-          type: "event",
-          description: task.description,
-          projectId: task.projectId,
-        },
-      };
-    }
+  //todo: check editing of deadline tasks
+  const { data: tasksData } = useTasks(); //todo this is fetching all the tasks. fetch only tasks with deadline
 
+  const eventsResolved = eventsData.map<CalendarEventType>((event) => {
     return {
+      start: new Date(event.startAt!),
+      end: new Date(event.endAt!),
+      title: event.title,
+      allDay: event.allDay,
+      resource: {
+        id: event._id,
+        completed: event.completed,
+        type: "event",
+        description: event.description,
+        projectId: event.projectId,
+      },
+    };
+  });
+
+  const tasksResolved = tasksData
+    .filter((task) => !!task.deadline)
+    .map<CalendarEventType>((task) => ({
       start: task.deadline ? new Date(task.deadline) : undefined,
       end: task.deadline ? new Date(task.deadline) : undefined,
       title: task.title,
@@ -111,8 +116,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
         description: task.description,
         projectId: task.projectId,
       },
-    };
-  });
+    }));
 
   const entriesResolved = journalEntriesData.map<CalendarEventType>(
     (entry) => ({
@@ -121,14 +125,14 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
       allDay: false,
       resource: {
         type: "journal",
-        id: entry.id,
+        id: entry._id,
         title: entry.title,
         note: entry.note,
       },
     })
   );
 
-  const events = [...eventsResolved, ...entriesResolved];
+  const events = [...eventsResolved, ...entriesResolved, ...tasksResolved];
 
   const customSlotPropGetter = useCallback(
     () => ({
@@ -186,22 +190,18 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
     isAllDay,
   }: EventInteractionArgs<Event>) => {
     if (isCalendarEvent(event)) {
-      axios.patch("/api/tasks/events", {
-        taskId: event.resource.id,
-        event: {
-          allDay: isAllDay || false,
-          startAt: new Date(start).getTime(),
-          endAt: new Date(end).getTime(),
-        },
+      axios.patch("/api/events", {
+        eventId: event.resource.id,
+        allDay: isAllDay || false,
+        startAt: new Date(start).getTime(),
+        endAt: new Date(end).getTime(),
       });
 
       setEventsData((e) =>
-        updateObjById<Task>(e, event.resource.id, {
-          event: {
-            allDay: isAllDay || false,
-            startAt: new Date(start).getTime(),
-            endAt: new Date(end).getTime(),
-          },
+        updateObjById<EventType>(e, event.resource.id, {
+          allDay: isAllDay || false,
+          startAt: new Date(start).getTime(),
+          endAt: new Date(end).getTime(),
         })
       );
     }
@@ -216,21 +216,17 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
     start: stringOrDate;
     end: stringOrDate;
   }) => {
-    axios.patch("/api/tasks/events", {
-      taskId: event.resource.id,
-      event: {
-        startAt: new Date(start).getTime(),
-        endAt: new Date(end).getTime(),
-      },
+    axios.patch("/api/events", {
+      eventId: event.resource.id,
+      startAt: new Date(start).getTime(),
+      endAt: new Date(end).getTime(),
     });
 
     setEventsData((e) =>
-      updateObjById<Task>(e, event.resource.id, {
-        event: {
-          allDay: false,
-          startAt: new Date(start).getTime(),
-          endAt: new Date(end).getTime(),
-        },
+      updateObjById<EventType>(e, event.resource.id, {
+        allDay: false,
+        startAt: new Date(start).getTime(),
+        endAt: new Date(end).getTime(),
       })
     );
   };
@@ -240,42 +236,40 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
   };
 
   const newEvent = async (data: FormValues) => {
-    type FieldsRequired = "title" | "description" | "projectId" | "event";
+    type FieldsRequired =
+      | "title"
+      | "description"
+      | "projectId"
+      | "allDay"
+      | "startAt"
+      | "endAt";
 
-    const taskData: Pick<Task, FieldsRequired> = {
+    const eventData: Pick<EventType, FieldsRequired> = {
       title: data.title,
       description: data.description,
       projectId: data.project,
-      event: {
-        allDay: eventInCreationData!.slots.length == 1,
-        startAt: new Date(eventInCreationData!.start).getTime(),
-        endAt: new Date(eventInCreationData!.end).getTime(),
-      },
+      allDay: eventInCreationData!.slots.length == 1,
+      startAt: new Date(eventInCreationData!.start).getTime(),
+      endAt: new Date(eventInCreationData!.end).getTime(),
     };
     const tempId = "temp-id";
 
-    const tempTask: Task = {
+    const tempEvent: EventType = {
       _id: tempId,
       completed: false,
-      isActive: false,
       deleted: false,
-      estimate: 0,
-      sortOrder: null,
       completedAt: 0,
-      activatedAt: 0,
-      parentTaskId: null,
       createdAt: 0,
       updatedAt: 0,
-      deadline: null,
       tags: [],
-      ...taskData,
+      ...eventData,
     };
-    setEventsData((e) => [...e, tempTask]);
+    setEventsData((e) => [...e, tempEvent]);
     setEventInCreationData(null);
 
     try {
-      const response = await axios.post<Task>("/api/tasks/events", taskData);
-      setEventsData((e) => updateObjById<Task>(e, tempId, response.data));
+      const response = await axios.post<EventType>("/api/events", eventData);
+      setEventsData((e) => updateObjById<EventType>(e, tempId, response.data));
       toast({
         title: "Success",
         description: "Event has been created",

@@ -1,7 +1,11 @@
 import { Project } from "@/models/project";
 import { ProjectsContext } from "../hooks/use-projects";
 import { TasksContext } from "../hooks/use-tasks";
-import { Task } from "@/models/task";
+import { TaskV2 as Task } from "@/models/taskV2";
+
+// todo:
+// create tets scenarious
+// test it
 
 export const wrapWithProjectsProvider = (
   component: JSX.Element,

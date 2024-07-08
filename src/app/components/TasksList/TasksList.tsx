@@ -5,7 +5,7 @@ import {
   getCoreRowModel,
   flexRender,
 } from "@tanstack/react-table";
-import { Task } from "@/models/task";
+import { TaskV2 as Task } from "@/models/taskV2";
 import {
   Table,
   TableBody,

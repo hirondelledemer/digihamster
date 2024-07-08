@@ -1,32 +1,32 @@
-import { TaskV2 as Task } from "@/models/taskV2";
-import useTasks from "./use-tasks";
+import { Event } from "@/models/event";
+import useEvents from "./use-events";
 import { updateObjById } from "../common/update-array";
 import axios from "axios";
 import { useToast } from "@/app/components/ui/use-toast";
 
-const useEditTask = () => {
-  const { setData: setTasksData } = useTasks();
+const useEditEvent = () => {
+  const { setData: setEventsData } = useEvents();
   const { toast } = useToast();
 
-  const editTask = async (
-    taskId: string,
-    props: Partial<Task>,
-    onDone: () => void
+  const editEvent = async (
+    eventId: string,
+    props: Partial<Event>,
+    onDone?: () => void
   ) => {
     try {
-      setTasksData((t) =>
-        updateObjById<Task>(t, taskId, {
+      setEventsData((t) =>
+        updateObjById<Event>(t, eventId, {
           ...props,
         })
       );
       onDone && onDone();
-      await axios.patch("/api/tasks/v2", {
-        taskId,
+      await axios.patch("/api/events", {
+        eventId,
         ...props,
       });
       toast({
         title: "Success",
-        description: "Task has been updated",
+        description: "Event has been updated",
       });
     } catch (e) {
       toast({
@@ -36,7 +36,7 @@ const useEditTask = () => {
       });
     }
   };
-  return { editTask };
+  return { editEvent };
 };
 
-export default useEditTask;
+export default useEditEvent;

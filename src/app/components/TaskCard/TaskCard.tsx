@@ -1,5 +1,5 @@
 import React, { FC, useState } from "react";
-import { Task } from "@/models/task";
+import { TaskV2 as Task } from "@/models/taskV2";
 import useProjects from "@/app/utils/hooks/use-projects";
 import { differenceInCalendarDays } from "date-fns";
 import {

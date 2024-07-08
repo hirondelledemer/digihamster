@@ -4,7 +4,7 @@ import { lightFormat, format } from "date-fns";
 import React, { FC, ReactNode } from "react";
 import { Checkbox } from "../ui/checkbox";
 import axios from "axios";
-import { Task } from "@/models/task";
+import { Event } from "@/models/event";
 import useEvents from "@/app/utils/hooks/use-events";
 import { cn } from "../utils";
 import styles from "./TodayEvent.module.scss";
@@ -37,12 +37,12 @@ const TodayEvent: FC<TodayEventProps> = ({
   const { setData } = useEvents();
 
   const handleCompleteClick = async (val: boolean) => {
-    await axios.patch<Task, { data: Task }>("/api/tasks/events", {
-      taskId: id,
+    await axios.patch<Event>("/api/events", {
+      eventId: id,
       completed: val,
     });
 
-    setData((events) => updateObjById<Task>(events, id, { completed: val }));
+    setData((events) => updateObjById<Event>(events, id, { completed: val }));
   };
 
   return (

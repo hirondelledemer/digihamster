@@ -1,13 +1,7 @@
 import mongoose from "mongoose";
 import { Taggable, TimeStamps } from "./shared-types";
 
-interface TaskEvent {
-  allDay: boolean;
-  startAt?: number;
-  endAt?: number;
-}
-
-export interface Task extends Taggable, TimeStamps {
+export interface TaskV2 extends Taggable, TimeStamps {
   _id: string;
   title: string;
   description: string;
@@ -17,16 +11,15 @@ export interface Task extends Taggable, TimeStamps {
   projectId: string;
   estimate: number;
   sortOrder: number | null;
-  event: TaskEvent | null; // todo: deprecated
   completedAt: number;
   activatedAt: number;
   parentTaskId: string | null;
   deadline: number | null;
 }
 
-export type ITask = Task & mongoose.Document<string> & Task;
+export type ITaskV2 = TaskV2 & mongoose.Document<string> & TaskV2;
 
-const TaskSchema = new mongoose.Schema(
+const TaskV2Schema = new mongoose.Schema(
   {
     title: { type: String, required: true },
     description: { type: String, required: false },
@@ -37,7 +30,6 @@ const TaskSchema = new mongoose.Schema(
     projectId: { type: String },
     estimate: { type: Number },
     sortOrder: { type: Number },
-    event: { type: Object },
     activatedAt: { type: Number },
     completedAt: { type: Number },
     parentTaskId: { type: String },
@@ -47,5 +39,6 @@ const TaskSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const Task = mongoose.models.Task || mongoose.model<ITask>("Task", TaskSchema);
-export default Task;
+const TaskV2 =
+  mongoose.models.TaskV2 || mongoose.model<ITaskV2>("TaskV2", TaskV2Schema);
+export default TaskV2;

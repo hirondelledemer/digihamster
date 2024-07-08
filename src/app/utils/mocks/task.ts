@@ -1,4 +1,4 @@
-import { Task } from "@/models/task";
+import { TaskV2 as Task } from "@/models/taskV2";
 
 export const generateTask: (i?: number, properties?: Partial<Task>) => Task = (
   i = 1,

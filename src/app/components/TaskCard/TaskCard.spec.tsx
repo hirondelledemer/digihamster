@@ -72,7 +72,7 @@ describe("TaskCard", () => {
   it("should deactivate task", () => {
     const wrapper = renderComponent(defaultProps);
     wrapper.clickDeactivate();
-    expect(mockAxios.patch).toHaveBeenCalledWith("/api/tasks/events", {
+    expect(mockAxios.patch).toHaveBeenCalledWith("/api/tasks/v2", {
       isActive: false,
       taskId: defaultTask._id,
     });
@@ -99,7 +99,7 @@ describe("TaskCard", () => {
       wrapper.setEta("eta-3");
       wrapper.submitForm();
     });
-    expect(mockAxios.patch).toHaveBeenCalledWith("/api/tasks/events", {
+    expect(mockAxios.patch).toHaveBeenCalledWith("/api/tasks/v2", {
       description: "task description 1new desc",
       estimate: 3,
       projectId: "project1",
@@ -117,7 +117,7 @@ describe("TaskCard", () => {
       };
       const wrapper = renderComponent(defaultProps, tasksContextValues);
       wrapper.clickComplete();
-      expect(mockAxios.patch).toHaveBeenCalledWith("/api/tasks/events", {
+      expect(mockAxios.patch).toHaveBeenCalledWith("/api/tasks/v2", {
         completed: true,
         taskId: defaultTask._id,
       });
@@ -143,7 +143,7 @@ describe("TaskCard", () => {
     it("should undo the task", async () => {
       const wrapper = renderComponent(props);
       wrapper.clickUndo();
-      expect(mockAxios.patch).toHaveBeenCalledWith("/api/tasks/events", {
+      expect(mockAxios.patch).toHaveBeenCalledWith("/api/tasks/v2", {
         completed: false,
         taskId: defaultTask._id,
       });
