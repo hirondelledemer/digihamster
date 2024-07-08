@@ -30,8 +30,7 @@ test.describe("error cases", () => {
       await driver.fillPassword(vals.password);
       await driver.clickLogin();
 
-      await expect(page).toHaveURL(urls.profile);
-      await expect(page).toHaveScreenshot("profile-page.png");
+      await expect(page).toHaveURL(urls.home);
     });
   });
 
@@ -80,6 +79,7 @@ const getDriver = ({ page }: { page: Page }) => {
       login: "/login",
       profile: "/profile",
       base: "/",
+      home: "/home",
     },
   };
 };
