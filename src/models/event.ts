@@ -9,8 +9,8 @@ export interface Event extends Taggable, TimeStamps {
   deleted: boolean;
   projectId: string;
   allDay: boolean;
-  startAt?: number;
-  endAt?: number;
+  startAt: number;
+  endAt: number;
   completedAt?: number;
 }
 

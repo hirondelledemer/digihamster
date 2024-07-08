@@ -2,12 +2,13 @@ import mongoose from "mongoose";
 import { Taggable, TimeStamps } from "./shared-types";
 
 export interface IJournalEntry extends Taggable, mongoose.Document, TimeStamps {
+  _id: string;
   title: string;
   note: string;
   userId: string;
 }
 
-const JournalEntrySchema = new mongoose.Schema(
+const JournalEntrySchema = new mongoose.Schema<string>(
   {
     title: { type: String },
     note: { type: String, required: true },

@@ -82,22 +82,25 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
 
   const { data: journalEntriesData } = useJournalEntries();
   const { data: eventsData, setData: setEventsData } = useEvents();
+
   //todo: check editing of deadline tasks
   const { data: tasksData } = useTasks(); //todo this is fetching all the tasks. fetch only tasks with deadline
 
-  const eventsResolved = eventsData.map<CalendarEventType>((event) => ({
-    start: new Date(event.startAt!),
-    end: new Date(event.endAt!),
-    title: event.title,
-    allDay: event.allDay,
-    resource: {
-      id: event._id,
-      completed: event.completed,
-      type: "event",
-      description: event.description,
-      projectId: event.projectId,
-    },
-  }));
+  const eventsResolved = eventsData.map<CalendarEventType>((event) => {
+    return {
+      start: new Date(event.startAt!),
+      end: new Date(event.endAt!),
+      title: event.title,
+      allDay: event.allDay,
+      resource: {
+        id: event._id,
+        completed: event.completed,
+        type: "event",
+        description: event.description,
+        projectId: event.projectId,
+      },
+    };
+  });
 
   const tasksResolved = tasksData
     .filter((task) => !!task.deadline)
@@ -122,7 +125,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
       allDay: false,
       resource: {
         type: "journal",
-        id: entry.id,
+        id: entry._id,
         title: entry.title,
         note: entry.note,
       },

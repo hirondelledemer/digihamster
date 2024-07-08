@@ -1,7 +1,10 @@
+import { connect } from "@/config/database/connection";
 import { getDataFromToken } from "@/app/helpers/getDataFromToken";
 import Event, { IEvent } from "@/models/event";
 import User from "@/models/user";
 import { NextRequest, NextResponse } from "next/server";
+
+connect();
 
 export async function GET(request: NextRequest) {
   try {
@@ -13,7 +16,7 @@ export async function GET(request: NextRequest) {
       userId,
       deleted: false,
     });
-    return NextResponse.json(events || []);
+    return NextResponse.json(events);
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 400 });
   }
