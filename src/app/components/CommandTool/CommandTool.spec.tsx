@@ -7,6 +7,15 @@ import {
   wrapWithProjectsProvider,
   wrapWithTasksProvider,
 } from "@/app/utils/tests/wraps";
+import { useRouter } from "next/navigation";
+
+jest.mock("next/navigation", () => ({
+  useRouter: () => ({
+    push: jest.fn(),
+  }),
+}));
+
+const useRouterMock = useRouter as unknown as jest.Mock;
 
 describe("CommandTool", () => {
   afterEach(() => {
@@ -38,84 +47,124 @@ describe("CommandTool", () => {
     expect(wrapper.getComponent()).not.toBe(null);
   });
 
-  it("should create active task", async () => {
-    const wrapper = renderComponent();
-    act(() => {
-      wrapper.pressCmdK();
-    });
-    expect(wrapper.commandToolOpen()).toBe(true);
+  describe("go-to actions", () => {
+    it("should to tasks page", async () => {
+      const pushMock = jest.fn();
+      const useRouter = jest.spyOn(require("next/navigation"), "useRouter");
+      useRouter.mockImplementation(() => ({
+        push: pushMock,
+      }));
 
-    act(() => {
-      wrapper.clickCreateActiveTask();
-    });
+      const wrapper = renderComponent();
+      await act(async () => {
+        wrapper.pressCmdK();
+      });
+      expect(wrapper.commandToolOpen()).toBe(true);
 
-    expect(wrapper.taskFormIsOpen()).toBe(true);
+      wrapper.clickGoToTasks();
 
-    wrapper.enterTitle("new task title");
-    await wrapper.enterDescription("new desc");
-    wrapper.enterEta("eta-2");
-
-    act(() => {
-      wrapper.submitTaskForm();
+      expect(pushMock).toHaveBeenCalledWith("/tasks");
     });
 
-    await waitFor(() => {
-      expect(mockAxios.post).toHaveBeenCalledWith("/api/tasks/v2", {
-        description: "new desc",
-        estimate: 2,
-        isActive: true,
-        projectId: "project1",
-        title: "new task title",
-        deadline: null,
+    it("should to home page", async () => {
+      const pushMock = jest.fn();
+      const useRouter = jest.spyOn(require("next/navigation"), "useRouter");
+      useRouter.mockImplementation(() => ({
+        push: pushMock,
+      }));
+
+      const wrapper = renderComponent();
+      await act(async () => {
+        wrapper.pressCmdK();
+      });
+      expect(wrapper.commandToolOpen()).toBe(true);
+
+      wrapper.clickGoToHome();
+
+      expect(pushMock).toHaveBeenCalledWith("/home");
+    });
+  });
+
+  describe("create task actions", () => {
+    it("should create active task", async () => {
+      const wrapper = renderComponent();
+      act(() => {
+        wrapper.pressCmdK();
+      });
+      expect(wrapper.commandToolOpen()).toBe(true);
+
+      act(() => {
+        wrapper.clickCreateActiveTask();
+      });
+
+      expect(wrapper.taskFormIsOpen()).toBe(true);
+
+      wrapper.enterTitle("new task title");
+      await wrapper.enterDescription("new desc");
+      wrapper.enterEta("eta-2");
+
+      act(() => {
+        wrapper.submitTaskForm();
+      });
+
+      await waitFor(() => {
+        expect(mockAxios.post).toHaveBeenCalledWith("/api/tasks/v2", {
+          description: "new desc",
+          estimate: 2,
+          isActive: true,
+          projectId: "project1",
+          title: "new task title",
+          deadline: null,
+        });
       });
     });
-  });
 
-  it("should create task with predefined title", async () => {
-    const wrapper = renderComponent();
-    act(() => {
-      wrapper.pressCmdK();
-    });
-    expect(wrapper.commandToolOpen()).toBe(true);
+    it("should create task with predefined title", async () => {
+      const wrapper = renderComponent();
+      act(() => {
+        wrapper.pressCmdK();
+      });
+      expect(wrapper.commandToolOpen()).toBe(true);
 
-    act(() => {
-      wrapper.enterSearch("new task title");
-      wrapper.clickCreateActiveTask();
-    });
+      act(() => {
+        wrapper.enterSearch("new task title");
+        wrapper.clickCreateActiveTask();
+      });
 
-    expect(wrapper.taskFormIsOpen()).toBe(true);
-    expect(wrapper.getTitle()).toBe("new task title");
-  });
-
-  it("should create regular task", async () => {
-    const wrapper = renderComponent();
-    act(() => {
-      wrapper.pressCmdK();
-    });
-    expect(wrapper.commandToolOpen()).toBe(true);
-
-    act(() => {
-      wrapper.clickCreateTask();
+      expect(wrapper.taskFormIsOpen()).toBe(true);
+      expect(wrapper.getTitle()).toBe("new task title");
     });
 
-    expect(wrapper.taskFormIsOpen()).toBe(true);
+    it("should create regular task", async () => {
+      const wrapper = renderComponent();
+      act(() => {
+        wrapper.pressCmdK();
+      });
+      expect(wrapper.commandToolOpen()).toBe(true);
 
-    wrapper.enterTitle("new task title");
-    await wrapper.enterDescription("new desc");
-    wrapper.enterEta("eta-2");
+      act(() => {
+        wrapper.clickCreateTask();
+      });
 
-    act(() => {
-      wrapper.submitTaskForm();
-    });
+      expect(wrapper.taskFormIsOpen()).toBe(true);
 
-    await waitFor(() => {
-      expect(mockAxios.post).toHaveBeenCalledWith("/api/tasks/v2", {
-        description: "new desc",
-        estimate: 2,
-        isActive: false,
-        projectId: "project1",
-        title: "new task title",
-        deadline: null,
+      wrapper.enterTitle("new task title");
+      await wrapper.enterDescription("new desc");
+      wrapper.enterEta("eta-2");
+
+      act(() => {
+        wrapper.submitTaskForm();
+      });
+
+      await waitFor(() => {
+        expect(mockAxios.post).toHaveBeenCalledWith("/api/tasks/v2", {
+          description: "new desc",
+          estimate: 2,
+          isActive: false,
+          projectId: "project1",
+          title: "new task title",
+          deadline: null,
+        });
       });
     });
   });

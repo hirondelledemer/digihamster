@@ -1,6 +1,7 @@
 "use client";
 
-import { FC, useState } from "react";
+import { FC, useCallback, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   CommandDialog,
   CommandEmpty,
@@ -24,6 +25,7 @@ import axios from "axios";
 import { updateObjById } from "@/app/utils/common/update-array";
 import { useToast } from "../ui/use-toast";
 import { TaskV2 as Task } from "@/models/taskV2";
+import { HOME, TASKS } from "@/app/utils/consts/routes";
 
 export interface CommandToolProps {
   testId?: string;
@@ -42,6 +44,7 @@ const CommandTool: FC<CommandToolProps> = (): JSX.Element => {
   const { setData: setTasksData } = useTasks();
   const { toast } = useToast();
   const [searchValue, setSearchValue] = useState<string>("");
+  const router = useRouter();
 
   const createNewTask = async (data: FormValues) => {
     type FieldsRequired =
@@ -101,6 +104,14 @@ const CommandTool: FC<CommandToolProps> = (): JSX.Element => {
     return 0;
   };
 
+  const gotToTasks = useCallback(() => {
+    router.push(TASKS);
+  }, [router]);
+
+  const goToHome = useCallback(() => {
+    router.push(HOME);
+  }, [router]);
+
   return (
     <>
       <Sheet open={taskFormOpen.isOpen}>
@@ -138,7 +149,11 @@ const CommandTool: FC<CommandToolProps> = (): JSX.Element => {
         />
         <CommandList>
           <CommandEmpty>No results found.</CommandEmpty>
-          <CommandGroup heading="Suggestions">
+          <CommandGroup heading="Go to">
+            <CommandItem onSelect={gotToTasks}>Tasks</CommandItem>
+            <CommandItem onSelect={goToHome}>Home</CommandItem>
+          </CommandGroup>
+          <CommandGroup heading="Actions">
             <CommandItem
               onSelect={() => setTaskFormOpen({ isOpen: true, isActive: true })}
             >
