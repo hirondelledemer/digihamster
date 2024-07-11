@@ -13,58 +13,13 @@ import {
   StopwatchIcon,
 } from "@radix-ui/react-icons";
 import { DataTableRowActions } from "./DataTableRowActions/DataTableRowActions";
+import { Project } from "@/models/project";
+import Estimate from "../../Estimate";
+import { format } from "date-fns";
 
-// import { Badge } from "@/registry/new-york/ui/badge";
-// import { Checkbox } from "@/registry/new-york/ui/checkbox";
-
-// import { labels, priorities, statuses } from "../data/data";
-// import { Task } from "../data/schema";
-// import { DataTableColumnHeader } from "./data-table-column-header";
-// import { DataTableRowActions } from "./data-table-row-actions";
-export const labels = [
-  {
-    value: "bug",
-    label: "Bug",
-  },
-  {
-    value: "feature",
-    label: "Feature",
-  },
-  {
-    value: "documentation",
-    label: "Documentation",
-  },
-];
-
-export const statuses = [
-  {
-    value: "backlog",
-    label: "Backlog",
-    icon: QuestionMarkCircledIcon,
-  },
-  {
-    value: "todo",
-    label: "Todo",
-    icon: CircleIcon,
-  },
-  {
-    value: "in progress",
-    label: "In Progress",
-    icon: StopwatchIcon,
-  },
-  {
-    value: "done",
-    label: "Done",
-    icon: CheckCircledIcon,
-  },
-  {
-    value: "canceled",
-    label: "Canceled",
-    icon: CrossCircledIcon,
-  },
-];
-
-export const columns: ColumnDef<Task>[] = [
+export const getColumns: (projects: Project[]) => ColumnDef<Task>[] = (
+  projects
+) => [
   {
     id: "select",
     header: ({ table }) => (
@@ -104,11 +59,8 @@ export const columns: ColumnDef<Task>[] = [
       <DataTableColumnHeader column={column} title="Title" />
     ),
     cell: ({ row }) => {
-      //   const label = labels.find((label) => label.value === row.original.label);
-
       return (
         <div className="flex space-x-2">
-          {/* {label && <Badge variant="outline">{label.label}</Badge>} */}
           <span className="max-w-[500px] truncate font-medium">
             {row.getValue("title")}
           </span>
@@ -117,25 +69,29 @@ export const columns: ColumnDef<Task>[] = [
     },
   },
   {
-    accessorKey: "status",
+    accessorKey: "description",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Status" />
+      <DataTableColumnHeader column={column} title="Description" />
     ),
     cell: ({ row }) => {
-      const status = statuses.find(
-        (status) => status.value === row.getValue("status")
+      return (
+        <div className="flex space-x-2">
+          <span className="max-w-[200px] truncate font-medium">
+            {row.getValue("description")}
+          </span>
+        </div>
       );
-
-      if (!status) {
-        return null;
-      }
-
+    },
+  },
+  {
+    accessorKey: "estimate",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Estimate" />
+    ),
+    cell: ({ row }) => {
       return (
         <div className="flex w-[100px] items-center">
-          {status.icon && (
-            <status.icon className="mr-2 h-4 w-4 text-muted-foreground" />
-          )}
-          <span>{status.label}</span>
+          <Estimate estimate={row.getValue("estimate")} />
         </div>
       );
     },
@@ -144,26 +100,68 @@ export const columns: ColumnDef<Task>[] = [
     },
   },
   {
-    accessorKey: "priority",
+    accessorKey: "projectId",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Priority" />
+      <DataTableColumnHeader column={column} title="Project" />
     ),
     cell: ({ row }) => {
-      //   const priority = priorities.find(
-      //     (priority) => priority.value === row.getValue("priority")
-      //   );
+      const project = projects.find((p) => p._id === row.getValue("projectId"));
 
-      //   if (!priority) {
-      //     return null;
-      //   }
+      if (!project) {
+        return null;
+      }
 
       return (
-        <div className="flex items-center">
-          {/* {priority.icon && (
-            <priority.icon className="mr-2 h-4 w-4 text-muted-foreground" />
-          )}
-          <span>{priority.label}</span> */}
-          priority
+        <div className="flex w-[100px] items-center">
+          <span>{project.title}</span>
+        </div>
+      );
+    },
+    filterFn: (row, id, value) => {
+      return value.includes(row.getValue(id));
+    },
+  },
+  {
+    accessorKey: "isActive",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Status" />
+    ),
+    cell: ({ row }) => {
+      return (
+        <div className="flex w-[100px] items-center">
+          <span>{row.original.isActive ? "ACTIVE" : ""}</span>
+        </div>
+      );
+    },
+    filterFn: (row, id, value) => {
+      return value.includes(row.getValue(id));
+    },
+  },
+  {
+    accessorKey: "createdAt",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Created At" />
+    ),
+    cell: ({ row }) => {
+      return (
+        <div className="flex w-[100px] items-center">
+          <span>{format(row.getValue("createdAt"), "yyyy-MM-dd")}</span>
+        </div>
+      );
+    },
+    filterFn: (row, id, value) => {
+      return value.includes(row.getValue(id));
+    },
+  },
+  {
+    accessorKey: "updatedAt",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Updated At" />
+    ),
+    cell: ({ row }) => {
+      return (
+        <div className="flex w-[100px] items-center">
+          <span>{format(row.getValue("updatedAt"), "yyyy-MM-dd")}</span>
         </div>
       );
     },
