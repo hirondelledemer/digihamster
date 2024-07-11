@@ -98,6 +98,7 @@ export const getColumns: (projects: Project[]) => ColumnDef<Task>[] = (
     filterFn: (row, id, value) => {
       return value.includes(row.getValue(id));
     },
+    sortUndefined: false,
   },
   {
     accessorKey: "projectId",
