@@ -4,14 +4,6 @@ import { TaskV2 as Task } from "@/models/taskV2";
 import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "../../ui/checkbox";
 import { DataTableColumnHeader } from "./DataTableColumnHeader/DataTableColumnHeader";
-import { Badge } from "../../ui/badge";
-import {
-  CheckCircledIcon,
-  CircleIcon,
-  CrossCircledIcon,
-  QuestionMarkCircledIcon,
-  StopwatchIcon,
-} from "@radix-ui/react-icons";
 import { DataTableRowActions } from "./DataTableRowActions/DataTableRowActions";
 import { Project } from "@/models/project";
 import Estimate from "../../Estimate";
@@ -45,15 +37,6 @@ export const getColumns: (projects: Project[]) => ColumnDef<Task>[] = (
     enableHiding: false,
   },
   {
-    accessorKey: "id",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Task" />
-    ),
-    cell: ({ row }) => <div className="w-[80px]">{row.getValue("id")}</div>,
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
     accessorKey: "title",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Title" />
@@ -61,7 +44,7 @@ export const getColumns: (projects: Project[]) => ColumnDef<Task>[] = (
     cell: ({ row }) => {
       return (
         <div className="flex space-x-2">
-          <span className="max-w-[500px] truncate font-medium">
+          <span className="max-w-[200px] truncate font-medium">
             {row.getValue("title")}
           </span>
         </div>
