@@ -11,7 +11,7 @@ const useEditTask = () => {
   const editTask = async (
     taskId: string,
     props: Partial<Task>,
-    onDone: () => void
+    onDone?: () => void
   ) => {
     try {
       setTasksData((t) =>
