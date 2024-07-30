@@ -36,7 +36,32 @@ const useEditTask = () => {
       });
     }
   };
-  return { editTask };
+
+  const deleteTask = async (
+    // todo: maybe rename
+    taskId: string,
+    onDone?: () => void
+  ) => {
+    try {
+      setTasksData((tasks) => tasks.filter((task) => task._id !== taskId));
+      onDone && onDone();
+      await axios.patch("/api/tasks/v2", {
+        taskId,
+        deleted: true,
+      });
+      toast({
+        title: "Success",
+        description: "Task has been deleted",
+      });
+    } catch (e) {
+      toast({
+        title: "Error",
+        description: JSON.stringify(e),
+        variant: "destructive",
+      });
+    }
+  };
+  return { editTask, deleteTask };
 };
 
 export default useEditTask;

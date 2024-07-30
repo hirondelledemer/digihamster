@@ -4,18 +4,10 @@ import { DotsHorizontalIcon } from "@radix-ui/react-icons";
 import { Row } from "@tanstack/react-table";
 import {
   DropdownMenu,
-  DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
   DropdownMenuItem,
-  DropdownMenuSub,
-  DropdownMenuSubTrigger,
-  DropdownMenuSubContent,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuShortcut,
 } from "../../../ui/dropdown-menu";
 import { Button } from "../../../ui/button";
 import { useState } from "react";
@@ -50,7 +42,7 @@ export function DataTableRowActions<TData>({
 }: DataTableRowActionsProps<TData>) {
   const task = taskSchema.parse(row.original);
   const [taskFormOpen, setTaskFormOpen] = useState<boolean>(false);
-  const { editTask } = useEditTask();
+  const { editTask, deleteTask } = useEditTask();
 
   const activateTask = () => {
     editTask(task._id, {
@@ -60,13 +52,6 @@ export function DataTableRowActions<TData>({
   const deactivateTask = () => {
     editTask(task._id, {
       isActive: false,
-    });
-  };
-
-  // todo: delete should be different hook
-  const deleteTask = () => {
-    editTask(task._id, {
-      deleted: true,
     });
   };
 
@@ -130,7 +115,9 @@ export function DataTableRowActions<TData>({
             </DropdownMenuItem>
           )}
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={deleteTask}>Delete</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => deleteTask(task._id)}>
+            Delete
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </>
