@@ -149,10 +149,6 @@ const CommandTool: FC<CommandToolProps> = (): JSX.Element => {
         />
         <CommandList>
           <CommandEmpty>No results found.</CommandEmpty>
-          <CommandGroup heading="Go to">
-            <CommandItem onSelect={gotToTasks}>Tasks</CommandItem>
-            <CommandItem onSelect={goToHome}>Home</CommandItem>
-          </CommandGroup>
           <CommandGroup heading="Actions">
             <CommandItem
               onSelect={() => setTaskFormOpen({ isOpen: true, isActive: true })}
@@ -166,6 +162,10 @@ const CommandTool: FC<CommandToolProps> = (): JSX.Element => {
             >
               Create Task
             </CommandItem>
+          </CommandGroup>
+          <CommandGroup heading="Go to">
+            <CommandItem onSelect={goToHome}>Home</CommandItem>
+            <CommandItem onSelect={gotToTasks}>Tasks</CommandItem>
           </CommandGroup>
         </CommandList>
       </CommandDialog>
