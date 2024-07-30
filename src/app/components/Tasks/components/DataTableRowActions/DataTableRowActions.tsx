@@ -10,7 +10,7 @@ import {
   DropdownMenuItem,
 } from "../../../ui/dropdown-menu";
 import { Button } from "../../../ui/button";
-import { useState } from "react";
+import { MouseEvent, useState } from "react";
 import {
   Sheet,
   SheetContent,
@@ -44,15 +44,28 @@ export function DataTableRowActions<TData>({
   const [taskFormOpen, setTaskFormOpen] = useState<boolean>(false);
   const { editTask, deleteTask } = useEditTask();
 
-  const activateTask = () => {
+  const handleActivateClick = (event: MouseEvent) => {
+    event.stopPropagation();
     editTask(task._id, {
       isActive: true,
     });
   };
-  const deactivateTask = () => {
+
+  const handleDeactivateClick = (event: MouseEvent) => {
+    event.stopPropagation();
     editTask(task._id, {
       isActive: false,
     });
+  };
+
+  const handleEditClick = (event: MouseEvent) => {
+    event.stopPropagation();
+    setTaskFormOpen(true);
+  };
+
+  const handleDeleteClick = (event: MouseEvent) => {
+    event.stopPropagation();
+    deleteTask(task._id);
   };
 
   return (
@@ -102,20 +115,19 @@ export function DataTableRowActions<TData>({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-[160px]">
-          {/* todo: open edit on task click */}
-          <DropdownMenuItem onClick={() => setTaskFormOpen(true)}>
-            Edit
-          </DropdownMenuItem>
+          <DropdownMenuItem onClick={handleEditClick}>Edit</DropdownMenuItem>
           {!task.isActive && (
-            <DropdownMenuItem onClick={activateTask}>Activate</DropdownMenuItem>
+            <DropdownMenuItem onClick={handleActivateClick}>
+              Activate
+            </DropdownMenuItem>
           )}
           {task.isActive && (
-            <DropdownMenuItem onClick={deactivateTask}>
+            <DropdownMenuItem onClick={handleDeactivateClick}>
               Deactivate
             </DropdownMenuItem>
           )}
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => deleteTask(task._id)}>
+          <DropdownMenuItem onClick={handleDeleteClick}>
             Delete
           </DropdownMenuItem>
         </DropdownMenuContent>
