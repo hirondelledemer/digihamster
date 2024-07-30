@@ -66,7 +66,7 @@ export function DataTable<TData, TValue>({
     getSortedRowModel: getSortedRowModel(),
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
-    manualPagination: true,
+    autoResetPageIndex: false,
   });
 
   return (

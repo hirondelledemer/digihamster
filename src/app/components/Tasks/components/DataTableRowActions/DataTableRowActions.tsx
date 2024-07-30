@@ -32,7 +32,7 @@ export const taskSchema = z.object({
   title: z.string(),
   description: z.union([z.string(), z.null(), z.undefined()]),
   estimate: z.union([z.number(), z.undefined(), z.null()]),
-  projectId: z.union([z.string(), z.null()]),
+  projectId: z.union([z.string(), z.null(), z.undefined()]),
   deadline: z.union([z.number(), z.undefined(), z.null()]),
   isActive: z.boolean() || z.undefined(),
 });
