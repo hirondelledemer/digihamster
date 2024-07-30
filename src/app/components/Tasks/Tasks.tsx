@@ -26,6 +26,8 @@ const Tasks: FC<TasksProps> = ({ testId }): JSX.Element => {
   const [selectedTask, setSelectedTask] = useState<TaskV2 | null>(null);
   const { editTask } = useEditTask();
 
+  const notCompletedTasks = tasks.filter((task) => !task.completed);
+
   const openTaskForm = (task: TaskV2) => {
     setSelectedTask(task);
   };
@@ -77,7 +79,11 @@ const Tasks: FC<TasksProps> = ({ testId }): JSX.Element => {
           </SheetHeader>
         </SheetContent>
       </Sheet>
-      <DataTable data={tasks} columns={columns} onRowClick={openTaskForm} />
+      <DataTable
+        data={notCompletedTasks}
+        columns={columns}
+        onRowClick={openTaskForm}
+      />
     </div>
   );
 };
