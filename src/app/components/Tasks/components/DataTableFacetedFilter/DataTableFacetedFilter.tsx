@@ -16,25 +16,6 @@ import {
 } from "../../../ui/command";
 import { cn } from "../../../utils";
 
-// import { cn } from "@/lib/utils";
-// import { Badge } from "@/registry/new-york/ui/badge";
-// import { Button } from "@/registry/new-york/ui/button";
-// import {
-//   Command,
-//   CommandEmpty,
-//   CommandGroup,
-//   CommandInput,
-//   CommandItem,
-//   CommandList,
-//   CommandSeparator,
-// } from "@/registry/new-york/ui/command";
-// import {
-//   Popover,
-//   PopoverContent,
-//   PopoverTrigger,
-// } from "@/registry/new-york/ui/popover";
-// import { Separator } from "@/registry/new-york/ui/separator";
-
 interface DataTableFacetedFilterProps<TData, TValue> {
   column?: Column<TData, TValue>;
   title?: string;

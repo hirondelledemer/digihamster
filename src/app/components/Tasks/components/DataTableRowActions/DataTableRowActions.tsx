@@ -31,29 +31,10 @@ import { FormValues } from "@/app/components/TaskForm/TaskForm";
 import useEditTask from "@/app/utils/hooks/use-edit-task";
 import { z } from "zod";
 
-// import { Button } from "@/registry/new-york/ui/button";
-// import {
-//   DropdownMenu,
-//   DropdownMenuContent,
-//   DropdownMenuItem,
-//   DropdownMenuRadioGroup,
-//   DropdownMenuRadioItem,
-//   DropdownMenuSeparator,
-//   DropdownMenuShortcut,
-//   DropdownMenuSub,
-//   DropdownMenuSubContent,
-//   DropdownMenuSubTrigger,
-//   DropdownMenuTrigger,
-// } from "@/registry/new-york/ui/dropdown-menu";
-
-// import { labels } from "../data/data";
-// import { taskSchema } from "../data/schema";
-
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
 }
 
-// todo: brain fog
 export const taskSchema = z.object({
   _id: z.string(),
   title: z.string(),
