@@ -21,7 +21,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "../ui/sheet";
-import TaskForm from "../TaskForm";
+import TaskForm from "../EventForm";
 import { FormValues } from "../TaskForm/TaskForm";
 import useEditEvent from "@/app/utils/hooks/use-edit-events";
 

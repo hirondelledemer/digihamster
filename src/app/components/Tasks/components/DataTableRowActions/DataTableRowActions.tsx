@@ -11,15 +11,7 @@ import {
 } from "../../../ui/dropdown-menu";
 import { Button } from "../../../ui/button";
 import { MouseEvent, useState } from "react";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from "@/app/components/ui/sheet";
 import TaskForm from "@/app/components/TaskForm";
-import { FormValues } from "@/app/components/TaskForm/TaskForm";
 import useEditTask from "@/app/utils/hooks/use-edit-task";
 import { z } from "zod";
 
@@ -27,14 +19,24 @@ interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
 }
 
+// todo: this is not okey. data should be normalized
 export const taskSchema = z.object({
   _id: z.string(),
   title: z.string(),
-  description: z.union([z.string(), z.null(), z.undefined()]),
+  description: z.union([z.string(), z.undefined(), z.null()]),
   estimate: z.union([z.number(), z.undefined(), z.null()]),
-  projectId: z.union([z.string(), z.null(), z.undefined()]),
+  projectId: z.union([z.string(), z.null()]),
   deadline: z.union([z.number(), z.undefined(), z.null()]),
   isActive: z.boolean() || z.undefined(),
+  completed: z.boolean(),
+  deleted: z.boolean(),
+  sortOrder: z.union([z.number(), z.undefined()]),
+  completedAt: z.union([z.number(), z.undefined()]),
+  activatedAt: z.union([z.number(), z.undefined(), z.null()]),
+  parentTaskId: z.union([z.string(), z.null(), z.undefined()]),
+  tags: z.array(z.string()),
+  createdAt: z.string(),
+  updatedAt: z.string(),
 });
 
 export function DataTableRowActions<TData>({
@@ -68,42 +70,18 @@ export function DataTableRowActions<TData>({
     deleteTask(task._id);
   };
 
+  const closeTaskForm = () => setTaskFormOpen(false);
+
   return (
     <>
-      <Sheet open={taskFormOpen}>
-        <SheetContent
-          side="left"
-          onCloseClick={() => setTaskFormOpen(false)}
-          onEscapeKeyDown={() => setTaskFormOpen(false)}
-        >
-          <SheetHeader>
-            <SheetTitle>Edit Task</SheetTitle>
-            <SheetDescription>
-              <TaskForm
-                onSubmit={(data: FormValues) =>
-                  editTask(
-                    task._id,
-                    {
-                      title: data.title,
-                      description: data.description,
-                      estimate: data.eta,
-                      projectId: data.project,
-                    },
-                    () => setTaskFormOpen(false)
-                  )
-                }
-                initialValues={{
-                  title: task.title,
-                  description: task.description || "",
-                  eta: task.estimate || 0,
-                  project: task.projectId || undefined,
-                  deadline: task.deadline,
-                }}
-              />
-            </SheetDescription>
-          </SheetHeader>
-        </SheetContent>
-      </Sheet>
+      <TaskForm
+        onDone={closeTaskForm}
+        onClose={closeTaskForm}
+        editMode
+        task={task}
+        open={taskFormOpen}
+      />
+
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button

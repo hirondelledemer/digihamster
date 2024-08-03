@@ -17,15 +17,7 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from "../ui/context-menu";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from "../ui/sheet";
 import TaskForm from "../TaskForm";
-import { FormValues } from "../TaskForm/TaskForm";
 import { Badge } from "../ui/badge";
 import { format } from "date-fns";
 import Estimate from "../Estimate";
@@ -55,46 +47,20 @@ const TaskCard: FC<TaskCardProps> = ({
   const { editTask } = useEditTask();
 
   const project = projects.find((p) => p._id === task.projectId);
-  const taskIsStale = differenceInCalendarDays(task.activatedAt, now()) > 7;
+  const taskIsStale =
+    differenceInCalendarDays(task.activatedAt || 0, now()) > 7;
+  const closeTaskForm = () => setTaskFormOpen(false);
 
   return (
     <div data-testid={testId} className={className}>
-      <Sheet open={taskFormOpen}>
-        <SheetContent
-          side="left"
-          onCloseClick={() => setTaskFormOpen(false)}
-          onEscapeKeyDown={() => setTaskFormOpen(false)}
-        >
-          <SheetHeader>
-            <SheetTitle>Create Task</SheetTitle>
-            <SheetDescription>
-              <TaskForm
-                testId={taskFormTestId}
-                editMode
-                onSubmit={(data: FormValues) =>
-                  editTask(
-                    task._id,
-                    {
-                      title: data.title,
-                      description: data.description,
-                      estimate: data.eta,
-                      projectId: data.project,
-                    },
-                    () => setTaskFormOpen(false)
-                  )
-                }
-                initialValues={{
-                  title: task.title,
-                  description: task.description,
-                  eta: task.estimate,
-                  project: task.projectId,
-                  deadline: task.deadline,
-                }}
-              />
-            </SheetDescription>
-          </SheetHeader>
-        </SheetContent>
-      </Sheet>
+      <TaskForm
+        testId={taskFormTestId}
+        editMode
+        open={taskFormOpen}
+        onDone={closeTaskForm}
+        onClose={closeTaskForm}
+        task={task}
+      />
       <ContextMenu>
         <ContextMenuTrigger>
           <Card
@@ -120,7 +86,7 @@ const TaskCard: FC<TaskCardProps> = ({
                   {taskIsStale && (
                     <DinosaurIcon className="h-4 w-4 fill-gray-200 mr-2" />
                   )}
-                  <Estimate estimate={task.estimate} />
+                  <Estimate estimate={task.estimate || 0} />
                 </div>
               </CardTitle>
               {!task.completed && (

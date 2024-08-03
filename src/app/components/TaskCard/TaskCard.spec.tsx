@@ -100,6 +100,7 @@ describe("TaskCard", () => {
       wrapper.submitForm();
     });
     expect(mockAxios.patch).toHaveBeenCalledWith("/api/tasks/v2", {
+      deadline: null,
       description: "task description 1new desc",
       estimate: 3,
       projectId: "project1",

@@ -4,17 +4,17 @@ import { Taggable, TimeStamps } from "./shared-types";
 export interface TaskV2 extends Taggable, TimeStamps {
   _id: string;
   title: string;
-  description: string;
+  description?: string | null;
   completed: boolean;
   isActive: boolean;
   deleted: boolean;
-  projectId: string;
-  estimate: number;
-  sortOrder: number | null;
-  completedAt: number;
-  activatedAt: number;
-  parentTaskId: string | null;
-  deadline: number | null;
+  projectId: string | null;
+  estimate?: number | null;
+  sortOrder?: number | null;
+  completedAt?: number;
+  activatedAt?: number | null;
+  parentTaskId?: string | null;
+  deadline?: number | null;
 }
 
 export type ITaskV2 = TaskV2 & mongoose.Document<string> & TaskV2;

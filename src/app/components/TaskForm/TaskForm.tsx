@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, useCallback } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -32,12 +32,27 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { cn } from "../utils";
 import { format } from "date-fns";
 import { Calendar } from "../ui/calendar";
+import { TaskV2 } from "@/models/taskV2";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "../ui/sheet";
+import useEditTask from "@/app/utils/hooks/use-edit-task";
+import useTasks from "@/app/utils/hooks/use-tasks";
+import axios from "axios";
+import { updateObjById } from "@/app/utils/common/update-array";
+import { useToast } from "../ui/use-toast";
 
-export const minimalNoteTestId = "TaskForm-minimal-note-testId";
+export const minimalNoteTestId = "TaskForm-minimal-note-testId" as const;
+export const taskFormTestId = "TaskForm-form-testid" as const;
 
 const FormSchema = z.object({
   title: z.string().min(1, { message: "This field has to be filled." }),
   description: z.string(),
+  isActive: z.union([z.boolean(), z.undefined()]),
   eta: z.number(),
   deadline: z.union([z.number(), z.null(), z.undefined()]),
   project: z.string().min(1, { message: "This field has to be filled." }),
@@ -45,24 +60,54 @@ const FormSchema = z.object({
 
 export type FormValues = z.infer<typeof FormSchema>;
 
-export interface TaskFormProps {
+interface CommonProps {
   testId?: string;
-  initialValues?: Partial<FormValues>;
-  onSubmit(values: FormValues): void;
+  onDone(): void;
   showEta?: boolean;
   showDeadline?: boolean;
-  editMode?: boolean;
+  open: boolean;
+  onClose(): void;
 }
+
+export interface TaskFormRegularProps extends CommonProps {
+  editMode?: undefined | false;
+  initialValues?: Partial<FormValues>;
+}
+export interface TaskFormEditModeProps extends CommonProps {
+  task: TaskV2;
+  editMode: true;
+}
+
+type TaskFormProps = TaskFormRegularProps | TaskFormEditModeProps;
 
 const TaskForm: FC<TaskFormProps> = ({
   testId,
-  initialValues,
-  onSubmit,
+  onDone,
   showEta = true,
   showDeadline = true,
-  editMode,
+  open,
+  onClose,
+  ...restProps
 }): JSX.Element => {
   const { data: projects, defaultProject } = useProjects();
+  const { editTask } = useEditTask();
+  const { setData: setTasksData } = useTasks();
+  const { toast } = useToast();
+
+  const getInitialValues = useCallback(() => {
+    if (restProps.editMode) {
+      return {
+        title: restProps.task.title,
+        description: restProps.task.description || "",
+        eta: restProps.task.estimate || 0,
+        project: restProps.task.projectId || defaultProject?._id,
+        deadline: restProps.task.deadline,
+        isActive: restProps.task.isActive,
+      };
+    }
+    return restProps.initialValues;
+  }, []);
+
   const form = useForm<FormValues>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -71,165 +116,259 @@ const TaskForm: FC<TaskFormProps> = ({
       eta: 0,
       project: defaultProject?._id,
       deadline: null,
-      ...initialValues,
+      isActive: false,
+      ...getInitialValues(),
     },
   });
 
-  const handleSubmit = (values: any) => {
-    onSubmit(values);
+  const createNewTask = async (data: FormValues) => {
+    type FieldsRequired =
+      | "title"
+      | "description"
+      | "projectId"
+      | "isActive"
+      | "estimate"
+      | "deadline";
+
+    const taskData: Pick<TaskV2, FieldsRequired> = {
+      title: data.title,
+      description: data.description,
+      projectId: data.project,
+      isActive: data.isActive || false,
+      estimate: data.eta,
+      deadline: data.deadline || null,
+    };
+    const tempId = "temp-id";
+
+    const tempTask: TaskV2 = {
+      // todo: rename to Task
+      _id: tempId,
+      completed: false,
+      deleted: false,
+      sortOrder: null,
+      completedAt: 0,
+      activatedAt: 0,
+      parentTaskId: null,
+      createdAt: "",
+      updatedAt: "",
+      tags: [],
+      ...taskData,
+    };
+    setTasksData((e) => [...e, tempTask]);
+
+    try {
+      const response = await axios.post<TaskV2>("/api/tasks/v2", taskData);
+      setTasksData((e) => updateObjById<TaskV2>(e, tempId, response.data));
+      toast({
+        title: "Success",
+        description: "Task has been created",
+      });
+    } catch (e) {
+      toast({
+        title: "Error",
+        description: JSON.stringify(e),
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleSubmit = (values: FormValues) => {
+    if (restProps.editMode) {
+      editTask(restProps.task._id, {
+        title: values.title,
+        description: values.description,
+        estimate: values.eta,
+        projectId: values.project,
+        deadline: values.deadline,
+      });
+    } else {
+      createNewTask(values);
+    }
+    onDone();
   };
 
   return (
     <div data-testid={testId}>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-          <FormField
-            control={form.control}
-            name="title"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Title</FormLabel>
-                <FormControl>
-                  <Input placeholder="Title" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          {showEta && (
-            <FormField
-              control={form.control}
-              name="eta"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>ETA</FormLabel>
-                  <FormControl>
-                    <ToggleGroup
-                      type="single"
-                      className="justify-start"
-                      value={field.value.toString()}
-                      onValueChange={(value) => {
-                        field.onChange(Number(value));
-                      }}
-                    >
-                      <ToggleGroupItem value="0" aria-label="eta-0">
-                        <IconComet className="h-4 w-4" color="#65a30d" />
-                      </ToggleGroupItem>
-                      <ToggleGroupItem value="1" aria-label="eta-1">
-                        <IconStar className="h-4 w-4" color="#0284c7" />
-                      </ToggleGroupItem>
-                      <ToggleGroupItem value="2" aria-label="eta-2">
-                        <IconStar className="h-4 w-4" color="#0284c7" />
-                        <IconStar className="h-4 w-4" color="#0284c7" />
-                      </ToggleGroupItem>
-                      <ToggleGroupItem value="3" aria-label="eta-3">
-                        <IconStar className="h-4 w-4" color="#0284c7" />
-                        <IconStar className="h-4 w-4" color="#0284c7" />
-                        <IconStar className="h-4 w-4" color="#0284c7" />
-                      </ToggleGroupItem>
-                      <ToggleGroupItem value="4" aria-label="eta-4">
-                        <IconStars className="h-4 w-4" color="#e11d48" />
-                      </ToggleGroupItem>
-                    </ToggleGroup>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          )}
-          {/* todo: make it with filter */}
-          <FormField
-            control={form.control}
-            name="project"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Project</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                  value={field.value}
+      <Sheet open={open}>
+        <SheetContent
+          side="left"
+          onCloseClick={onClose}
+          onEscapeKeyDown={onClose}
+        >
+          <SheetHeader>
+            <SheetTitle>Create Task</SheetTitle>
+            <SheetDescription>
+              <Form {...form}>
+                <form
+                  onSubmit={form.handleSubmit(handleSubmit)}
+                  className="space-y-6"
+                  data-testId={taskFormTestId}
                 >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select Project" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {projects.map((project) => (
-                      <SelectItem
-                        key={project._id as unknown as string}
-                        value={project._id as unknown as string}
-                        role="option"
-                      >
-                        {project.title}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="description"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Description</FormLabel>
-                <FormControl>
-                  <Textarea placeholder="description" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          {showDeadline && (
-            <FormField
-              control={form.control}
-              name="deadline"
-              render={({ field }) => (
-                <FormItem className="flex flex-col">
-                  <FormLabel>Deadline</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant={"outline"}
-                          className={cn(
-                            "pl-3 text-left font-normal",
-                            !field.value && "text-muted-foreground"
-                          )}
+                  <FormField
+                    control={form.control}
+                    name="title"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Title</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Title" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  {showEta && (
+                    <FormField
+                      control={form.control}
+                      name="eta"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>ETA</FormLabel>
+                          <FormControl>
+                            <ToggleGroup
+                              type="single"
+                              className="justify-start"
+                              value={field.value.toString()}
+                              onValueChange={(value) => {
+                                field.onChange(Number(value));
+                              }}
+                            >
+                              <ToggleGroupItem value="0" aria-label="eta-0">
+                                <IconComet
+                                  className="h-4 w-4"
+                                  color="#65a30d"
+                                />
+                              </ToggleGroupItem>
+                              <ToggleGroupItem value="1" aria-label="eta-1">
+                                <IconStar className="h-4 w-4" color="#0284c7" />
+                              </ToggleGroupItem>
+                              <ToggleGroupItem value="2" aria-label="eta-2">
+                                <IconStar className="h-4 w-4" color="#0284c7" />
+                                <IconStar className="h-4 w-4" color="#0284c7" />
+                              </ToggleGroupItem>
+                              <ToggleGroupItem value="3" aria-label="eta-3">
+                                <IconStar className="h-4 w-4" color="#0284c7" />
+                                <IconStar className="h-4 w-4" color="#0284c7" />
+                                <IconStar className="h-4 w-4" color="#0284c7" />
+                              </ToggleGroupItem>
+                              <ToggleGroupItem value="4" aria-label="eta-4">
+                                <IconStars
+                                  className="h-4 w-4"
+                                  color="#e11d48"
+                                />
+                              </ToggleGroupItem>
+                            </ToggleGroup>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
+                  {/* todo: make it with filter */}
+                  <FormField
+                    control={form.control}
+                    name="project"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Project</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                          value={field.value}
                         >
-                          {field.value ? (
-                            format(field.value, "yyyy-MM-dd")
-                          ) : (
-                            <span>Pick a date</span>
-                          )}
-                          <IconCalendar className="ml-auto h-4 w-4 opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={
-                          field.value ? new Date(field.value) : undefined
-                        }
-                        onSelect={(date) => {
-                          console.log("aaa", date);
-                          field.onChange(date ? date.getTime() : undefined);
-                        }}
-                      />
-                    </PopoverContent>
-                  </Popover>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          )}
-          <Button type="submit">{editMode ? "Save" : "Create"}</Button>
-        </form>
-      </Form>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select Project" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {projects.map((project) => (
+                              <SelectItem
+                                key={project._id as unknown as string}
+                                value={project._id as unknown as string}
+                                role="option"
+                              >
+                                {project.title}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="description"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Description</FormLabel>
+                        <FormControl>
+                          <Textarea placeholder="description" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  {showDeadline && (
+                    <FormField
+                      control={form.control}
+                      name="deadline"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-col">
+                          <FormLabel>Deadline</FormLabel>
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <FormControl>
+                                <Button
+                                  variant={"outline"}
+                                  className={cn(
+                                    "pl-3 text-left font-normal",
+                                    !field.value && "text-muted-foreground"
+                                  )}
+                                >
+                                  {field.value ? (
+                                    format(field.value, "yyyy-MM-dd")
+                                  ) : (
+                                    <span>Pick a date</span>
+                                  )}
+                                  <IconCalendar className="ml-auto h-4 w-4 opacity-50" />
+                                </Button>
+                              </FormControl>
+                            </PopoverTrigger>
+                            <PopoverContent
+                              className="w-auto p-0"
+                              align="start"
+                            >
+                              <Calendar
+                                mode="single"
+                                selected={
+                                  field.value
+                                    ? new Date(field.value)
+                                    : undefined
+                                }
+                                onSelect={(date) => {
+                                  field.onChange(
+                                    date ? date.getTime() : undefined
+                                  );
+                                }}
+                              />
+                            </PopoverContent>
+                          </Popover>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
+                  <Button type="submit">
+                    {restProps.editMode ? "Save" : "Create"}
+                  </Button>
+                </form>
+              </Form>
+            </SheetDescription>
+          </SheetHeader>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 };

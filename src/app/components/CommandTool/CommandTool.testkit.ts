@@ -1,6 +1,6 @@
 import { fireEvent, screen } from "@/config/utils/test-utils";
-import { taskFormTestId } from "./CommandTool";
 import { getTaskFormTestkit } from "../TaskForm/TaskForm.testkit";
+import { taskFormTestId } from "../TaskForm/TaskForm";
 
 export const getCommandToolTestkit = (component: HTMLElement) => ({
   getComponent: () => component,

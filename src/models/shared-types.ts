@@ -3,6 +3,6 @@ export interface Taggable {
 }
 
 export interface TimeStamps {
-  createdAt: number;
-  updatedAt: number;
+  createdAt?: string;
+  updatedAt: string;
 }

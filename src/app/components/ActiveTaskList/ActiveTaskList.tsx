@@ -24,7 +24,7 @@ const ActiveTaskList: FC<ActiveTaskListProps> = ({ testId }): JSX.Element => {
             .filter(
               (task) => task.isActive || (task.deadline && !task.completed)
             )
-            .sort((a, b) => a.estimate - b.estimate)
+            .sort((a, b) => (a.estimate || 0) - (b.estimate || 0))
             .sort((a, b) =>
               a.completed === b.completed ? 0 : a.completed ? 1 : -1
             )

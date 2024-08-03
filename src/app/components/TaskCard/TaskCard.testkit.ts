@@ -1,6 +1,7 @@
 import { fireEvent, within, screen } from "@/config/utils/test-utils";
-import { cardTestId, taskFormTestId, titleTestId } from "./TaskCard";
+import { cardTestId, titleTestId } from "./TaskCard";
 import { getTaskFormTestkit } from "../TaskForm/TaskForm.testkit";
+import { taskFormTestId } from "../TaskForm/TaskForm";
 
 export const getTaskCardTestkit = (component: HTMLElement) => {
   const openContextMenu = () => {
@@ -10,7 +11,8 @@ export const getTaskCardTestkit = (component: HTMLElement) => {
   return {
     getComponent: () => component,
     getTitle: () => within(component).getByTestId(titleTestId).textContent,
-    staleIndicatorIsVisible: () => within(component).queryByTestId('dinosaur-icon') !== null,
+    staleIndicatorIsVisible: () =>
+      within(component).queryByTestId("dinosaur-icon") !== null,
     clickComplete: () => {
       openContextMenu();
       const completeButton = screen.getByText("Complete");

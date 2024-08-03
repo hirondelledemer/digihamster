@@ -44,7 +44,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "../ui/sheet";
-import TaskForm from "../TaskForm";
+import TaskForm from "../EventForm";
 import { FormValues } from "../TaskForm/TaskForm";
 import { useToast } from "../ui/use-toast";
 import { Event as EventType } from "@/models/event";
@@ -113,14 +113,14 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
         id: task._id,
         completed: task.completed,
         type: "deadline",
-        description: task.description,
-        projectId: task.projectId,
+        description: task.description || "",
+        projectId: task.projectId || "",
       },
     }));
 
   const entriesResolved = journalEntriesData.map<CalendarEventType>(
     (entry) => ({
-      start: new Date(entry.createdAt),
+      start: new Date(entry.createdAt || 0),
       title: entry.title,
       allDay: false,
       resource: {
@@ -259,8 +259,8 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
       completed: false,
       deleted: false,
       completedAt: 0,
-      createdAt: 0,
-      updatedAt: 0,
+      createdAt: "",
+      updatedAt: "",
       tags: [],
       ...eventData,
     };

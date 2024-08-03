@@ -1,6 +1,6 @@
-import { render, screen, waitFor } from "@testing-library/react";
-import TaskForm, { TaskFormProps } from "./TaskForm";
-import { getTaskFormTestkit } from "./TaskForm.testkit";
+import { render, waitFor } from "@/config/utils/test-utils";
+import TaskForm, { TaskFormProps } from "./EventForm";
+import { getTaskFormTestkit } from "./EventForm.testkit";
 import { ProjectsContext } from "@/app/utils/hooks/use-projects";
 
 describe("TaskForm", () => {

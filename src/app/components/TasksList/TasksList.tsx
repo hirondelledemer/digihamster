@@ -60,7 +60,7 @@ const getColumns: (projects: Project[]) => ColumnDef<Task>[] = (projects) => [
     accessorKey: "updatedAt",
     header: "Updated At",
     cell: ({ row }) => {
-      return lightFormat(new Date(row.original.updatedAt), "yyyy-MM-dd");
+      return lightFormat(new Date(row.original.updatedAt || 0), "yyyy-MM-dd");
     },
   },
 ];
