@@ -2,11 +2,14 @@ import * as mongoose from "mongoose";
 
 const Schema = mongoose.Schema;
 
-export interface ITag extends mongoose.Document {
+export interface Tag {
+  _id: string;
   title: string;
   color: string;
   deleted: boolean;
 }
+
+export type ITag = Tag & mongoose.Document<string>;
 
 const TagSchema = new Schema(
   {
@@ -17,8 +20,6 @@ const TagSchema = new Schema(
   },
   { timestamps: true }
 );
-
-// export default mongoose.model<ITag>("Tag", TagSchema);
 
 const Tag = mongoose.models.Tag || mongoose.model<ITag>("Tag", TagSchema);
 export default Tag;

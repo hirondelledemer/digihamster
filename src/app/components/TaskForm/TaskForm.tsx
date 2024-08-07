@@ -45,6 +45,8 @@ import useTasks from "@/app/utils/hooks/use-tasks";
 import axios from "axios";
 import { updateObjById } from "@/app/utils/common/update-array";
 import { useToast } from "../ui/use-toast";
+import Filter from "../Filter";
+import useTags from "@/app/utils/hooks/use-tags";
 
 export const minimalNoteTestId = "TaskForm-minimal-note-testId" as const;
 export const taskFormTestId = "TaskForm-form-testid" as const;
@@ -56,6 +58,7 @@ const FormSchema = z.object({
   eta: z.number(),
   deadline: z.union([z.number(), z.null(), z.undefined()]),
   project: z.string().min(1, { message: "This field has to be filled." }),
+  tags: z.array(z.string()),
 });
 
 export type FormValues = z.infer<typeof FormSchema>;
@@ -64,7 +67,7 @@ interface CommonProps {
   testId?: string;
   onDone(): void;
   showEta?: boolean;
-  showDeadline?: boolean;
+  showDeadline?: boolean; // todo: remove
   open: boolean;
   onClose(): void;
 }
@@ -90,6 +93,7 @@ const TaskForm: FC<TaskFormProps> = ({
   ...restProps
 }): JSX.Element => {
   const { data: projects, defaultProject } = useProjects();
+  const { data: tags } = useTags();
   const { editTask } = useEditTask();
   const { setData: setTasksData } = useTasks();
   const { toast } = useToast();
@@ -103,10 +107,11 @@ const TaskForm: FC<TaskFormProps> = ({
         project: restProps.task.projectId || defaultProject?._id,
         deadline: restProps.task.deadline,
         isActive: restProps.task.isActive,
+        tags: restProps.task.tags,
       };
     }
     return restProps.initialValues;
-  }, []);
+  }, [defaultProject, restProps]);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(FormSchema),
@@ -117,6 +122,7 @@ const TaskForm: FC<TaskFormProps> = ({
       project: defaultProject?._id,
       deadline: null,
       isActive: false,
+      tags: [],
       ...getInitialValues(),
     },
   });
@@ -128,7 +134,8 @@ const TaskForm: FC<TaskFormProps> = ({
       | "projectId"
       | "isActive"
       | "estimate"
-      | "deadline";
+      | "deadline"
+      | "tags";
 
     const taskData: Pick<TaskV2, FieldsRequired> = {
       title: data.title,
@@ -137,6 +144,7 @@ const TaskForm: FC<TaskFormProps> = ({
       isActive: data.isActive || false,
       estimate: data.eta,
       deadline: data.deadline || null,
+      tags: data.tags,
     };
     const tempId = "temp-id";
 
@@ -151,7 +159,6 @@ const TaskForm: FC<TaskFormProps> = ({
       parentTaskId: null,
       createdAt: "",
       updatedAt: "",
-      tags: [],
       ...taskData,
     };
     setTasksData((e) => [...e, tempTask]);
@@ -180,6 +187,7 @@ const TaskForm: FC<TaskFormProps> = ({
         estimate: values.eta,
         projectId: values.project,
         deadline: values.deadline,
+        tags: values.tags,
       });
     } else {
       createNewTask(values);
@@ -360,6 +368,25 @@ const TaskForm: FC<TaskFormProps> = ({
                       )}
                     />
                   )}
+                  <FormField
+                    control={form.control}
+                    name="tags"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Tags</FormLabel>
+                        <Filter
+                          onChange={field.onChange}
+                          value={field.value}
+                          maxLengthToShow={10}
+                          options={tags.map((tag) => ({
+                            value: tag._id,
+                            label: tag.title,
+                          }))}
+                        />
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                   <Button type="submit">
                     {restProps.editMode ? "Save" : "Create"}
                   </Button>
