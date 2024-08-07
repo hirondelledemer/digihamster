@@ -24,6 +24,7 @@ import Estimate from "../Estimate";
 import { now } from "@/app/utils/date/date";
 import DinosaurIcon from "../icons/DinosaurIcon";
 import useEditTask from "@/app/utils/hooks/use-edit-task";
+import useTags from "@/app/utils/hooks/use-tags";
 
 export const titleTestId = "TaskCard-title-testid";
 export const cardTestId = "TaskCard-card-testid";
@@ -42,7 +43,7 @@ const TaskCard: FC<TaskCardProps> = ({
   className,
 }): JSX.Element => {
   const { data: projects } = useProjects();
-
+  const { data: tags } = useTags();
   const [taskFormOpen, setTaskFormOpen] = useState<boolean>(false);
   const { editTask } = useEditTask();
 
@@ -50,6 +51,7 @@ const TaskCard: FC<TaskCardProps> = ({
   const taskIsStale =
     differenceInCalendarDays(task.activatedAt || 0, now()) > 7;
   const closeTaskForm = () => setTaskFormOpen(false);
+  const taskTags = tags.filter((tag) => task.tags.includes(tag._id));
 
   return (
     <div data-testid={testId} className={className}>
@@ -100,9 +102,16 @@ const TaskCard: FC<TaskCardProps> = ({
                 <MinimalNote note={task.description} />
               </CardContent>
             )}
-            {task.deadline && (
+            {(task.deadline || !!taskTags.length) && (
               <CardFooter className="p-4">
-                <Badge variant="destructive">Deadline</Badge>
+                <div className="space-x-1">
+                  <Badge variant="destructive">Deadline</Badge>
+                  {taskTags.map((tag) => (
+                    <Badge variant="outline" key={tag._id}>
+                      {tag.title}
+                    </Badge>
+                  ))}
+                </div>
               </CardFooter>
             )}
           </Card>

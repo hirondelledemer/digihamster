@@ -1,9 +1,10 @@
+import { TagsContext } from "@/app/utils/hooks/use-tags";
 import TaskCard, { TaskCardProps } from "./TaskCard";
 import { getTaskCardTestkit } from "./TaskCard.testkit";
 import { ProjectsContext } from "@/app/utils/hooks/use-projects";
 import { TasksContext, TasksContextValues } from "@/app/utils/hooks/use-tasks";
 import { generateTask } from "@/app/utils/mocks/task";
-import { render, act } from "@/config/utils/test-utils";
+import { render, act, screen } from "@/config/utils/test-utils";
 
 import mockAxios from "jest-mock-axios";
 
@@ -46,9 +47,30 @@ describe("TaskCard", () => {
             setData: jest.fn(),
           }}
         >
-          <TasksContext.Provider value={tasksContextValues}>
-            <TaskCard {...props} />
-          </TasksContext.Provider>
+          <TagsContext.Provider
+            value={{
+              data: [
+                {
+                  _id: "tag1",
+                  title: "Tag 1",
+                  deleted: false,
+                  color: "color1",
+                },
+                {
+                  _id: "tag2",
+                  title: "Tag 2",
+                  deleted: false,
+                  color: "color2",
+                },
+              ],
+              loading: false,
+              setData: jest.fn(),
+            }}
+          >
+            <TasksContext.Provider value={tasksContextValues}>
+              <TaskCard {...props} />
+            </TasksContext.Provider>
+          </TagsContext.Provider>
         </ProjectsContext.Provider>
       ).container
     );
@@ -108,7 +130,7 @@ describe("TaskCard", () => {
       projectId: "project1",
       taskId: "task1",
       title: "new title",
-      tags: ["tag1", "tag2"],
+      tags: [],
     });
   });
 
@@ -174,4 +196,23 @@ describe("TaskCard", () => {
       expect(wrapper.staleIndicatorIsVisible()).toBe(true);
     });
   });
+
+  describe.only("tags", () => {
+    const props: TaskCardProps = {
+      task: generateTask(0, { tags: ["tag1", "tag2"] }),
+    };
+
+    it("should show tags", () => {
+      const wrapper = renderComponent(props);
+      screen.logTestingPlaygroundURL();
+
+      expect(1).toBe(2);
+      // todo: finish this
+    });
+  });
 });
+
+// todo: add color to tags
+// add tests here
+// redo this teskit
+// show tags in tasks page
