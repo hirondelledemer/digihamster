@@ -32,7 +32,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { cn } from "../utils";
 import { format } from "date-fns";
 import { Calendar } from "../ui/calendar";
-import { TaskV2 } from "@/models/taskV2";
+import { TaskV2 as Task } from "@/models/taskV2";
 import {
   Sheet,
   SheetContent,
@@ -77,7 +77,7 @@ export interface TaskFormRegularProps extends CommonProps {
   initialValues?: Partial<FormValues>;
 }
 export interface TaskFormEditModeProps extends CommonProps {
-  task: TaskV2;
+  task: Task;
   editMode: true;
 }
 
@@ -137,7 +137,7 @@ const TaskForm: FC<TaskFormProps> = ({
       | "deadline"
       | "tags";
 
-    const taskData: Pick<TaskV2, FieldsRequired> = {
+    const taskData: Pick<Task, FieldsRequired> = {
       title: data.title,
       description: data.description,
       projectId: data.project,
@@ -148,8 +148,7 @@ const TaskForm: FC<TaskFormProps> = ({
     };
     const tempId = "temp-id";
 
-    const tempTask: TaskV2 = {
-      // todo: rename to Task
+    const tempTask: Task = {
       _id: tempId,
       completed: false,
       deleted: false,
@@ -164,8 +163,8 @@ const TaskForm: FC<TaskFormProps> = ({
     setTasksData((e) => [...e, tempTask]);
 
     try {
-      const response = await axios.post<TaskV2>("/api/tasks/v2", taskData);
-      setTasksData((e) => updateObjById<TaskV2>(e, tempId, response.data));
+      const response = await axios.post<Task>("/api/tasks/v2", taskData);
+      setTasksData((e) => updateObjById<Task>(e, tempId, response.data));
       toast({
         title: "Success",
         description: "Task has been created",
