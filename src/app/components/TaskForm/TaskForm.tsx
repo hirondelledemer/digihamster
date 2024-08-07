@@ -197,185 +197,182 @@ const TaskForm: FC<TaskFormProps> = ({
           side="left"
           onCloseClick={onClose}
           onEscapeKeyDown={onClose}
+          aria-describedby="Task Form Modal"
         >
           <SheetHeader>
             <SheetTitle>Create Task</SheetTitle>
-            <SheetDescription>
-              <Form {...form}>
-                <form
-                  onSubmit={form.handleSubmit(handleSubmit)}
-                  className="space-y-6"
-                  data-testId={taskFormTestId}
-                >
-                  <FormField
-                    control={form.control}
-                    name="title"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Title</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Title" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="eta"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>ETA</FormLabel>
-                        <FormControl>
-                          <ToggleGroup
-                            type="single"
-                            className="justify-start"
-                            value={field.value.toString()}
-                            onValueChange={(value) => {
-                              field.onChange(Number(value));
-                            }}
-                          >
-                            <ToggleGroupItem value="0" aria-label="eta-0">
-                              <IconComet className="h-4 w-4" color="#65a30d" />
-                            </ToggleGroupItem>
-                            <ToggleGroupItem value="1" aria-label="eta-1">
-                              <IconStar className="h-4 w-4" color="#0284c7" />
-                            </ToggleGroupItem>
-                            <ToggleGroupItem value="2" aria-label="eta-2">
-                              <IconStar className="h-4 w-4" color="#0284c7" />
-                              <IconStar className="h-4 w-4" color="#0284c7" />
-                            </ToggleGroupItem>
-                            <ToggleGroupItem value="3" aria-label="eta-3">
-                              <IconStar className="h-4 w-4" color="#0284c7" />
-                              <IconStar className="h-4 w-4" color="#0284c7" />
-                              <IconStar className="h-4 w-4" color="#0284c7" />
-                            </ToggleGroupItem>
-                            <ToggleGroupItem value="4" aria-label="eta-4">
-                              <IconStars className="h-4 w-4" color="#e11d48" />
-                            </ToggleGroupItem>
-                          </ToggleGroup>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  {/* todo: make it with filter */}
-                  <FormField
-                    control={form.control}
-                    name="project"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Project</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                          value={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select Project" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {projects.map((project) => (
-                              <SelectItem
-                                key={project._id as unknown as string}
-                                value={project._id as unknown as string}
-                                role="option"
-                              >
-                                {project.title}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="description"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Description</FormLabel>
-                        <FormControl>
-                          <Textarea placeholder="description" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="deadline"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-col">
-                        <FormLabel>Deadline</FormLabel>
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <FormControl>
-                              <Button
-                                variant={"outline"}
-                                className={cn(
-                                  "pl-3 text-left font-normal",
-                                  !field.value && "text-muted-foreground"
-                                )}
-                              >
-                                {field.value ? (
-                                  format(field.value, "yyyy-MM-dd")
-                                ) : (
-                                  <span>Pick a date</span>
-                                )}
-                                <IconCalendar className="ml-auto h-4 w-4 opacity-50" />
-                              </Button>
-                            </FormControl>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-auto p-0" align="start">
-                            <Calendar
-                              mode="single"
-                              selected={
-                                field.value ? new Date(field.value) : undefined
-                              }
-                              onSelect={(date) => {
-                                field.onChange(
-                                  date ? date.getTime() : undefined
-                                );
-                              }}
-                            />
-                          </PopoverContent>
-                        </Popover>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="tags"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Tags</FormLabel>
-                        <Filter
-                          onChange={field.onChange}
-                          value={field.value}
-                          maxLengthToShow={10}
-                          options={tags.map((tag) => ({
-                            value: tag._id,
-                            label: tag.title,
-                          }))}
-                        />
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <Button type="submit">
-                    {restProps.editMode ? "Save" : "Create"}
-                  </Button>
-                </form>
-              </Form>
-            </SheetDescription>
           </SheetHeader>
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(handleSubmit)}
+              className="space-y-6"
+              data-testid={taskFormTestId}
+            >
+              <FormField
+                control={form.control}
+                name="title"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Title</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Title" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="eta"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>ETA</FormLabel>
+                    <FormControl>
+                      <ToggleGroup
+                        type="single"
+                        className="justify-start"
+                        value={field.value.toString()}
+                        onValueChange={(value) => {
+                          field.onChange(Number(value));
+                        }}
+                      >
+                        <ToggleGroupItem value="0" aria-label="eta-0">
+                          <IconComet className="h-4 w-4" color="#65a30d" />
+                        </ToggleGroupItem>
+                        <ToggleGroupItem value="1" aria-label="eta-1">
+                          <IconStar className="h-4 w-4" color="#0284c7" />
+                        </ToggleGroupItem>
+                        <ToggleGroupItem value="2" aria-label="eta-2">
+                          <IconStar className="h-4 w-4" color="#0284c7" />
+                          <IconStar className="h-4 w-4" color="#0284c7" />
+                        </ToggleGroupItem>
+                        <ToggleGroupItem value="3" aria-label="eta-3">
+                          <IconStar className="h-4 w-4" color="#0284c7" />
+                          <IconStar className="h-4 w-4" color="#0284c7" />
+                          <IconStar className="h-4 w-4" color="#0284c7" />
+                        </ToggleGroupItem>
+                        <ToggleGroupItem value="4" aria-label="eta-4">
+                          <IconStars className="h-4 w-4" color="#e11d48" />
+                        </ToggleGroupItem>
+                      </ToggleGroup>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {/* todo: make it with filter */}
+              <FormField
+                control={form.control}
+                name="project"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Project</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      value={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select Project" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {projects.map((project) => (
+                          <SelectItem
+                            key={project._id as unknown as string}
+                            value={project._id as unknown as string}
+                            role="option"
+                          >
+                            {project.title}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Description</FormLabel>
+                    <FormControl>
+                      <Textarea placeholder="description" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="deadline"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <FormLabel>Deadline</FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant={"outline"}
+                            className={cn(
+                              "pl-3 text-left font-normal",
+                              !field.value && "text-muted-foreground"
+                            )}
+                          >
+                            {field.value ? (
+                              format(field.value, "yyyy-MM-dd")
+                            ) : (
+                              <span>Pick a date</span>
+                            )}
+                            <IconCalendar className="ml-auto h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={
+                            field.value ? new Date(field.value) : undefined
+                          }
+                          onSelect={(date) => {
+                            field.onChange(date ? date.getTime() : undefined);
+                          }}
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="tags"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Tags</FormLabel>
+                    <Filter
+                      onChange={field.onChange}
+                      value={field.value}
+                      maxLengthToShow={10}
+                      options={tags.map((tag) => ({
+                        value: tag._id,
+                        label: tag.title,
+                      }))}
+                    />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Button type="submit">
+                {restProps.editMode ? "Save" : "Create"}
+              </Button>
+            </form>
+          </Form>
         </SheetContent>
       </Sheet>
     </div>

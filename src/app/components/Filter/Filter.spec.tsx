@@ -1,13 +1,18 @@
-import { render } from '@testing-library/react';
-import Filter, { FilterProps } from './Filter';
-import { getFilterTestkit } from './Filter.testkit';
+import { render } from "@testing-library/react";
+import Filter, { FilterProps } from "./Filter";
+import { getFilterTestkit } from "./Filter.testkit";
 
-describe('Filter', () => {
-  const defaultProps: FilterProps = {};
+describe("Filter", () => {
+  const defaultProps: FilterProps = {
+    options: [],
+    value: [],
+    onChange: jest.fn(),
+  };
+
   const renderComponent = (props = defaultProps) =>
     getFilterTestkit(render(<Filter {...props} />).container);
 
-  it('should render Filter', () => {
+  it("should render Filter", () => {
     const wrapper = renderComponent();
     expect(wrapper.getComponent()).not.toBe(null);
   });

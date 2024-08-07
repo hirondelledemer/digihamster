@@ -13,6 +13,7 @@ import {
 import useHotKeys from "@/app/utils/hooks/use-hotkeys";
 import TaskForm from "../TaskForm";
 import { HOME, TASKS } from "@/app/utils/consts/routes";
+import { DialogDescription, DialogTitle } from "@radix-ui/react-dialog";
 
 export interface CommandToolProps {
   testId?: string;
@@ -71,6 +72,7 @@ const CommandTool: FC<CommandToolProps> = (): JSX.Element => {
         onOpenChange={setOpen}
         filter={handleFilter}
       >
+        <DialogTitle className="hidden" />
         <CommandInput
           placeholder="Type a command or search..."
           value={searchValue}

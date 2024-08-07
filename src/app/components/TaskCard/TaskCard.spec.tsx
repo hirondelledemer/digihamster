@@ -4,6 +4,7 @@ import { ProjectsContext } from "@/app/utils/hooks/use-projects";
 import { TasksContext, TasksContextValues } from "@/app/utils/hooks/use-tasks";
 import { generateTask } from "@/app/utils/mocks/task";
 import { render, act } from "@/config/utils/test-utils";
+
 import mockAxios from "jest-mock-axios";
 
 jest.mock("../../utils/date/date");
@@ -94,11 +95,12 @@ describe("TaskCard", () => {
     const wrapper = renderComponent(defaultProps);
     wrapper.clickEdit();
     wrapper.enterTitle("new title");
-    await act(async () => {
-      await wrapper.enterDescription("new desc");
-      wrapper.setEta("eta-3");
+    await wrapper.enterDescription("new desc");
+    wrapper.setEta("eta-3");
+    await act(() => {
       wrapper.submitForm();
     });
+
     expect(mockAxios.patch).toHaveBeenCalledWith("/api/tasks/v2", {
       deadline: null,
       description: "task description 1new desc",
@@ -106,6 +108,7 @@ describe("TaskCard", () => {
       projectId: "project1",
       taskId: "task1",
       title: "new title",
+      tags: ["tag1", "tag2"],
     });
   });
 
