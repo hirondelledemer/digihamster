@@ -8,10 +8,14 @@ import { DataTableRowActions } from "./DataTableRowActions/DataTableRowActions";
 import { Project } from "@/models/project";
 import Estimate from "../../Estimate";
 import { format } from "date-fns";
+import { Tag } from "@/models/tag";
+import { Badge } from "../../ui/badge";
+import { isIncludedIn } from "remeda";
 
-export const getColumns: (projects: Project[]) => ColumnDef<Task>[] = (
-  projects
-) => [
+export const getColumns: (
+  projects: Project[],
+  tags: Tag[]
+) => ColumnDef<Task>[] = (projects, tags) => [
   {
     id: "select",
     header: ({ table }) => (
@@ -44,8 +48,15 @@ export const getColumns: (projects: Project[]) => ColumnDef<Task>[] = (
     cell: ({ row }) => {
       return (
         <div className="flex space-x-2">
-          <span className="max-w-[200px] truncate font-medium">
+          <span className="max-w-[200px] truncate font-medium space-x-2">
             {row.getValue("title")}
+            {tags
+              .filter((tag) => row.original.tags.includes(tag._id))
+              .map((tag) => (
+                <Badge variant="outline" key={tag._id}>
+                  {tag.title}
+                </Badge>
+              ))}
           </span>
         </div>
       );
@@ -64,6 +75,16 @@ export const getColumns: (projects: Project[]) => ColumnDef<Task>[] = (
           </span>
         </div>
       );
+    },
+    filterFn: (row, _id, value: string[]) => {
+      // console.log(row, id, value);
+      // return isSubset(row.original.tags, value);
+      return !!value.filter((tagId) => row.original.tags.includes(tagId))
+        .length;
+
+      // return row.original.tags.includes(value);
+      // return true;
+      // return value.includes(row.getValue(id));
     },
   },
   {

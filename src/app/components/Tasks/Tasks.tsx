@@ -6,6 +6,7 @@ import { getColumns } from "./components/columns";
 import useProjects from "@/app/utils/hooks/use-projects";
 import { TaskV2 } from "@/models/taskV2";
 import TaskForm from "../TaskForm";
+import useTags from "@/app/utils/hooks/use-tags";
 
 export interface TasksProps {
   testId?: string;
@@ -14,6 +15,7 @@ export interface TasksProps {
 const Tasks: FC<TasksProps> = ({ testId }): JSX.Element => {
   const { data: tasks } = useTasks();
   const { data: projects } = useProjects();
+  const { data: tags } = useTags();
   const [selectedTask, setSelectedTask] = useState<TaskV2 | null>(null);
 
   const notCompletedTasks = tasks.filter((task) => !task.completed);
@@ -26,7 +28,7 @@ const Tasks: FC<TasksProps> = ({ testId }): JSX.Element => {
     setSelectedTask(null);
   };
 
-  const columns = getColumns(projects);
+  const columns = getColumns(projects, tags);
   return (
     <div className="h-full w-full p-6" data-testid={testId}>
       {selectedTask && (
