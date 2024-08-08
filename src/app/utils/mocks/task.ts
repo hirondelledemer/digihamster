@@ -18,7 +18,7 @@ export const generateTask: (i?: number, properties?: Partial<Task>) => Task = (
     completedAt: 0,
     activatedAt: 0,
     parentTaskId: null,
-    tags: ["tag1", "tag2"],
+    tags: [],
     createdAt: "",
     updatedAt: "",
     deadline: null,

@@ -7,6 +7,7 @@ import { DataTableFacetedFilter } from "../DataTableFacetedFilter/DataTableFacet
 import { Button } from "../../../ui/button";
 import { DataTableViewOptions } from "../DataTableViewOptions/DataTableViewOptions";
 import useProjects from "@/app/utils/hooks/use-projects";
+import useTags from "@/app/utils/hooks/use-tags";
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
@@ -17,10 +18,16 @@ export function DataTableToolbar<TData>({
 }: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0;
   const { data: projects } = useProjects();
+  const { data: tags } = useTags();
 
-  const options = projects.map((project) => ({
+  const projectOptions = projects.map((project) => ({
     label: project.title,
     value: project._id,
+  }));
+
+  const tagOptions = tags.map((tag) => ({
+    label: tag.title,
+    value: tag._id,
   }));
 
   return (
@@ -38,7 +45,14 @@ export function DataTableToolbar<TData>({
           <DataTableFacetedFilter
             column={table.getColumn("projectId")}
             title="Projects"
-            options={options}
+            options={projectOptions}
+          />
+        )}
+        {table.getColumn("description") && (
+          <DataTableFacetedFilter
+            column={table.getColumn("description")}
+            title="Tags"
+            options={tagOptions}
           />
         )}
         {isFiltered && (

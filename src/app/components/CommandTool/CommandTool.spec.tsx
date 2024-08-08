@@ -115,6 +115,7 @@ describe("CommandTool", () => {
           projectId: "project1",
           title: "new task title",
           deadline: null,
+          tags: [],
         });
       });
     });
@@ -164,6 +165,7 @@ describe("CommandTool", () => {
           projectId: "project1",
           title: "new task title",
           deadline: null,
+          tags: [],
         });
       });
     });

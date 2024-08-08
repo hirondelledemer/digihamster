@@ -1,6 +1,4 @@
 {
-    "cSpell.words": [
-        "testid",
-        "Testkit"
-    ]
+  "cSpell.words": ["testid", "Testkit"],
+  "typescript.tsdk": "node_modules/typescript/lib"
 }

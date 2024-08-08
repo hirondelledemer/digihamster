@@ -41,6 +41,8 @@ export const getTaskCardTestkit = (component: HTMLElement) => {
         .getByTestId(cardTestId)
         .className.includes("line-through"),
 
+    // task form
+
     taskFormIsOpen: () => screen.queryAllByTestId(taskFormTestId).length === 1,
     getTaskFormTitleValue: () =>
       getTaskFormTestkit(
