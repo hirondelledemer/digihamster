@@ -196,23 +196,4 @@ describe("TaskCard", () => {
       expect(wrapper.staleIndicatorIsVisible()).toBe(true);
     });
   });
-
-  describe.only("tags", () => {
-    const props: TaskCardProps = {
-      task: generateTask(0, { tags: ["tag1", "tag2"] }),
-    };
-
-    it("should show tags", () => {
-      const wrapper = renderComponent(props);
-      screen.logTestingPlaygroundURL();
-
-      expect(1).toBe(2);
-      // todo: finish this
-    });
-  });
 });
-
-// todo: add color to tags
-// add tests here
-// redo this teskit
-// show tags in tasks page

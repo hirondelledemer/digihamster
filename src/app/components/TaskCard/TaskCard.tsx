@@ -105,7 +105,9 @@ const TaskCard: FC<TaskCardProps> = ({
             {(task.deadline || !!taskTags.length) && (
               <CardFooter className="p-4">
                 <div className="space-x-1">
-                  <Badge variant="destructive">Deadline</Badge>
+                  {task.deadline && (
+                    <Badge variant="destructive">Deadline</Badge>
+                  )}
                   {taskTags.map((tag) => (
                     <Badge variant="outline" key={tag._id}>
                       {tag.title}

@@ -2,7 +2,6 @@
 
 import { TaskV2 as Task } from "@/models/taskV2";
 import { ColumnDef } from "@tanstack/react-table";
-import { Checkbox } from "../../ui/checkbox";
 import { DataTableColumnHeader } from "./DataTableColumnHeader/DataTableColumnHeader";
 import { DataTableRowActions } from "./DataTableRowActions/DataTableRowActions";
 import { Project } from "@/models/project";
@@ -10,7 +9,6 @@ import Estimate from "../../Estimate";
 import { format } from "date-fns";
 import { Tag } from "@/models/tag";
 import { Badge } from "../../ui/badge";
-import { isIncludedIn } from "remeda";
 
 export const getColumns: (
   projects: Project[],
@@ -47,9 +45,12 @@ export const getColumns: (
     ),
     cell: ({ row }) => {
       return (
-        <div className="flex space-x-2">
-          <span className="max-w-[200px] truncate font-medium space-x-2">
-            {row.getValue("title")}
+        <div className="flex">
+          <span className="max-w-[300px] truncate font-medium space-x-2">
+            <span>{row.getValue("title")}</span>
+            {row.original.deadline && (
+              <Badge variant="destructive">Deadline</Badge>
+            )}
             {tags
               .filter((tag) => row.original.tags.includes(tag._id))
               .map((tag) => (
