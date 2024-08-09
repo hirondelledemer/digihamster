@@ -4,7 +4,7 @@ import { getTaskCardTestkit } from "./TaskCard.testkit";
 import { ProjectsContext } from "@/app/utils/hooks/use-projects";
 import { TasksContext, TasksContextValues } from "@/app/utils/hooks/use-tasks";
 import { generateTask } from "@/app/utils/mocks/task";
-import { render, act, screen } from "@/config/utils/test-utils";
+import { render, act } from "@/config/utils/test-utils";
 
 import mockAxios from "jest-mock-axios";
 
@@ -188,7 +188,7 @@ describe("TaskCard", () => {
     const dayInMs = 24 * 60 * 60 * 1000;
 
     const props: TaskCardProps = {
-      task: generateTask(0, { activatedAt: weekInMs + dayInMs }),
+      task: generateTask(0, { activatedAt: (weekInMs + dayInMs) * -1 }),
     };
 
     it("show stale indicator", () => {

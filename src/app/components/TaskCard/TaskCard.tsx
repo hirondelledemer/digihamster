@@ -49,7 +49,8 @@ const TaskCard: FC<TaskCardProps> = ({
 
   const project = projects.find((p) => p._id === task.projectId);
   const taskIsStale =
-    differenceInCalendarDays(task.activatedAt || 0, now()) > 7;
+    differenceInCalendarDays(now(), task.activatedAt || 0) > 7;
+
   const closeTaskForm = () => setTaskFormOpen(false);
   const taskTags = tags.filter((tag) => task.tags.includes(tag._id));
 
