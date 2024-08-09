@@ -1,9 +1,10 @@
-import { render } from "@testing-library/react";
 import ActiveTaskList, { ActiveTaskListProps } from "./ActiveTaskList";
 import { getActiveTaskListTestkit } from "./ActiveTaskList.testkit";
 import { generateCustomTasksList } from "@/app/utils/mocks/task";
 import { ProjectsContext } from "@/app/utils/hooks/use-projects";
 import { TasksContext } from "@/app/utils/hooks/use-tasks";
+import { render, screen } from "@/config/utils/test-utils";
+import { TagsContext } from "@/app/utils/hooks/use-tags";
 
 describe("ActiveTaskList", () => {
   const defaultTasks = generateCustomTasksList([
@@ -34,15 +35,36 @@ describe("ActiveTaskList", () => {
             setData: jest.fn(),
           }}
         >
-          <TasksContext.Provider
+          <TagsContext.Provider
             value={{
-              data: tasks,
+              data: [
+                {
+                  _id: "tag1",
+                  title: "Tag 1",
+                  deleted: false,
+                  color: "color1",
+                },
+                {
+                  _id: "tag2",
+                  title: "Tag 2",
+                  deleted: false,
+                  color: "color2",
+                },
+              ],
               loading: false,
               setData: jest.fn(),
             }}
           >
-            <ActiveTaskList {...props} />
-          </TasksContext.Provider>
+            <TasksContext.Provider
+              value={{
+                data: tasks,
+                loading: false,
+                setData: jest.fn(),
+              }}
+            >
+              <ActiveTaskList {...props} />
+            </TasksContext.Provider>
+          </TagsContext.Provider>
         </ProjectsContext.Provider>
       ).container
     );
@@ -84,5 +106,35 @@ describe("ActiveTaskList", () => {
     expect(wrapper.getTaskTitleAt(0)).toBe(tasks[1].title);
     expect(wrapper.getTaskTitleAt(1)).toBe(tasks[2].title);
     expect(wrapper.getTaskTitleAt(2)).toBe(tasks[0].title);
+  });
+
+  describe("tags filter", () => {
+    it("should not show any tags if there are no", () => {
+      const tasks = generateCustomTasksList([
+        { isActive: true },
+        { isActive: true },
+        { isActive: true },
+      ]);
+
+      const wrapper = renderComponent(defaultProps, tasks);
+
+      expect(wrapper.getComponent().textContent).toBe(
+        "[data-radix-scroll-area-viewport]{scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;}[data-radix-scroll-area-viewport]::-webkit-scrollbar{display:none}Task 0Project 1task description 0Task 1Project 1task description 1Task 2Project 1task description 2"
+      );
+    });
+
+    it("should show tags if there are tasks with tags", () => {
+      const tasks = generateCustomTasksList([
+        { isActive: true, tags: ["tag1"] },
+        { isActive: true, tags: ["tag1"] },
+        { isActive: true, tags: ["tag1", "tag2"] },
+      ]);
+
+      const wrapper = renderComponent(defaultProps, tasks);
+
+      expect(wrapper.getComponent().textContent).toBe(
+        "Tag 1Tag 2[data-radix-scroll-area-viewport]{scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;}[data-radix-scroll-area-viewport]::-webkit-scrollbar{display:none}Task 0Project 1task description 0Tag 1Task 1Project 1task description 1Tag 1Task 2Project 1task description 2Tag 1Tag 2"
+      );
+    });
   });
 });
