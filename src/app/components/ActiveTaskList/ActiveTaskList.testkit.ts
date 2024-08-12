@@ -9,4 +9,7 @@ export const getActiveTaskListTestkit = (component: HTMLElement) => ({
     getTaskCardTestkit(
       within(component).queryAllByTestId(taskTestId)[index]
     ).getTitle(),
+
+  getTags: () => within(component).getAllByRole("available-tag"),
+  ...within(component),
 });

@@ -3,7 +3,7 @@ import { getActiveTaskListTestkit } from "./ActiveTaskList.testkit";
 import { generateCustomTasksList } from "@/app/utils/mocks/task";
 import { ProjectsContext } from "@/app/utils/hooks/use-projects";
 import { TasksContext } from "@/app/utils/hooks/use-tasks";
-import { render, screen } from "@/config/utils/test-utils";
+import { fireEvent, render } from "@/config/utils/test-utils";
 import { TagsContext } from "@/app/utils/hooks/use-tags";
 
 describe("ActiveTaskList", () => {
@@ -135,6 +135,39 @@ describe("ActiveTaskList", () => {
       expect(wrapper.getComponent().textContent).toBe(
         "Tag 1Tag 2[data-radix-scroll-area-viewport]{scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;}[data-radix-scroll-area-viewport]::-webkit-scrollbar{display:none}Task 0Project 1task description 0Tag 1Task 1Project 1task description 1Tag 1Task 2Project 1task description 2Tag 1Tag 2"
       );
+    });
+
+    it("should filter tasks if tag is deselected", async () => {
+      const tasks = generateCustomTasksList([
+        { isActive: true, tags: ["tag1"] },
+        { isActive: true, tags: ["tag1"] },
+        { isActive: true, tags: ["tag1", "tag2"] },
+        { isActive: true },
+      ]);
+
+      const wrapper = renderComponent(defaultProps, tasks);
+
+      const [tag1, tag2] = wrapper.getTags();
+
+      expect(tag1.className).toContain("bg-primary");
+      expect(tag2.className).toContain("bg-primary");
+
+      fireEvent.click(tag1);
+
+      expect(tag1.className).not.toContain("bg-primary");
+      expect(tag2.className).toContain("bg-primary");
+      expect(wrapper.getTasksCount()).toBe(2);
+      expect(wrapper.getTaskTitleAt(0)).toBe(tasks[2].title);
+      expect(wrapper.getTaskTitleAt(1)).toBe(tasks[3].title);
+
+      fireEvent.click(tag1);
+      expect(tag1.className).toContain("bg-primary");
+      expect(tag2.className).toContain("bg-primary");
+      expect(wrapper.getTasksCount()).toBe(4);
+      expect(wrapper.getTaskTitleAt(0)).toBe(tasks[0].title);
+      expect(wrapper.getTaskTitleAt(1)).toBe(tasks[1].title);
+      expect(wrapper.getTaskTitleAt(2)).toBe(tasks[2].title);
+      expect(wrapper.getTaskTitleAt(3)).toBe(tasks[3].title);
     });
   });
 });

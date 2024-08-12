@@ -56,7 +56,7 @@ export const TagsContextProvider = ({ children }: any) => {
 };
 
 export default function useTags() {
-  const { data, setData } = useContext(TagsContext);
+  const { data, setData, loading } = useContext(TagsContext);
 
-  return { data, setData };
+  return { data, setData, loading };
 }
