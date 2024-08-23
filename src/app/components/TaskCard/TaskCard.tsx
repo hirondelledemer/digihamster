@@ -17,7 +17,6 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from "../ui/context-menu";
-import TaskForm from "../TaskForm";
 import { Badge } from "../ui/badge";
 import { format } from "date-fns";
 import Estimate from "../Estimate";
@@ -25,6 +24,7 @@ import { now } from "@/app/utils/date/date";
 import DinosaurIcon from "../icons/DinosaurIcon";
 import useEditTask from "@/app/utils/hooks/use-edit-task";
 import useTags from "@/app/utils/hooks/use-tags";
+import TaskFormModal from "../TaskFormModal";
 
 export const titleTestId = "TaskCard-title-testid";
 export const cardTestId = "TaskCard-card-testid";
@@ -56,7 +56,7 @@ const TaskCard: FC<TaskCardProps> = ({
 
   return (
     <div data-testid={testId} className={className}>
-      <TaskForm
+      <TaskFormModal
         testId={taskFormTestId}
         editMode
         open={taskFormOpen}

@@ -11,9 +11,9 @@ import {
   CommandList,
 } from "../ui/command";
 import useHotKeys from "@/app/utils/hooks/use-hotkeys";
-import TaskForm from "../TaskForm";
 import { HOME, TASKS } from "@/app/utils/consts/routes";
-import { DialogDescription, DialogTitle } from "@radix-ui/react-dialog";
+import { DialogTitle } from "@radix-ui/react-dialog";
+import TaskFormModal from "../TaskFormModal";
 
 export interface CommandToolProps {
   testId?: string;
@@ -55,7 +55,7 @@ const CommandTool: FC<CommandToolProps> = (): JSX.Element => {
   return (
     <>
       {taskFormOpen.open && (
-        <TaskForm
+        <TaskFormModal
           testId={taskFormTestId}
           onDone={close}
           initialValues={{
