@@ -38,23 +38,16 @@ const ActiveTaskList: FC<ActiveTaskListProps> = ({
     [tasksToShow]
   );
 
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [tagsToExclude, setTagsToExclude] = useState<string[]>([]);
 
   const filteredTasks = useMemo(
     () =>
       tasksToShow.filter((task) => {
-        if (!task.tags.length) {
-          return true;
-        }
-        return !!task.tags.find((tagId) => selectedTags.includes(tagId))
+        return !task.tags.find((tagId) => tagsToExclude.includes(tagId))
           ?.length;
       }),
-    [selectedTags, tasksToShow]
+    [tagsToExclude, tasksToShow]
   );
-
-  useEffect(() => {
-    setSelectedTags(usedTagIds);
-  }, [usedTagIds]);
 
   const usedTags = useMemo(
     () => tags.filter((tag) => usedTagIds.includes(tag._id)),
@@ -66,8 +59,8 @@ const ActiveTaskList: FC<ActiveTaskListProps> = ({
       <div className="w-[350px]">
         <TagsFilter
           tags={usedTags}
-          selectedTagIds={selectedTags}
-          onSelectedTagsIdsChange={setSelectedTags}
+          selectedTagIds={tagsToExclude}
+          onSelectedTagsIdsChange={setTagsToExclude}
         />
       </div>
       <ScrollArea className="h-screen">

@@ -156,9 +156,8 @@ describe("ActiveTaskList", () => {
 
       expect(tag1.className).not.toContain("bg-primary");
       expect(tag2.className).toContain("bg-primary");
-      expect(wrapper.getTasksCount()).toBe(2);
-      expect(wrapper.getTaskTitleAt(0)).toBe(tasks[2].title);
-      expect(wrapper.getTaskTitleAt(1)).toBe(tasks[3].title);
+      expect(wrapper.getTasksCount()).toBe(1);
+      expect(wrapper.getTaskTitleAt(0)).toBe(tasks[3].title);
 
       fireEvent.click(tag1);
       expect(tag1.className).toContain("bg-primary");

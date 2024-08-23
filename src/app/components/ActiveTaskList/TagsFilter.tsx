@@ -37,7 +37,7 @@ const TagsFilter: FC<TagsFilterProps> = ({
         >
           <Badge
             role="available-tag"
-            variant={selectedTagIds.includes(tag._id) ? "default" : "outline"}
+            variant={selectedTagIds.includes(tag._id) ? "outline" : "default"}
           >
             {tag.title}
           </Badge>
