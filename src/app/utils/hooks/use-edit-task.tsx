@@ -43,7 +43,6 @@ export const useEditTask = () => {
     onDone?: () => void
   ) => {
     try {
-      console.log("lol");
       setTasksData((tasks) => tasks.filter((task) => task._id !== taskId));
       onDone && onDone();
       await axios.patch("/api/tasks/v2", {
