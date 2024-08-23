@@ -4,7 +4,7 @@ import { updateObjById } from "../common/update-array";
 import axios from "axios";
 import { useToast } from "@/app/components/ui/use-toast";
 
-const useEditTask = () => {
+export const useEditTask = () => {
   const { setData: setTasksData } = useTasks();
   const { toast } = useToast();
 
@@ -43,6 +43,7 @@ const useEditTask = () => {
     onDone?: () => void
   ) => {
     try {
+      console.log("lol");
       setTasksData((tasks) => tasks.filter((task) => task._id !== taskId));
       onDone && onDone();
       await axios.patch("/api/tasks/v2", {

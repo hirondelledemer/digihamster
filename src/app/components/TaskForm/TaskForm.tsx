@@ -33,7 +33,7 @@ import { cn } from "../utils";
 import { format } from "date-fns";
 import { Calendar } from "../ui/calendar";
 import { TaskV2 as Task } from "@/models/taskV2";
-import useEditTask from "@/app/utils/hooks/use-edit-task";
+import { useEditTask } from "@/app/utils/hooks/use-edit-task";
 import useTasks from "@/app/utils/hooks/use-tasks";
 import axios from "axios";
 import { updateObjById } from "@/app/utils/common/update-array";
@@ -79,7 +79,7 @@ const TaskForm: FC<TaskFormProps> = ({
 }): JSX.Element => {
   const { data: projects, defaultProject } = useProjects();
   const { data: tags } = useTags();
-  const { editTask } = useEditTask();
+  const { editTask, deleteTask } = useEditTask();
   const { setData: setTasksData } = useTasks();
   const { toast } = useToast();
 
@@ -164,6 +164,7 @@ const TaskForm: FC<TaskFormProps> = ({
   };
 
   const handleSubmit = (values: FormValues) => {
+    console.log("jerer");
     if (restProps.editMode) {
       editTask(restProps.task._id, {
         title: values.title,
@@ -178,6 +179,43 @@ const TaskForm: FC<TaskFormProps> = ({
     }
     onDone();
   };
+
+  const handleDelete = useCallback(
+    async (event: React.MouseEvent<HTMLButtonElement>) => {
+      event.preventDefault();
+      if (restProps.editMode) {
+        await deleteTask(restProps.task._id);
+        onDone();
+      }
+    },
+    [deleteTask, restProps, onDone]
+  );
+
+  const handleComplete = useCallback(
+    async (event: React.MouseEvent<HTMLButtonElement>) => {
+      event.preventDefault();
+      if (restProps.editMode) {
+        await editTask(restProps.task._id, {
+          completed: true,
+        });
+        onDone();
+      }
+    },
+    [editTask, restProps, onDone]
+  );
+
+  const handleUndo = useCallback(
+    async (event: React.MouseEvent<HTMLButtonElement>) => {
+      event.preventDefault();
+      if (restProps.editMode) {
+        await editTask(restProps.task._id, {
+          completed: false,
+        });
+        onDone();
+      }
+    },
+    [editTask, restProps, onDone]
+  );
 
   return (
     <Form {...form} data-testid={testId}>
@@ -344,7 +382,26 @@ const TaskForm: FC<TaskFormProps> = ({
             </FormItem>
           )}
         />
-        <Button type="submit">{restProps.editMode ? "Save" : "Create"}</Button>
+        <div className="space-x-2">
+          <Button type="submit">
+            {restProps.editMode ? "Save" : "Create"}
+          </Button>
+          {restProps.editMode && !restProps.task.deleted && (
+            <Button onClick={handleDelete} variant="outline">
+              Delete
+            </Button>
+          )}
+          {restProps.editMode && !restProps.task.completed && (
+            <Button onClick={handleComplete} variant="outline">
+              Complete
+            </Button>
+          )}
+          {restProps.editMode && restProps.task.completed && (
+            <Button onClick={handleUndo} variant="outline">
+              Undo
+            </Button>
+          )}
+        </div>
       </form>
     </Form>
   );
