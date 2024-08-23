@@ -1,6 +1,6 @@
 import { within, fireEvent } from "@testing-library/react";
 
-import userEvent, { UserEvent } from "@testing-library/user-event";
+import userEvent from "@testing-library/user-event";
 
 export const getTaskFormTestkit = (component: HTMLElement) => ({
   getComponent: () => component,
@@ -68,4 +68,27 @@ export const getTaskFormTestkit = (component: HTMLElement) => ({
   getDeadlineButtonExists: () =>
     within(component).queryAllByRole("button", { name: /deadline/i }).length ===
     1,
+
+  // actions
+
+  deleteButtonExists: () =>
+    within(component).queryByRole("button", { name: /delete/i }) !== null,
+  clickDeleteButton: () => {
+    const button = within(component).getByRole("button", { name: /delete/i });
+    fireEvent.click(button);
+  },
+
+  completeButtonExists: () =>
+    within(component).queryByRole("button", { name: /complete/i }) !== null,
+  clickCompleteButton: () => {
+    const button = within(component).getByRole("button", { name: /complete/i });
+    fireEvent.click(button);
+  },
+
+  undoButtonExists: () =>
+    within(component).queryByRole("button", { name: /undo/i }) !== null,
+  clickUndoButton: () => {
+    const button = within(component).getByRole("button", { name: /undo/i });
+    fireEvent.click(button);
+  },
 });

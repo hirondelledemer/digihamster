@@ -5,8 +5,9 @@ import { DataTable } from "./components/DataTable/DataTable";
 import { getColumns } from "./components/columns";
 import useProjects from "@/app/utils/hooks/use-projects";
 import { TaskV2 } from "@/models/taskV2";
-import TaskForm from "../TaskForm";
+
 import useTags from "@/app/utils/hooks/use-tags";
+import TaskFormModal from "../TaskFormModal";
 
 export interface TasksProps {
   testId?: string;
@@ -32,7 +33,7 @@ const Tasks: FC<TasksProps> = ({ testId }): JSX.Element => {
   return (
     <div className="h-full w-full p-6" data-testid={testId}>
       {selectedTask && (
-        <TaskForm
+        <TaskFormModal
           onDone={closeTaskForm}
           onClose={closeTaskForm}
           editMode

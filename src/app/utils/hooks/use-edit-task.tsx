@@ -4,7 +4,7 @@ import { updateObjById } from "../common/update-array";
 import axios from "axios";
 import { useToast } from "@/app/components/ui/use-toast";
 
-const useEditTask = () => {
+export const useEditTask = () => {
   const { setData: setTasksData } = useTasks();
   const { toast } = useToast();
 

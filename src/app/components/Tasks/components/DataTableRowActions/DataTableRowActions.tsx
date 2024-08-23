@@ -11,9 +11,9 @@ import {
 } from "../../../ui/dropdown-menu";
 import { Button } from "../../../ui/button";
 import { MouseEvent, useState } from "react";
-import TaskForm from "@/app/components/TaskForm";
 import useEditTask from "@/app/utils/hooks/use-edit-task";
 import { z } from "zod";
+import TaskFormModal from "@/app/components/TaskFormModal";
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
@@ -74,7 +74,7 @@ export function DataTableRowActions<TData>({
 
   return (
     <>
-      <TaskForm
+      <TaskFormModal
         onDone={closeTaskForm}
         onClose={closeTaskForm}
         editMode
