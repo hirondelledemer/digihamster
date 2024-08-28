@@ -3,7 +3,7 @@ import { getActiveTaskListTestkit } from "./ActiveTaskList.testkit";
 import { generateCustomTasksList } from "@/app/utils/mocks/task";
 import { ProjectsContext } from "@/app/utils/hooks/use-projects";
 import { TasksContext } from "@/app/utils/hooks/use-tasks";
-import { fireEvent, render } from "@/config/utils/test-utils";
+import { fireEvent, render, screen } from "@/config/utils/test-utils";
 import { TagsContext } from "@/app/utils/hooks/use-tags";
 
 describe("ActiveTaskList", () => {
@@ -119,7 +119,7 @@ describe("ActiveTaskList", () => {
       const wrapper = renderComponent(defaultProps, tasks);
 
       expect(wrapper.getComponent().textContent).toBe(
-        "[data-radix-scroll-area-viewport]{scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;}[data-radix-scroll-area-viewport]::-webkit-scrollbar{display:none}Task 0Project 1task description 0Task 1Project 1task description 1Task 2Project 1task description 2"
+        "00[data-radix-scroll-area-viewport]{scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;}[data-radix-scroll-area-viewport]::-webkit-scrollbar{display:none}Task 0Project 1task description 0Task 1Project 1task description 1Task 2Project 1task description 2"
       );
     });
 
@@ -133,7 +133,7 @@ describe("ActiveTaskList", () => {
       const wrapper = renderComponent(defaultProps, tasks);
 
       expect(wrapper.getComponent().textContent).toBe(
-        "Tag 1Tag 2[data-radix-scroll-area-viewport]{scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;}[data-radix-scroll-area-viewport]::-webkit-scrollbar{display:none}Task 0Project 1task description 0Tag 1Task 1Project 1task description 1Tag 1Task 2Project 1task description 2Tag 1Tag 2"
+        "Tag 1Tag 200[data-radix-scroll-area-viewport]{scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;}[data-radix-scroll-area-viewport]::-webkit-scrollbar{display:none}Task 0Project 1task description 0Tag 1Task 1Project 1task description 1Tag 1Task 2Project 1task description 2Tag 1Tag 2"
       );
     });
 

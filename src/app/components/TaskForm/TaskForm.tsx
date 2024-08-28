@@ -164,7 +164,6 @@ const TaskForm: FC<TaskFormProps> = ({
   };
 
   const handleSubmit = (values: FormValues) => {
-    console.log("jerer");
     if (restProps.editMode) {
       editTask(restProps.task._id, {
         title: values.title,

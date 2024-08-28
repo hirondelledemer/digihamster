@@ -9,12 +9,21 @@ import { ScrollArea } from "../ui/scroll-area";
 import { unique } from "remeda";
 import useTags from "@/app/utils/hooks/use-tags";
 import TagsFilter from "./TagsFilter";
+import {
+  IconCircle,
+  IconCircleCheck,
+  IconCircleCheckFilled,
+} from "@tabler/icons-react";
+import { TaskV2 } from "@/models/taskV2";
 
 export const taskTestId = "ActiveTaskList-task-testid";
 
 export interface ActiveTaskListProps {
   testId?: string;
 }
+
+const addEstimates = (acc: number, val: TaskV2): number =>
+  acc + (val.estimate || 0);
 
 const ActiveTaskList: FC<ActiveTaskListProps> = ({
   testId,
@@ -54,6 +63,16 @@ const ActiveTaskList: FC<ActiveTaskListProps> = ({
     [tags, usedTagIds]
   );
 
+  const pendingTasksCount = useMemo(
+    () => filteredTasks.filter((t) => !t.completed).reduce(addEstimates, 0),
+    [filteredTasks]
+  );
+
+  const completedTasksCount = useMemo(
+    () => filteredTasks.filter((t) => t.completed).reduce(addEstimates, 0),
+    [filteredTasks]
+  );
+
   return (
     <div data-testid={testId}>
       <div className="w-[350px]">
@@ -62,6 +81,17 @@ const ActiveTaskList: FC<ActiveTaskListProps> = ({
           selectedTagIds={tagsToExclude}
           onSelectedTagsIdsChange={setTagsToExclude}
         />
+      </div>
+      <div className="text-sm flex items-center mb-3 space-x-2">
+        <IconCircle size={16} color="#eab308" className="mr-1" />
+        {pendingTasksCount}
+        <IconCircleCheck
+          size={19}
+          color="black"
+          fill="#22c55e"
+          className="mr-1"
+        />
+        {completedTasksCount}
       </div>
       <ScrollArea className="h-screen">
         <div className="pr-6">
