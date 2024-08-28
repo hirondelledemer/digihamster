@@ -14,7 +14,7 @@ export interface Event extends Taggable, TimeStamps {
   completedAt?: number;
 }
 
-export type IEvent = Event & mongoose.Document<string> & Event;
+export type IEvent = Event & mongoose.Document<string>;
 
 const EventSchema = new mongoose.Schema(
   {
