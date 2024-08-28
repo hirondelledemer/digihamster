@@ -88,7 +88,7 @@ const ActiveTaskList: FC<ActiveTaskListProps> = ({
         <IconCircleCheck
           size={19}
           color="black"
-          fill="#22c55e"
+          fill="green"
           className="mr-1"
         />
         {completedTasksCount}
