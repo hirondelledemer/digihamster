@@ -8,6 +8,7 @@ import {
 import Calendar from "../Calendar";
 import ActiveTaskList from "../ActiveTaskList";
 import CommandTool from "../CommandTool";
+import PinnedNotes from "../PinnedNotes";
 
 export const Home = (): JSX.Element => {
   return (
@@ -30,8 +31,13 @@ export const Home = (): JSX.Element => {
       </ResizablePanel>
       <ResizableHandle />
       <ResizablePanel>
-        <div className="flex p-6 pb-12">
-          <ActiveTaskList />
+        <div className="flex">
+          <div className="flex p-6 pb-12">
+            <ActiveTaskList />
+          </div>
+          <div className="flex p-6 pl-0 pb-12">
+            <PinnedNotes />
+          </div>
         </div>
       </ResizablePanel>
     </ResizablePanelGroup>

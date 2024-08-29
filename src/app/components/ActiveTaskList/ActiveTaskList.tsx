@@ -1,7 +1,7 @@
 "use client";
 //todo: make this component server. need to rethink how it gets its data
 
-import React, { FC, useEffect, useMemo, useState } from "react";
+import React, { FC, useMemo, useState } from "react";
 import TaskCard from "../TaskCard";
 import useTasks from "@/app/utils/hooks/use-tasks";
 
@@ -9,11 +9,7 @@ import { ScrollArea } from "../ui/scroll-area";
 import { unique } from "remeda";
 import useTags from "@/app/utils/hooks/use-tags";
 import TagsFilter from "./TagsFilter";
-import {
-  IconCircle,
-  IconCircleCheck,
-  IconCircleCheckFilled,
-} from "@tabler/icons-react";
+import { IconCircle, IconCircleCheck } from "@tabler/icons-react";
 import { TaskV2 } from "@/models/taskV2";
 
 export const taskTestId = "ActiveTaskList-task-testid";
