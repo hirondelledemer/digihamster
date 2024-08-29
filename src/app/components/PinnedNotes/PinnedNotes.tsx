@@ -11,7 +11,6 @@ export interface PinnedNotesProps {
 const PinnedNotes: FC<PinnedNotesProps> = ({ testId }): JSX.Element => {
   const { data: notes } = useNotes();
 
-  console.log(notes);
   return (
     <div data-testid={testId} className="space-y-6">
       {notes.map((note) => (

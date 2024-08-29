@@ -13,8 +13,6 @@ export async function GET(request: NextRequest) {
     const getIsActive =
       request.nextUrl.searchParams.get("isActive") || undefined;
 
-    console.log("getIsActive", getIsActive);
-
     // Find the user in the database based on the user ID
     const notes = await Note.find({
       userId,
