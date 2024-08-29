@@ -34,9 +34,6 @@ import { format } from "date-fns";
 import { Calendar } from "../ui/calendar";
 import { TaskV2 as Task } from "@/models/taskV2";
 import { useEditTask } from "@/app/utils/hooks/use-edit-task";
-import useTasks from "@/app/utils/hooks/use-tasks";
-import axios from "axios";
-import { updateObjById } from "@/app/utils/common/update-array";
 import { useToast } from "../ui/use-toast";
 import Filter from "../Filter";
 import useTags from "@/app/utils/hooks/use-tags";
@@ -79,9 +76,7 @@ const TaskForm: FC<TaskFormProps> = ({
 }): JSX.Element => {
   const { data: projects, defaultProject } = useProjects();
   const { data: tags } = useTags();
-  const { editTask, deleteTask } = useEditTask();
-  const { setData: setTasksData } = useTasks();
-  const { toast } = useToast();
+  const { editTask, deleteTask, createNewTask } = useEditTask();
 
   const getInitialValues = useCallback(() => {
     if (restProps.editMode) {
@@ -112,57 +107,6 @@ const TaskForm: FC<TaskFormProps> = ({
     },
   });
 
-  const createNewTask = async (data: FormValues) => {
-    type FieldsRequired =
-      | "title"
-      | "description"
-      | "projectId"
-      | "isActive"
-      | "estimate"
-      | "deadline"
-      | "tags";
-
-    const taskData: Pick<Task, FieldsRequired> = {
-      title: data.title,
-      description: data.description,
-      projectId: data.project,
-      isActive: data.isActive || false,
-      estimate: data.eta,
-      deadline: data.deadline || null,
-      tags: data.tags,
-    };
-    const tempId = "temp-id";
-
-    const tempTask: Task = {
-      _id: tempId,
-      completed: false,
-      deleted: false,
-      sortOrder: null,
-      completedAt: 0,
-      activatedAt: 0,
-      parentTaskId: null,
-      createdAt: "",
-      updatedAt: "",
-      ...taskData,
-    };
-    setTasksData((e) => [...e, tempTask]);
-
-    try {
-      const response = await axios.post<Task>("/api/tasks/v2", taskData);
-      setTasksData((e) => updateObjById<Task>(e, tempId, response.data));
-      toast({
-        title: "Success",
-        description: "Task has been created",
-      });
-    } catch (e) {
-      toast({
-        title: "Error",
-        description: JSON.stringify(e),
-        variant: "destructive",
-      });
-    }
-  };
-
   const handleSubmit = (values: FormValues) => {
     if (restProps.editMode) {
       editTask(restProps.task._id, {
@@ -174,7 +118,16 @@ const TaskForm: FC<TaskFormProps> = ({
         tags: values.tags,
       });
     } else {
-      createNewTask(values);
+      const taskData = {
+        title: values.title,
+        description: values.description,
+        projectId: values.project,
+        isActive: values.isActive || false,
+        estimate: values.eta,
+        deadline: values.deadline || null,
+        tags: values.tags,
+      };
+      createNewTask(taskData);
     }
     onDone();
   };

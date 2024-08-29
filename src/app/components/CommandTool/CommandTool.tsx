@@ -14,6 +14,8 @@ import useHotKeys from "@/app/utils/hooks/use-hotkeys";
 import { HOME, TASKS } from "@/app/utils/consts/routes";
 import { DialogTitle } from "@radix-ui/react-dialog";
 import TaskFormModal from "../TaskFormModal";
+import useEditTask from "@/app/utils/hooks/use-edit-task";
+import useProjects from "@/app/utils/hooks/use-projects";
 
 export interface CommandToolProps {
   testId?: string;
@@ -30,12 +32,14 @@ const CommandTool: FC<CommandToolProps> = (): JSX.Element => {
   }>({ open: false, taskIsActive: false });
 
   useHotKeys([["mod+K", () => setOpen((open) => !open)]]);
+  const { createNewTask } = useEditTask();
+  const { defaultProject } = useProjects();
   const [searchValue, setSearchValue] = useState<string>("");
   const router = useRouter();
 
   const handleFilter = (value: string, search: string): 1 | 0 => {
     if (value.includes(search)) return 1;
-    if (value === "create active task" || value === "create task") return 1;
+    if (value === "add quick task") return 1;
     return 0;
   };
 
@@ -51,6 +55,15 @@ const CommandTool: FC<CommandToolProps> = (): JSX.Element => {
     setTaskFormOpen({ open: false, taskIsActive: false });
     setOpen(false);
   };
+
+  const createQuickTask = useCallback(() => {
+    createNewTask({
+      title: searchValue,
+      isActive: true,
+      tags: [],
+      projectId: defaultProject?._id || "",
+    });
+  }, [createNewTask, searchValue, defaultProject?._id]);
 
   return (
     <>
@@ -95,6 +108,7 @@ const CommandTool: FC<CommandToolProps> = (): JSX.Element => {
             >
               Create Task
             </CommandItem>
+            <CommandItem onSelect={createQuickTask}>Add Quick Task</CommandItem>
           </CommandGroup>
           <CommandGroup heading="Go to">
             <CommandItem onSelect={goToHome}>Home</CommandItem>
