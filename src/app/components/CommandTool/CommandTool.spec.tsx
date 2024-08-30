@@ -120,7 +120,7 @@ describe("CommandTool", () => {
       });
     });
 
-    it.only("should quick", async () => {
+    it("should add quick task", async () => {
       const wrapper = renderComponent();
       act(() => {
         wrapper.pressCmdK();
