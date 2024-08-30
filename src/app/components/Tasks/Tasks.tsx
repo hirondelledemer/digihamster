@@ -21,6 +21,9 @@ const Tasks: FC<TasksProps> = ({ testId }): JSX.Element => {
 
   const notCompletedTasks = tasks.filter((task) => !task.completed);
 
+  const activeTasks = notCompletedTasks.filter((task) => task.isActive);
+  const restTasks = notCompletedTasks.filter((task) => !task.isActive);
+
   const openTaskForm = (task: TaskV2) => {
     setSelectedTask(task);
   };
@@ -42,11 +45,17 @@ const Tasks: FC<TasksProps> = ({ testId }): JSX.Element => {
         />
       )}
 
-      <DataTable
-        data={notCompletedTasks}
-        columns={columns}
-        onRowClick={openTaskForm}
-      />
+      <div className="mb-12">
+        <DataTable
+          data={activeTasks}
+          columns={columns}
+          onRowClick={openTaskForm}
+          disablePagination
+          disableSorting
+          disableToolbar
+        />
+      </div>
+      <DataTable data={restTasks} columns={columns} onRowClick={openTaskForm} />
     </div>
   );
 };
