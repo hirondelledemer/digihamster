@@ -120,7 +120,7 @@ describe("CommandTool", () => {
       });
     });
 
-    it("should create task with predefined title", async () => {
+    it("should add quick task", async () => {
       const wrapper = renderComponent();
       act(() => {
         wrapper.pressCmdK();
@@ -129,11 +129,22 @@ describe("CommandTool", () => {
 
       act(() => {
         wrapper.enterSearch("new task title");
-        wrapper.clickCreateActiveTask();
+      });
+      expect(wrapper.getCreateQuickTaskExists()).toBe(true);
+      expect(wrapper.getCreateActiveTaskExists()).toBe(false);
+      expect(wrapper.getCreateTaskExists()).toBe(false);
+      act(() => {
+        wrapper.clickAddQuickTask();
       });
 
-      expect(wrapper.taskFormIsOpen()).toBe(true);
-      expect(wrapper.getTitle()).toBe("new task title");
+      await waitFor(() => {
+        expect(mockAxios.post).toHaveBeenCalledWith("/api/tasks/v2", {
+          isActive: true,
+          projectId: "project1",
+          title: "new task title",
+          tags: [],
+        });
+      });
     });
 
     it("should create regular task", async () => {

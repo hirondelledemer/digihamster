@@ -12,9 +12,17 @@ export const getCommandToolTestkit = (component: HTMLElement) => ({
       metaKey: true,
     });
   },
+  getCreateActiveTaskExists: () =>
+    screen.queryAllByText("Create Active Task").length !== 0,
+  getCreateQuickTaskExists: () =>
+    screen.queryAllByText("Add Quick Task").length !== 0,
   clickCreateActiveTask: () => {
     fireEvent.click(screen.getByText("Create Active Task"));
   },
+  clickAddQuickTask: () => {
+    fireEvent.click(screen.getByText("Add Quick Task"));
+  },
+  getCreateTaskExists: () => screen.queryAllByText("Create Task").length !== 0,
   clickCreateTask: () => {
     fireEvent.click(screen.getByText("Create Task"));
   },

@@ -23,11 +23,9 @@ const PinnedNote: FC<PinnedNoteProps> = ({ testId, note }): ReactNode => {
   const { toast } = useToast();
   const { setData } = useNotes();
 
-  console.log(1);
   if (!editor) {
     return null;
   }
-  console.log(2);
 
   const handleSubmit = async () => {
     const { title, content, tags } = getRteValue();

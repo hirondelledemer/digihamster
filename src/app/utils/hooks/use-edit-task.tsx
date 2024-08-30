@@ -4,9 +4,51 @@ import { updateObjById } from "../common/update-array";
 import axios from "axios";
 import { useToast } from "@/app/components/ui/use-toast";
 
+type FieldsRequired =
+  | "title"
+  | "description"
+  | "projectId"
+  | "isActive"
+  | "estimate"
+  | "deadline"
+  | "tags";
+
 export const useEditTask = () => {
   const { setData: setTasksData } = useTasks();
   const { toast } = useToast();
+
+  const createNewTask = async (data: Pick<Task, FieldsRequired>) => {
+    const tempId = "temp-id";
+
+    const tempTask: Task = {
+      _id: tempId,
+      completed: false,
+      deleted: false,
+      sortOrder: null,
+      completedAt: 0,
+      activatedAt: 0,
+      parentTaskId: null,
+      createdAt: "",
+      updatedAt: "",
+      ...data,
+    };
+    setTasksData((e) => [...e, tempTask]);
+
+    try {
+      const response = await axios.post<Task>("/api/tasks/v2", data);
+      setTasksData((e) => updateObjById<Task>(e, tempId, response.data));
+      toast({
+        title: "Success",
+        description: "Task has been created",
+      });
+    } catch (e) {
+      toast({
+        title: "Error",
+        description: JSON.stringify(e),
+        variant: "destructive",
+      });
+    }
+  };
 
   const editTask = async (
     taskId: string,
@@ -61,7 +103,7 @@ export const useEditTask = () => {
       });
     }
   };
-  return { editTask, deleteTask };
+  return { editTask, deleteTask, createNewTask };
 };
 
 export default useEditTask;
