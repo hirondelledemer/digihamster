@@ -23,6 +23,7 @@ test.beforeEach(configureSnapshotPath());
 test.describe("command tool", () => {
   test("add quick task", async ({ page }) => {
     const { vals, urls, ...driver } = getDriver({ page });
+    const taskName = `new task (${new Date().getTime()})`;
 
     // login
     await driver.goto(urls.base);
@@ -36,18 +37,18 @@ test.describe("command tool", () => {
     // create task
     await driver.openCommandTool();
     await expect(driver.commandInput).toBeVisible();
-    await driver.fillCommand("new task");
+    await driver.fillCommand(taskName);
     await driver.pressEnter();
     await expect(driver.commandInput).toBeHidden();
-    await expect(driver.getTaskCardByName("new task")).toBeVisible();
+    await expect(driver.getTaskCardByName(taskName)).toBeVisible();
 
     // delete task
-    await driver.getTaskCardByName("new task").click({ button: "right" });
+    await driver.getTaskCardByName(taskName).click({ button: "right" });
     await driver.editButton.click();
     await expect(driver.taskFormDialog).toBeVisible();
     await driver.deleteButton.click();
     await expect(driver.taskFormDialog).toBeHidden();
-    await expect(driver.getTaskCardByName("new task")).toBeHidden();
+    await expect(driver.getTaskCardByName(taskName)).toBeHidden();
   });
 });
 
