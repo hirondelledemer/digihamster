@@ -63,6 +63,7 @@ const CommandTool: FC<CommandToolProps> = (): JSX.Element => {
       tags: [],
       projectId: defaultProject?._id || "",
     });
+    setOpen(false);
   }, [createNewTask, searchValue, defaultProject?._id]);
 
   return (

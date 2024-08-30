@@ -17,7 +17,7 @@ export const configureSnapshotPath =
 
 test.beforeEach(configureSnapshotPath());
 
-test.describe("error cases", () => {
+test.describe("login page", () => {
   test.describe("happy path", () => {
     test("user logs in", async ({ page }) => {
       const { vals, urls, ...driver } = getDriver({ page });
@@ -43,6 +43,7 @@ test.describe("error cases", () => {
       await driver.fillPassword(vals.password);
       await driver.clickLogin();
 
+      await expect(driver.noUserError).toBeVisible();
       await expect(page).toHaveURL(urls.login);
       await expect(page).toHaveScreenshot("login-error-no-user.png");
     });
@@ -55,6 +56,7 @@ test.describe("error cases", () => {
       await driver.fillPassword("incorrect");
       await driver.clickLogin();
 
+      await expect(driver.wrongPasswordError).toBeVisible();
       await expect(page).toHaveURL(urls.login);
       await expect(page).toHaveScreenshot("login-error-bad-password.png");
     });
@@ -65,11 +67,15 @@ const getDriver = ({ page }: { page: Page }) => {
   const emailInput = page.getByPlaceholder("email");
   const passwordInput = page.getByPlaceholder("password");
   const loginButton = page.getByRole("button", { name: "Login" });
+  const wrongPasswordError = page.getByText("Invalid password");
+  const noUserError = page.getByText("User does not exist");
 
   return {
     fillEmail: (email: string) => emailInput.fill(email),
     fillPassword: (password: string) => passwordInput.fill(password),
     clickLogin: () => loginButton.click(),
+    wrongPasswordError,
+    noUserError,
     goto: (location: string) => page.goto(location),
     vals: {
       email: "test@test.com",
