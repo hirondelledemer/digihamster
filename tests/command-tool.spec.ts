@@ -26,7 +26,7 @@ test.describe("command tool", () => {
 
     // login
     await driver.goto(urls.base);
-    await expect(page).toHaveScreenshot("login-page.png");
+    await expect(driver.emailInput).toBeVisible();
     await driver.fillEmail(vals.email);
     await driver.fillPassword(vals.password);
     await driver.clickLogin();
@@ -66,6 +66,7 @@ const getDriver = ({ page }: { page: Page }) => {
     fillPassword: (password: string) => passwordInput.fill(password),
     fillCommand: (command: string) => commandInput.fill(command),
     clickLogin: () => loginButton.click(),
+    emailInput,
     editButton,
     loginButton,
     deleteButton,
