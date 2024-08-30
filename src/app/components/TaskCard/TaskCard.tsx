@@ -25,6 +25,7 @@ import DinosaurIcon from "../icons/DinosaurIcon";
 import useEditTask from "@/app/utils/hooks/use-edit-task";
 import useTags from "@/app/utils/hooks/use-tags";
 import TaskFormModal from "../TaskFormModal";
+import StaleIndicator from "../StaleIndicator";
 
 export const titleTestId = "TaskCard-title-testid";
 export const cardTestId = "TaskCard-card-testid";
@@ -48,8 +49,6 @@ const TaskCard: FC<TaskCardProps> = ({
   const { editTask } = useEditTask();
 
   const project = projects.find((p) => p._id === task.projectId);
-  const taskIsStale =
-    differenceInCalendarDays(now(), task.activatedAt || 0) > 7;
 
   const closeTaskForm = () => setTaskFormOpen(false);
   const taskTags = tags.filter((tag) => task.tags.includes(tag._id));
@@ -86,9 +85,10 @@ const TaskCard: FC<TaskCardProps> = ({
                   )}
                 </div>
                 <div className="flex items-center">
-                  {taskIsStale && (
-                    <DinosaurIcon className="h-4 w-4 fill-gray-200 mr-2" />
-                  )}
+                  <StaleIndicator
+                    date={task.activatedAt || 0}
+                    className="mr-2"
+                  />
                   <Estimate estimate={task.estimate || 0} />
                 </div>
               </CardTitle>
