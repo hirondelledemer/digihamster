@@ -15,15 +15,18 @@ import {
   CommandSeparator,
 } from "../../../ui/command";
 import { cn } from "../../../utils";
+import { useMemo } from "react";
+import { sort } from "remeda";
+interface Option {
+  label: string;
+  value: string;
+  icon?: React.ComponentType<{ className?: string }>;
+}
 
 interface DataTableFacetedFilterProps<TData, TValue> {
   column?: Column<TData, TValue>;
   title?: string;
-  options: {
-    label: string;
-    value: string;
-    icon?: React.ComponentType<{ className?: string }>;
-  }[];
+  options: Option[];
 }
 
 export function DataTableFacetedFilter<TData, TValue>({
@@ -34,6 +37,11 @@ export function DataTableFacetedFilter<TData, TValue>({
   const facets = column?.getFacetedUniqueValues();
 
   const selectedValues = new Set(column?.getFilterValue() as string[]);
+
+  const optionsToShow = useMemo(
+    () => sort(options, (o) => (selectedValues.has(o.value) ? 0 : 1)),
+    [options, selectedValues]
+  );
 
   return (
     <Popover>
@@ -59,7 +67,7 @@ export function DataTableFacetedFilter<TData, TValue>({
                     {selectedValues.size} selected
                   </Badge>
                 ) : (
-                  options
+                  optionsToShow
                     .filter((option) => selectedValues.has(option.value))
                     .map((option) => (
                       <Badge
@@ -82,7 +90,7 @@ export function DataTableFacetedFilter<TData, TValue>({
           <CommandList>
             <CommandEmpty>No results found.</CommandEmpty>
             <CommandGroup>
-              {options.map((option) => {
+              {optionsToShow.map((option) => {
                 const isSelected = selectedValues.has(option.value);
                 return (
                   <CommandItem

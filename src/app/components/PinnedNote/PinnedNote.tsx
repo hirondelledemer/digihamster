@@ -41,7 +41,6 @@ const PinnedNote: FC<PinnedNoteProps> = ({ testId, note }): ReactNode => {
         title: "Success",
         description: "Note has been updated",
       });
-      // editor?.commands.setContent("");
       setData((n) =>
         updateObjById<Note>(n, note._id, {
           ...updatedNote,

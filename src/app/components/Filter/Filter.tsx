@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, useMemo, useState } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Button } from "../ui/button";
 import { CheckIcon, PlusCircledIcon } from "@radix-ui/react-icons";
@@ -14,6 +14,7 @@ import {
   CommandSeparator,
 } from "../ui/command";
 import { cn } from "../utils";
+import { sort } from "remeda";
 
 interface Option {
   value: string;
@@ -40,6 +41,10 @@ const Filter: FC<FilterProps> = ({
   onChange,
   maxLengthToShow = DEFAULT_LENGTH,
 }): JSX.Element => {
+  const [optionsToShow] = useState<Option[]>(
+    sort(options, (o) => (value.includes(o.value) ? 0 : 1))
+  );
+
   return (
     <Popover data-testid={testId}>
       <PopoverTrigger asChild>
@@ -64,7 +69,7 @@ const Filter: FC<FilterProps> = ({
                     {value.length} selected
                   </Badge>
                 ) : (
-                  options
+                  optionsToShow
                     .filter((option) => value.includes(option.value))
                     .map((option) => (
                       <Badge
@@ -87,7 +92,7 @@ const Filter: FC<FilterProps> = ({
           <CommandList>
             <CommandEmpty>No results found.</CommandEmpty>
             <CommandGroup>
-              {options.map((option) => {
+              {optionsToShow.map((option) => {
                 const isSelected = value.includes(option.value);
                 return (
                   <CommandItem
