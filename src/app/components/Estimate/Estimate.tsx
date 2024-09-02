@@ -1,5 +1,10 @@
 import React, { FC } from "react";
-import { IconComet, IconStar, IconStars } from "@tabler/icons-react";
+import {
+  IconCircle,
+  IconComet,
+  IconStar,
+  IconStars,
+} from "@tabler/icons-react";
 
 export interface EstimateProps {
   estimate: number | null;
@@ -7,8 +12,13 @@ export interface EstimateProps {
 
 const Estimate: FC<EstimateProps> = ({ estimate }): JSX.Element => {
   if (!estimate) {
+    return <IconCircle className="h-4 w-4" color="#eab308" />;
+  }
+
+  if (estimate < 1) {
     return <IconComet size={18} color="green" />;
   }
+
   if (estimate > 0 && estimate < 4) {
     return (
       <div className="flex">

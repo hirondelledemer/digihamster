@@ -25,6 +25,7 @@ import {
   IconComet,
   IconStar,
   IconStars,
+  IconCircle,
 } from "@tabler/icons-react";
 import useProjects from "@/app/utils/hooks/use-projects";
 import { Textarea } from "../ui/textarea";
@@ -205,7 +206,7 @@ const TaskForm: FC<TaskFormProps> = ({
                     field.onChange(Number(value));
                   }}
                 >
-                  <ToggleGroupItem value="0" aria-label="eta-0">
+                  <ToggleGroupItem value="0.5" aria-label="eta-0-5">
                     <IconComet className="h-4 w-4" color="#65a30d" />
                   </ToggleGroupItem>
                   <ToggleGroupItem value="1" aria-label="eta-1">
@@ -222,6 +223,9 @@ const TaskForm: FC<TaskFormProps> = ({
                   </ToggleGroupItem>
                   <ToggleGroupItem value="4" aria-label="eta-4">
                     <IconStars className="h-4 w-4" color="#e11d48" />
+                  </ToggleGroupItem>
+                  <ToggleGroupItem value="0" aria-label="eta-0">
+                    <IconCircle className="h-4 w-4" color="#eab308" />
                   </ToggleGroupItem>
                 </ToggleGroup>
               </FormControl>
