@@ -99,8 +99,8 @@ const TaskCard: FC<TaskCardProps> = ({
               )}
             </CardHeader>
             {task.description && !task.completed && (
-              <CardContent className="px-4 text-xs">
-                <MinimalNote note={task.description} />
+              <CardContent className="pb-4 px-4 text-xs whitespace-pre-wrap muted">
+                {task.description}
               </CardContent>
             )}
             {(task.deadline || !!taskTags.length) && (
