@@ -35,9 +35,25 @@ describe("Timeline.utils", () => {
       },
     ]);
 
-    expect(getProjectPercentages(data, projects)).toStrictEqual({
-      1: { percentage: 75, color: "color1" },
-      2: { percentage: 25, color: "color2" },
+    expect(getProjectPercentages(data, projects, [])).toStrictEqual({
+      1: {
+        percentage: 75,
+        color: "color1",
+        estimate: 1.5,
+        label: "Project 0: 1.5",
+      },
+      2: {
+        percentage: 25,
+        color: "color2",
+        estimate: 0.5,
+        label: "Project 1: 0.5",
+      },
+      events: {
+        color: "#713f12",
+        estimate: 0,
+        label: "Meetings: 0",
+        percentage: 0,
+      },
     });
   });
 });

@@ -1,5 +1,5 @@
 "use client";
-import React, { FC, useCallback, useMemo } from "react";
+import React, { FC, useCallback } from "react";
 import useTasks from "@/app/utils/hooks/use-tasks";
 import useEvents from "@/app/utils/hooks/use-events";
 import useJournalEntries from "@/app/utils/hooks/use-entry";
@@ -19,10 +19,10 @@ import {
   IconCalendarCheck,
   IconCircleCheck,
 } from "@tabler/icons-react";
-import { getProjectPercentages } from "./Timeline.utils";
+import { getProjectPercentages, isEvent, isTask } from "./Timeline.utils";
 import useProjects from "@/app/utils/hooks/use-projects";
-import { TaskV2 } from "@/models/taskV2";
 import { addEstimates } from "@/app/utils/tasks/estimates";
+import PercentagesBar from "../PercentagesBar";
 
 export interface TimelineProps {
   testId?: string;
@@ -58,12 +58,10 @@ const Timeline: FC<TimelineProps> = ({ testId }): JSX.Element => {
   const logEvents = [...filteredTasks, ...filteredEntries, ...filteredEvents];
   const sortedEvents = sortBy(logEvents, [
     (val) => {
-      console.log(val);
-      if ("startAt" in val) {
-        // todo: typequards
+      if (isEvent(val)) {
         return new Date(val.startAt).getTime();
       }
-      if ("completedAt" in val) {
+      if (isTask(val)) {
         return new Date(val.completedAt || 0).getTime();
       }
       return new Date(val.updatedAt).getTime();
@@ -71,7 +69,11 @@ const Timeline: FC<TimelineProps> = ({ testId }): JSX.Element => {
     "asc",
   ]);
 
-  const projectPercentages = getProjectPercentages(filteredTasks, projects);
+  const projectPercentages = getProjectPercentages(
+    filteredTasks,
+    projects,
+    filteredEvents
+  );
 
   const getCompletedTasksCount = useCallback(
     (projectId?: string) =>
@@ -85,21 +87,7 @@ const Timeline: FC<TimelineProps> = ({ testId }): JSX.Element => {
     <div data-testid={testId} className="p-4">
       This week ({getWeek(now())}):
       <div className="space-y-1">
-        <div className="h-5 flex">
-          {Object.keys(projectPercentages).map(
-            (
-              key // todo: extract
-            ) => (
-              <div
-                key={key}
-                style={{
-                  width: `${projectPercentages[key].percentage}%`,
-                  backgroundColor: `${projectPercentages[key].color}`,
-                }}
-              />
-            )
-          )}
-        </div>
+        <PercentagesBar data={projectPercentages} />
         <div className="flex space-x-2">
           <div className="text-sm flex items-center mb-3 space-x-2">
             <IconCircleCheck
@@ -114,14 +102,17 @@ const Timeline: FC<TimelineProps> = ({ testId }): JSX.Element => {
             (
               projectId // todo: extract and add tooltip
             ) => (
-              <div className="text-sm flex items-center mb-3 space-x-2">
+              <div
+                key={projectId}
+                className="text-sm flex items-center mb-3 space-x-2"
+              >
                 <IconCircleCheck
                   size={19}
                   color="black"
                   fill={projectPercentages[projectId].color}
                   className="mr-1"
                 />
-                {getCompletedTasksCount(projectId)}
+                {projectPercentages[projectId].estimate}
               </div>
             )
           )}
@@ -150,7 +141,7 @@ const Timeline: FC<TimelineProps> = ({ testId }): JSX.Element => {
                   <IconCircleCheck // todo: extract this icon
                     size={19}
                     color="black"
-                    fill="green"
+                    fill={projects.find((p) => p._id === val.projectId)?.color}
                   />
                 </div>
                 <div>{val.title}</div>
