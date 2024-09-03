@@ -11,7 +11,6 @@ export interface Event extends Taggable, TimeStamps {
   allDay: boolean;
   startAt: number;
   endAt: number;
-  completedAt?: number;
 }
 
 export type IEvent = Event & mongoose.Document<string>;
