@@ -11,15 +11,13 @@ import useTags from "@/app/utils/hooks/use-tags";
 import TagsFilter from "./TagsFilter";
 import { IconCircle, IconCircleCheck } from "@tabler/icons-react";
 import { TaskV2 } from "@/models/taskV2";
+import { addEstimates } from "@/app/utils/tasks/estimates";
 
 export const taskTestId = "ActiveTaskList-task-testid";
 
 export interface ActiveTaskListProps {
   testId?: string;
 }
-
-const addEstimates = (acc: number, val: TaskV2): number =>
-  acc + (val.estimate || 0);
 
 const ActiveTaskList: FC<ActiveTaskListProps> = ({
   testId,

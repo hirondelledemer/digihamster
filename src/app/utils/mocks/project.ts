@@ -19,3 +19,11 @@ export const generateProject: (
 export const generateListOfProjects: (count: number) => Project[] = (count) => {
   return [...Array(count)].map((_v, i) => generateProject(i));
 };
+
+export const generateCustomProjectsList: (
+  taskInfo: Partial<Project>[]
+) => Project[] = (projectInfo) => {
+  return projectInfo.map((projectProperties, i) => ({
+    ...generateProject(i, projectProperties),
+  }));
+};

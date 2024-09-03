@@ -20,7 +20,6 @@ export async function GET(request: NextRequest) {
       isActive: getIsActive,
     });
 
-    console.log("notes", notes);
     return NextResponse.json(notes);
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 400 });

@@ -258,7 +258,6 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
       _id: tempId,
       completed: false,
       deleted: false,
-      completedAt: 0,
       createdAt: "",
       updatedAt: "",
       tags: [],
