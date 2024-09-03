@@ -19,7 +19,12 @@ import {
   IconCalendarCheck,
   IconCircleCheck,
 } from "@tabler/icons-react";
-import { getProjectPercentages, isEvent, isTask } from "./Timeline.utils";
+import {
+  getProjectPercentages,
+  isEvent,
+  isJournalEntry,
+  isTask,
+} from "./Timeline.utils";
 import useProjects from "@/app/utils/hooks/use-projects";
 import { addEstimates } from "@/app/utils/tasks/estimates";
 import PercentagesBar from "../PercentagesBar";
@@ -118,7 +123,7 @@ const Timeline: FC<TimelineProps> = ({ testId }): JSX.Element => {
           )}
         </div>
         {sortedEvents.map((val) => {
-          if ("startAt" in val) {
+          if (isEvent(val)) {
             return (
               <div key={val._id} className="flex items-center">
                 {getDate(val.startAt)}
@@ -133,7 +138,7 @@ const Timeline: FC<TimelineProps> = ({ testId }): JSX.Element => {
               </div>
             );
           }
-          if ("completedAt" in val) {
+          if (isTask(val)) {
             return (
               <div key={val._id} className="flex items-center">
                 {getDate(val.completedAt)}
@@ -148,7 +153,7 @@ const Timeline: FC<TimelineProps> = ({ testId }): JSX.Element => {
               </div>
             );
           }
-          if ("note" in val) {
+          if (isJournalEntry(val)) {
             return (
               <div key={val._id} className="flex">
                 {getDate(val.updatedAt)}
