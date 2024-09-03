@@ -26,7 +26,7 @@ const PercentagesBar: FC<PercentagesBarProps> = ({
   return (
     <div data-testid={testId} className="h-5 flex">
       {Object.keys(data).map((key) => (
-        <TooltipProvider>
+        <TooltipProvider key={key}>
           <Tooltip>
             <TooltipTrigger
               style={{
@@ -35,7 +35,6 @@ const PercentagesBar: FC<PercentagesBarProps> = ({
               className="hover:border-color-transparent hover:border-2"
             >
               <div
-                key={key}
                 style={{
                   height: "100%",
                   width: "100%",
