@@ -27,3 +27,31 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 400 });
   }
 }
+
+export async function PATCH(request: NextRequest) {
+  try {
+    await getDataFromToken(request);
+    const reqBody = await request.json();
+    const args = reqBody;
+    const project = await Project.findOne({ _id: args.id });
+
+    if (!project) {
+      throw new Error("project does not exists");
+    }
+
+    const updatedProject = await Project.findOneAndUpdate(
+      { _id: args.id },
+      {
+        title: args.title || project.title,
+        color: args.color || project.color,
+        deleted: args.deleted === undefined ? project.deleted : args.deleted,
+        sortOrder:
+          args.sortOrder === undefined ? project.sortOrder : args.sortOrder,
+      }
+    );
+
+    return NextResponse.json(updatedProject);
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 400 });
+  }
+}
