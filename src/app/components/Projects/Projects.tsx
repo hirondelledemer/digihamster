@@ -1,5 +1,5 @@
 "use client";
-import React, { FC, useState } from "react";
+import React, { FC, useMemo, useState } from "react";
 
 import useProjects from "@/app/utils/hooks/use-projects";
 import { DataTable } from "../Tasks/components/DataTable/DataTable";
@@ -8,6 +8,7 @@ import { getColumns } from "../Tasks/components/columns";
 import useTags from "@/app/utils/hooks/use-tags";
 import { TaskV2 } from "@/models/taskV2";
 import TaskFormModal from "../TaskFormModal";
+import ProjectCard from "../ProjectCard";
 
 export interface ProjectsProps {
   testId?: string;
@@ -36,6 +37,16 @@ const Projects: FC<ProjectsProps> = ({ testId }): JSX.Element => {
     setSelectedTask(null);
   };
 
+  const sortedProjects = useMemo(
+    () =>
+      projects.sort((a) =>
+        tasks.filter((t) => !t.completed && t.projectId === a._id).length > 0
+          ? -1
+          : 1
+      ),
+    [projects, tasks]
+  );
+
   return (
     <div data-testid={testId}>
       {selectedTask && (
@@ -48,21 +59,18 @@ const Projects: FC<ProjectsProps> = ({ testId }): JSX.Element => {
         />
       )}
 
-      <div className="flex p-4">
-        <div>
-          {projects
-            .filter((project) => !project.deleted)
-            .map((project) => (
-              <div>
-                <div
-                  onClick={() => {
-                    setSelectedProjectId(project._id);
-                  }}
-                >
-                  {project.title}
-                </div>
-              </div>
-            ))}
+      <div className="flex p-4 space-x-6">
+        <div className="space-y-2">
+          {sortedProjects.map((project) => (
+            <div
+              key={project._id}
+              onClick={() => {
+                setSelectedProjectId(project._id);
+              }}
+            >
+              <ProjectCard project={project} />
+            </div>
+          ))}
         </div>
         <div>
           <DataTable
