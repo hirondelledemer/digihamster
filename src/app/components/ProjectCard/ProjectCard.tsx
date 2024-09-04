@@ -7,11 +7,13 @@ import { addEstimates } from "@/app/utils/tasks/estimates";
 export interface ProjectCardProps {
   testId?: string;
   project: Project;
+  selected: boolean;
 }
 
 const ProjectCard: FC<ProjectCardProps> = ({
   testId,
   project,
+  selected,
 }): JSX.Element => {
   const { data: tasks } = useTasks();
 
@@ -56,9 +58,9 @@ const ProjectCard: FC<ProjectCardProps> = ({
   return (
     <Card
       data-testid={testId}
-      className={`w-[350px] p-0 rounded-md ${
+      className={`w-[350px] p-0 rounded-md hover:border hover:border-primary ${
         completed ? "opacity-40 line-through" : ""
-      }`}
+      } ${selected && "border border-[#791027]"}`}
     >
       <CardHeader className="p-4">
         <CardTitle className="font-normal flex items-center justify-between">
@@ -70,7 +72,7 @@ const ProjectCard: FC<ProjectCardProps> = ({
       </CardHeader>
 
       <CardContent className="pb-4 px-4 text-xs whitespace-pre-wrap muted">
-        <div className="w-full border bg--secondary h-2 bg-[#3a3300]">
+        <div className="w-full border bg--secondary h-2 bg-[#22040b]">
           <div
             style={{
               height: "100%",

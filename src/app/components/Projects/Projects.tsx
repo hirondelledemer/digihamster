@@ -68,7 +68,10 @@ const Projects: FC<ProjectsProps> = ({ testId }): JSX.Element => {
                 setSelectedProjectId(project._id);
               }}
             >
-              <ProjectCard project={project} />
+              <ProjectCard
+                project={project}
+                selected={project._id === selectedProjectId}
+              />
             </div>
           ))}
         </div>
