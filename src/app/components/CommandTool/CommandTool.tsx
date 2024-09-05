@@ -47,6 +47,10 @@ const CommandTool: FC<CommandToolProps> = (): JSX.Element => {
     router.push(TASKS);
   }, [router]);
 
+  const gotToProjects = useCallback(() => {
+    router.push(PROJECTS);
+  }, [router]);
+
   const goToHome = useCallback(() => {
     router.push(HOME);
   }, [router]);
@@ -114,6 +118,7 @@ const CommandTool: FC<CommandToolProps> = (): JSX.Element => {
           <CommandGroup heading="Go to">
             <CommandItem onSelect={goToHome}>Home</CommandItem>
             <CommandItem onSelect={gotToTasks}>Tasks</CommandItem>
+            <CommandItem onSelect={gotToProjects}>Projects</CommandItem>
           </CommandGroup>
         </CommandList>
       </CommandDialog>
