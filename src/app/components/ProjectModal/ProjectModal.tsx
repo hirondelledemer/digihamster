@@ -2,14 +2,14 @@ import React, { FC, ReactNode } from "react";
 
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "../ui/sheet";
 
-export interface TaskModalProps {
+export interface ProjectModalProps {
   testId?: string;
   open: boolean;
   onClose(): void;
   children: ReactNode;
 }
 
-const TaskFormModal: FC<TaskModalProps> = ({
+const ProjectModal: FC<ProjectModalProps> = ({
   testId,
   open,
   onClose,
@@ -22,10 +22,10 @@ const TaskFormModal: FC<TaskModalProps> = ({
           side="left"
           onCloseClick={onClose}
           onEscapeKeyDown={onClose}
-          aria-describedby="Task Form Modal"
+          aria-describedby="Project Form Modal"
         >
           <SheetHeader>
-            <SheetTitle>Create Task</SheetTitle>
+            <SheetTitle>Project</SheetTitle>
           </SheetHeader>
           {children}
         </SheetContent>
@@ -34,4 +34,4 @@ const TaskFormModal: FC<TaskModalProps> = ({
   );
 };
 
-export default TaskFormModal;
+export default ProjectModal;

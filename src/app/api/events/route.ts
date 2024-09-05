@@ -55,7 +55,6 @@ export async function POST(request: NextRequest) {
 
 export async function PATCH(request: NextRequest) {
   try {
-    console.log("patch");
     await getDataFromToken(request);
     const reqBody = await request.json();
     const args = reqBody;

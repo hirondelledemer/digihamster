@@ -22,6 +22,8 @@ export const wrapWithProjectsProvider = (
       defaultProject: value.defaultProject,
       loading: false,
       setData: jest.fn(),
+      updateProject: jest.fn(),
+      createProject: jest.fn(),
     }}
   >
     {component}

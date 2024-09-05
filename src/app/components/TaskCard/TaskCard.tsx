@@ -1,7 +1,6 @@
 import React, { FC, useState } from "react";
 import { TaskV2 as Task } from "@/models/taskV2";
 import useProjects from "@/app/utils/hooks/use-projects";
-import { differenceInCalendarDays } from "date-fns";
 import {
   Card,
   CardContent,
@@ -10,7 +9,6 @@ import {
   CardHeader,
   CardTitle,
 } from "../ui/card";
-import MinimalNote from "../MinimalNote";
 import {
   ContextMenu,
   ContextMenuContent,
@@ -20,8 +18,6 @@ import {
 import { Badge } from "../ui/badge";
 import { format } from "date-fns";
 import Estimate from "../Estimate";
-import { now } from "@/app/utils/date/date";
-import DinosaurIcon from "../icons/DinosaurIcon";
 import useEditTask from "@/app/utils/hooks/use-edit-task";
 import useTags from "@/app/utils/hooks/use-tags";
 import TaskFormModal from "../TaskFormModal";

@@ -35,7 +35,6 @@ import { format } from "date-fns";
 import { Calendar } from "../ui/calendar";
 import { TaskV2 as Task } from "@/models/taskV2";
 import { useEditTask } from "@/app/utils/hooks/use-edit-task";
-import { useToast } from "../ui/use-toast";
 import Filter from "../Filter";
 import useTags from "@/app/utils/hooks/use-tags";
 

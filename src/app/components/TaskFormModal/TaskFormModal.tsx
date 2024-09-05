@@ -1,6 +1,5 @@
 import React, { FC } from "react";
 
-import { z } from "zod";
 import TaskModal from "../TaskModal";
 import TaskForm from "../TaskForm";
 import { TaskModalProps } from "../TaskModal/TaskModal";
