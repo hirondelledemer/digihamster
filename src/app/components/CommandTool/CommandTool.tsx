@@ -11,7 +11,7 @@ import {
   CommandList,
 } from "../ui/command";
 import useHotKeys from "@/app/utils/hooks/use-hotkeys";
-import { HOME, TASKS } from "@/app/utils/consts/routes";
+import { HOME, PROJECTS, TASKS } from "@/app/utils/consts/routes";
 import { DialogTitle } from "@radix-ui/react-dialog";
 import TaskFormModal from "../TaskFormModal";
 import useEditTask from "@/app/utils/hooks/use-edit-task";
