@@ -11,6 +11,9 @@ import {
 import axios from "axios";
 import { Project } from "@/models/project";
 import { useToast } from "@/app/components/ui/use-toast";
+import { updateObjById } from "../common/update-array";
+
+type FieldsRequired = "title" | "color";
 
 export const ProjectsContext = createContext<{
   data: Project[];
@@ -18,10 +21,14 @@ export const ProjectsContext = createContext<{
   setData: Dispatch<SetStateAction<Project[]>>;
   error?: unknown;
   loading: boolean;
+  updateProject(id: string, props: Partial<Project>, onDone?: () => void): void;
+  createProject(data: Pick<Project, FieldsRequired>): void;
 }>({
   data: [],
   setData: () => {},
   loading: false,
+  updateProject: () => {},
+  createProject: () => {},
 });
 
 const { Provider } = ProjectsContext;
@@ -56,15 +63,82 @@ export const ProjectsContextProvider = ({ children }: any) => {
     })();
   }, [toast]);
 
+  const createProject = async (data: Pick<Project, FieldsRequired>) => {
+    const tempId = "temp-id";
+
+    const tempProject: Project = {
+      _id: tempId,
+      deleted: false,
+      order: 0,
+      ...data,
+    };
+    setData((e) => [...e, tempProject]);
+
+    try {
+      const response = await axios.post<Project>("/api/projects", data);
+      setData((e) => updateObjById<Project>(e, tempId, response.data));
+      toast({
+        title: "Success",
+        description: "Project has been created",
+      });
+    } catch (e) {
+      toast({
+        title: "Error",
+        description: JSON.stringify(e),
+        variant: "destructive",
+      });
+    }
+  };
+
+  const updateProject = async (
+    projectId: string,
+    props: Partial<Project>,
+    onDone?: () => void
+  ) => {
+    try {
+      setData((p) =>
+        updateObjById<Project>(p, projectId, {
+          ...props,
+        })
+      );
+      onDone && onDone();
+      await axios.patch("/api/projects", {
+        id: projectId,
+        ...props,
+      });
+      toast({
+        title: "Success",
+        description: "Project has been updated",
+      });
+    } catch (e) {
+      toast({
+        title: "Error",
+        description: JSON.stringify(e),
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
-    <Provider value={{ data, setData, error, loading, defaultProject }}>
+    <Provider
+      value={{
+        data,
+        setData,
+        error,
+        loading,
+        defaultProject,
+        updateProject,
+        createProject,
+      }}
+    >
       {children}
     </Provider>
   );
 };
 
 export default function useProjects() {
-  const { data, setData, defaultProject } = useContext(ProjectsContext);
+  const { data, setData, defaultProject, updateProject, createProject } =
+    useContext(ProjectsContext);
 
-  return { data, setData, defaultProject };
+  return { data, setData, defaultProject, updateProject, createProject };
 }

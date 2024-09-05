@@ -1,6 +1,6 @@
 import { connect } from "@/config/database/connection";
 import { getDataFromToken } from "@/app/helpers/getDataFromToken";
-import Project from "@/models/project";
+import Project, { IProject } from "@/models/project";
 import { NextRequest, NextResponse } from "next/server";
 import User from "@/models/user";
 
@@ -23,6 +23,30 @@ export async function GET(request: NextRequest) {
       projects,
       defaultProject,
     });
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 400 });
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const userId: string = await getDataFromToken(request);
+    const reqBody = await request.json();
+    const args = reqBody;
+
+    const projects = await Project.find({ userId });
+
+    const newProject = new Project({
+      userId,
+      title: args.title,
+      color: args.color,
+      deleted: false,
+      order: projects.length,
+    });
+
+    const savedProject = await newProject.save();
+
+    return NextResponse.json(savedProject);
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 400 });
   }

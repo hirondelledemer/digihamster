@@ -9,6 +9,8 @@ import useTags from "@/app/utils/hooks/use-tags";
 import { TaskV2 } from "@/models/taskV2";
 import TaskFormModal from "../TaskFormModal";
 import ProjectCard from "../ProjectCard";
+import { Button } from "../ui/button";
+import ProjectModalForm from "../ProjectModalForm";
 
 export interface ProjectsProps {
   testId?: string;
@@ -22,19 +24,22 @@ const Projects: FC<ProjectsProps> = ({ testId }): JSX.Element => {
   const [selectedProjectId, setSelectedProjectId] = useState(
     defaultProject?._id
   );
-  const [selectedTask, setSelectedTask] = useState<TaskV2 | null>(null);
+  const [openTaskForm, setOpenTaskForm] = useState<{
+    open: boolean;
+    selectedTask: TaskV2 | null;
+  }>({ selectedTask: null, open: false });
+  const [openProjectForm, setOpenProjectForm] = useState<boolean>(false);
 
   const filteredTasks = tasks.filter(
     (task) => task.projectId === selectedProjectId && !task.completed
   );
   const columns = getColumns(projects, tags);
 
-  const openTaskForm = (task: TaskV2) => {
-    setSelectedTask(task);
-  };
-
   const closeTaskForm = () => {
-    setSelectedTask(null);
+    setOpenTaskForm({ selectedTask: null, open: false });
+  };
+  const closeOpenProjectForm = () => {
+    setOpenProjectForm(false);
   };
 
   const sortedProjects = useMemo(
@@ -49,18 +54,38 @@ const Projects: FC<ProjectsProps> = ({ testId }): JSX.Element => {
 
   return (
     <div data-testid={testId}>
-      {selectedTask && (
-        <TaskFormModal
-          onDone={closeTaskForm}
-          onClose={closeTaskForm}
-          editMode
-          task={selectedTask}
-          open={!!selectedTask}
-        />
-      )}
+      <TaskFormModal
+        onDone={closeTaskForm}
+        onClose={closeTaskForm}
+        editMode={!!openTaskForm.selectedTask}
+        task={
+          !!openTaskForm.selectedTask
+            ? openTaskForm.selectedTask
+            : (null as any)
+        }
+        initialValues={{ project: selectedProjectId }}
+        open={openTaskForm.open}
+      />
 
+      <ProjectModalForm
+        onDone={closeOpenProjectForm}
+        onClose={closeOpenProjectForm}
+        open={openProjectForm}
+      />
       <div className="flex p-4 space-x-6">
         <div className="space-y-2">
+          <div className="space-x-2">
+            <Button onClick={() => setOpenProjectForm(true)}>
+              Create Project
+            </Button>
+            <Button
+              onClick={() =>
+                setOpenTaskForm({ open: true, selectedTask: null })
+              }
+            >
+              Create Task
+            </Button>
+          </div>
           {sortedProjects.map((project) => (
             <div
               key={project._id}
@@ -79,7 +104,9 @@ const Projects: FC<ProjectsProps> = ({ testId }): JSX.Element => {
           <DataTable
             data={filteredTasks}
             columns={columns}
-            onRowClick={openTaskForm}
+            onRowClick={(task: TaskV2) => {
+              setOpenTaskForm({ selectedTask: task, open: true });
+            }}
           />
         </div>
       </div>

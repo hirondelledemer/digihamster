@@ -3,6 +3,7 @@ import useTasks from "./use-tasks";
 import { updateObjById } from "../common/update-array";
 import axios from "axios";
 import { useToast } from "@/app/components/ui/use-toast";
+import { now } from "../date/date";
 
 type FieldsRequired =
   | "title"
@@ -25,11 +26,11 @@ export const useEditTask = () => {
       completed: false,
       deleted: false,
       sortOrder: null,
-      completedAt: 0,
-      activatedAt: 0,
+      completedAt: undefined,
+      activatedAt: undefined,
       parentTaskId: null,
-      createdAt: "",
-      updatedAt: "",
+      createdAt: now().toDateString(),
+      updatedAt: now().toDateString(),
       ...data,
     };
     setTasksData((e) => [...e, tempTask]);
