@@ -38,6 +38,7 @@ type Story = StoryObj<typeof ProjectCard>;
 
 const defaultArgs: ProjectCardProps = {
   project: project1,
+  selected: false,
 };
 
 export const Default: Story = {
@@ -46,8 +47,18 @@ export const Default: Story = {
 
 const completedArgs: ProjectCardProps = {
   project: project2,
+  selected: false,
 };
 
 export const Completed: Story = {
   args: completedArgs,
+};
+
+const selectedArgs: ProjectCardProps = {
+  project: project2,
+  selected: true,
+};
+
+export const Selected: Story = {
+  args: selectedArgs,
 };

@@ -4,10 +4,10 @@ import ProjectForm from "../ProjectForm";
 import { ProjectModalProps } from "../ProjectModal/ProjectModal";
 import { ProjectFormProps } from "../ProjectForm/ProjectForm";
 
-type ProjectFormModalProps = Omit<ProjectModalProps, "children"> &
+export type ProjectModalFormProps = Omit<ProjectModalProps, "children"> &
   ProjectFormProps;
 
-const ProjectModalForm: FC<ProjectFormModalProps> = ({
+const ProjectModalForm: FC<ProjectModalFormProps> = ({
   testId,
   open,
   onClose,

@@ -1,19 +1,21 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from "@storybook/react";
 
-import ProjectForm from '.';
-import { ProjectFormProps } from './ProjectForm';
+import ProjectForm from ".";
+import { ProjectFormProps } from "./ProjectForm";
 
 const meta: Meta<typeof ProjectForm> = {
-  title: 'Example/ProjectForm',
+  title: "Example/ProjectForm",
   component: ProjectForm,
-  tags: ['autodocs']
+  tags: ["autodocs"],
 };
 
 export default meta;
 type Story = StoryObj<typeof ProjectForm>;
 
-const defaultArgs: ProjectFormProps = {};
+const defaultArgs: ProjectFormProps = {
+  onDone: () => {},
+};
 
 export const Default: Story = {
-  args: defaultArgs
+  args: defaultArgs,
 };
