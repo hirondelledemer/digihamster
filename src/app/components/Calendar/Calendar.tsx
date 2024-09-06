@@ -5,6 +5,7 @@ import React, {
   useMemo,
   useCallback,
   useState,
+  useEffect,
 } from "react";
 
 import {
@@ -14,6 +15,7 @@ import {
   stringOrDate,
   View,
   Event,
+  HeaderProps,
 } from "react-big-calendar";
 import moment from "moment";
 import withDragAndDrop, {
@@ -29,11 +31,18 @@ import "./Calendar.scss";
 import Today from "../Today";
 
 import CalendarToolbar from "../CalendarToolbar";
-import { isSameDay } from "date-fns";
+import {
+  addMinutes,
+  endOfDay,
+  interval,
+  isSameDay,
+  isWithinInterval,
+  startOfDay,
+} from "date-fns";
 import axios from "axios";
 
 import CalendarEvent, { CalendarEventType } from "../CalendarEvent";
-import { eventPropGetter } from "../CalendarEvent/CalendarEvent";
+// import { eventPropGetter } from "../CalendarEvent/CalendarEvent";
 import useJournalEntries from "@/app/utils/hooks/use-entry";
 import useEvents from "@/app/utils/hooks/use-events";
 import { updateObjById } from "@/app/utils/common/update-array";
@@ -51,6 +60,19 @@ import { Event as EventType } from "@/models/event";
 import useTasks from "@/app/utils/hooks/use-tasks";
 
 export const now = () => new Date();
+interface WeatherData {
+  list: {
+    dt: number;
+    dt_txt: string;
+    main: {
+      feels_like: number;
+      humidity: number;
+    };
+    weather: {
+      main: string;
+    }[];
+  }[];
+}
 
 // todo: why is this needed
 moment.locale("ko", {
@@ -77,8 +99,31 @@ function isCalendarEvent(
 export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
   const [eventInCreationData, setEventInCreationData] =
     useState<SlotInfo | null>(null);
+  const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const { toast } = useToast();
+
+  useEffect(() => {
+    (async function () {
+      try {
+        setLoading(true);
+        const weatherResponse = await axios.get<WeatherData>("/api/weather");
+        console.log("weatherResponse", weatherResponse);
+        setWeatherData(weatherResponse.data);
+        // setDefaultProject(projectsResponse.data.defaultProject);
+      } catch (err) {
+        // setError(err);
+        // toast({
+        //   title: "Error",
+        //   description: "error while getting projects",
+        //   variant: "destructive",
+        // });
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
 
   const { data: journalEntriesData } = useJournalEntries();
   const { data: eventsData, setData: setEventsData } = useEvents();
@@ -132,7 +177,34 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
     })
   );
 
-  const events = [...eventsResolved, ...entriesResolved, ...tasksResolved];
+  const weatherResolved = (weatherData?.list || [])
+    .filter(
+      (entry) =>
+        !entry.dt_txt.includes("03:00:00") && !entry.dt_txt.includes("00:00:00")
+    )
+    .map<CalendarEventType>((entry) => ({
+      start: new Date(entry.dt_txt),
+      end: addMinutes(new Date(entry.dt_txt), 1),
+      title:
+        entry.main.feels_like.toString() +
+        " " +
+        entry.weather.map((w) => w.main).join(", "),
+      allDay: false,
+      resource: {
+        type: "weather",
+        id: entry.dt.toString(),
+        temp: entry.main.feels_like,
+        weather: entry.weather,
+      },
+    }));
+
+  console.log(weatherResolved);
+  const events = [
+    ...eventsResolved,
+    ...entriesResolved,
+    ...tasksResolved,
+    // ...weatherResolved,
+  ];
 
   const customSlotPropGetter = useCallback(
     () => ({
@@ -282,6 +354,38 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
     }
   };
 
+  const headerComp = useCallback(
+    (props: HeaderProps) => {
+      const dayInterval = interval(
+        startOfDay(props.date),
+        endOfDay(props.date)
+      );
+      console.log(weatherData);
+      const firstResult = weatherData?.list.find((weatherItem) => {
+        console.log(
+          props.date,
+          startOfDay(props.date),
+          endOfDay(props.date),
+          new Date(weatherItem.dt_txt)
+        );
+
+        return isWithinInterval(new Date(weatherItem.dt_txt), dayInterval);
+      });
+      if (firstResult) {
+        return (
+          <div>
+            {props.label}.{firstResult.main.feels_like}
+          </div>
+        );
+      }
+      return "label";
+    },
+    [weatherData]
+  );
+
+  if (loading) {
+    return null;
+  }
   // todo: test this component
   return (
     <>
@@ -304,14 +408,16 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
       </Sheet>
       <DnDropCalendar
         selectable
+        draggableAccessor={(event) => event.resource.type === "event"}
         localizer={localizer}
         events={events}
+        backgroundEvents={weatherResolved}
         onEventDrop={moveEvent}
         resizable
         showMultiDayTimes
         onEventResize={resizeEvent}
         onSelectSlot={openEventForm}
-        defaultView={view}
+        defaultView={"day"}
         popup
         doShowMoreDrillDown
         formats={{ eventTimeRangeFormat: () => "" }}
@@ -321,9 +427,12 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
             date: cutomDate,
             time: cutomDate,
           },
+          week: {
+            header: headerComp,
+          },
           toolbar: CalendarToolbar,
         }}
-        eventPropGetter={eventPropGetter}
+        // eventPropGetter={eventPropGetter}
         min={dates.add(
           dates.startOf(new Date(2015, 17, 1), "day"),
           +6,

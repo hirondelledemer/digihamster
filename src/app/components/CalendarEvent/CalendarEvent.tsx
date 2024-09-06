@@ -1,7 +1,6 @@
 "use client";
 
 import React, { FC, useState } from "react";
-import style from "./CalendarEvent.module.scss";
 import { Event } from "react-big-calendar";
 import axios from "axios";
 import useEvents from "@/app/utils/hooks/use-events";
@@ -24,17 +23,40 @@ import {
 import TaskForm from "../EventForm";
 import { FormValues } from "../TaskForm/TaskForm";
 import useEditEvent from "@/app/utils/hooks/use-edit-events";
+import { IconCloud, IconCloudRain, IconSun } from "@tabler/icons-react";
+
+// interface CalendarJournalEvent {
+//   title: string;
+//   resource: {
+//     id: string;
+//     type: "journal";
+//     note?: string;
+//     title?: string;
+//   };
+// }
+
+// export interface CalendarWeatherEvent extends Event {
+//   title: string;
+//   resource: {
+//     id: string;
+//     type: "weather";
+//     temp?: number;
+//     weather?: { main: string }[];
+//   };
+// }
 
 export interface CalendarEventType extends Event {
   title: string;
   resource: {
     id: string;
     completed?: boolean;
-    type: "event" | "deadline" | "journal";
+    type: "event" | "deadline" | "journal" | "weather";
     note?: string;
     title?: string;
     description?: string;
-    projectId?: string; // todo: rethink shape
+    projectId?: string; // todo: rethink shape. do discriminated union
+    temp?: number;
+    weather?: { main: string }[];
   };
 }
 
@@ -43,16 +65,26 @@ export interface CalendarEventProps {
   event: CalendarEventType;
 }
 
-export const taskFormTestId = "CalendarEvent-task-form-test-id";
-
-export const eventPropGetter = (event: Event) => {
-  return {
-    className:
-      event.resource.type === "deadline"
-        ? style.eventWithDeadline
-        : style.event,
-  };
+const getWeatherIcon = (
+  weather: {
+    main: string;
+  }[]
+) => {
+  return weather.map((w) => {
+    if (w.main === "Clear") {
+      return <IconSun size={14} />;
+    }
+    if (w.main === "Clouds") {
+      return <IconCloud size={14} />;
+    }
+    if (w.main === "Rain") {
+      return <IconCloudRain size={14} />;
+    }
+    return w.main;
+  });
 };
+
+export const taskFormTestId = "CalendarEvent-task-form-test-id";
 
 const CalendarEvent: FC<CalendarEventProps> = ({
   testId,
@@ -81,6 +113,15 @@ const CalendarEvent: FC<CalendarEventProps> = ({
       completed: true,
     });
   };
+
+  if (event.resource.type === "weather") {
+    return (
+      <div className="pt-1 flex text-xs items-center pointer-events-none justify-end relative z-10">
+        <div>{Math.floor(event.resource.temp || 0)}</div>
+        <div>{getWeatherIcon(event.resource.weather || [])}</div>
+      </div>
+    );
+  }
 
   return (
     // todo: this is copy/paste code: extract
@@ -122,7 +163,7 @@ const CalendarEvent: FC<CalendarEventProps> = ({
         <ContextMenuTrigger disabled={event.resource.type === "deadline"}>
           <div
             data-testid={testId}
-            className={`h-full p-1 ${
+            className={`h-full p-1 italic cursor-pointer bg-[#29221f] pl-4 rounded-lg hover:border hover:border-primary mt-[-1px]${
               event.resource.completed
                 ? "text-muted-foreground line-through"
                 : ""
