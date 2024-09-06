@@ -108,7 +108,7 @@ const CalendarEvent: FC<CalendarEventProps> = ({
               event.resource.completed
                 ? "text-muted-foreground line-through"
                 : ""
-            }`}
+            } ${event.resource.type === "deadline" ? "bg-[#2B1B1E]" : ""}`}
           >
             {event.title}
             {event.resource.type === "deadline" && (
