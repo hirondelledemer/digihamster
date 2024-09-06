@@ -15,7 +15,6 @@ import {
   stringOrDate,
   View,
   Event,
-  HeaderProps,
 } from "react-big-calendar";
 import moment from "moment";
 import withDragAndDrop, {
@@ -31,14 +30,7 @@ import "./Calendar.scss";
 import Today from "../Today";
 
 import CalendarToolbar from "../CalendarToolbar";
-import {
-  addMinutes,
-  endOfDay,
-  interval,
-  isSameDay,
-  isWithinInterval,
-  startOfDay,
-} from "date-fns";
+import { addMinutes, isSameDay } from "date-fns";
 import axios from "axios";
 
 import CalendarEvent, { CalendarEventType } from "../CalendarEvent";
@@ -64,6 +56,7 @@ import {
   CalendarWeatherEntry,
   WeatherData,
 } from "../CalendarEvent/CalendarEvent.types";
+import CalendarWeatherEvent from "../CalendarWeatherEvent";
 
 export const now = () => new Date();
 
@@ -81,10 +74,22 @@ export interface PlannerProps {
   view: View;
 }
 
-function isCalendarEvent(
-  event: Event | CalendarEventType
-): event is CalendarEventType {
-  return (event as CalendarEventType).resource !== undefined;
+function isCalendarEventEntry(
+  event: CalendarEventType
+): event is CalendarEventEntry {
+  return (event as CalendarEventType).resource.type === "event";
+}
+
+function isCalendarDeadlineEntry(
+  event: CalendarEventType
+): event is CalendarDeadlineEntry {
+  return (event as CalendarDeadlineEntry).resource.type === "deadline";
+}
+
+function isCalendarWeatherEntry(
+  event: CalendarEventType
+): event is CalendarWeatherEntry {
+  return (event as CalendarWeatherEntry).resource.type === "weather";
 }
 
 // todo: test this component
@@ -225,8 +230,11 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
   );
 
   const customEvent = ({ event }: { event: CalendarEventType }) => {
-    if (isCalendarEvent(event)) {
+    if (isCalendarEventEntry(event) || isCalendarDeadlineEntry(event)) {
       return <CalendarEvent event={event} />;
+    }
+    if (isCalendarWeatherEntry(event)) {
+      return <CalendarWeatherEvent event={event} />;
     }
   };
 
@@ -240,7 +248,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
     end,
     isAllDay,
   }: EventInteractionArgs<CalendarEventType>) => {
-    if (isCalendarEvent(event)) {
+    if (isCalendarEventEntry(event)) {
       axios.patch("/api/events", {
         eventId: event.resource.id,
         allDay: isAllDay || false,
@@ -363,7 +371,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
         showMultiDayTimes
         onEventResize={resizeEvent}
         onSelectSlot={openEventForm}
-        defaultView={"day"}
+        defaultView={view}
         popup
         doShowMoreDrillDown
         formats={{ eventTimeRangeFormat: () => "" }}

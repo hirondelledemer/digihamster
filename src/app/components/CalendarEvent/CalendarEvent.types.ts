@@ -19,7 +19,7 @@ export interface CalendarJournalEntry {
   resource: {
     id: string;
     type: "journal";
-    note?: string;
+    note: string;
     title?: string;
   };
 }
@@ -29,8 +29,8 @@ export interface CalendarWeatherEntry extends Event {
   resource: {
     id: string;
     type: "weather";
-    temp?: number;
-    weather?: { main: string }[];
+    temp: number;
+    weather: { main: string }[];
   };
 }
 
@@ -38,10 +38,10 @@ export interface CalendarDeadlineEntry extends Event {
   title: string;
   resource: {
     id: string;
-    completed?: boolean;
+    completed: boolean;
     type: "deadline";
     description?: string;
-    projectId?: string;
+    projectId: string;
   };
 }
 

@@ -23,32 +23,12 @@ import {
 import TaskForm from "../EventForm";
 import { FormValues } from "../TaskForm/TaskForm";
 import useEditEvent from "@/app/utils/hooks/use-edit-events";
-import { IconCloud, IconCloudRain, IconSun } from "@tabler/icons-react";
 import { CalendarEventType } from "./CalendarEvent.types";
 
 export interface CalendarEventProps {
   testId?: string;
   event: CalendarEventType;
 }
-
-const getWeatherIcon = (
-  weather: {
-    main: string;
-  }[]
-) => {
-  return weather.map((w, index) => {
-    if (w.main === "Clear") {
-      return <IconSun key={index} size={14} />;
-    }
-    if (w.main === "Clouds") {
-      return <IconCloud key={index} size={14} />;
-    }
-    if (w.main === "Rain") {
-      return <IconCloudRain key={index} size={14} />;
-    }
-    return w.main;
-  });
-};
 
 export const taskFormTestId = "CalendarEvent-task-form-test-id";
 
@@ -80,17 +60,8 @@ const CalendarEvent: FC<CalendarEventProps> = ({
     });
   };
 
-  if (event.resource.type === "journal") {
+  if (event.resource.type === "journal" || event.resource.type === "weather") {
     return null;
-  }
-
-  if (event.resource.type === "weather") {
-    return (
-      <div className="pt-1 flex text-xs items-center pointer-events-none justify-end relative z-10">
-        <div>{Math.floor(event.resource.temp || 0)}</div>
-        <div>{getWeatherIcon(event.resource.weather || [])}</div>
-      </div>
-    );
   }
 
   return (
