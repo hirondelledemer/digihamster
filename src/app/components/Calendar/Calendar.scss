@@ -69,3 +69,45 @@
 .rbc-overlay-header {
   border-bottom: 1px solid hsl(var(--border));
 }
+
+.rbc-event-content {
+  border: none;
+  background: transparent;
+}
+
+.rbc-event {
+  border: none !important;
+  padding: 0;
+  background: transparent;
+  cursor: default;
+  
+  &:focus {
+    outline: none;
+  }
+}
+
+
+.rbc-event .rbc-selected {
+  border: none !important;
+  padding: 0;
+  background: transparent;
+}
+
+.rbc-addons-dnd-resizable {
+  margin-top: 1px
+}
+
+.rbc-background-event {
+  z-index: 1;
+  right: 0% !important;
+  left: unset !important;
+  width: 50px !important;
+
+  &:focus {
+    border: none;
+    outline: none !important;
+  }
+  &:focus-visible {
+    border: none;
+  }
+}

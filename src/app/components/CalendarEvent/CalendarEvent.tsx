@@ -1,8 +1,7 @@
 "use client";
 
 import React, { FC, useState } from "react";
-import style from "./CalendarEvent.module.scss";
-import { Event } from "react-big-calendar";
+
 import axios from "axios";
 import useEvents from "@/app/utils/hooks/use-events";
 import { Event as EventType } from "@/models/event";
@@ -24,19 +23,7 @@ import {
 import TaskForm from "../EventForm";
 import { FormValues } from "../TaskForm/TaskForm";
 import useEditEvent from "@/app/utils/hooks/use-edit-events";
-
-export interface CalendarEventType extends Event {
-  title: string;
-  resource: {
-    id: string;
-    completed?: boolean;
-    type: "event" | "deadline" | "journal";
-    note?: string;
-    title?: string;
-    description?: string;
-    projectId?: string; // todo: rethink shape
-  };
-}
+import { CalendarEventType } from "./CalendarEvent.types";
 
 export interface CalendarEventProps {
   testId?: string;
@@ -44,15 +31,6 @@ export interface CalendarEventProps {
 }
 
 export const taskFormTestId = "CalendarEvent-task-form-test-id";
-
-export const eventPropGetter = (event: Event) => {
-  return {
-    className:
-      event.resource.type === "deadline"
-        ? style.eventWithDeadline
-        : style.event,
-  };
-};
 
 const CalendarEvent: FC<CalendarEventProps> = ({
   testId,
@@ -81,6 +59,10 @@ const CalendarEvent: FC<CalendarEventProps> = ({
       completed: true,
     });
   };
+
+  if (event.resource.type === "journal" || event.resource.type === "weather") {
+    return null;
+  }
 
   return (
     // todo: this is copy/paste code: extract
@@ -122,11 +104,11 @@ const CalendarEvent: FC<CalendarEventProps> = ({
         <ContextMenuTrigger disabled={event.resource.type === "deadline"}>
           <div
             data-testid={testId}
-            className={`h-full p-1 ${
+            className={`h-full p-1 italic cursor-pointer bg-[#29221f] pl-4 rounded-lg hover:border hover:border-primary mt-[-1px]${
               event.resource.completed
                 ? "text-muted-foreground line-through"
                 : ""
-            }`}
+            } ${event.resource.type === "deadline" ? "bg-[#2B1B1E]" : ""}`}
           >
             {event.title}
             {event.resource.type === "deadline" && (

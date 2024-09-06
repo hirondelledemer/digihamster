@@ -5,6 +5,7 @@ import React, {
   useMemo,
   useCallback,
   useState,
+  useEffect,
 } from "react";
 
 import {
@@ -29,11 +30,10 @@ import "./Calendar.scss";
 import Today from "../Today";
 
 import CalendarToolbar from "../CalendarToolbar";
-import { isSameDay } from "date-fns";
+import { addMinutes, isSameDay } from "date-fns";
 import axios from "axios";
 
 import CalendarEvent, { CalendarEventType } from "../CalendarEvent";
-import { eventPropGetter } from "../CalendarEvent/CalendarEvent";
 import useJournalEntries from "@/app/utils/hooks/use-entry";
 import useEvents from "@/app/utils/hooks/use-events";
 import { updateObjById } from "@/app/utils/common/update-array";
@@ -49,6 +49,14 @@ import { FormValues } from "../TaskForm/TaskForm";
 import { useToast } from "../ui/use-toast";
 import { Event as EventType } from "@/models/event";
 import useTasks from "@/app/utils/hooks/use-tasks";
+import {
+  CalendarDeadlineEntry,
+  CalendarEventEntry,
+  CalendarJournalEntry,
+  CalendarWeatherEntry,
+  WeatherData,
+} from "../CalendarEvent/CalendarEvent.types";
+import CalendarWeatherEvent from "../CalendarWeatherEvent";
 
 export const now = () => new Date();
 
@@ -59,17 +67,29 @@ moment.locale("ko", {
     doy: 1,
   },
 });
-const DnDropCalendar = withDragAndDrop(Calendar as any);
+const DnDropCalendar = withDragAndDrop<CalendarEventType>(Calendar as any);
 const localizer = momentLocalizer(moment); // or glo
 
 export interface PlannerProps {
   view: View;
 }
 
-function isCalendarEvent(
-  event: Event | CalendarEventType
-): event is CalendarEventType {
-  return (event as CalendarEventType).resource !== undefined;
+function isCalendarEventEntry(
+  event: CalendarEventType
+): event is CalendarEventEntry {
+  return (event as CalendarEventType).resource.type === "event";
+}
+
+function isCalendarDeadlineEntry(
+  event: CalendarEventType
+): event is CalendarDeadlineEntry {
+  return (event as CalendarDeadlineEntry).resource.type === "deadline";
+}
+
+function isCalendarWeatherEntry(
+  event: CalendarEventType
+): event is CalendarWeatherEntry {
+  return (event as CalendarWeatherEntry).resource.type === "weather";
 }
 
 // todo: test this component
@@ -77,8 +97,23 @@ function isCalendarEvent(
 export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
   const [eventInCreationData, setEventInCreationData] =
     useState<SlotInfo | null>(null);
+  const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const { toast } = useToast();
+
+  useEffect(() => {
+    (async function () {
+      try {
+        setLoading(true);
+        const weatherResponse = await axios.get<WeatherData>("/api/weather");
+        setWeatherData(weatherResponse.data);
+      } catch (err) {
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
 
   const { data: journalEntriesData } = useJournalEntries();
   const { data: eventsData, setData: setEventsData } = useEvents();
@@ -86,7 +121,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
   //todo: check editing of deadline tasks
   const { data: tasksData } = useTasks(); //todo this is fetching all the tasks. fetch only tasks with deadline
 
-  const eventsResolved = eventsData.map<CalendarEventType>((event) => {
+  const eventsResolved = eventsData.map<CalendarEventEntry>((event) => {
     return {
       start: new Date(event.startAt!),
       end: new Date(event.endAt!),
@@ -104,7 +139,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
 
   const tasksResolved = tasksData
     .filter((task) => !!task.deadline)
-    .map<CalendarEventType>((task) => ({
+    .map<CalendarDeadlineEntry>((task) => ({
       start: task.deadline ? new Date(task.deadline) : undefined,
       end: task.deadline ? new Date(task.deadline) : undefined,
       title: task.title,
@@ -118,7 +153,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
       },
     }));
 
-  const entriesResolved = journalEntriesData.map<CalendarEventType>(
+  const entriesResolved = journalEntriesData.map<CalendarJournalEntry>(
     (entry) => ({
       start: new Date(entry.createdAt || 0),
       title: entry.title,
@@ -131,6 +166,27 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
       },
     })
   );
+
+  const weatherResolved = (weatherData?.list || [])
+    .filter(
+      (entry) =>
+        !entry.dt_txt.includes("03:00:00") && !entry.dt_txt.includes("00:00:00")
+    )
+    .map<CalendarWeatherEntry>((entry) => ({
+      start: new Date(entry.dt_txt),
+      end: addMinutes(new Date(entry.dt_txt), 1),
+      title:
+        entry.main.feels_like.toString() +
+        " " +
+        entry.weather.map((w) => w.main).join(", "),
+      allDay: false,
+      resource: {
+        type: "weather",
+        id: entry.dt.toString(),
+        temp: entry.main.feels_like,
+        weather: entry.weather,
+      },
+    }));
 
   const events = [...eventsResolved, ...entriesResolved, ...tasksResolved];
 
@@ -173,13 +229,16 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
     []
   );
 
-  const customEvent = ({ event }: { event: Event }) => {
-    if (isCalendarEvent(event)) {
+  const customEvent = ({ event }: { event: CalendarEventType }) => {
+    if (isCalendarEventEntry(event) || isCalendarDeadlineEntry(event)) {
       return <CalendarEvent event={event} />;
+    }
+    if (isCalendarWeatherEntry(event)) {
+      return <CalendarWeatherEvent event={event} />;
     }
   };
 
-  const cutomDate = (props: any) => {
+  const customDate = (props: any) => {
     return <div className={style.event}>{props.label}</div>;
   };
 
@@ -188,8 +247,8 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
     start,
     end,
     isAllDay,
-  }: EventInteractionArgs<Event>) => {
-    if (isCalendarEvent(event)) {
+  }: EventInteractionArgs<CalendarEventType>) => {
+    if (isCalendarEventEntry(event)) {
       axios.patch("/api/events", {
         eventId: event.resource.id,
         allDay: isAllDay || false,
@@ -282,7 +341,6 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
     }
   };
 
-  // todo: test this component
   return (
     <>
       <Sheet open={!!eventInCreationData}>
@@ -304,8 +362,10 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
       </Sheet>
       <DnDropCalendar
         selectable
+        draggableAccessor={(event) => event.resource.type === "event"}
         localizer={localizer}
         events={events}
+        backgroundEvents={weatherResolved}
         onEventDrop={moveEvent}
         resizable
         showMultiDayTimes
@@ -318,12 +378,11 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
         components={{
           event: customEvent,
           agenda: {
-            date: cutomDate,
-            time: cutomDate,
+            date: customDate,
+            time: customDate,
           },
           toolbar: CalendarToolbar,
         }}
-        eventPropGetter={eventPropGetter}
         min={dates.add(
           dates.startOf(new Date(2015, 17, 1), "day"),
           +6,
