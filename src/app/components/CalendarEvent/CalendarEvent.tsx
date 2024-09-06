@@ -1,7 +1,7 @@
 "use client";
 
 import React, { FC, useState } from "react";
-import { Event } from "react-big-calendar";
+
 import axios from "axios";
 import useEvents from "@/app/utils/hooks/use-events";
 import { Event as EventType } from "@/models/event";
@@ -24,41 +24,7 @@ import TaskForm from "../EventForm";
 import { FormValues } from "../TaskForm/TaskForm";
 import useEditEvent from "@/app/utils/hooks/use-edit-events";
 import { IconCloud, IconCloudRain, IconSun } from "@tabler/icons-react";
-
-// interface CalendarJournalEvent {
-//   title: string;
-//   resource: {
-//     id: string;
-//     type: "journal";
-//     note?: string;
-//     title?: string;
-//   };
-// }
-
-// export interface CalendarWeatherEvent extends Event {
-//   title: string;
-//   resource: {
-//     id: string;
-//     type: "weather";
-//     temp?: number;
-//     weather?: { main: string }[];
-//   };
-// }
-
-export interface CalendarEventType extends Event {
-  title: string;
-  resource: {
-    id: string;
-    completed?: boolean;
-    type: "event" | "deadline" | "journal" | "weather";
-    note?: string;
-    title?: string;
-    description?: string;
-    projectId?: string; // todo: rethink shape. do discriminated union
-    temp?: number;
-    weather?: { main: string }[];
-  };
-}
+import { CalendarEventType } from "./CalendarEvent.types";
 
 export interface CalendarEventProps {
   testId?: string;
@@ -70,15 +36,15 @@ const getWeatherIcon = (
     main: string;
   }[]
 ) => {
-  return weather.map((w) => {
+  return weather.map((w, index) => {
     if (w.main === "Clear") {
-      return <IconSun size={14} />;
+      return <IconSun key={index} size={14} />;
     }
     if (w.main === "Clouds") {
-      return <IconCloud size={14} />;
+      return <IconCloud key={index} size={14} />;
     }
     if (w.main === "Rain") {
-      return <IconCloudRain size={14} />;
+      return <IconCloudRain key={index} size={14} />;
     }
     return w.main;
   });
@@ -113,6 +79,10 @@ const CalendarEvent: FC<CalendarEventProps> = ({
       completed: true,
     });
   };
+
+  if (event.resource.type === "journal") {
+    return null;
+  }
 
   if (event.resource.type === "weather") {
     return (
