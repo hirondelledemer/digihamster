@@ -62,22 +62,10 @@ import {
   CalendarEventEntry,
   CalendarJournalEntry,
   CalendarWeatherEntry,
+  WeatherData,
 } from "../CalendarEvent/CalendarEvent.types";
 
 export const now = () => new Date();
-interface WeatherData {
-  list: {
-    dt: number;
-    dt_txt: string;
-    main: {
-      feels_like: number;
-      humidity: number;
-    };
-    weather: {
-      main: string;
-    }[];
-  }[];
-}
 
 // todo: why is this needed
 moment.locale("ko", {
@@ -242,7 +230,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
     }
   };
 
-  const cutomDate = (props: any) => {
+  const customDate = (props: any) => {
     return <div className={style.event}>{props.label}</div>;
   };
 
@@ -345,39 +333,6 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
     }
   };
 
-  const headerComp = useCallback(
-    (props: HeaderProps) => {
-      const dayInterval = interval(
-        startOfDay(props.date),
-        endOfDay(props.date)
-      );
-      console.log(weatherData);
-      const firstResult = weatherData?.list.find((weatherItem) => {
-        console.log(
-          props.date,
-          startOfDay(props.date),
-          endOfDay(props.date),
-          new Date(weatherItem.dt_txt)
-        );
-
-        return isWithinInterval(new Date(weatherItem.dt_txt), dayInterval);
-      });
-      if (firstResult) {
-        return (
-          <div>
-            {props.label}.{firstResult.main.feels_like}
-          </div>
-        );
-      }
-      return "label";
-    },
-    [weatherData]
-  );
-
-  if (loading) {
-    return null;
-  }
-  // todo: test this component
   return (
     <>
       <Sheet open={!!eventInCreationData}>
@@ -415,11 +370,8 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
         components={{
           event: customEvent,
           agenda: {
-            date: cutomDate,
-            time: cutomDate,
-          },
-          week: {
-            header: headerComp,
+            date: customDate,
+            time: customDate,
           },
           toolbar: CalendarToolbar,
         }}

@@ -1,5 +1,19 @@
 import { Event } from "react-big-calendar";
 
+export interface WeatherData {
+  list: {
+    dt: number;
+    dt_txt: string;
+    main: {
+      feels_like: number;
+      humidity: number;
+    };
+    weather: {
+      main: string;
+    }[];
+  }[];
+}
+
 export interface CalendarJournalEntry {
   title: string;
   resource: {
