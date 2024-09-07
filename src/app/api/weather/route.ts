@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
 }
 
 async function getWeatherData() {
-  const weatherURL = `https://api.openweathermap.org/data/2.5/forecast?lat=55.930085&lon=25.1119614&appid=${process.env.WEATHER_API_KEY}&units=metric`;
+  const weatherURL = `https://api.openweathermap.org/data/2.5/forecast?lat=54.687157&lon=25.279652&appid=${process.env.WEATHER_API_KEY}&units=metric`;
   try {
     const response = await fetch(weatherURL);
     const weatherData = await response.json();
