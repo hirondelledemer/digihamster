@@ -77,7 +77,7 @@ const ActiveTaskList: FC<ActiveTaskListProps> = ({
         />
       </div>
       <div className="text-sm flex items-center mb-3 space-x-2">
-        <IconCircle size={16} color="#eab308" className="mr-1" />
+        <IconCircle size={16} color="green" className="mr-1" />
         {pendingTasksCount}
         <IconCircleCheck
           size={19}
