@@ -62,6 +62,11 @@ const ActiveTaskList: FC<ActiveTaskListProps> = ({
     [filteredTasks]
   );
 
+  const unestimatedTasksCount = useMemo(
+    () => filteredTasks.filter((t) => !t.estimate).length,
+    [filteredTasks]
+  );
+
   const completedTasksCount = useMemo(
     () => filteredTasks.filter((t) => t.completed).reduce(addEstimates, 0),
     [filteredTasks]
@@ -77,6 +82,8 @@ const ActiveTaskList: FC<ActiveTaskListProps> = ({
         />
       </div>
       <div className="text-sm flex items-center mb-3 space-x-2">
+        <IconCircle size={16} color="#eab308" className="mr-1" />
+        {unestimatedTasksCount}
         <IconCircle size={16} color="green" className="mr-1" />
         {pendingTasksCount}
         <IconCircleCheck
