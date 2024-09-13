@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { CSSProperties, FC, useState } from "react";
 import { TaskV2 as Task } from "@/models/taskV2";
 import useProjects from "@/app/utils/hooks/use-projects";
 import {
@@ -22,6 +22,7 @@ import useEditTask from "@/app/utils/hooks/use-edit-task";
 import useTags from "@/app/utils/hooks/use-tags";
 import TaskFormModal from "../TaskFormModal";
 import StaleIndicator from "../StaleIndicator";
+import { useDraggable } from "@dnd-kit/core";
 
 export const titleTestId = "TaskCard-title-testid";
 export const cardTestId = "TaskCard-card-testid";
@@ -43,6 +44,17 @@ const TaskCard: FC<TaskCardProps> = ({
   const { data: tags } = useTags();
   const [taskFormOpen, setTaskFormOpen] = useState<boolean>(false);
   const { editTask } = useEditTask();
+
+  const { attributes, listeners, setNodeRef, transform } = useDraggable({
+    id: task._id,
+  });
+  const style: CSSProperties | undefined = transform
+    ? {
+        transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+        position: "fixed",
+        zIndex: 999,
+      }
+    : undefined;
 
   const project = projects.find((p) => p._id === task.projectId);
 
@@ -66,6 +78,10 @@ const TaskCard: FC<TaskCardProps> = ({
             className={`w-[350px] p-0 rounded-md ${
               task.completed ? "opacity-40 line-through" : ""
             }`}
+            ref={setNodeRef}
+            style={style}
+            {...listeners}
+            {...attributes}
           >
             <CardHeader className="p-4">
               <CardTitle

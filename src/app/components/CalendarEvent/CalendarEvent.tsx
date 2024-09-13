@@ -24,6 +24,7 @@ import TaskForm from "../EventForm";
 import { FormValues } from "../TaskForm/TaskForm";
 import useEditEvent from "@/app/utils/hooks/use-edit-events";
 import { CalendarEventType } from "./CalendarEvent.types";
+import { useDroppable } from "@dnd-kit/core";
 
 export interface CalendarEventProps {
   testId?: string;
@@ -39,6 +40,15 @@ const CalendarEvent: FC<CalendarEventProps> = ({
   const { setData } = useEvents();
   const [taskFormOpen, setTaskFormOpen] = useState<boolean>(false);
   const { editEvent } = useEditEvent();
+
+  console.log(event.resource.id);
+
+  const { isOver, setNodeRef } = useDroppable({
+    id: event.resource.id,
+  });
+  const style = {
+    color: isOver ? "green" : undefined,
+  };
 
   const handleDeleteClick = async () => {
     await axios.patch("/api/events", {
@@ -65,7 +75,6 @@ const CalendarEvent: FC<CalendarEventProps> = ({
   }
 
   return (
-    // todo: this is copy/paste code: extract
     <>
       <Sheet open={taskFormOpen}>
         <SheetContent
@@ -109,6 +118,8 @@ const CalendarEvent: FC<CalendarEventProps> = ({
                 ? "text-muted-foreground line-through"
                 : ""
             } ${event.resource.type === "deadline" ? "bg-[#2B1B1E]" : ""}`}
+            ref={setNodeRef}
+            style={style}
           >
             {event.title}
             {event.resource.type === "deadline" && (

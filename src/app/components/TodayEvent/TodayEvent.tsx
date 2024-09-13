@@ -1,7 +1,7 @@
 "use client";
 
 import { lightFormat, format } from "date-fns";
-import React, { FC, ReactNode } from "react";
+import React, { FC } from "react";
 import { Checkbox } from "../ui/checkbox";
 import axios from "axios";
 import { Event } from "@/models/event";
@@ -10,80 +10,91 @@ import { cn } from "../utils";
 import styles from "./TodayEvent.module.scss";
 import { updateObjById } from "@/app/utils/common/update-array";
 import { Badge } from "../ui/badge";
+import {
+  CalendarDeadlineEntry,
+  CalendarEventEntry,
+  isCalendarDeadlineEntry,
+  isCalendarEventEntry,
+} from "../CalendarEvent/CalendarEvent.types";
+import TaskCard from "../TaskCard";
 
 export interface TodayEventProps {
   testId?: string;
-  start?: Date;
-  end?: Date;
-  title: ReactNode | string;
-  completed: boolean;
-  allDay?: boolean;
-  id: string;
   showDate?: boolean;
-  type: "deadline" | "event";
+  event: CalendarEventEntry | CalendarDeadlineEntry;
 }
 
 const TodayEvent: FC<TodayEventProps> = ({
   testId,
-  allDay,
-  title,
-  start,
-  end,
-  completed,
-  id,
   showDate,
-  type,
+  event,
 }): JSX.Element => {
   const { setData } = useEvents();
 
+  // todo: use
   const handleCompleteClick = async (val: boolean) => {
     await axios.patch<Event>("/api/events", {
-      eventId: id,
+      eventId: event.resource.id,
       completed: val,
     });
 
-    setData((events) => updateObjById<Event>(events, id, { completed: val }));
+    setData((events) =>
+      updateObjById<Event>(events, event.resource.id, { completed: val })
+    );
   };
 
   return (
-    <div
-      className={cn([
-        "grid grid-cols-3 gap-4 italic mt-4",
-        completed ? "text-muted-foreground" : "",
-        completed ? styles.container : "",
-      ])}
-      data-testid={testId}
-    >
-      {allDay ? (
-        <div className="flex">All Day</div>
-      ) : (
-        <div className="flex">
-          {start && showDate && <div>{format(start, "MMM d, EEEEE")}</div>}
-          {start && end && (
-            <div>
-              {lightFormat(start, "H:mm")}-{lightFormat(end, "H:mm")}
-            </div>
-          )}
-        </div>
-      )}
-      <div>
-        {title}
-        {type === "deadline" && (
-          <Badge
-            className="ml-4"
-            variant={completed ? "secondary" : "destructive"}
-          >
-            Deadline
-          </Badge>
+    <div>
+      <div
+        className={cn([
+          "grid grid-cols-3 gap-4 italic mt-4",
+          event.resource.completed ? "text-muted-foreground" : "",
+          event.resource.completed ? styles.container : "",
+        ])}
+        data-testid={testId}
+      >
+        {isCalendarEventEntry(event) && event.allDay ? (
+          <div className="flex">All Day</div>
+        ) : (
+          <div className="flex">
+            {event.start && showDate && (
+              <div>{format(event.start, "MMM d, EEEEE")}</div>
+            )}
+            {event.start && event.end && (
+              <div>
+                {lightFormat(event.start, "H:mm")}-
+                {lightFormat(event.end, "H:mm")}
+              </div>
+            )}
+          </div>
         )}
-      </div>
+        <div>
+          <div>
+            {event.title}
+            {isCalendarDeadlineEntry(event) && (
+              <Badge
+                className="ml-4"
+                variant={event.resource.completed ? "secondary" : "destructive"}
+              >
+                Deadline
+              </Badge>
+            )}
+          </div>
+          <div>
+            {isCalendarEventEntry(event) &&
+              event.resource.tasks.map((t) => (
+                <TaskCard key={t._id} task={t} />
+              ))}
+          </div>
+        </div>
 
-      <div className="flex justify-end self-center">
-        <Checkbox
-          checked={completed}
-          onCheckedChange={handleCompleteClick}
-          variant={completed ? "secondary" : "default"}
-        />
+        <div className="flex justify-end self-baseline">
+          <Checkbox
+            checked={event.resource.completed}
+            onCheckedChange={handleCompleteClick}
+            variant={event.resource.completed ? "secondary" : "default"}
+          />
+        </div>
       </div>
     </div>
   );

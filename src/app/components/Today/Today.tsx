@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Navigate, Event, View } from "react-big-calendar";
+import { Navigate, View } from "react-big-calendar";
 import * as dates from "date-arithmetic";
 import TodayEvent from "../TodayEvent";
 import { IconChevronDown } from "@tabler/icons-react";
@@ -13,12 +13,19 @@ import {
 } from "../ui/collapsible";
 import { cn } from "../utils";
 import { lightFormat } from "date-fns";
+import { CalendarEventType } from "../CalendarEvent";
+import {
+  CalendarDeadlineEntry,
+  isCalendarDeadlineEntry,
+  isCalendarEventEntry,
+  isCalendarJournalEntry,
+} from "../CalendarEvent/CalendarEvent.types";
 
 export const todayEvent = "Today-today-event-test-id";
 export const upcomingEventsTestId = "Today-upcoming-events-test-id";
 export interface TodayProps {
   testId?: string;
-  events: Event[];
+  events: CalendarEventType[];
   date: Date;
   localizer: {
     endOf: (date: Date, view: View) => Date;
@@ -30,58 +37,54 @@ function Today({ localizer, events, date }: TodayProps) {
   const max = localizer.endOf(date, "day");
   const min = localizer.startOf(date, "day");
 
-  const sortByTime = (event1: Event, event2: Event) =>
+  const sortByTime = (event1: CalendarEventType, event2: CalendarEventType) =>
     (event1.start?.getTime() || 0) - (event2.start?.getTime() || 0);
 
-  const upcomingEvents = events.filter((event: Event) =>
+  const upcomingEvents = events.filter((event: CalendarEventType) =>
     event.start ? dates.gt(event.start, max, "day") : false
   );
 
-  const allDayEvents = events.filter((event: Event) =>
+  const allDayEvents = events.filter((event: CalendarEventType) =>
     event.allDay && event.start
       ? dates.inRange(event.start, min, max, "day")
       : false
   );
 
-  const regularEvents = events.filter((event: Event) =>
+  const regularEvents = events.filter((event: CalendarEventType) =>
     !event.allDay && event.start
       ? dates.inRange(event.start, min, max, "day")
       : false
   );
 
-  const getTodayEventComp = (event: Event) => {
-    return event.resource.type === "journal" ? (
-      <div
-        key={event.resource.id}
-        className={cn([
-          "grid grid-cols-3 gap-4 italic mt-4 text-muted-foreground",
-        ])}
-      >
-        <div>{event.start ? lightFormat(event.start, "H:mm") : "???"}</div>
-        <div className="col-span-2">
-          <Collapsible>
-            <CollapsibleTrigger className="italic">
-              {event.title || "-"}
-            </CollapsibleTrigger>
-            <CollapsibleContent>
-              <MinimalNote note={event.resource.note} />
-            </CollapsibleContent>
-          </Collapsible>
+  const getTodayEventComp = (event: CalendarEventType) => {
+    if (isCalendarJournalEntry(event)) {
+      return (
+        <div
+          key={event.resource.id}
+          className={cn([
+            "grid grid-cols-3 gap-4 italic mt-4 text-muted-foreground",
+          ])}
+        >
+          <div>{event.start ? lightFormat(event.start, "H:mm") : "???"}</div>
+          <div className="col-span-2">
+            <Collapsible>
+              <CollapsibleTrigger className="italic">
+                {event.title || "-"}
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <MinimalNote note={event.resource.note} />
+              </CollapsibleContent>
+            </Collapsible>
+          </div>
         </div>
-      </div>
-    ) : (
-      <TodayEvent
-        key={event.resource.id}
-        testId={todayEvent}
-        start={event.start}
-        end={event.end}
-        allDay={event.allDay}
-        title={event.title || ""}
-        id={event.resource.id}
-        completed={event.resource.completed}
-        type={event.resource.type}
-      />
-    );
+      );
+    }
+
+    if (isCalendarEventEntry(event) || isCalendarDeadlineEntry(event)) {
+      return (
+        <TodayEvent key={event.resource.id} testId={todayEvent} event={event} />
+      );
+    }
   };
 
   return (
@@ -102,20 +105,16 @@ function Today({ localizer, events, date }: TodayProps) {
               </div>
             </CollapsibleTrigger>
             <CollapsibleContent data-testid={upcomingEventsTestId}>
-              {upcomingEvents.sort(sortByTime).map((event: Event) => (
-                <TodayEvent
-                  key={event.resource.id}
-                  testId={todayEvent}
-                  start={event.start}
-                  end={event.end}
-                  allDay={event.allDay}
-                  title={event.title || ""}
-                  id={event.resource.id}
-                  showDate
-                  completed={event.resource.completed}
-                  type={event.resource.type}
-                />
-              ))}
+              {upcomingEvents
+                .sort(sortByTime)
+                .map((event: CalendarEventType) => (
+                  <TodayEvent
+                    key={event.resource.id}
+                    testId={todayEvent}
+                    showDate
+                    event={event as CalendarDeadlineEntry}
+                  />
+                ))}
             </CollapsibleContent>
           </Collapsible>
         )}
