@@ -23,8 +23,9 @@ import {
 import TaskForm from "../EventForm";
 import { FormValues } from "../TaskForm/TaskForm";
 import useEditEvent from "@/app/utils/hooks/use-edit-events";
-import { CalendarEventType } from "./CalendarEvent.types";
+import { CalendarEventType, isCalendarEventEntry } from "./CalendarEvent.types";
 import { useDroppable } from "@dnd-kit/core";
+import { cn } from "../utils";
 
 export interface CalendarEventProps {
   testId?: string;
@@ -108,11 +109,12 @@ const CalendarEvent: FC<CalendarEventProps> = ({
         <ContextMenuTrigger disabled={event.resource.type === "deadline"}>
           <div
             data-testid={testId}
-            className={`h-full p-1 cursor-pointer bg-[#29221f] pl-4 rounded-lg hover:border hover:border-primary mt-[-1px]${
-              event.resource.completed
-                ? "text-muted-foreground line-through"
-                : ""
-            } ${event.resource.type === "deadline" ? "bg-[#2B1B1E]" : ""} ${isOver ? "border border-primary" : ""}`}
+            className={cn(
+              "h-full p-1 cursor-pointer bg-[#29221f] pl-4 rounded-lg hover:border hover:border-primary mt-[-1px]",
+              event.resource.completed && "text-muted-foreground line-through",
+              event.resource.type === "deadline" ? "bg-[#2B1B1E]" : "",
+              isOver ? "border border-primary" : ""
+            )}
             ref={setNodeRef}
           >
             {isOver && (
@@ -127,6 +129,14 @@ const CalendarEvent: FC<CalendarEventProps> = ({
                   <Badge variant="destructive">Deadline</Badge>
                 </div>
               )}
+              <div>
+                {isCalendarEventEntry(event) &&
+                  event.resource.tasks.map((t) => (
+                    <div key={t._id} className="text-sm mt-1">
+                      task - {t.title}
+                    </div>
+                  ))}
+              </div>
             </div>
           </div>
         </ContextMenuTrigger>

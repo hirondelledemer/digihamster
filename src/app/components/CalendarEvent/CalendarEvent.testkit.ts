@@ -42,5 +42,6 @@ export const getCalendarEventTestkit = (component: HTMLElement) => {
     },
 
     deadlineLabelExists,
+    ...within(component),
   };
 };
