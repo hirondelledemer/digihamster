@@ -169,6 +169,14 @@ const TaskCard: FC<TaskCardProps> = ({
           <ContextMenuItem inset onClick={() => setTaskFormOpen(true)}>
             Edit
           </ContextMenuItem>
+          {!!task.eventId && (
+            <ContextMenuItem
+              inset
+              onClick={() => editTask(task._id, { eventId: null })}
+            >
+              Remove from event
+            </ContextMenuItem>
+          )}
         </ContextMenuContent>
       </ContextMenu>
     </div>

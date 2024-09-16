@@ -15,7 +15,7 @@ export interface TaskV2 extends Taggable, TimeStamps {
   activatedAt?: number | null;
   parentTaskId?: string | null;
   deadline?: number | null;
-  eventId?: string;
+  eventId?: string | null;
 }
 
 export type ITaskV2 = TaskV2 & mongoose.Document<string>;
