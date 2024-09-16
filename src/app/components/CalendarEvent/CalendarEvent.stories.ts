@@ -22,6 +22,7 @@ const defaultArgs: CalendarEventProps = {
       id: "event1",
       completed: false,
       type: "event",
+      tasks: [],
     },
   },
 };
@@ -40,6 +41,7 @@ const completedArgs: CalendarEventProps = {
       id: "event1",
       completed: true,
       type: "event",
+      tasks: [],
     },
   },
 };

@@ -41,14 +41,9 @@ const CalendarEvent: FC<CalendarEventProps> = ({
   const [taskFormOpen, setTaskFormOpen] = useState<boolean>(false);
   const { editEvent } = useEditEvent();
 
-  console.log(event.resource.id);
-
   const { isOver, setNodeRef } = useDroppable({
     id: event.resource.id,
   });
-  const style = {
-    color: isOver ? "green" : undefined,
-  };
 
   const handleDeleteClick = async () => {
     await axios.patch("/api/events", {
@@ -113,20 +108,26 @@ const CalendarEvent: FC<CalendarEventProps> = ({
         <ContextMenuTrigger disabled={event.resource.type === "deadline"}>
           <div
             data-testid={testId}
-            className={`h-full p-1 italic cursor-pointer bg-[#29221f] pl-4 rounded-lg hover:border hover:border-primary mt-[-1px]${
+            className={`h-full p-1 cursor-pointer bg-[#29221f] pl-4 rounded-lg hover:border hover:border-primary mt-[-1px]${
               event.resource.completed
                 ? "text-muted-foreground line-through"
                 : ""
-            } ${event.resource.type === "deadline" ? "bg-[#2B1B1E]" : ""}`}
+            } ${event.resource.type === "deadline" ? "bg-[#2B1B1E]" : ""} ${isOver ? "border border-primary" : ""}`}
             ref={setNodeRef}
-            style={style}
           >
-            {event.title}
-            {event.resource.type === "deadline" && (
-              <div>
-                <Badge variant="destructive">Deadline</Badge>
-              </div>
+            {isOver && (
+              <span className="absolute bottom-[50%]">
+                Add task to this event
+              </span>
             )}
+            <div className={`italic ${isOver ? "blur-sm" : ""}`}>
+              {event.title}
+              {event.resource.type === "deadline" && (
+                <div>
+                  <Badge variant="destructive">Deadline</Badge>
+                </div>
+              )}
+            </div>
           </div>
         </ContextMenuTrigger>
         <ContextMenuContent className="w-64">
