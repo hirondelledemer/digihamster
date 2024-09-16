@@ -98,7 +98,7 @@ const ActiveTaskList: FC<ActiveTaskListProps> = ({
         />
         {completedTasksCount}
       </div>
-      <ScrollArea className="h-screen">
+      <ScrollArea className="h-full">
         <div className="pr-6">
           {filteredTasks.map((task) => (
             <TaskCard

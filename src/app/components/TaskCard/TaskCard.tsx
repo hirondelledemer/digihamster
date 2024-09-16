@@ -48,13 +48,15 @@ const TaskCard: FC<TaskCardProps> = ({
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id: task._id,
   });
-  const style: CSSProperties | undefined = transform
-    ? {
-        transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
-        position: "fixed",
-        zIndex: 999,
-      }
-    : undefined;
+
+  const style: CSSProperties | undefined =
+    transform && !task.completed
+      ? {
+          transform: `translate(${transform.x}px, ${transform.y}px)`,
+          position: "fixed",
+          zIndex: 999,
+        }
+      : undefined;
 
   const project = projects.find((p) => p._id === task.projectId);
 
