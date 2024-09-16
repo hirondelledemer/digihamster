@@ -1,3 +1,4 @@
+import { TaskV2 } from "@/models/taskV2";
 import { Event } from "react-big-calendar";
 
 export interface WeatherData {
@@ -14,7 +15,7 @@ export interface WeatherData {
   }[];
 }
 
-export interface CalendarJournalEntry {
+export interface CalendarJournalEntry extends Event {
   title: string;
   resource: {
     id: string;
@@ -53,7 +54,32 @@ export interface CalendarEventEntry extends Event {
     type: "event";
     description?: string;
     projectId?: string;
+    tasks: TaskV2[];
   };
+}
+
+export function isCalendarEventEntry(
+  event: CalendarEventType
+): event is CalendarEventEntry {
+  return (event as CalendarEventType).resource.type === "event";
+}
+
+export function isCalendarDeadlineEntry(
+  event: CalendarEventType
+): event is CalendarDeadlineEntry {
+  return (event as CalendarDeadlineEntry).resource.type === "deadline";
+}
+
+export function isCalendarWeatherEntry(
+  event: CalendarEventType
+): event is CalendarWeatherEntry {
+  return (event as CalendarWeatherEntry).resource.type === "weather";
+}
+
+export function isCalendarJournalEntry(
+  event: CalendarEventType
+): event is CalendarJournalEntry {
+  return (event as CalendarJournalEntry).resource.type === "journal";
 }
 
 export type CalendarEventType =

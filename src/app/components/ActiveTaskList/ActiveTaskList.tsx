@@ -28,7 +28,11 @@ const ActiveTaskList: FC<ActiveTaskListProps> = ({
   const tasksToShow = useMemo(
     () =>
       tasks
-        .filter((task) => task.isActive || (task.deadline && !task.completed))
+        .filter(
+          (task) =>
+            (task.isActive || (task.deadline && !task.completed)) &&
+            !task.eventId
+        )
         .sort((a, b) => (a.estimate || 0) - (b.estimate || 0))
         .sort((a, b) =>
           a.completed === b.completed ? 0 : a.completed ? 1 : -1

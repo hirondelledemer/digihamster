@@ -6,6 +6,7 @@ import { ProjectsContextProvider } from "../utils/hooks/use-projects";
 import { TagsContextProvider } from "../utils/hooks/use-tags";
 
 import { TasksContextProvider } from "../utils/hooks/use-tasks";
+import { DraggableTasksContextProvider } from "../utils/hooks/use-draggable-tasks";
 
 export default function HomePage() {
   return (
@@ -15,7 +16,9 @@ export default function HomePage() {
           <ProjectsContextProvider>
             <TagsContextProvider>
               <TasksContextProvider>
-                <HomeComp />
+                <DraggableTasksContextProvider>
+                  <HomeComp />
+                </DraggableTasksContextProvider>
               </TasksContextProvider>
             </TagsContextProvider>
           </ProjectsContextProvider>

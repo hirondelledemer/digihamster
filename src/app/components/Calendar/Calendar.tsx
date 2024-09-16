@@ -54,6 +54,9 @@ import {
   CalendarEventEntry,
   CalendarJournalEntry,
   CalendarWeatherEntry,
+  isCalendarDeadlineEntry,
+  isCalendarEventEntry,
+  isCalendarWeatherEntry,
   WeatherData,
 } from "../CalendarEvent/CalendarEvent.types";
 import CalendarWeatherEvent from "../CalendarWeatherEvent";
@@ -72,24 +75,6 @@ const localizer = momentLocalizer(moment); // or glo
 
 export interface PlannerProps {
   view: View;
-}
-
-function isCalendarEventEntry(
-  event: CalendarEventType
-): event is CalendarEventEntry {
-  return (event as CalendarEventType).resource.type === "event";
-}
-
-function isCalendarDeadlineEntry(
-  event: CalendarEventType
-): event is CalendarDeadlineEntry {
-  return (event as CalendarDeadlineEntry).resource.type === "deadline";
-}
-
-function isCalendarWeatherEntry(
-  event: CalendarEventType
-): event is CalendarWeatherEntry {
-  return (event as CalendarWeatherEntry).resource.type === "weather";
 }
 
 // todo: test this component
@@ -133,6 +118,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
         type: "event",
         description: event.description,
         projectId: event.projectId,
+        tasks: tasksData.filter((t) => t.eventId === event._id),
       },
     };
   });

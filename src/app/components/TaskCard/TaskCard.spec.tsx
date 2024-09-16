@@ -7,6 +7,7 @@ import { generateTask } from "@/app/utils/mocks/task";
 import { render, act } from "@/config/utils/test-utils";
 
 import mockAxios from "jest-mock-axios";
+import { wrapWithProjectsProvider } from "@/app/utils/tests/wraps";
 
 jest.mock("../../utils/date/date");
 
@@ -32,21 +33,7 @@ describe("TaskCard", () => {
   ) =>
     getTaskCardTestkit(
       render(
-        <ProjectsContext.Provider
-          value={{
-            data: [
-              {
-                _id: "project1",
-                title: "Project 1",
-                deleted: false,
-                color: "color1",
-                order: 0,
-              },
-            ],
-            loading: false,
-            setData: jest.fn(),
-          }}
-        >
+        wrapWithProjectsProvider(
           <TagsContext.Provider
             value={{
               data: [
@@ -70,8 +57,19 @@ describe("TaskCard", () => {
             <TasksContext.Provider value={tasksContextValues}>
               <TaskCard {...props} />
             </TasksContext.Provider>
-          </TagsContext.Provider>
-        </ProjectsContext.Provider>
+          </TagsContext.Provider>,
+          {
+            projects: [
+              {
+                _id: "project1",
+                title: "Project 1",
+                deleted: false,
+                color: "color1",
+                order: 0,
+              },
+            ],
+          }
+        )
       ).container
     );
 
@@ -194,6 +192,21 @@ describe("TaskCard", () => {
     it("show stale indicator", () => {
       const wrapper = renderComponent(props);
       expect(wrapper.staleIndicatorIsVisible()).toBe(true);
+    });
+  });
+
+  describe("task has an event", () => {
+    const props: TaskCardProps = {
+      task: generateTask(0, { eventId: "event1" }),
+    };
+
+    it("should remove event", () => {
+      const wrapper = renderComponent(props);
+      wrapper.clickRemoveEvent();
+      expect(mockAxios.patch).toHaveBeenCalledWith("/api/tasks/v2", {
+        eventId: null,
+        taskId: props.task._id,
+      });
     });
   });
 });

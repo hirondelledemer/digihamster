@@ -45,6 +45,7 @@ export async function POST(request: NextRequest) {
       parentTaskId: args.parentTaskId,
       tags: args.tags,
       deadline: args.deadline,
+      eventId: args.eventId,
       activatedAt: args.isActive ? new Date() : undefined,
     });
 
@@ -74,6 +75,7 @@ export async function PATCH(request: NextRequest) {
         description: args.description || task.description,
         tags: args.tags || task.tags,
         estimate: args.estimate === undefined ? task.estimate : args.estimate,
+        eventId: args.eventId === undefined ? task.eventId : args.eventId,
         deadline: args.estimate === undefined ? task.deadline : args.deadline,
         sortOrder:
           args.sortOrder === undefined ? task.sortOrder : args.sortOrder,

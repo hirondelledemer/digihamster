@@ -9,10 +9,16 @@ describe("TodayEvent", () => {
   });
 
   const defaultProps: TodayEventProps = {
-    title: "Title",
-    completed: false,
-    id: "event1",
-    type: "event",
+    event: {
+      title: "Title",
+      resource: {
+        completed: false,
+        id: "event1",
+        type: "event",
+        description: "",
+        tasks: [],
+      },
+    },
   };
   const renderComponent = (props = defaultProps) =>
     getTodayEventTestkit(render(<TodayEvent {...props} />).container);
@@ -22,17 +28,23 @@ describe("TodayEvent", () => {
     expect(wrapper.getComponent()).not.toBe(null);
   });
 
-  it("should should not show deadline label", () => {
+  it("should not show deadline label", () => {
     const wrapper = renderComponent();
     expect(wrapper.getComponent().textContent).toBe("Title");
   });
 
   describe("event is a task with a deadline", () => {
     const props: TodayEventProps = {
-      title: "Title",
-      completed: false,
-      id: "event1",
-      type: "deadline",
+      event: {
+        title: "Title",
+        resource: {
+          completed: false,
+          id: "event1",
+          type: "deadline",
+          description: "",
+          projectId: "project1",
+        },
+      },
     };
 
     it("should should not show deadline label", () => {
@@ -43,10 +55,17 @@ describe("TodayEvent", () => {
 
   describe("event is all day", () => {
     const props: TodayEventProps = {
-      title: "Title",
-      completed: false,
-      allDay: true,
-      id: "event1",
+      event: {
+        title: "Title",
+        allDay: true,
+        resource: {
+          completed: false,
+          id: "event1",
+          type: "event",
+          description: "",
+          tasks: [],
+        },
+      },
     };
 
     it("should show label all day", () => {
@@ -56,7 +75,7 @@ describe("TodayEvent", () => {
 
     it("should show title", () => {
       const wrapper = renderComponent(props);
-      expect(wrapper.getTitle(props.title as string)).toBeInTheDocument();
+      expect(wrapper.getTitle(props.event.title as string)).toBeInTheDocument();
     });
 
     it("should show checkbox in red", () => {
@@ -77,12 +96,18 @@ describe("TodayEvent", () => {
 
   describe("event is not all day", () => {
     const props: TodayEventProps = {
-      title: "Title",
-      completed: false,
-      allDay: false,
-      id: "event1",
-      start: new Date(0),
-      end: new Date(800000000),
+      event: {
+        title: "Title",
+        start: new Date(0),
+        end: new Date(800000000),
+        resource: {
+          completed: false,
+          id: "event1",
+          type: "event",
+          description: "",
+          tasks: [],
+        },
+      },
     };
 
     it("should show label with time", () => {
@@ -92,7 +117,7 @@ describe("TodayEvent", () => {
 
     it("should show title", () => {
       const wrapper = renderComponent(props);
-      expect(wrapper.getTitle(props.title as string)).toBeInTheDocument();
+      expect(wrapper.getTitle(props.event.title as string)).toBeInTheDocument();
     });
 
     it("should show checkbox", () => {
@@ -103,17 +128,23 @@ describe("TodayEvent", () => {
 
   describe("event is completed", () => {
     const props: TodayEventProps = {
-      title: "Title",
-      completed: true,
-      allDay: false,
-      id: "event1",
-      start: new Date(0),
-      end: new Date(800000000),
+      event: {
+        title: "Title",
+        start: new Date(0),
+        end: new Date(800000000),
+        resource: {
+          completed: true,
+          id: "event1",
+          type: "event",
+          description: "",
+          tasks: [],
+        },
+      },
     };
 
     it.skip("should show strike-through", () => {
       const wrapper = renderComponent(props);
-      expect(wrapper.getTitle(props.title as string)).toBeInTheDocument();
+      expect(wrapper.getTitle(props.event.title as string)).toBeInTheDocument();
       // todo: find out how to test
       // expect(wrapper.componentHasAStrike(props.title as string)).toBe(true);
     });

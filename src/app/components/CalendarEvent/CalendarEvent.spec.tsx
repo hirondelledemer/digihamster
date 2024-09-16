@@ -1,8 +1,10 @@
-import { render } from "@/config/utils/test-utils";
+import { render, screen } from "@/config/utils/test-utils";
 import { CalendarEventProps } from "./CalendarEvent";
 import CalendarEvent from "./CalendarEvent";
 import { getCalendarEventTestkit } from "./CalendarEvent.testkit";
 import mockAxios from "jest-mock-axios";
+import { generateListOfTasks } from "@/app/utils/mocks/task";
+import { CalendarEventEntry } from "./CalendarEvent.types";
 
 describe("CalendarEvent", () => {
   const defaultProps: CalendarEventProps = {
@@ -12,7 +14,7 @@ describe("CalendarEvent", () => {
         completed: false,
         id: "event1",
         type: "event",
-        title: "Event 1",
+        tasks: [],
       },
     },
   };
@@ -74,15 +76,10 @@ describe("CalendarEvent", () => {
           completed: true,
           id: "event1",
           type: "event",
-          title: "Event 1",
+          tasks: [],
         },
       },
     };
-
-    it("renders completed Calendar event", () => {
-      const wrapper = renderComponent(props);
-      expect(wrapper.getEventTextIsStriked()).toBe(true);
-    });
 
     it('should not show "complete" button', () => {
       const wrapper = renderComponent(props);
@@ -98,6 +95,7 @@ describe("CalendarEvent", () => {
           completed: false,
           id: "event1",
           type: "deadline",
+          projectId: "",
         },
       },
     };
@@ -105,6 +103,34 @@ describe("CalendarEvent", () => {
     it("should show deadline tag", () => {
       const wrapper = renderComponent(props);
       expect(wrapper.deadlineLabelExists()).toBe(true);
+    });
+  });
+
+  describe("event has tasks", () => {
+    const props: CalendarEventProps = {
+      event: {
+        title: "Event",
+        resource: {
+          completed: false,
+          id: "event1",
+          type: "event",
+          tasks: [...generateListOfTasks(2)],
+        },
+      },
+    };
+
+    it("should show deadline tag", () => {
+      const wrapper = renderComponent(props);
+      expect(
+        wrapper.getByText(
+          `task - ${(props.event as CalendarEventEntry).resource.tasks[0].title}`
+        )
+      ).toBeInTheDocument();
+      expect(
+        wrapper.getByText(
+          `task - ${(props.event as CalendarEventEntry).resource.tasks[1].title}`
+        )
+      ).toBeInTheDocument();
     });
   });
 });

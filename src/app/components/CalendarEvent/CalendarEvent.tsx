@@ -23,7 +23,9 @@ import {
 import TaskForm from "../EventForm";
 import { FormValues } from "../TaskForm/TaskForm";
 import useEditEvent from "@/app/utils/hooks/use-edit-events";
-import { CalendarEventType } from "./CalendarEvent.types";
+import { CalendarEventType, isCalendarEventEntry } from "./CalendarEvent.types";
+import { useDroppable } from "@dnd-kit/core";
+import { cn } from "../utils";
 
 export interface CalendarEventProps {
   testId?: string;
@@ -39,6 +41,10 @@ const CalendarEvent: FC<CalendarEventProps> = ({
   const { setData } = useEvents();
   const [taskFormOpen, setTaskFormOpen] = useState<boolean>(false);
   const { editEvent } = useEditEvent();
+
+  const { isOver, setNodeRef } = useDroppable({
+    id: event.resource.id,
+  });
 
   const handleDeleteClick = async () => {
     await axios.patch("/api/events", {
@@ -65,7 +71,6 @@ const CalendarEvent: FC<CalendarEventProps> = ({
   }
 
   return (
-    // todo: this is copy/paste code: extract
     <>
       <Sheet open={taskFormOpen}>
         <SheetContent
@@ -104,18 +109,35 @@ const CalendarEvent: FC<CalendarEventProps> = ({
         <ContextMenuTrigger disabled={event.resource.type === "deadline"}>
           <div
             data-testid={testId}
-            className={`h-full p-1 italic cursor-pointer bg-[#29221f] pl-4 rounded-lg hover:border hover:border-primary mt-[-1px]${
-              event.resource.completed
-                ? "text-muted-foreground line-through"
-                : ""
-            } ${event.resource.type === "deadline" ? "bg-[#2B1B1E]" : ""}`}
-          >
-            {event.title}
-            {event.resource.type === "deadline" && (
-              <div>
-                <Badge variant="destructive">Deadline</Badge>
-              </div>
+            className={cn(
+              "h-full p-1 cursor-pointer bg-[#29221f] pl-4 rounded-lg hover:border hover:border-primary mt-[-1px]",
+              event.resource.completed && "text-muted-foreground line-through",
+              event.resource.type === "deadline" ? "bg-[#2B1B1E]" : "",
+              isOver ? "border border-primary" : ""
             )}
+            ref={setNodeRef}
+          >
+            {isOver && (
+              <span className="absolute bottom-[50%]">
+                Add task to this event
+              </span>
+            )}
+            <div className={`italic ${isOver ? "blur-sm" : ""}`}>
+              {event.title}
+              {event.resource.type === "deadline" && (
+                <div>
+                  <Badge variant="destructive">Deadline</Badge>
+                </div>
+              )}
+              <div>
+                {isCalendarEventEntry(event) &&
+                  event.resource.tasks.map((t) => (
+                    <div key={t._id} className="text-sm mt-1">
+                      task - {t.title}
+                    </div>
+                  ))}
+              </div>
+            </div>
           </div>
         </ContextMenuTrigger>
         <ContextMenuContent className="w-64">
