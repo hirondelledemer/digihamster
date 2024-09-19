@@ -1,19 +1,22 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from "@storybook/react";
 
-import HabitFormModal from '.';
-import { HabitFormModalProps } from './HabitFormModal';
+import HabitFormModal from ".";
+import { HabitFormModalProps } from "./HabitFormModal";
 
 const meta: Meta<typeof HabitFormModal> = {
-  title: 'Example/HabitFormModal',
+  title: "Example/HabitFormModal",
   component: HabitFormModal,
-  tags: ['autodocs']
+  tags: ["autodocs"],
 };
 
 export default meta;
 type Story = StoryObj<typeof HabitFormModal>;
 
-const defaultArgs: HabitFormModalProps = {};
+const defaultArgs: HabitFormModalProps = {
+  open: true,
+  onClose: () => {},
+};
 
 export const Default: Story = {
-  args: defaultArgs
+  args: defaultArgs,
 };
