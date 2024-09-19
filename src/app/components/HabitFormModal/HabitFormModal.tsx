@@ -1,22 +1,22 @@
-import React, { FC, ReactNode } from "react";
-
+import React, { FC } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "../ui/sheet";
+import HabitForm, { HabitFormProps } from "../HabitForm/HabitForm";
 
-export interface TaskModalProps {
+export interface HabitFormModalProps {
   testId?: string;
   open: boolean;
   onClose(): void;
-  children: ReactNode;
 }
 
-const TaskModal: FC<TaskModalProps> = ({
+const HabitFormModal: FC<HabitFormModalProps & HabitFormProps> = ({
   testId,
-  open,
   onClose,
-  children,
+  open,
+  ...restProps
 }): JSX.Element => {
   return (
     <div data-testid={testId}>
+      {/* <TaskModal open={open} onClose={onClose}> */}
       <Sheet open={open}>
         <SheetContent
           side="left"
@@ -27,11 +27,11 @@ const TaskModal: FC<TaskModalProps> = ({
           <SheetHeader>
             <SheetTitle>Create Task</SheetTitle>
           </SheetHeader>
-          {children}
+          <HabitForm {...restProps} />
         </SheetContent>
       </Sheet>
     </div>
   );
 };
 
-export default TaskModal;
+export default HabitFormModal;
