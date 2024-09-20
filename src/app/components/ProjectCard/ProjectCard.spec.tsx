@@ -5,6 +5,7 @@ import { generateProject } from "@/app/utils/mocks/project";
 import { wrapWithTasksProvider } from "@/app/utils/tests/wraps";
 import { generateCustomTasksList } from "@/app/utils/mocks/task";
 
+// todo: check if testkit is needed
 describe("ProjectCard", () => {
   const defaultProps: ProjectCardProps = {
     project: generateProject(),

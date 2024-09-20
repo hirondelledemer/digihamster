@@ -1,5 +1,4 @@
 import React, { FC } from "react";
-import style from "./ProjectsList.module.scss";
 import { Card, CardHeader, CardTitle } from "../ui/card";
 import { Project } from "@/models/project";
 

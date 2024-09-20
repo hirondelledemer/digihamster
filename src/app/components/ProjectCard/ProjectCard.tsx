@@ -78,35 +78,37 @@ const ProjectCard: FC<ProjectCardProps> = ({
         <ContextMenuTrigger>
           <Card
             className={`w-[350px] p-0 rounded-md hover:border hover:border-primary ${
-              completed ? "opacity-40 line-through" : ""
+              project.disabled ? "opacity-40 line-through" : ""
             } ${selected && "border border-[#791027]"}`}
           >
             <CardHeader className="p-4">
               <CardTitle className="font-normal flex items-center justify-between">
                 <div>{project.title}</div>
-                {completed && !project.disabled && (
-                  <IconCircleCheck
-                    data-testid="completed-icon"
-                    size={19}
-                    color="black"
-                    fill={project.color}
-                    className="mr-1"
-                  />
-                )}
-                {!completed && !project.disabled && (
-                  <div className="flex items-center text-xs">
-                    {completedTasksCount}/{taskCount}
-                  </div>
-                )}
-                {project.disabled && (
-                  <IconXboxX
-                    data-testid="disabled-icon"
-                    size={19}
-                    color="black"
-                    fill={project.color}
-                    className="mr-1"
-                  />
-                )}
+                <div className="flex">
+                  {completed && (
+                    <IconCircleCheck
+                      data-testid="completed-icon"
+                      size={19}
+                      color="black"
+                      fill={project.color}
+                      className="mr-1"
+                    />
+                  )}
+                  {!completed && !project.disabled && (
+                    <div className="flex items-center text-xs">
+                      {completedTasksCount}/{taskCount}
+                    </div>
+                  )}
+                  {project.disabled && (
+                    <IconXboxX
+                      data-testid="disabled-icon"
+                      size={19}
+                      color="black"
+                      fill={project.color}
+                      className="mr-1"
+                    />
+                  )}
+                </div>
               </CardTitle>
             </CardHeader>
 
