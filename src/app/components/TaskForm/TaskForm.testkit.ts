@@ -32,6 +32,12 @@ export const getTaskFormTestkit = (component: HTMLElement) => ({
     1,
   getProjectInputValue: () =>
     within(component).getByRole("combobox", { name: /project/i }).textContent,
+  getProjectOptions: async () => {
+    await userEvent.click(
+      within(component).getByRole("combobox", { name: /project/i })
+    );
+    within(component).getAllByRole("option");
+  },
   //todo: for some reason this does not work
   setProject: (value: string) => {
     const input = within(component).getByRole("combobox", { name: /project/i });
@@ -91,4 +97,5 @@ export const getTaskFormTestkit = (component: HTMLElement) => ({
     const button = within(component).getByRole("button", { name: /undo/i });
     fireEvent.click(button);
   },
+  ...within(component),
 });

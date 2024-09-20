@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
 
     const projects = await Project.find({
       userId,
-    });
+    }).sort("order");
     const user = await User.findOne({ _id: userId }).select("-password");
 
     const defaultProject = projects.find(
@@ -41,6 +41,7 @@ export async function POST(request: NextRequest) {
       title: args.title,
       color: args.color,
       deleted: false,
+      disabled: false,
       order: projects.length,
     });
 
@@ -69,6 +70,8 @@ export async function PATCH(request: NextRequest) {
         title: args.title || project.title,
         color: args.color || project.color,
         deleted: args.deleted === undefined ? project.deleted : args.deleted,
+        disabled:
+          args.disabled === undefined ? project.disabled : args.disabled,
         sortOrder:
           args.sortOrder === undefined ? project.sortOrder : args.sortOrder,
       }

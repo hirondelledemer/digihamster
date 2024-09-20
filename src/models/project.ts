@@ -8,6 +8,7 @@ export interface Project {
   deleted: boolean;
   color: string;
   order: number;
+  disabled: boolean;
 }
 export type IProject = Project & mongoose.Document<string>;
 
@@ -15,6 +16,7 @@ const ProjectSchema = new Schema(
   {
     title: { type: String, required: true },
     deleted: { type: Boolean, required: true },
+    disabled: { type: Boolean, required: true },
     color: { type: String },
     userId: { type: String, required: true },
     order: { type: Number, required: true },

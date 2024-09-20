@@ -1,10 +1,9 @@
 import { TagsContext } from "@/app/utils/hooks/use-tags";
 import TaskCard, { TaskCardProps } from "./TaskCard";
 import { getTaskCardTestkit } from "./TaskCard.testkit";
-import { ProjectsContext } from "@/app/utils/hooks/use-projects";
 import { TasksContext, TasksContextValues } from "@/app/utils/hooks/use-tasks";
 import { generateTask } from "@/app/utils/mocks/task";
-import { render, act } from "@/config/utils/test-utils";
+import { render, act, screen } from "@/config/utils/test-utils";
 
 import mockAxios from "jest-mock-axios";
 import { wrapWithProjectsProvider } from "@/app/utils/tests/wraps";
@@ -57,18 +56,7 @@ describe("TaskCard", () => {
             <TasksContext.Provider value={tasksContextValues}>
               <TaskCard {...props} />
             </TasksContext.Provider>
-          </TagsContext.Provider>,
-          {
-            projects: [
-              {
-                _id: "project1",
-                title: "Project 1",
-                deleted: false,
-                color: "color1",
-                order: 0,
-              },
-            ],
-          }
+          </TagsContext.Provider>
         )
       ).container
     );

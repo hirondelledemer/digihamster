@@ -12,23 +12,32 @@ import axios from "axios";
 import { Project } from "@/models/project";
 import { useToast } from "@/app/components/ui/use-toast";
 import { updateObjById } from "../common/update-array";
+import { arrayMove } from "@dnd-kit/sortable";
 
-type FieldsRequired = "title" | "color";
+type FieldsRequired = "title" | "color" | "disabled";
 
-export const ProjectsContext = createContext<{
+export interface ProjectsContextValue {
   data: Project[];
   defaultProject?: Project;
   setData: Dispatch<SetStateAction<Project[]>>;
   error?: unknown;
   loading: boolean;
   updateProject(id: string, props: Partial<Project>, onDone?: () => void): void;
+  updateProjectsOrder(
+    movedProjectId: string,
+    overProjectId: string,
+    onDone?: () => void
+  ): void;
   createProject(data: Pick<Project, FieldsRequired>): void;
-}>({
+}
+
+export const ProjectsContext = createContext<ProjectsContextValue>({
   data: [],
   setData: () => {},
   loading: false,
   updateProject: () => {},
   createProject: () => {},
+  updateProjectsOrder: () => {},
 });
 
 const { Provider } = ProjectsContext;
@@ -119,6 +128,37 @@ export const ProjectsContextProvider = ({ children }: any) => {
     }
   };
 
+  const updateProjectsOrder = async (
+    movedProjectId: string,
+    overProjectId: string,
+    onDone?: () => void
+  ) => {
+    try {
+      const oldIndex = data.findIndex((p) => p._id === movedProjectId);
+      const newIndex = data.findIndex((p) => p._id === overProjectId);
+      const newArray = arrayMove(data, oldIndex, newIndex);
+
+      setData(newArray);
+      onDone && onDone();
+      await axios.patch("/api/projects/sort", {
+        sortOrder: newArray.map((p, index) => ({
+          projectId: p._id,
+          order: index,
+        })),
+      });
+      toast({
+        title: "Success",
+        description: "Project order been updated",
+      });
+    } catch (e) {
+      toast({
+        title: "Error",
+        description: JSON.stringify(e),
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <Provider
       value={{
@@ -129,6 +169,7 @@ export const ProjectsContextProvider = ({ children }: any) => {
         defaultProject,
         updateProject,
         createProject,
+        updateProjectsOrder,
       }}
     >
       {children}
@@ -137,8 +178,21 @@ export const ProjectsContextProvider = ({ children }: any) => {
 };
 
 export default function useProjects() {
-  const { data, setData, defaultProject, updateProject, createProject } =
-    useContext(ProjectsContext);
+  const {
+    data,
+    setData,
+    defaultProject,
+    updateProject,
+    createProject,
+    updateProjectsOrder,
+  } = useContext(ProjectsContext);
 
-  return { data, setData, defaultProject, updateProject, createProject };
+  return {
+    data,
+    setData,
+    defaultProject,
+    updateProject,
+    createProject,
+    updateProjectsOrder,
+  };
 }

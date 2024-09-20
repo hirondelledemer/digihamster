@@ -10,6 +10,9 @@ import {
   ContextMenuTrigger,
 } from "../ui/context-menu";
 import ProjectModalForm from "../ProjectModalForm";
+import { IconCircleCheck, IconXboxX } from "@tabler/icons-react";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 export interface ProjectCardProps {
   testId?: string;
@@ -24,6 +27,13 @@ const ProjectCard: FC<ProjectCardProps> = ({
 }): JSX.Element => {
   const { data: tasks } = useTasks();
   const [projectModalOpen, setProjectModalOpen] = useState<boolean>(false);
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id: project._id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
 
   const taskCount = useMemo(
     () => tasks.filter((t) => t.projectId === project._id).length,
@@ -32,7 +42,7 @@ const ProjectCard: FC<ProjectCardProps> = ({
 
   const completedTasksCount = useMemo(
     () =>
-      tasks.filter((t) => t.projectId === project._id && !t.completed).length,
+      tasks.filter((t) => t.projectId === project._id && t.completed).length,
     [tasks, project._id]
   );
 
@@ -46,7 +56,7 @@ const ProjectCard: FC<ProjectCardProps> = ({
     () =>
       tasks.filter((t) => t.projectId === project._id && !t.completed)
         .length === 0,
-    [tasks, project._id]
+    [tasks, project]
   );
 
   const completedTasksEta = useMemo(
@@ -77,37 +87,70 @@ const ProjectCard: FC<ProjectCardProps> = ({
         <ContextMenuTrigger>
           <Card
             className={`w-[350px] p-0 rounded-md hover:border hover:border-primary ${
-              completed ? "opacity-40 line-through" : ""
+              project.disabled ? "opacity-40 line-through" : ""
             } ${selected && "border border-[#791027]"}`}
+            ref={setNodeRef}
+            style={style}
+            {...attributes}
+            {...listeners}
           >
             <CardHeader className="p-4">
               <CardTitle className="font-normal flex items-center justify-between">
                 <div>{project.title}</div>
-                <div className="flex items-center text-xs">
-                  {completedTasksCount}/{taskCount}
+                <div className="flex">
+                  {completed && (
+                    <IconCircleCheck
+                      data-testid="completed-icon"
+                      size={19}
+                      color="black"
+                      fill={project.color}
+                      className="mr-1"
+                    />
+                  )}
+                  {!completed && !project.disabled && (
+                    <div className="flex items-center text-xs">
+                      {completedTasksCount}/{taskCount}
+                    </div>
+                  )}
+                  {project.disabled && (
+                    <IconXboxX
+                      data-testid="disabled-icon"
+                      size={19}
+                      color="black"
+                      fill={project.color}
+                      className="mr-1"
+                    />
+                  )}
                 </div>
               </CardTitle>
             </CardHeader>
 
-            <CardContent className="pb-4 px-4 text-xs whitespace-pre-wrap muted">
-              <div className="w-full border bg--secondary h-2 bg-[#22040b]">
+            {!completed && !project.disabled && (
+              <CardContent className="pb-4 px-4 text-xs whitespace-pre-wrap muted">
                 <div
-                  style={{
-                    height: "100%",
-                    width: `${(estimatedTaskCount / taskCount) * 100}%`,
-                    backgroundColor: "#1b1917",
-                  }}
+                  data-testid="progress-bar"
+                  className="w-full border bg--secondary h-2 bg-[#22040b]"
                 >
                   <div
+                    data-testid="progress-bar-outer"
                     style={{
                       height: "100%",
-                      backgroundColor: project.color,
-                      width: `${(completedTasksEta / totalTaskEta) * 100}%`,
+                      width: `${(estimatedTaskCount / taskCount) * 100}%`,
+                      backgroundColor: "#1b1917",
                     }}
-                  />
+                  >
+                    <div
+                      data-testid="progress-bar-inner"
+                      style={{
+                        height: "100%",
+                        backgroundColor: project.color,
+                        width: `${(completedTasksEta / totalTaskEta) * 100}%`,
+                      }}
+                    />
+                  </div>
                 </div>
-              </div>
-            </CardContent>
+              </CardContent>
+            )}
           </Card>
         </ContextMenuTrigger>
         <ContextMenuContent className="w-64">

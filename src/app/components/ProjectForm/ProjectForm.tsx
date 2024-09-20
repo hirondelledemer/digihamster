@@ -7,6 +7,7 @@ import { z } from "zod";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -22,6 +23,7 @@ import {
 } from "../ui/select";
 import { colors } from "./ProjectForm.consts";
 import { Button } from "../ui/button";
+import { Switch } from "../ui/switch";
 
 interface CommonProps {
   testId?: string;
@@ -44,6 +46,7 @@ export type ProjectFormProps =
 const FormSchema = z.object({
   title: z.string().min(1, { message: "Required." }),
   color: z.string().min(1, { message: "Required." }),
+  disabled: z.boolean(),
 });
 
 export type FormValues = z.infer<typeof FormSchema>;
@@ -59,6 +62,7 @@ const ProjectForm: FC<ProjectFormProps> = ({
       return {
         title: restProps.project.title,
         color: restProps.project.color,
+        disabled: restProps.project.disabled,
       };
     }
     return restProps.initialValues;
@@ -69,6 +73,7 @@ const ProjectForm: FC<ProjectFormProps> = ({
     defaultValues: {
       title: "",
       color: "#e11d48",
+      disabled: false,
       ...getInitialValues(),
     },
   });
@@ -78,11 +83,13 @@ const ProjectForm: FC<ProjectFormProps> = ({
       updateProject(restProps.project._id, {
         title: values.title,
         color: values.color,
+        disabled: values.disabled,
       });
     } else {
       createProject({
         title: values.title,
         color: values.color,
+        disabled: values.disabled,
       });
     }
     onDone();
@@ -136,6 +143,25 @@ const ProjectForm: FC<ProjectFormProps> = ({
                 </SelectContent>
               </Select>
               <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="disabled"
+          render={({ field }) => (
+            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+              <div className="space-y-0.5">
+                <FormLabel>Disable</FormLabel>
+                <FormDescription>Do not allow selection</FormDescription>
+              </div>
+              <FormControl>
+                <Switch
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
             </FormItem>
           )}
         />
