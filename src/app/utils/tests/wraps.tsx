@@ -1,31 +1,29 @@
 import { Project } from "@/models/project";
-import { ProjectsContext } from "../hooks/use-projects";
-import { TasksContext } from "../hooks/use-tasks";
+import { ProjectsContext, ProjectsContextValue } from "../hooks/use-projects";
+import { TasksContext, TasksContextValues } from "../hooks/use-tasks";
 import { TaskV2 as Task } from "@/models/taskV2";
 import { Tag } from "@/models/tag";
 import { TagsContext } from "../hooks/use-tags";
+import { generateListOfProjects } from "../mocks/project";
+import { generateListOfTasks } from "../mocks/task";
 
-// todo:
-// create tets scenarious
-// test it
+const defaultProjects = generateListOfProjects(5);
+const defaultProject = defaultProjects[0];
+
+const defaultProjectsValue: ProjectsContextValue = {
+  data: defaultProjects,
+  defaultProject,
+  setData: jest.fn(),
+  loading: false,
+  updateProject: jest.fn(),
+  createProject: jest.fn(),
+};
 
 export const wrapWithProjectsProvider = (
   component: JSX.Element,
-  value: {
-    projects: Project[];
-    defaultProject?: Project;
-  }
+  value: Partial<ProjectsContextValue> = {}
 ) => (
-  <ProjectsContext.Provider
-    value={{
-      data: value.projects,
-      defaultProject: value.defaultProject,
-      loading: false,
-      setData: jest.fn(),
-      updateProject: jest.fn(),
-      createProject: jest.fn(),
-    }}
-  >
+  <ProjectsContext.Provider value={{ ...defaultProjectsValue, ...value }}>
     {component}
   </ProjectsContext.Provider>
 );
@@ -42,17 +40,20 @@ export const wrapWithTagsProvider = (component: JSX.Element, value: Tag[]) => (
   </TagsContext.Provider>
 );
 
+const defaultTasks = generateListOfTasks(5);
+const defaultTasksValue: TasksContextValues = {
+  data: defaultTasks,
+  setData: jest.fn(),
+  loading: false,
+};
 export const wrapWithTasksProvider = (
   component: JSX.Element,
-  value: {
-    data: Task[];
-  }
+  value?: Partial<TasksContextValues>
 ) => (
   <TasksContext.Provider
     value={{
-      data: value.data,
-      loading: false,
-      setData: jest.fn(),
+      ...defaultTasksValue,
+      ...value,
     }}
   >
     {component}

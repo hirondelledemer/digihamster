@@ -1,42 +1,26 @@
-import { act, render, waitFor } from "@/config/utils/test-utils";
+import { render, screen, userEvent, waitFor } from "@/config/utils/test-utils";
 
 import TaskForm, { TaskFormProps } from "./TaskForm";
 import { generateTask } from "@/app/utils/mocks/task";
 import { getTaskFormTestkit } from "./TaskForm.testkit";
 
 import { TasksContext } from "@/app/utils/hooks/use-tasks";
-import { ProjectsContext } from "@/app/utils/hooks/use-projects";
 import mockAxios from "jest-mock-axios";
+import { wrapWithProjectsProvider } from "@/app/utils/tests/wraps";
+import { ProjectsContextValue } from "@/app/utils/hooks/use-projects";
+import { generateCustomProjectsList } from "@/app/utils/mocks/project";
 
 jest.mock("../../utils/date/date");
 
-describe("Today", () => {
+describe("TaskForm", () => {
   const defaultProps: TaskFormProps = { onDone: jest.fn() };
-  const renderComponent = (props: TaskFormProps = defaultProps) =>
+  const renderComponent = (
+    props: TaskFormProps = defaultProps,
+    projectsProps?: Partial<ProjectsContextValue>
+  ) =>
     getTaskFormTestkit(
       render(
-        <ProjectsContext.Provider
-          value={{
-            data: [
-              {
-                _id: "project1",
-                title: "Project 1",
-                deleted: false,
-                color: "color1",
-                order: 0,
-              },
-            ],
-            defaultProject: {
-              _id: "project1",
-              title: "Project 1",
-              deleted: false,
-              color: "color1",
-              order: 0,
-            },
-            loading: false,
-            setData: jest.fn(),
-          }}
-        >
+        wrapWithProjectsProvider(
           <TasksContext.Provider
             value={{
               data: [],
@@ -45,8 +29,9 @@ describe("Today", () => {
             }}
           >
             <TaskForm {...props} />
-          </TasksContext.Provider>
-        </ProjectsContext.Provider>
+          </TasksContext.Provider>,
+          projectsProps
+        )
       ).container
     );
 
@@ -57,6 +42,25 @@ describe("Today", () => {
   it("should render TaskForm", () => {
     const wrapper = renderComponent();
     expect(wrapper.getComponent()).not.toBe(null);
+  });
+
+  it("should non disabled projects in dropdown", async () => {
+    renderComponent(defaultProps, {
+      data: generateCustomProjectsList([
+        { disabled: false },
+        { disabled: false },
+        { disabled: true },
+      ]),
+    });
+
+    userEvent.click(screen.getByRole("combobox", { name: /project/i }));
+
+    const options = await screen.findAllByRole("option");
+
+    expect(options.map((o) => o.textContent)).toStrictEqual([
+      "Project 0",
+      "Project 1",
+    ]);
   });
 
   describe("regular mode", () => {

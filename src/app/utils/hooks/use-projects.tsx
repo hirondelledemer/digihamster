@@ -13,9 +13,9 @@ import { Project } from "@/models/project";
 import { useToast } from "@/app/components/ui/use-toast";
 import { updateObjById } from "../common/update-array";
 
-type FieldsRequired = "title" | "color";
+type FieldsRequired = "title" | "color" | "disabled";
 
-export const ProjectsContext = createContext<{
+export interface ProjectsContextValue {
   data: Project[];
   defaultProject?: Project;
   setData: Dispatch<SetStateAction<Project[]>>;
@@ -23,7 +23,9 @@ export const ProjectsContext = createContext<{
   loading: boolean;
   updateProject(id: string, props: Partial<Project>, onDone?: () => void): void;
   createProject(data: Pick<Project, FieldsRequired>): void;
-}>({
+}
+
+export const ProjectsContext = createContext<ProjectsContextValue>({
   data: [],
   setData: () => {},
   loading: false,

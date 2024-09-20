@@ -65,3 +65,5 @@ window.DOMRect = {
 window.ClipboardEvent = ClipboardEventMock as any;
 window.DragEvent = DragEventMock as any;
 window.ResizeObserver = ResizeObserver;
+window.HTMLElement.prototype.hasPointerCapture = jest.fn();
+window.HTMLElement.prototype.scrollIntoView = jest.fn();

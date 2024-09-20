@@ -250,15 +250,17 @@ const TaskForm: FC<TaskFormProps> = ({
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {projects.map((project) => (
-                    <SelectItem
-                      key={project._id as unknown as string}
-                      value={project._id as unknown as string}
-                      role="option"
-                    >
-                      {project.title}
-                    </SelectItem>
-                  ))}
+                  {projects
+                    .filter((project) => !project.disabled)
+                    .map((project) => (
+                      <SelectItem
+                        key={project._id as unknown as string}
+                        value={project._id as unknown as string}
+                        role="option"
+                      >
+                        {project.title}
+                      </SelectItem>
+                    ))}
                 </SelectContent>
               </Select>
               <FormMessage />
