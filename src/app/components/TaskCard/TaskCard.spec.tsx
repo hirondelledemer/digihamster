@@ -26,16 +26,6 @@ describe("TaskCard", () => {
     setData: jest.fn(),
   };
 
-  // projects: [
-  //   {
-  //     _id: "project1",
-  //     title: "Project 1",
-  //     deleted: false,
-  //     color: "color1",
-  //     order: 0,
-  //   },
-  // ],
-
   const renderComponent = (
     props = defaultProps,
     tasksContextValues = defaultTasksContextValues
