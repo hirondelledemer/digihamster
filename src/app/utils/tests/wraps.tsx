@@ -16,6 +16,7 @@ const defaultProjectsValue: ProjectsContextValue = {
   setData: jest.fn(),
   loading: false,
   updateProject: jest.fn(),
+  updateProjectsOrder: jest.fn(),
   createProject: jest.fn(),
 };
 

@@ -11,6 +11,8 @@ import {
 } from "../ui/context-menu";
 import ProjectModalForm from "../ProjectModalForm";
 import { IconCircleCheck, IconXboxX } from "@tabler/icons-react";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 export interface ProjectCardProps {
   testId?: string;
@@ -25,6 +27,13 @@ const ProjectCard: FC<ProjectCardProps> = ({
 }): JSX.Element => {
   const { data: tasks } = useTasks();
   const [projectModalOpen, setProjectModalOpen] = useState<boolean>(false);
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id: project._id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
 
   const taskCount = useMemo(
     () => tasks.filter((t) => t.projectId === project._id).length,
@@ -80,6 +89,10 @@ const ProjectCard: FC<ProjectCardProps> = ({
             className={`w-[350px] p-0 rounded-md hover:border hover:border-primary ${
               project.disabled ? "opacity-40 line-through" : ""
             } ${selected && "border border-[#791027]"}`}
+            ref={setNodeRef}
+            style={style}
+            {...attributes}
+            {...listeners}
           >
             <CardHeader className="p-4">
               <CardTitle className="font-normal flex items-center justify-between">

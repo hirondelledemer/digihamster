@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
 
     const projects = await Project.find({
       userId,
-    });
+    }).sort("order");
     const user = await User.findOne({ _id: userId }).select("-password");
 
     const defaultProject = projects.find(

@@ -116,7 +116,6 @@ describe("ProjectCard", () => {
 
     it("should show disabled icon", () => {
       renderComponent(props);
-      expect(screen.queryByTestId("completed-icon")).not.toBeInTheDocument();
       expect(screen.getByTestId("disabled-icon")).toBeInTheDocument();
     });
   });

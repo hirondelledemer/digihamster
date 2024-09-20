@@ -90,6 +90,7 @@ const TaskForm: FC<TaskFormProps> = ({
         tags: restProps.task.tags,
       };
     }
+
     return restProps.initialValues;
   }, [defaultProject, restProps]);
 

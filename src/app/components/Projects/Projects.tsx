@@ -1,5 +1,5 @@
 "use client";
-import React, { FC, useMemo, useState } from "react";
+import React, { FC, useState } from "react";
 
 import useProjects from "@/app/utils/hooks/use-projects";
 import { DataTable } from "../Tasks/components/DataTable/DataTable";
@@ -11,18 +11,43 @@ import TaskFormModal from "../TaskFormModal";
 import ProjectCard from "../ProjectCard";
 import { Button } from "../ui/button";
 import ProjectModalForm from "../ProjectModalForm";
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import { Switch } from "../ui/switch";
+import { Label } from "../ui/label";
 
 export interface ProjectsProps {
   testId?: string;
 }
 
 const Projects: FC<ProjectsProps> = ({ testId }): JSX.Element => {
-  const { data: projects, defaultProject } = useProjects();
+  const { data: projects, defaultProject, updateProjectsOrder } = useProjects();
   const { data: tasks } = useTasks();
   const { data: tags } = useTags();
 
   const [selectedProjectId, setSelectedProjectId] = useState(
     defaultProject?._id
+  );
+
+  const [enableSorting, setEnableSorting] = useState<boolean>(false);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
   );
   const [openTaskForm, setOpenTaskForm] = useState<{
     open: boolean;
@@ -42,15 +67,13 @@ const Projects: FC<ProjectsProps> = ({ testId }): JSX.Element => {
     setOpenProjectForm(false);
   };
 
-  const sortedProjects = useMemo(
-    () =>
-      projects.sort((a) =>
-        tasks.filter((t) => !t.completed && t.projectId === a._id).length > 0
-          ? -1
-          : 1
-      ),
-    [projects, tasks]
-  );
+  const handleDragEnd = async (event: any) => {
+    const { active, over } = event;
+
+    if (active.id !== over.id) {
+      updateProjectsOrder(active.id, over.id);
+    }
+  };
 
   return (
     <div data-testid={testId}>
@@ -74,7 +97,7 @@ const Projects: FC<ProjectsProps> = ({ testId }): JSX.Element => {
       />
       <div className="flex p-4 space-x-6">
         <div className="space-y-2">
-          <div className="space-x-2">
+          <div className="space-x-2 flex items-center">
             <Button onClick={() => setOpenProjectForm(true)}>
               Create Project
             </Button>
@@ -85,20 +108,44 @@ const Projects: FC<ProjectsProps> = ({ testId }): JSX.Element => {
             >
               Create Task
             </Button>
+            <Label>Sort:</Label>
+            <Switch
+              checked={enableSorting}
+              onCheckedChange={setEnableSorting}
+            />
           </div>
-          {sortedProjects.map((project) => (
-            <div
-              key={project._id}
-              onClick={() => {
-                setSelectedProjectId(project._id);
-              }}
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
+            <SortableContext
+              items={projects.map((p) => ({ ...p, id: p._id }))}
+              strategy={verticalListSortingStrategy}
+              disabled={!enableSorting}
             >
-              <ProjectCard
-                project={project}
-                selected={project._id === selectedProjectId}
-              />
-            </div>
-          ))}
+              {projects.map((project, index) => (
+                <div
+                  key={project._id}
+                  onClick={() => {
+                    setSelectedProjectId(project._id);
+                  }}
+                  className={
+                    enableSorting
+                      ? index % 2 === 0
+                        ? "animate-wiggle cursor-grab"
+                        : "animate-wiggle2 cursor-grab"
+                      : ""
+                  }
+                >
+                  <ProjectCard
+                    project={project}
+                    selected={project._id === selectedProjectId}
+                  />
+                </div>
+              ))}
+            </SortableContext>
+          </DndContext>
         </div>
         <div>
           <DataTable
