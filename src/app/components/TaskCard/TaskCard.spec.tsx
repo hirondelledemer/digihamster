@@ -196,5 +196,10 @@ describe("TaskCard", () => {
         taskId: props.task._id,
       });
     });
+
+    it("should not allow to deactivate it", () => {
+      const wrapper = renderComponent(props);
+      expect(wrapper.deactivateButtonExists()).toBe(false);
+    });
   });
 });

@@ -123,12 +123,12 @@ describe("CalendarEvent", () => {
       const wrapper = renderComponent(props);
       expect(
         wrapper.getByText(
-          `task - ${(props.event as CalendarEventEntry).resource.tasks[0].title}`
+          `${(props.event as CalendarEventEntry).resource.tasks[0].title}`
         )
       ).toBeInTheDocument();
       expect(
         wrapper.getByText(
-          `task - ${(props.event as CalendarEventEntry).resource.tasks[1].title}`
+          `${(props.event as CalendarEventEntry).resource.tasks[1].title}`
         )
       ).toBeInTheDocument();
     });

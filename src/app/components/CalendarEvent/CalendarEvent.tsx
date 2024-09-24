@@ -26,6 +26,7 @@ import useEditEvent from "@/app/utils/hooks/use-edit-events";
 import { CalendarEventType, isCalendarEventEntry } from "./CalendarEvent.types";
 import { useDroppable } from "@dnd-kit/core";
 import { cn } from "../utils";
+import TaskCard from "../TaskCard";
 
 export interface CalendarEventProps {
   testId?: string;
@@ -110,7 +111,7 @@ const CalendarEvent: FC<CalendarEventProps> = ({
           <div
             data-testid={testId}
             className={cn(
-              "h-full p-1 cursor-pointer bg-[#29221f] pl-4 rounded-lg hover:border hover:border-primary mt-[-1px]",
+              "h-full p-1 cursor-pointer bg-[#29221f] rounded-lg hover:border hover:border-primary mt-[-1px]",
               event.resource.completed && "text-muted-foreground line-through",
               event.resource.type === "deadline" ? "bg-[#2B1B1E]" : "",
               isOver ? "border border-primary" : ""
@@ -132,8 +133,11 @@ const CalendarEvent: FC<CalendarEventProps> = ({
               <div>
                 {isCalendarEventEntry(event) &&
                   event.resource.tasks.map((t) => (
-                    <div key={t._id} className="text-sm mt-1">
-                      task - {t.title}
+                    <div
+                      key={t._id}
+                      className="text-sm mt-1 border bg-card rounded-md p-1"
+                    >
+                      {t.title}
                     </div>
                   ))}
               </div>

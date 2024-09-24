@@ -80,17 +80,15 @@
   padding: 0;
   background: transparent;
   cursor: default;
-  
+  transition: height 0.3s;
+
   &:focus {
     outline: none;
   }
-}
-
-
-.rbc-event .rbc-selected {
-  border: none !important;
-  padding: 0;
-  background: transparent;
+  &:hover {
+    height: unset !important;
+    z-index: 2;
+  }
 }
 
 .rbc-addons-dnd-resizable {

@@ -3,12 +3,8 @@
 import { lightFormat, format } from "date-fns";
 import React, { FC } from "react";
 import { Checkbox } from "../ui/checkbox";
-import axios from "axios";
-import { Event } from "@/models/event";
-import useEvents from "@/app/utils/hooks/use-events";
 import { cn } from "../utils";
 import styles from "./TodayEvent.module.scss";
-import { updateObjById } from "@/app/utils/common/update-array";
 import { Badge } from "../ui/badge";
 import {
   CalendarDeadlineEntry,
@@ -17,6 +13,8 @@ import {
   isCalendarEventEntry,
 } from "../CalendarEvent/CalendarEvent.types";
 import TaskCard from "../TaskCard";
+import { useDroppable } from "@dnd-kit/core";
+import useEditEvent from "@/app/utils/hooks/use-edit-events";
 
 export interface TodayEventProps {
   testId?: string;
@@ -29,22 +27,19 @@ const TodayEvent: FC<TodayEventProps> = ({
   showDate,
   event,
 }): JSX.Element => {
-  const { setData } = useEvents();
+  const { editEvent } = useEditEvent();
 
-  // todo: use
+  const { isOver, setNodeRef } = useDroppable({
+    id: event.resource.id,
+    disabled: isCalendarDeadlineEntry(event),
+  });
+
   const handleCompleteClick = async (val: boolean) => {
-    await axios.patch<Event>("/api/events", {
-      eventId: event.resource.id,
-      completed: val,
-    });
-
-    setData((events) =>
-      updateObjById<Event>(events, event.resource.id, { completed: val })
-    );
+    editEvent(event.resource.id, { completed: val });
   };
 
   return (
-    <div>
+    <div ref={setNodeRef} className={cn(isOver ? "border border-primary" : "")}>
       <div
         className={cn([
           "grid grid-cols-3 gap-4 italic mt-4",
