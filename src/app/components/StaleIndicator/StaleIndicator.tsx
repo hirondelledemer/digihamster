@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, useMemo } from "react";
 import { differenceInCalendarDays } from "date-fns";
 import { now } from "@/app/utils/date/date";
 import DinosaurIcon from "../icons/DinosaurIcon";
@@ -21,33 +21,34 @@ const StaleIndicator: FC<StaleIndicatorProps> = ({
 }): JSX.Element | null => {
   const staleDays = differenceInCalendarDays(now(), date);
 
-  if (staleDays > 14) {
-    return (
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger>
-            <DinosaurIcon className={cn("h-4 w-4 fill-amber-500", className)} />
-          </TooltipTrigger>
-          <TooltipContent>{staleDays}</TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-    );
+  const color = useMemo(() => {
+    if (staleDays > 21) {
+      return "fill-red-500";
+    }
+
+    if (staleDays > 14) {
+      return "fill-amber-500";
+    }
+    if (staleDays > 7) {
+      return "fill-gray-200";
+    }
+    return null;
+  }, [staleDays]);
+
+  if (!color) {
+    return null;
   }
 
-  if (staleDays > 7) {
-    return (
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger>
-            <DinosaurIcon className={cn("h-4 w-4 fill-gray-200", className)} />
-          </TooltipTrigger>
-          <TooltipContent>{staleDays}</TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-    );
-  }
-
-  return null;
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger>
+          {<DinosaurIcon className={cn("h-4 w-4", color, className)} />}
+        </TooltipTrigger>
+        <TooltipContent>{staleDays}</TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
 };
 
 export default StaleIndicator;
