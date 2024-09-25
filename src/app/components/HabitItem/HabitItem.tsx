@@ -39,7 +39,7 @@ const HabitItem: FC<HabitItemProps> = ({ testId, habit }): JSX.Element => {
   };
 
   return (
-    <div data-testid={testId} className="flex">
+    <div data-testid={testId} className="flex hover:bg hover:bg-secondary">
       <HabitFormModal
         open={habitFormOpen}
         editMode

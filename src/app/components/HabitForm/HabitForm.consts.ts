@@ -1,7 +1,7 @@
 export const TIMES_PER_MONTH = [
   {
     label: "Every day",
-    value: 30,
+    value: 28,
   },
   {
     label: "5 times per week",

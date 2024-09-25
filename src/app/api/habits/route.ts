@@ -63,9 +63,9 @@ export async function PATCH(request: NextRequest) {
         title: args.title || habit.title,
         category: args.category || habit.category,
         timesPerMonth:
-          args.timesPerWeek === undefined
-            ? habit.timesPerWeek
-            : args.timesPerWeek,
+          args.timesPerMonth === undefined
+            ? habit.timesPerMonth
+            : args.timesPerMonth,
         deleted: args.deleted === undefined ? habit.deleted : args.deleted,
       }
     );

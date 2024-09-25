@@ -20,6 +20,11 @@ import {
   isCalendarEventEntry,
   isCalendarJournalEntry,
 } from "../CalendarEvent/CalendarEvent.types";
+import useHabits from "@/app/utils/hooks/use-habits";
+import { Checkbox } from "../ui/checkbox";
+import { Habit } from "@/models/habit";
+import TodayHabit from "../TodayHabit";
+import { DAY } from "@/app/utils/consts/dates";
 
 export const todayEvent = "Today-today-event-test-id";
 export const upcomingEventsTestId = "Today-upcoming-events-test-id";
@@ -36,6 +41,8 @@ export interface TodayProps {
 function Today({ localizer, events, date }: TodayProps) {
   const max = localizer.endOf(date, "day");
   const min = localizer.startOf(date, "day");
+
+  const { data: habits } = useHabits();
 
   const sortByTime = (event1: CalendarEventType, event2: CalendarEventType) =>
     (event1.start?.getTime() || 0) - (event2.start?.getTime() || 0);
@@ -95,6 +102,45 @@ function Today({ localizer, events, date }: TodayProps) {
           "There are not events today."}
         {allDayEvents.map(getTodayEventComp)}
         {regularEvents.sort(sortByTime).map(getTodayEventComp)}
+
+        <Collapsible>
+          <CollapsibleTrigger>
+            <div className="flex mt-6">
+              Ready for today
+              <IconChevronDown />
+            </div>
+          </CollapsibleTrigger>
+          <CollapsibleContent data-testid={upcomingEventsTestId}>
+            {habits
+              .filter((habit) => {
+                const todayTimestamp = min.getTime();
+
+                const todayHabit = habit.log.find(
+                  (log) => log.at === todayTimestamp
+                );
+
+                return !todayHabit;
+              })
+              .map((habit) => {
+                const todayTimestamp = min.getTime();
+                const earliestDay = todayTimestamp - 28 * DAY;
+                const progress = habit.log.filter(
+                  (log) => log.at >= earliestDay && log.completed
+                ).length;
+                const progressPercentage =
+                  (progress / habit.timesPerMonth) * 100 || 0;
+
+                return (
+                  <TodayHabit
+                    key={habit._id}
+                    habit={habit}
+                    date={min}
+                    percentage={progressPercentage}
+                  />
+                );
+              })}
+          </CollapsibleContent>
+        </Collapsible>
 
         {!!upcomingEvents.length && (
           <Collapsible>

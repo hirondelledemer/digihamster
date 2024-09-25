@@ -153,11 +153,11 @@ export const HabitsContextProvider = ({ children }: any) => {
     onDone?: () => void
   ) => {
     try {
-      //   setData((p) =>
-      //     updateObjById<Habit>(p, habitId, {
-      //       ...props,
-      //     })
-      //   );
+      setData((p) =>
+        updateObjById<Habit>(p, habitId, {
+          log: [props],
+        })
+      );
       onDone && onDone();
       await axios.patch("/api/habits/logs", {
         id: habitId,
