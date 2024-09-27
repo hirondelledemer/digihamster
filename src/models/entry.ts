@@ -5,7 +5,6 @@ export interface JournalEntry extends Taggable, TimeStamps {
   _id: string;
   title: string;
   note: string;
-  userId: string;
 }
 
 export type IJournalEntry = JournalEntry & mongoose.Document<string>;

@@ -9,12 +9,14 @@ import {
   useState,
 } from "react";
 import axios from "axios";
-import { IJournalEntry } from "@/models/entry";
+import { JournalEntry } from "@/models/entry";
 
-export const EntriesContext = createContext<{
-  data: IJournalEntry[];
-  setData: Dispatch<SetStateAction<IJournalEntry[]>>;
-}>({
+export interface EntriesContextValue {
+  data: JournalEntry[];
+  setData: Dispatch<SetStateAction<JournalEntry[]>>;
+}
+
+export const EntriesContext = createContext<EntriesContextValue>({
   data: [],
   setData: () => {},
 });
@@ -22,7 +24,7 @@ export const EntriesContext = createContext<{
 const { Provider } = EntriesContext;
 
 export const EntriesContextProvider = ({ children }: any) => {
-  const [data, setData] = useState<IJournalEntry[]>([]);
+  const [data, setData] = useState<JournalEntry[]>([]);
   // todo: look into utilising this
   const [error, setError] = useState<unknown>(null);
   const [loading, setLoading] = useState(false);
@@ -32,7 +34,7 @@ export const EntriesContextProvider = ({ children }: any) => {
       try {
         setLoading(true);
         const journalEntriesResponse = await axios.get<{
-          data: IJournalEntry[];
+          data: JournalEntry[];
         }>("/api/entries");
         setData(journalEntriesResponse.data.data);
       } catch (err) {

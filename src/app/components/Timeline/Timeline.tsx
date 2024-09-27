@@ -1,5 +1,5 @@
 "use client";
-import React, { FC, useCallback } from "react";
+import React, { FC, useCallback, useMemo, useState } from "react";
 import useTasks from "@/app/utils/hooks/use-tasks";
 import useEvents from "@/app/utils/hooks/use-events";
 import useJournalEntries from "@/app/utils/hooks/use-entry";
@@ -10,6 +10,7 @@ import {
   isAfter,
   isBefore,
   startOfWeek,
+  sub,
 } from "date-fns";
 import { now } from "@/app/utils/date/date";
 import { sortBy } from "remeda";
@@ -28,19 +29,33 @@ import {
 import useProjects from "@/app/utils/hooks/use-projects";
 import { addEstimates } from "@/app/utils/tasks/estimates";
 import PercentagesBar from "../PercentagesBar";
+import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
 
 export interface TimelineProps {
   testId?: string;
 }
-
+type IPeriod = "this_week" | "2_weeks" | "month";
 const Timeline: FC<TimelineProps> = ({ testId }): JSX.Element => {
   const { data: tasks } = useTasks();
   const { data: events } = useEvents();
   const { data: journalEntries } = useJournalEntries();
   const { data: projects } = useProjects();
+  const [period, setPeriod] = useState<IPeriod>("this_week");
 
-  const endOfThisWeek = endOfWeek(now());
-  const startDate = startOfWeek(now());
+  const endOfThisWeek = endOfWeek(now(), { weekStartsOn: 1 });
+  const startDate = useMemo(() => {
+    if (period === "2_weeks") {
+      return sub(now(), {
+        weeks: 2,
+      });
+    }
+    if (period === "month") {
+      return sub(now(), {
+        months: 1,
+      });
+    }
+    return startOfWeek(now(), { weekStartsOn: 1 });
+  }, [period]);
   const endDate = isBefore(now(), endOfThisWeek) ? now() : endOfThisWeek;
 
   const filteredTasks = tasks.filter(
@@ -91,6 +106,18 @@ const Timeline: FC<TimelineProps> = ({ testId }): JSX.Element => {
   return (
     <div data-testid={testId} className="p-4">
       This week ({getWeek(now())}):
+      <ToggleGroup
+        type="single"
+        className="justify-start"
+        value={period}
+        onValueChange={(value) => {
+          setPeriod(value as IPeriod);
+        }}
+      >
+        <ToggleGroupItem value="this_week">This week</ToggleGroupItem>
+        <ToggleGroupItem value="2_weeks">2 Weeks</ToggleGroupItem>
+        <ToggleGroupItem value="month">Month</ToggleGroupItem>
+      </ToggleGroup>
       <div className="space-y-1">
         <PercentagesBar data={projectPercentages} />
         <div className="flex space-x-2">
@@ -125,7 +152,11 @@ const Timeline: FC<TimelineProps> = ({ testId }): JSX.Element => {
         {sortedEvents.map((val) => {
           if (isEvent(val)) {
             return (
-              <div key={val._id} className="flex items-center">
+              <div
+                key={val._id}
+                className="flex items-center"
+                data-testid="event-entry"
+              >
                 {getDate(val.startAt)}
                 <div className="basis-[3%]">
                   {val.completed ? (
@@ -140,7 +171,11 @@ const Timeline: FC<TimelineProps> = ({ testId }): JSX.Element => {
           }
           if (isTask(val)) {
             return (
-              <div key={val._id} className="flex items-center">
+              <div
+                key={val._id}
+                data-testid="task-entry"
+                className="flex items-center"
+              >
                 {getDate(val.completedAt)}
                 <div className="basis-[3%]">
                   <IconCircleCheck // todo: extract this icon
@@ -155,7 +190,7 @@ const Timeline: FC<TimelineProps> = ({ testId }): JSX.Element => {
           }
           if (isJournalEntry(val)) {
             return (
-              <div key={val._id} className="flex">
+              <div key={val._id} className="flex" data-testid="journal-entry">
                 {getDate(val.updatedAt)}
                 <div className="w-[90%]">
                   <MinimalNote note={val.note} />

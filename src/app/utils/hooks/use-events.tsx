@@ -12,12 +12,14 @@ import axios from "axios";
 import { Event } from "@/models/event";
 import { useToast } from "@/app/components/ui/use-toast";
 
-export const EventsContext = createContext<{
+export interface EventsContextValues {
   data: Event[];
   setData: Dispatch<SetStateAction<Event[]>>;
   error?: unknown;
   loading: boolean;
-}>({
+}
+
+export const EventsContext = createContext<EventsContextValues>({
   data: [],
   setData: () => {},
   error: undefined,
