@@ -2,10 +2,7 @@ import { generateCustomTasksList } from "@/app/utils/mocks/task";
 import { TaskV2 } from "@/models/taskV2";
 import { getProjectPercentages } from "./Timeline.utils";
 import { Project } from "@/models/project";
-import {
-  generateCustomProjectsList,
-  generateProject,
-} from "@/app/utils/mocks/project";
+import { generateCustomProjectsList } from "@/app/utils/mocks/project";
 
 describe("Timeline.utils", () => {
   it("should return percentages of projects", () => {
