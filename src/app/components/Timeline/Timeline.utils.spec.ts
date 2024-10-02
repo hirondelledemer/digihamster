@@ -40,18 +40,18 @@ describe("Timeline.utils", () => {
         percentage: 75,
         color: "color1",
         estimate: 1.5,
-        label: "Project 0: 1.5",
+        label: "Project 0",
       },
       2: {
         percentage: 25,
         color: "color2",
         estimate: 0.5,
-        label: "Project 1: 0.5",
+        label: "Project 1",
       },
       events: {
         color: "#713f12",
         estimate: 0,
-        label: "Meetings: 0",
+        label: "Meetings",
         percentage: 0,
       },
     });

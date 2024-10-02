@@ -4,11 +4,13 @@ import useTasks from "@/app/utils/hooks/use-tasks";
 import useEvents from "@/app/utils/hooks/use-events";
 import useJournalEntries from "@/app/utils/hooks/use-entry";
 import {
+  eachDayOfInterval,
   endOfWeek,
   format,
   getWeek,
   isAfter,
   isBefore,
+  isSameDay,
   startOfWeek,
   sub,
 } from "date-fns";
@@ -30,11 +32,13 @@ import useProjects from "@/app/utils/hooks/use-projects";
 import { addEstimates } from "@/app/utils/tasks/estimates";
 import PercentagesBar from "../PercentagesBar";
 import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
+import TimelineChart from "../TimelineChart";
 
 export interface TimelineProps {
   testId?: string;
 }
-type IPeriod = "this_week" | "2_weeks" | "month";
+type IPeriod = "this_week" | "month" | "last_week" | "last_2_weeks";
+
 const Timeline: FC<TimelineProps> = ({ testId }): JSX.Element => {
   const { data: tasks } = useTasks();
   const { data: events } = useEvents();
@@ -44,10 +48,21 @@ const Timeline: FC<TimelineProps> = ({ testId }): JSX.Element => {
 
   const endOfThisWeek = endOfWeek(now(), { weekStartsOn: 1 });
   const startDate = useMemo(() => {
-    if (period === "2_weeks") {
-      return sub(now(), {
-        weeks: 2,
-      });
+    if (period === "last_week") {
+      return startOfWeek(
+        sub(now(), {
+          weeks: 1,
+        }),
+        { weekStartsOn: 1 }
+      );
+    }
+    if (period === "last_2_weeks") {
+      return startOfWeek(
+        sub(now(), {
+          weeks: 2,
+        }),
+        { weekStartsOn: 1 }
+      );
     }
     if (period === "month") {
       return sub(now(), {
@@ -103,6 +118,25 @@ const Timeline: FC<TimelineProps> = ({ testId }): JSX.Element => {
     [filteredTasks]
   );
 
+  const chartData = useMemo(
+    () =>
+      eachDayOfInterval({ start: startDate, end: endDate }).map((date) => {
+        const pp = getProjectPercentages(
+          tasks.filter((t) => t.completedAt && isSameDay(date, t.completedAt)),
+          projects,
+          events.filter((e) => isSameDay(e.startAt, date))
+        );
+
+        const newObj = Object.fromEntries(
+          Object.entries(pp).map(([k, v]) => [k, v.estimate])
+        );
+        return {
+          day: format(date, "MMM, d"),
+          ...newObj,
+        };
+      }),
+    [endDate, events, projects, startDate, tasks]
+  );
   return (
     <div data-testid={testId} className="p-4">
       This week ({getWeek(now())}):
@@ -115,9 +149,13 @@ const Timeline: FC<TimelineProps> = ({ testId }): JSX.Element => {
         }}
       >
         <ToggleGroupItem value="this_week">This week</ToggleGroupItem>
-        <ToggleGroupItem value="2_weeks">2 Weeks</ToggleGroupItem>
+        <ToggleGroupItem value="last_week">Last week</ToggleGroupItem>
+        <ToggleGroupItem value="last_2_weeks">Last 2 weeks</ToggleGroupItem>
         <ToggleGroupItem value="month">Month</ToggleGroupItem>
       </ToggleGroup>
+      <div className="h-[200px] mb-2 mt-2">
+        <TimelineChart chartConfig={projectPercentages} chartData={chartData} />
+      </div>
       <div className="space-y-1">
         <PercentagesBar data={projectPercentages} />
         <div className="flex space-x-2">

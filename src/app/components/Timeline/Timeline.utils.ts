@@ -33,7 +33,7 @@ export const getProjectPercentages = (
       percentage: (eventsCompleteTime / totalEstimate) * 100,
       estimate: eventsCompleteTime,
       color: "#713f12",
-      label: `Meetings: ${eventsCompleteTime}`,
+      label: "Meetings",
     },
   };
 
@@ -50,7 +50,7 @@ export const getProjectPercentages = (
       [projectId]: {
         percentage: (eta / totalEstimate) * 100,
         estimate: eta,
-        label: `${allProjects.find((project) => project._id === projectId)?.title}: ${eta}`,
+        label: allProjects.find((project) => project._id === projectId)?.title,
         color: allProjects.find((project) => project._id === projectId)?.color,
       },
     };
