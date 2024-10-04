@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
 import { Navigate, View } from "react-big-calendar";
 import * as dates from "date-arithmetic";
 import TodayEvent from "../TodayEvent";
@@ -12,7 +12,7 @@ import {
   CollapsibleTrigger,
 } from "../ui/collapsible";
 import { cn } from "../utils";
-import { lightFormat } from "date-fns";
+import { differenceInDays, lightFormat } from "date-fns";
 import { CalendarEventType } from "../CalendarEvent";
 import {
   CalendarDeadlineEntry,
@@ -21,10 +21,8 @@ import {
   isCalendarJournalEntry,
 } from "../CalendarEvent/CalendarEvent.types";
 import useHabits from "@/app/utils/hooks/use-habits";
-import { Checkbox } from "../ui/checkbox";
-import { Habit } from "@/models/habit";
 import TodayHabit from "../TodayHabit";
-import { DAY } from "@/app/utils/consts/dates";
+import { Habit } from "@/models/habit";
 
 export const todayEvent = "Today-today-event-test-id";
 export const upcomingEventsTestId = "Today-upcoming-events-test-id";
@@ -94,6 +92,52 @@ function Today({ localizer, events, date }: TodayProps) {
     }
   };
 
+  const filteredHabits = useMemo(
+    () =>
+      habits
+        .filter((habit) => {
+          const todayTimestamp = min.getTime();
+
+          const todayHabit = habit.log.find((log) => log.at === todayTimestamp);
+
+          return !todayHabit;
+        })
+        .sort((h1, h2) => {
+          const lastLog1 = h1.log.findLast(
+            (log) => log.at < date.getTime() && log.completed
+          );
+          const lastLog2 = h2.log.findLast(
+            (log) => log.at < date.getTime() && log.completed
+          );
+
+          const diff1 = lastLog1 ? differenceInDays(date, lastLog1.at) : 29;
+          const diff2 = lastLog2 ? differenceInDays(date, lastLog2.at) : 29;
+
+          const averageAcceptableDiff1 = 28 / h1.timesPerMonth;
+          const averageAcceptableDiff2 = 28 / h2.timesPerMonth;
+
+          return (
+            diff2 - averageAcceptableDiff2 - (diff1 - averageAcceptableDiff1)
+          );
+        }),
+    [habits, min, date]
+  );
+
+  const readyHabits = useMemo(
+    () =>
+      filteredHabits
+        .filter(getHabitIsDue(date))
+        .sort(byLastCompletedDate(date)),
+    [filteredHabits, date]
+  );
+
+  const restHabits = useMemo(
+    () =>
+      filteredHabits
+        .filter((h) => !getHabitIsDue(date)(h))
+        .sort(byLastCompletedDate(date)),
+    [filteredHabits, date]
+  );
   return (
     <>
       <div className="flex flex-col">
@@ -103,44 +147,37 @@ function Today({ localizer, events, date }: TodayProps) {
         {allDayEvents.map(getTodayEventComp)}
         {regularEvents.sort(sortByTime).map(getTodayEventComp)}
 
-        <Collapsible>
-          <CollapsibleTrigger>
-            <div className="flex mt-6">
-              Ready for today
-              <IconChevronDown />
-            </div>
-          </CollapsibleTrigger>
-          <CollapsibleContent data-testid={upcomingEventsTestId}>
-            {habits
-              .filter((habit) => {
-                const todayTimestamp = min.getTime();
+        {!!readyHabits.length && (
+          <Collapsible>
+            <CollapsibleTrigger>
+              <div className="flex mt-6">
+                Ready for today ({readyHabits.length})
+                <IconChevronDown />
+              </div>
+            </CollapsibleTrigger>
+            <CollapsibleContent data-testid={upcomingEventsTestId}>
+              {readyHabits.map((habit) => (
+                <TodayHabit key={habit._id} habit={habit} date={min} />
+              ))}
+            </CollapsibleContent>
+          </Collapsible>
+        )}
 
-                const todayHabit = habit.log.find(
-                  (log) => log.at === todayTimestamp
-                );
-
-                return !todayHabit;
-              })
-              .map((habit) => {
-                const todayTimestamp = min.getTime();
-                const earliestDay = todayTimestamp - 28 * DAY;
-                const progress = habit.log.filter(
-                  (log) => log.at >= earliestDay && log.completed
-                ).length;
-                const progressPercentage =
-                  (progress / habit.timesPerMonth) * 100 || 0;
-
-                return (
-                  <TodayHabit
-                    key={habit._id}
-                    habit={habit}
-                    date={min}
-                    percentage={progressPercentage}
-                  />
-                );
-              })}
-          </CollapsibleContent>
-        </Collapsible>
+        {!!restHabits.length && (
+          <Collapsible>
+            <CollapsibleTrigger>
+              <div className="flex mt-6">
+                Other tasks
+                <IconChevronDown />
+              </div>
+            </CollapsibleTrigger>
+            <CollapsibleContent data-testid={upcomingEventsTestId}>
+              {restHabits.map((habit) => (
+                <TodayHabit key={habit._id} habit={habit} date={min} />
+              ))}
+            </CollapsibleContent>
+          </Collapsible>
+        )}
 
         {!!upcomingEvents.length && (
           <Collapsible>
@@ -202,3 +239,40 @@ Today.title = (date: Date) => {
 };
 
 export default Today;
+
+function byLastCompletedDate(
+  date: Date
+): ((a: Habit, b: Habit) => number) | undefined {
+  return (h1, h2) => {
+    const lastLog1 = h1.log.findLast(
+      (log) => log.at < date.getTime() && log.completed
+    );
+    const lastLog2 = h2.log.findLast(
+      (log) => log.at < date.getTime() && log.completed
+    );
+
+    const diff1 = lastLog1 ? differenceInDays(date, lastLog1.at) : 29;
+    const diff2 = lastLog2 ? differenceInDays(date, lastLog2.at) : 29;
+
+    const averageAcceptableDiff1 = 28 / h1.timesPerMonth;
+    const averageAcceptableDiff2 = 28 / h2.timesPerMonth;
+
+    return diff2 - averageAcceptableDiff2 - (diff1 - averageAcceptableDiff1);
+  };
+}
+
+function getHabitIsDue(date: Date): (value: Habit) => boolean {
+  return (habit) => {
+    const lastLog = habit.log.findLast(
+      (log) => log.at < date.getTime() && log.completed
+    );
+
+    const diff = lastLog ? differenceInDays(date, lastLog.at) : 29;
+
+    const averageAcceptableDiff = 28 / habit.timesPerMonth;
+
+    const readyIn = Math.floor(averageAcceptableDiff - diff);
+
+    return readyIn <= 0;
+  };
+}
