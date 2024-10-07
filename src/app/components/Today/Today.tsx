@@ -101,7 +101,7 @@ function Today({ localizer, events, date }: TodayProps) {
 
         return !todayHabit;
       }),
-    [habits, min, date]
+    [habits, min]
   );
 
   const readyHabits = useMemo(

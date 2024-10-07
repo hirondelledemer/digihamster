@@ -17,8 +17,9 @@ import {
 import { IconSquareLetterA } from "@tabler/icons-react";
 import { format } from "date-fns";
 import useHotKeys from "@/app/utils/hooks/use-hotkeys";
+import { CalendarEventType } from "../CalendarEvent";
 
-export interface CalendarToolbarProps extends ToolbarProps {
+export interface CalendarToolbarProps extends ToolbarProps<CalendarEventType> {
   testId?: string;
   onNavigate(navigate: NavigateAction): void;
   label: string;
