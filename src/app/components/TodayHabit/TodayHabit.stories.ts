@@ -24,7 +24,6 @@ const defaultArgs: TodayHabitProps = {
     updatedAt: "",
   },
   date: now(),
-  percentage: 1,
 };
 
 export const Default: Story = {

@@ -1,28 +1,23 @@
 import React, { FC } from "react";
 import { Habit } from "@/models/habit";
 import { cn } from "../utils";
-import { Checkbox } from "../ui/checkbox";
 import { Button } from "../ui/button";
 import useHabits from "@/app/utils/hooks/use-habits";
+import { differenceInDays, formatDistanceStrict } from "date-fns";
 
 export interface TodayHabitProps {
   testId?: string;
   habit: Habit;
   date: Date;
-  percentage: number;
 }
 
 const TodayHabit: FC<TodayHabitProps> = ({
   testId,
   habit,
   date,
-  percentage,
 }): JSX.Element | null => {
   const todayTimestamp = date.getTime();
   const { addLog } = useHabits();
-  const todayHabit = habit.log.find((log) => log.at === todayTimestamp);
-
-  console.log("todayHabit", todayHabit);
 
   const handleCompleteClick = (completed: boolean) => {
     addLog(habit._id, {
@@ -31,16 +26,38 @@ const TodayHabit: FC<TodayHabitProps> = ({
     });
   };
 
+  const lastLog = habit.log.findLast(
+    (log) => log.at < date.getTime() && log.completed
+  );
+
+  const diff = lastLog ? differenceInDays(date, lastLog.at) : 29;
+
+  const formattedDiff = lastLog
+    ? formatDistanceStrict(lastLog.at, date, {
+        unit: "day",
+        addSuffix: true,
+      })
+    : "never";
+
+  const averageAcceptableDiff = 28 / habit.timesPerMonth;
+  const readyIn = Math.floor(averageAcceptableDiff - diff);
+
   return (
     <div data-testid={testId}>
-      <div className={cn(["grid grid-cols-4 gap-4 italic mt-4"])}>
-        <div className="flex">Ready to:</div>
-
+      <div className={cn(["grid grid-cols-3 gap-4 italic mt-4"])}>
+        {readyIn > 0 ? (
+          <div className="text-xs">ready in {readyIn} days</div>
+        ) : (
+          <div
+            className={cn(
+              "text-xs",
+              diff > averageAcceptableDiff ? "text-primary " : ""
+            )}
+          >
+            {formattedDiff}
+          </div>
+        )}
         <div>{habit.title}</div>
-
-        <div className={cn([percentage < 30 ? "text-primary" : ""])}>
-          {Math.floor(percentage)}%
-        </div>
 
         <div className="flex justify-end self-baseline">
           <Button
