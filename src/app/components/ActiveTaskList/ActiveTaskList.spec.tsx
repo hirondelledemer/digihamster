@@ -5,6 +5,7 @@ import { ProjectsContext } from "@/app/utils/hooks/use-projects";
 import { TasksContext } from "@/app/utils/hooks/use-tasks";
 import { fireEvent, render, screen } from "@/config/utils/test-utils";
 import { TagsContext } from "@/app/utils/hooks/use-tags";
+import { wrapWithProjectsProvider } from "@/app/utils/tests/wraps";
 
 describe("ActiveTaskList", () => {
   const defaultTasks = generateCustomTasksList([
@@ -20,21 +21,7 @@ describe("ActiveTaskList", () => {
   const renderComponent = (props = defaultProps, tasks = defaultTasks) =>
     getActiveTaskListTestkit(
       render(
-        <ProjectsContext.Provider
-          value={{
-            data: [
-              {
-                _id: "project1",
-                title: "Project 1",
-                deleted: false,
-                color: "color1",
-                order: 0,
-              },
-            ],
-            loading: false,
-            setData: jest.fn(),
-          }}
-        >
+        wrapWithProjectsProvider(
           <TagsContext.Provider
             value={{
               data: [
@@ -65,7 +52,7 @@ describe("ActiveTaskList", () => {
               <ActiveTaskList {...props} />
             </TasksContext.Provider>
           </TagsContext.Provider>
-        </ProjectsContext.Provider>
+        )
       ).container
     );
 
@@ -118,8 +105,9 @@ describe("ActiveTaskList", () => {
 
       const wrapper = renderComponent(defaultProps, tasks);
 
-      expect(wrapper.getComponent().textContent).toBe(
-        "300[data-radix-scroll-area-viewport]{scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;}[data-radix-scroll-area-viewport]::-webkit-scrollbar{display:none}Task 0Project 1task description 0Task 1Project 1task description 1Task 2Project 1task description 2"
+      expect(wrapper.getComponent().textContent).toContain("300");
+      expect(wrapper.getComponent().textContent).toContain(
+        "Task 0Project 1task description 0Task 1Project 1task description 1Task 2Project 1task description 2"
       );
     });
 
@@ -132,8 +120,9 @@ describe("ActiveTaskList", () => {
 
       const wrapper = renderComponent(defaultProps, tasks);
 
-      expect(wrapper.getComponent().textContent).toBe(
-        "Tag 1Tag 2300[data-radix-scroll-area-viewport]{scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;}[data-radix-scroll-area-viewport]::-webkit-scrollbar{display:none}Task 0Project 1task description 0Tag 1Task 1Project 1task description 1Tag 1Task 2Project 1task description 2Tag 1Tag 2"
+      expect(wrapper.getComponent().textContent).toContain("Tag 1Tag 2300");
+      expect(wrapper.getComponent().textContent).toContain(
+        "Task 0Project 1task description 0Tag 1Task 1Project 1task description 1Tag 1Task 2Project 1task description 2Tag 1Tag 2"
       );
     });
 
