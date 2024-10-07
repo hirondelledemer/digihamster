@@ -13,7 +13,7 @@ describe("TodayHabit", () => {
       deleted: false,
       log: [],
       category: "",
-      timesPerMonth: 2,
+      timesPerMonth: 28,
       updatedAt: "",
     },
     date: new Date(0),
@@ -46,13 +46,13 @@ describe("TodayHabit", () => {
           },
         ],
         category: "",
-        timesPerMonth: 2,
+        timesPerMonth: 28,
         updatedAt: "",
       },
       date: new Date(0),
     };
     renderComponent(props);
-    expect(screen.getByText("1 day")).toBeInTheDocument();
+    expect(screen.getByText("1 day ago")).toBeInTheDocument();
   });
 
   it("should show how many days ago last habit was completed relative to date", () => {
@@ -76,12 +76,12 @@ describe("TodayHabit", () => {
           },
         ],
         category: "",
-        timesPerMonth: 2,
+        timesPerMonth: 28,
         updatedAt: "",
       },
       date: new Date(0 - DAY),
     };
     renderComponent(props);
-    expect(screen.getByText("1 day")).toBeInTheDocument();
+    expect(screen.getByText("1 day ago")).toBeInTheDocument();
   });
 });

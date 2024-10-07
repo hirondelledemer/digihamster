@@ -87,7 +87,6 @@ describe("ProjectCard", () => {
 
     it("should not show completed tasks count", () => {
       const wrapper = renderComponent(defaultProps, tasks);
-      screen.logTestingPlaygroundURL();
       expect(wrapper.getComponent().textContent).toBe("Project 1");
     });
 
@@ -110,7 +109,6 @@ describe("ProjectCard", () => {
 
     it("should not show completed tasks count", () => {
       const wrapper = renderComponent(props);
-      screen.logTestingPlaygroundURL();
       expect(wrapper.getComponent().textContent).toBe("Project 0");
     });
 

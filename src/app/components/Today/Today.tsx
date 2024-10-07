@@ -94,32 +94,13 @@ function Today({ localizer, events, date }: TodayProps) {
 
   const filteredHabits = useMemo(
     () =>
-      habits
-        .filter((habit) => {
-          const todayTimestamp = min.getTime();
+      habits.filter((habit) => {
+        const todayTimestamp = min.getTime();
 
-          const todayHabit = habit.log.find((log) => log.at === todayTimestamp);
+        const todayHabit = habit.log.find((log) => log.at === todayTimestamp);
 
-          return !todayHabit;
-        })
-        .sort((h1, h2) => {
-          const lastLog1 = h1.log.findLast(
-            (log) => log.at < date.getTime() && log.completed
-          );
-          const lastLog2 = h2.log.findLast(
-            (log) => log.at < date.getTime() && log.completed
-          );
-
-          const diff1 = lastLog1 ? differenceInDays(date, lastLog1.at) : 29;
-          const diff2 = lastLog2 ? differenceInDays(date, lastLog2.at) : 29;
-
-          const averageAcceptableDiff1 = 28 / h1.timesPerMonth;
-          const averageAcceptableDiff2 = 28 / h2.timesPerMonth;
-
-          return (
-            diff2 - averageAcceptableDiff2 - (diff1 - averageAcceptableDiff1)
-          );
-        }),
+        return !todayHabit;
+      }),
     [habits, min, date]
   );
 
