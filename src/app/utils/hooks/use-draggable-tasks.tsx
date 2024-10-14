@@ -12,9 +12,15 @@ export const DraggableTasksContextProvider = ({ children }: any) => {
       modifiers={[snapCenterToCursor]}
       onDragEnd={(props) => {
         if (props.over) {
-          editTask(props.active.id.toString(), {
-            eventId: props.over?.id.toString(),
-          });
+          if (props.over.data.current?.containerType === "calendar") {
+            editTask(props.active.id.toString(), {
+              deadline: props.over.data.current.date,
+            });
+          } else {
+            editTask(props.active.id.toString(), {
+              eventId: props.over?.id.toString(),
+            });
+          }
         }
       }}
     >

@@ -55,6 +55,7 @@ const TaskCard: FC<TaskCardProps> = ({
         transform: `translate(${transform.x}px, ${transform.y}px)`,
         position: "fixed",
         zIndex: 999,
+        opacity: 0.5,
       }
     : undefined;
 

@@ -76,7 +76,7 @@ export async function PATCH(request: NextRequest) {
         tags: args.tags || task.tags,
         estimate: args.estimate === undefined ? task.estimate : args.estimate,
         eventId: args.eventId === undefined ? task.eventId : args.eventId,
-        deadline: args.estimate === undefined ? task.deadline : args.deadline,
+        deadline: args.deadline === undefined ? task.deadline : args.deadline,
         sortOrder:
           args.sortOrder === undefined ? task.sortOrder : args.sortOrder,
         completed:

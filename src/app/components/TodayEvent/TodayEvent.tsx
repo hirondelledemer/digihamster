@@ -1,7 +1,7 @@
 "use client";
 
 import { lightFormat, format } from "date-fns";
-import React, { FC } from "react";
+import React, { FC, useMemo } from "react";
 import { Checkbox } from "../ui/checkbox";
 import { cn } from "../utils";
 import styles from "./TodayEvent.module.scss";
@@ -15,6 +15,8 @@ import {
 import TaskCard from "../TaskCard";
 import { useDroppable } from "@dnd-kit/core";
 import useEditEvent from "@/app/utils/hooks/use-edit-events";
+import useEditTask from "@/app/utils/hooks/use-edit-task";
+import useProjects from "@/app/utils/hooks/use-projects";
 
 export interface TodayEventProps {
   testId?: string;
@@ -28,6 +30,8 @@ const TodayEvent: FC<TodayEventProps> = ({
   event,
 }): JSX.Element => {
   const { editEvent } = useEditEvent();
+  const { editTask } = useEditTask();
+  const { getProjectById } = useProjects();
 
   const { isOver, setNodeRef } = useDroppable({
     id: event.resource.id,
@@ -35,8 +39,20 @@ const TodayEvent: FC<TodayEventProps> = ({
   });
 
   const handleCompleteClick = async (val: boolean) => {
-    editEvent(event.resource.id, { completed: val });
+    if (isCalendarDeadlineEntry(event)) {
+      editTask(event.resource.id, { completed: val });
+    } else {
+      editEvent(event.resource.id, { completed: val });
+    }
   };
+
+  const project = useMemo(
+    () =>
+      isCalendarDeadlineEntry(event)
+        ? getProjectById(event.resource.task.projectId || "")
+        : null,
+    [getProjectById, event]
+  );
 
   return (
     <div ref={setNodeRef} className={cn(isOver ? "border border-primary" : "")}>
@@ -66,13 +82,16 @@ const TodayEvent: FC<TodayEventProps> = ({
         <div>
           <div>
             {event.title}
-            {isCalendarDeadlineEntry(event) && (
-              <Badge
+            {project && (
+              <span
                 className="ml-4"
-                variant={event.resource.completed ? "secondary" : "destructive"}
+                style={{
+                  color: project.color,
+                  opacity: event.resource.completed ? 0.7 : 1,
+                }}
               >
-                Deadline
-              </Badge>
+                {project.title}
+              </span>
             )}
           </div>
           <div>

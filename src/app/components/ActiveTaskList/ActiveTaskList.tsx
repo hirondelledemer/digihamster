@@ -10,7 +10,6 @@ import { unique } from "remeda";
 import useTags from "@/app/utils/hooks/use-tags";
 import TagsFilter from "./TagsFilter";
 import { IconCircle, IconCircleCheck } from "@tabler/icons-react";
-import { TaskV2 } from "@/models/taskV2";
 import { addEstimates } from "@/app/utils/tasks/estimates";
 
 export const taskTestId = "ActiveTaskList-task-testid";
@@ -28,11 +27,7 @@ const ActiveTaskList: FC<ActiveTaskListProps> = ({
   const tasksToShow = useMemo(
     () =>
       tasks
-        .filter(
-          (task) =>
-            (task.isActive || (task.deadline && !task.completed)) &&
-            !task.eventId
-        )
+        .filter((task) => task.isActive && !task.deadline && !task.eventId)
         .sort((a, b) => (a.estimate || 0) - (b.estimate || 0))
         .sort((a, b) =>
           a.completed === b.completed ? 0 : a.completed ? 1 : -1

@@ -29,6 +29,7 @@ export interface ProjectsContextValue {
     onDone?: () => void
   ): void;
   createProject(data: Pick<Project, FieldsRequired>): void;
+  getProjectById(id: string): Project;
 }
 
 export const ProjectsContext = createContext<ProjectsContextValue>({
@@ -38,6 +39,9 @@ export const ProjectsContext = createContext<ProjectsContextValue>({
   updateProject: () => {},
   createProject: () => {},
   updateProjectsOrder: () => {},
+  getProjectById: () => {
+    return null as unknown as Project;
+  },
 });
 
 const { Provider } = ProjectsContext;
@@ -159,6 +163,15 @@ export const ProjectsContextProvider = ({ children }: any) => {
     }
   };
 
+  const getProjectById = (id: string) => {
+    const project = data.find((project) => project._id === id);
+    if (!project) {
+      throw Error("no project by this id");
+    }
+
+    return project;
+  };
+
   return (
     <Provider
       value={{
@@ -170,6 +183,7 @@ export const ProjectsContextProvider = ({ children }: any) => {
         updateProject,
         createProject,
         updateProjectsOrder,
+        getProjectById,
       }}
     >
       {children}
@@ -185,6 +199,8 @@ export default function useProjects() {
     updateProject,
     createProject,
     updateProjectsOrder,
+    getProjectById,
+    loading,
   } = useContext(ProjectsContext);
 
   return {
@@ -194,5 +210,7 @@ export default function useProjects() {
     updateProject,
     createProject,
     updateProjectsOrder,
+    getProjectById,
+    loading,
   };
 }

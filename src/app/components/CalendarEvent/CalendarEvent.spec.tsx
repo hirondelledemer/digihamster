@@ -3,7 +3,7 @@ import { CalendarEventProps } from "./CalendarEvent";
 import CalendarEvent from "./CalendarEvent";
 import { getCalendarEventTestkit } from "./CalendarEvent.testkit";
 import mockAxios from "jest-mock-axios";
-import { generateListOfTasks } from "@/app/utils/mocks/task";
+import { generateListOfTasks, generateTask } from "@/app/utils/mocks/task";
 import { CalendarEventEntry } from "./CalendarEvent.types";
 
 describe("CalendarEvent", () => {
@@ -87,25 +87,6 @@ describe("CalendarEvent", () => {
     });
   });
 
-  describe("event is a tasks with a deadline", () => {
-    const props: CalendarEventProps = {
-      event: {
-        title: "Event",
-        resource: {
-          completed: false,
-          id: "event1",
-          type: "deadline",
-          projectId: "",
-        },
-      },
-    };
-
-    it("should show deadline tag", () => {
-      const wrapper = renderComponent(props);
-      expect(wrapper.deadlineLabelExists()).toBe(true);
-    });
-  });
-
   describe("event has tasks", () => {
     const props: CalendarEventProps = {
       event: {
@@ -119,7 +100,7 @@ describe("CalendarEvent", () => {
       },
     };
 
-    it("should show deadline tag", () => {
+    it("should not show tasks", () => {
       const wrapper = renderComponent(props);
       expect(
         wrapper.getByText(

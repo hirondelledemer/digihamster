@@ -13,7 +13,7 @@ describe("ActiveTaskList", () => {
     { isActive: true },
     { isActive: true },
     { isActive: false },
-    { isActive: false, deadline: 1100000 },
+    { isActive: true, deadline: 1100000 },
     { isActive: false, deadline: 1100000, completed: true },
   ]);
   const defaultProps: ActiveTaskListProps = {};
@@ -56,14 +56,13 @@ describe("ActiveTaskList", () => {
       ).container
     );
 
-  it("renders active tasks and tasks with not completed tasks with deadline", () => {
+  it("renders active tasks and tasks with not completed tasks without deadline", () => {
     const wrapper = renderComponent();
     expect(wrapper.getComponent()).not.toBe(null);
-    expect(wrapper.getTasksCount()).toBe(4);
+    expect(wrapper.getTasksCount()).toBe(3);
     expect(wrapper.getTaskTitleAt(0)).toBe(defaultTasks[0].title);
     expect(wrapper.getTaskTitleAt(1)).toBe(defaultTasks[1].title);
     expect(wrapper.getTaskTitleAt(2)).toBe(defaultTasks[2].title);
-    expect(wrapper.getTaskTitleAt(3)).toBe(`${defaultTasks[4].title}01-01`);
   });
 
   it('should render tasks in order "not completed" -> "completed"', () => {
@@ -76,9 +75,8 @@ describe("ActiveTaskList", () => {
 
     const wrapper = renderComponent(defaultProps, tasks);
     expect(wrapper.getTaskTitleAt(0)).toBe(defaultTasks[0].title);
-    expect(wrapper.getTaskTitleAt(1)).toBe(`${defaultTasks[2].title}01-01`);
-    expect(wrapper.getTaskTitleAt(2)).toBe(defaultTasks[3].title);
-    expect(wrapper.getTaskTitleAt(3)).toBe(defaultTasks[1].title);
+    expect(wrapper.getTaskTitleAt(1)).toBe(`${defaultTasks[3].title}`);
+    expect(wrapper.getTaskTitleAt(2)).toBe(defaultTasks[1].title);
   });
 
   it("should sort tasks by estimate", () => {

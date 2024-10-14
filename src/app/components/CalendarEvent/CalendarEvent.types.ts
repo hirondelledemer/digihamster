@@ -38,11 +38,10 @@ export interface CalendarWeatherEntry extends Event {
 export interface CalendarDeadlineEntry extends Event {
   title: string;
   resource: {
-    id: string;
-    completed: boolean;
     type: "deadline";
-    description?: string;
-    projectId: string;
+    id: string;
+    completed?: boolean;
+    task: TaskV2;
   };
 }
 

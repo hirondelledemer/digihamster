@@ -6,7 +6,6 @@ import axios from "axios";
 import useEvents from "@/app/utils/hooks/use-events";
 import { Event as EventType } from "@/models/event";
 import { updateObjById } from "@/app/utils/common/update-array";
-import { Badge } from "../ui/badge";
 import {
   ContextMenu,
   ContextMenuContent,
@@ -23,10 +22,14 @@ import {
 import TaskForm from "../EventForm";
 import { FormValues } from "../TaskForm/TaskForm";
 import useEditEvent from "@/app/utils/hooks/use-edit-events";
-import { CalendarEventType, isCalendarEventEntry } from "./CalendarEvent.types";
-import { useDroppable } from "@dnd-kit/core";
+import {
+  CalendarEventType,
+  isCalendarDeadlineEntry,
+  isCalendarEventEntry,
+} from "./CalendarEvent.types";
 import { cn } from "../utils";
-import TaskCard from "../TaskCard";
+import useProjects from "@/app/utils/hooks/use-projects";
+import TaskFormModal from "../TaskFormModal";
 
 export interface CalendarEventProps {
   testId?: string;
@@ -41,11 +44,9 @@ const CalendarEvent: FC<CalendarEventProps> = ({
 }): JSX.Element | null => {
   const { setData } = useEvents();
   const [taskFormOpen, setTaskFormOpen] = useState<boolean>(false);
+  const [eventFormOpen, setEventFormOpen] = useState<boolean>(false);
   const { editEvent } = useEditEvent();
-
-  const { isOver, setNodeRef } = useDroppable({
-    id: event.resource.id,
-  });
+  const { getProjectById } = useProjects();
 
   const handleDeleteClick = async () => {
     await axios.patch("/api/events", {
@@ -71,65 +72,72 @@ const CalendarEvent: FC<CalendarEventProps> = ({
     return null;
   }
 
+  const closeTaskForm = () => setTaskFormOpen(false);
+
   return (
     <>
-      <Sheet open={taskFormOpen}>
-        <SheetContent
-          side="left"
-          onCloseClick={() => setTaskFormOpen(false)}
-          onEscapeKeyDown={() => setTaskFormOpen(false)}
-        >
-          <SheetHeader>
-            <SheetTitle>Edit Event</SheetTitle>
-            <SheetDescription>
-              <TaskForm
-                testId={taskFormTestId}
-                editMode
-                onSubmit={(data: FormValues) =>
-                  editEvent(
-                    event.resource.id,
-                    {
-                      title: data.title,
-                      description: data.description,
-                      projectId: data.project,
-                    },
-                    () => setTaskFormOpen(false)
-                  )
-                }
-                initialValues={{
-                  title: event.title,
-                  project: event.resource.projectId,
-                  description: event.resource.description,
-                }}
-              />
-            </SheetDescription>
-          </SheetHeader>
-        </SheetContent>
-      </Sheet>
+      {isCalendarDeadlineEntry(event) && (
+        <TaskFormModal
+          editMode
+          open={taskFormOpen}
+          onDone={closeTaskForm}
+          onClose={closeTaskForm}
+          task={event.resource.task}
+        />
+      )}
+      {isCalendarEventEntry(event) && (
+        <Sheet open={eventFormOpen}>
+          <SheetContent
+            side="left"
+            onCloseClick={() => setEventFormOpen(false)}
+            onEscapeKeyDown={() => setEventFormOpen(false)}
+          >
+            <SheetHeader>
+              <SheetTitle>Edit Event</SheetTitle>
+              <SheetDescription>
+                <TaskForm
+                  testId={taskFormTestId}
+                  editMode
+                  onSubmit={(data: FormValues) =>
+                    editEvent(
+                      event.resource.id,
+                      {
+                        title: data.title,
+                        description: data.description,
+                        projectId: data.project,
+                      },
+                      () => setTaskFormOpen(false)
+                    )
+                  }
+                  initialValues={{
+                    title: event.title,
+                    project: event.resource.projectId,
+                    description: event.resource.description,
+                  }}
+                />
+              </SheetDescription>
+            </SheetHeader>
+          </SheetContent>
+        </Sheet>
+      )}
       <ContextMenu>
-        <ContextMenuTrigger disabled={event.resource.type === "deadline"}>
+        <ContextMenuTrigger>
           <div
             data-testid={testId}
+            style={{
+              border: isCalendarDeadlineEntry(event)
+                ? `2px solid ${
+                    getProjectById(event.resource.task.projectId || "").color
+                  }`
+                : "",
+            }}
             className={cn(
               "h-full p-1 cursor-pointer bg-[#29221f] rounded-lg hover:border hover:border-primary mt-[-1px]",
-              event.resource.completed && "text-muted-foreground line-through",
-              event.resource.type === "deadline" ? "bg-[#2B1B1E]" : "",
-              isOver ? "border border-primary" : ""
+              event.resource.completed && "text-muted-foreground line-through"
             )}
-            ref={setNodeRef}
           >
-            {isOver && (
-              <span className="absolute bottom-[50%]">
-                Add task to this event
-              </span>
-            )}
-            <div className={`italic ${isOver ? "blur-sm" : ""}`}>
+            <div className={`italic`}>
               {event.title}
-              {event.resource.type === "deadline" && (
-                <div>
-                  <Badge variant="destructive">Deadline</Badge>
-                </div>
-              )}
               <div>
                 {isCalendarEventEntry(event) &&
                   event.resource.tasks.map((t) => (
@@ -145,17 +153,26 @@ const CalendarEvent: FC<CalendarEventProps> = ({
           </div>
         </ContextMenuTrigger>
         <ContextMenuContent className="w-64">
-          <ContextMenuItem inset onClick={handleDeleteClick}>
-            Delete
-          </ContextMenuItem>
-          {!event.resource.completed && (
+          {isCalendarEventEntry(event) && (
+            <ContextMenuItem inset onClick={handleDeleteClick}>
+              Delete
+            </ContextMenuItem>
+          )}
+          {!event.resource.completed && isCalendarEventEntry(event) && (
             <ContextMenuItem inset onClick={handleCompleteClick}>
               Complete
             </ContextMenuItem>
           )}
-          <ContextMenuItem inset onClick={() => setTaskFormOpen(true)}>
-            Edit
-          </ContextMenuItem>
+          {isCalendarEventEntry(event) && (
+            <ContextMenuItem inset onClick={() => setEventFormOpen(true)}>
+              Edit
+            </ContextMenuItem>
+          )}
+          {isCalendarDeadlineEntry(event) && (
+            <ContextMenuItem inset onClick={() => setTaskFormOpen(true)}>
+              Edit
+            </ContextMenuItem>
+          )}
         </ContextMenuContent>
       </ContextMenu>
     </>

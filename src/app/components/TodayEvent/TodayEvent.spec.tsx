@@ -1,3 +1,4 @@
+import { generateTask } from "@/app/utils/mocks/task";
 import TodayEvent, { TodayEventProps } from "./TodayEvent";
 import { getTodayEventTestkit } from "./TodayEvent.testkit";
 import { render } from "@/config/utils/test-utils";
@@ -41,15 +42,14 @@ describe("TodayEvent", () => {
           completed: false,
           id: "event1",
           type: "deadline",
-          description: "",
-          projectId: "project1",
+          task: generateTask(),
         },
       },
     };
 
     it("should should not show deadline label", () => {
       const wrapper = renderComponent(props);
-      expect(wrapper.getComponent().textContent).toBe("TitleDeadline");
+      expect(wrapper.getComponent().textContent).toBe("Title");
     });
   });
 

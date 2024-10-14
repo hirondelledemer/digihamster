@@ -60,6 +60,10 @@ import {
   WeatherData,
 } from "../CalendarEvent/CalendarEvent.types";
 import CalendarWeatherEvent from "../CalendarWeatherEvent";
+import CalendarSlot from "../CalendarSlot";
+import useEditTask from "@/app/utils/hooks/use-edit-task";
+import { HALF_HOUR } from "@/app/utils/consts/dates";
+import useProjects from "@/app/utils/hooks/use-projects";
 
 export const now = () => new Date();
 
@@ -83,7 +87,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
   const [eventInCreationData, setEventInCreationData] =
     useState<SlotInfo | null>(null);
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [weatherLoading, setLoading] = useState<boolean>(false);
 
   const { toast } = useToast();
 
@@ -102,9 +106,11 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
 
   const { data: journalEntriesData } = useJournalEntries();
   const { data: eventsData, setData: setEventsData } = useEvents();
+  const { loading } = useProjects();
 
   //todo: check editing of deadline tasks
   const { data: tasksData } = useTasks(); //todo this is fetching all the tasks. fetch only tasks with deadline
+  const { editTask } = useEditTask(); //todo this is fetching all the tasks. fetch only tasks with deadline
 
   const eventsResolved = eventsData.map<CalendarEventEntry>((event) => {
     return {
@@ -127,15 +133,14 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
     .filter((task) => !!task.deadline)
     .map<CalendarDeadlineEntry>((task) => ({
       start: task.deadline ? new Date(task.deadline) : undefined,
-      end: task.deadline ? new Date(task.deadline) : undefined,
+      end: task.deadline ? new Date(task.deadline + HALF_HOUR) : undefined,
       title: task.title,
       allDay: false,
       resource: {
         id: task._id,
         completed: task.completed,
         type: "deadline",
-        description: task.description || "",
-        projectId: task.projectId || "",
+        task,
       },
     }));
 
@@ -249,6 +254,10 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
           endAt: new Date(end).getTime(),
         })
       );
+    } else if (isCalendarDeadlineEntry(event)) {
+      editTask(event.resource.id, {
+        deadline: new Date(start).getTime(),
+      });
     }
   };
 
@@ -327,6 +336,10 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
     }
   };
 
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <>
       <Sheet open={!!eventInCreationData}>
@@ -348,8 +361,8 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
       </Sheet>
       <DnDropCalendar
         selectable
-        draggableAccessor={(event) => event.resource.type === "event"}
         localizer={localizer}
+        resizableAccessor={isCalendarEventEntry}
         events={events}
         backgroundEvents={weatherResolved}
         onEventDrop={moveEvent}
@@ -367,6 +380,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
             date: customDate,
             time: customDate,
           },
+          timeSlotWrapper: CalendarSlot,
           toolbar: CalendarToolbar,
         }}
         min={dates.add(

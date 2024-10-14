@@ -22,6 +22,7 @@ const defaultProjectsValue: ProjectsContextValue = {
   updateProject: jest.fn(),
   updateProjectsOrder: jest.fn(),
   createProject: jest.fn(),
+  getProjectById: jest.fn(),
 };
 
 export const wrapWithProjectsProvider = (
