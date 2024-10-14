@@ -30,7 +30,7 @@ export const taskSchema = z.object({
   isActive: z.boolean() || z.undefined(),
   completed: z.boolean(),
   deleted: z.boolean(),
-  sortOrder: z.union([z.number(), z.undefined()]),
+  sortOrder: z.union([z.number(), z.undefined(), z.null()]),
   completedAt: z.union([z.number(), z.undefined()]),
   activatedAt: z.union([z.number(), z.undefined(), z.null()]),
   parentTaskId: z.union([z.string(), z.null(), z.undefined()]),
