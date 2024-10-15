@@ -4,7 +4,6 @@ import React, { FC, useState } from "react";
 import useProjects from "@/app/utils/hooks/use-projects";
 import { DataTable } from "../Tasks/components/DataTable/DataTable";
 import useTasks from "@/app/utils/hooks/use-tasks";
-import { getColumns } from "../Tasks/components/columns";
 import useTags from "@/app/utils/hooks/use-tags";
 import { TaskV2 } from "@/models/taskV2";
 import TaskFormModal from "../TaskFormModal";
@@ -27,6 +26,8 @@ import {
 } from "@dnd-kit/core";
 import { Switch } from "../ui/switch";
 import { Label } from "../ui/label";
+import ProjectBurnDownChart from "../ProjectBurnDownChart";
+import { getColumns } from "./columns";
 
 export interface ProjectsProps {
   testId?: string;
@@ -95,7 +96,7 @@ const Projects: FC<ProjectsProps> = ({ testId }): JSX.Element => {
         onClose={closeOpenProjectForm}
         open={openProjectForm}
       />
-      <div className="flex p-4 space-x-6">
+      <div className="flex p-4 space-x-6 justify-stretch">
         <div className="space-y-2">
           <div className="space-x-2 flex items-center">
             <Button onClick={() => setOpenProjectForm(true)}>
@@ -147,7 +148,10 @@ const Projects: FC<ProjectsProps> = ({ testId }): JSX.Element => {
             </SortableContext>
           </DndContext>
         </div>
-        <div>
+        <div className="grow">
+          {selectedProjectId && (
+            <ProjectBurnDownChart projectId={selectedProjectId} />
+          )}
           <DataTable
             data={filteredTasks}
             columns={columns}
