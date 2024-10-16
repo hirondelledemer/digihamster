@@ -49,7 +49,9 @@ describe("TodayEvent", () => {
 
     it("should should not show deadline label", () => {
       const wrapper = renderComponent(props);
-      expect(wrapper.getComponent().textContent).toBe("Title");
+      expect(wrapper.getComponent().textContent).toBe(
+        "Titletask description 1"
+      );
     });
   });
 

@@ -5,7 +5,6 @@ import React, { FC, useMemo } from "react";
 import { Checkbox } from "../ui/checkbox";
 import { cn } from "../utils";
 import styles from "./TodayEvent.module.scss";
-import { Badge } from "../ui/badge";
 import {
   CalendarDeadlineEntry,
   CalendarEventEntry,
@@ -95,6 +94,12 @@ const TodayEvent: FC<TodayEventProps> = ({
             )}
           </div>
           <div>
+            {isCalendarEventEntry(event) && (
+              <span className="text-xs">{event.resource.description}</span>
+            )}
+            {isCalendarDeadlineEntry(event) && (
+              <span className="text-xs">{event.resource.task.description}</span>
+            )}
             {isCalendarEventEntry(event) &&
               event.resource.tasks.map((t) => (
                 <TaskCard key={t._id} task={t} />
