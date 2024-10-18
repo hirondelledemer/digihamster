@@ -65,7 +65,7 @@ import useEditTask from "@/app/utils/hooks/use-edit-task";
 import { HALF_HOUR } from "@/app/utils/consts/dates";
 import useProjects from "@/app/utils/hooks/use-projects";
 
-import { Cycle } from "@/models/cycle";
+import useCycle from "@/app/utils/hooks/use-cycle";
 
 export const now = () => new Date();
 
@@ -88,10 +88,8 @@ export interface PlannerProps {
 export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
   const [eventInCreationData, setEventInCreationData] =
     useState<SlotInfo | null>(null);
-  const [newEntityDropdownOpen, setNewEntityDropdownOpen] =
-    useState<boolean>(false);
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
-  const [cycleData, setCycleData] = useState<Cycle | null>(null);
+
   const [isLoading, setLoading] = useState<boolean>(false);
 
   const { toast } = useToast();
@@ -101,8 +99,6 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
       try {
         setLoading(true);
         const weatherResponse = await axios.get<WeatherData>("/api/weather");
-        const cycleResponse = await axios.get<Cycle>("/api/cycle");
-        setCycleData(cycleResponse.data);
         setWeatherData(weatherResponse.data);
       } catch (err) {
       } finally {
@@ -113,6 +109,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
 
   const { data: journalEntriesData } = useJournalEntries();
   const { data: eventsData, setData: setEventsData } = useEvents();
+  const { data: cycleData } = useCycle();
   const { loading: projectsLoading } = useProjects();
 
   //todo: check editing of deadline tasks
@@ -200,7 +197,6 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
       const dayIsCycleDay =
         cycleData &&
         !!cycleData.dates.filter((i) => {
-          console.log("lol", i, date);
           return isWithinInterval(date, interval(i.startDate, i.endDate));
         }).length;
       const dayIsFutureCycleDay =

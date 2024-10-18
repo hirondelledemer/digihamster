@@ -27,6 +27,7 @@ import {
 } from "../ui/dropdown-menu";
 import axios from "axios";
 import { useToast } from "../ui/use-toast";
+import useCycle from "@/app/utils/hooks/use-cycle";
 
 export interface CalendarToolbarProps extends ToolbarProps<CalendarEventType> {
   testId?: string;
@@ -51,25 +52,13 @@ const CalendarToolbar: FC<CalendarToolbarProps> = ({
     ["M", () => onView("month")],
   ]);
   const { toast } = useToast();
+  const { updateCycle } = useCycle();
 
   const addCycle = async () => {
-    try {
-      const startDate = date;
-      startDate.setHours(0, 0, 0, 0);
-      await axios.patch("/api/cycle", {
-        startDate: startDate.getTime(),
-      });
-      toast({
-        title: "Success",
-        description: "Cycle has started",
-      });
-    } catch (e) {
-      toast({
-        title: "Error",
-        description: JSON.stringify(e),
-        variant: "destructive",
-      });
-    }
+    const startDate = date;
+    startDate.setHours(0, 0, 0, 0);
+
+    updateCycle(startDate.getTime());
   };
 
   return (

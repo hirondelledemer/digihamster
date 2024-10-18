@@ -8,6 +8,7 @@ import { TagsContextProvider } from "../utils/hooks/use-tags";
 import { TasksContextProvider } from "../utils/hooks/use-tasks";
 import { DraggableTasksContextProvider } from "../utils/hooks/use-draggable-tasks";
 import { HabitsContextProvider } from "../utils/hooks/use-habits";
+import { CycleContextProvider } from "../utils/hooks/use-cycle";
 
 export default function HomePage() {
   return (
@@ -18,9 +19,11 @@ export default function HomePage() {
             <TagsContextProvider>
               <TasksContextProvider>
                 <HabitsContextProvider>
-                  <DraggableTasksContextProvider>
-                    <HomeComp />
-                  </DraggableTasksContextProvider>
+                  <CycleContextProvider>
+                    <DraggableTasksContextProvider>
+                      <HomeComp />
+                    </DraggableTasksContextProvider>
+                  </CycleContextProvider>
                 </HabitsContextProvider>
               </TasksContextProvider>
             </TagsContextProvider>
