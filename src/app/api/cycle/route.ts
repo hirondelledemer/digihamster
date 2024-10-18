@@ -1,8 +1,9 @@
 import { getDataFromToken } from "@/app/helpers/getDataFromToken";
 import { NextRequest, NextResponse } from "next/server";
 import Cycle, { ICycle } from "@/models/cycle";
-import { DAY } from "@/app/utils/consts/dates";
 import { addDays, differenceInCalendarDays } from "date-fns";
+
+export const DAY = 1000 * 60 * 60 * 24;
 
 export async function GET(request: NextRequest) {
   try {
