@@ -1,6 +1,9 @@
 import { getDataFromToken } from "@/app/helpers/getDataFromToken";
 import { NextRequest, NextResponse } from "next/server";
 import Habit, { IHabit } from "@/models/habit";
+import { connect } from "@/config/database/connection";
+
+connect();
 
 export async function PATCH(request: NextRequest) {
   try {
