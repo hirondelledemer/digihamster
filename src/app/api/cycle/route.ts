@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Cycle, { ICycle } from "@/models/cycle";
 import { addDays, differenceInCalendarDays } from "date-fns";
 
-export const DAY = 1000 * 60 * 60 * 24;
+const DAY = 1000 * 60 * 60 * 24;
 
 export async function GET(request: NextRequest) {
   try {
