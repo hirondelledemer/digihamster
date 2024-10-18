@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
   try {
     const userId = await getDataFromToken(request);
 
-    const cycle = await Cycle.find({ userId });
+    const cycle = await Cycle.findOne({ userId });
 
     return NextResponse.json(cycle);
   } catch (error: any) {
