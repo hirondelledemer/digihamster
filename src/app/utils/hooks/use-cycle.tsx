@@ -6,10 +6,7 @@ import axios from "axios";
 import { useToast } from "@/app/components/ui/use-toast";
 
 import { Cycle } from "@/models/cycle";
-import { addDays } from "date-fns";
 import { DAY } from "../consts/dates";
-
-type FieldsRequired = "title" | "color" | "disabled";
 
 export interface CycleContextValue {
   data: Cycle | null;
@@ -66,9 +63,6 @@ export const CycleContextProvider = ({ children }: any) => {
           } as Cycle)
       );
 
-      //   onDone && onDone();
-      //   const startDate = date;
-      //   startDate.setHours(0, 0, 0, 0);
       await axios.patch("/api/cycle", {
         startDate: startDate,
       });

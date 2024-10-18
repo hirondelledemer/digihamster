@@ -7,7 +7,6 @@ import { generateCustomTasksList } from "@/app/utils/mocks/task";
 import { generateProject } from "@/app/utils/mocks/project";
 import { subDays } from "date-fns";
 import { now } from "@/app/utils/date/date";
-import { DAY } from "@/app/utils/consts/dates";
 
 const project1 = generateProject(1, { color: "#f59e0b" });
 
