@@ -13,11 +13,20 @@ import {
   IconSquareLetterM,
   IconSquareLetterT,
   IconSquareLetterW,
+  IconSquarePlus,
 } from "@tabler/icons-react";
 import { IconSquareLetterA } from "@tabler/icons-react";
 import { format } from "date-fns";
 import useHotKeys from "@/app/utils/hooks/use-hotkeys";
 import { CalendarEventType } from "../CalendarEvent";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
+import axios from "axios";
+import { useToast } from "../ui/use-toast";
 
 export interface CalendarToolbarProps extends ToolbarProps<CalendarEventType> {
   testId?: string;
@@ -41,6 +50,27 @@ const CalendarToolbar: FC<CalendarToolbarProps> = ({
     ["A", () => onView("agenda")],
     ["M", () => onView("month")],
   ]);
+  const { toast } = useToast();
+
+  const addCycle = async () => {
+    try {
+      const startDate = date;
+      startDate.setHours(0, 0, 0, 0);
+      await axios.patch("/api/cycle", {
+        startDate: startDate.getTime(),
+      });
+      toast({
+        title: "Success",
+        description: "Cycle has started",
+      });
+    } catch (e) {
+      toast({
+        title: "Error",
+        description: JSON.stringify(e),
+        variant: "destructive",
+      });
+    }
+  };
 
   return (
     <div data-testid={testId} className="flex justify-between align-center">
@@ -72,7 +102,20 @@ const CalendarToolbar: FC<CalendarToolbarProps> = ({
       <div>{view === "agenda" ? format(date, "EEEE MMM dd") : label}</div>
       <div>
         <div>
-          {/* todo: fix month style */}
+          {(view === "agenda" || view === "day") && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <IconSquarePlus />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56">
+                <DropdownMenuItem onClick={addCycle}>
+                  Cycle Starts
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
           <Button variant="ghost" size="icon" onClick={() => onView("month")}>
             <IconSquareLetterM />
           </Button>
