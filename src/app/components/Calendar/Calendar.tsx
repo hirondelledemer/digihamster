@@ -30,7 +30,7 @@ import "./Calendar.scss";
 import Today from "../Today";
 
 import CalendarToolbar from "../CalendarToolbar";
-import { addMinutes, isSameDay } from "date-fns";
+import { addMinutes, interval, isSameDay, isWithinInterval } from "date-fns";
 import axios from "axios";
 
 import CalendarEvent, { CalendarEventType } from "../CalendarEvent";
@@ -65,6 +65,8 @@ import useEditTask from "@/app/utils/hooks/use-edit-task";
 import { HALF_HOUR } from "@/app/utils/consts/dates";
 import useProjects from "@/app/utils/hooks/use-projects";
 
+import useCycle from "@/app/utils/hooks/use-cycle";
+
 export const now = () => new Date();
 
 // todo: why is this needed
@@ -87,7 +89,8 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
   const [eventInCreationData, setEventInCreationData] =
     useState<SlotInfo | null>(null);
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
-  const [weatherLoading, setLoading] = useState<boolean>(false);
+
+  const [isLoading, setLoading] = useState<boolean>(false);
 
   const { toast } = useToast();
 
@@ -106,7 +109,8 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
 
   const { data: journalEntriesData } = useJournalEntries();
   const { data: eventsData, setData: setEventsData } = useEvents();
-  const { loading } = useProjects();
+  const { data: cycleData } = useCycle();
+  const { loading: projectsLoading } = useProjects();
 
   //todo: check editing of deadline tasks
   const { data: tasksData } = useTasks(); //todo this is fetching all the tasks. fetch only tasks with deadline
@@ -188,17 +192,44 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
     []
   );
 
-  const customDayPropGetter = useCallback((date: Date) => {
-    if (isSameDay(date, now())) {
-      return {
-        className: style.today,
-      };
-    }
+  const customDayPropGetter = useCallback(
+    (date: Date) => {
+      const dayIsCycleDay =
+        cycleData &&
+        !!cycleData.dates.filter((i) => {
+          return isWithinInterval(date, interval(i.startDate, i.endDate));
+        }).length;
+      const dayIsFutureCycleDay =
+        cycleData &&
+        !!cycleData.futureDates.filter((i) => {
+          return isWithinInterval(date, interval(i.startDate, i.endDate));
+        }).length;
 
-    return {
-      className: style.day,
-    };
-  }, []);
+      cycleData?.dates.filter((i) =>
+        isWithinInterval(date, interval(i.startDate, i.endDate))
+      );
+
+      if (isSameDay(date, now())) {
+        return {
+          className: style.today,
+          style: {
+            backgroundColor: dayIsCycleDay ? " #340411" : "",
+          },
+        };
+      }
+
+      return {
+        className: style.day,
+        style: {
+          background: dayIsFutureCycleDay
+            ? "repeating-linear-gradient(45deg, #340411, #340411 5px, transparent 5px, transparent 10px)"
+            : "",
+          backgroundColor: dayIsCycleDay ? "#1C0209" : "",
+        },
+      };
+    },
+    [cycleData]
+  );
 
   const customGroupGetter = useCallback(
     () => ({
@@ -336,7 +367,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
     }
   };
 
-  if (loading) {
+  if (projectsLoading || isLoading) {
     return <div>Loading...</div>;
   }
 
