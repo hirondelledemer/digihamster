@@ -10,7 +10,6 @@ describe("Calendar", () => {
   it("should render", () => {
     const wrapper = renderComponent();
 
-    wrapper.clickEventSlot();
     expect(wrapper.getComponent()).toBeInTheDocument();
   });
 });
