@@ -2,8 +2,11 @@ import { getDataFromToken } from "@/app/helpers/getDataFromToken";
 import { NextRequest, NextResponse } from "next/server";
 import Cycle, { ICycle } from "@/models/cycle";
 import { addDays, differenceInCalendarDays } from "date-fns";
+import { connect } from "@/config/database/connection";
 
 const DAY = 1000 * 60 * 60 * 24;
+
+connect();
 
 export async function GET(request: NextRequest) {
   try {
