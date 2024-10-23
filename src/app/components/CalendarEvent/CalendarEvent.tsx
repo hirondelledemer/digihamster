@@ -30,6 +30,7 @@ import {
 import { cn } from "../utils";
 import useProjects from "@/app/utils/hooks/use-projects";
 import TaskFormModal from "../TaskFormModal";
+import useEditTask from "@/app/utils/hooks/use-edit-task";
 
 export interface CalendarEventProps {
   testId?: string;
@@ -42,6 +43,7 @@ const CalendarEvent: FC<CalendarEventProps> = ({
   testId,
   event,
 }): JSX.Element | null => {
+  const { editTask } = useEditTask();
   const { setData } = useEvents();
   const [taskFormOpen, setTaskFormOpen] = useState<boolean>(false);
   const [eventFormOpen, setEventFormOpen] = useState<boolean>(false);
@@ -49,23 +51,23 @@ const CalendarEvent: FC<CalendarEventProps> = ({
   const { getProjectById } = useProjects();
 
   const handleDeleteClick = async () => {
-    await axios.patch("/api/events", {
-      eventId: event.resource.id,
-      deleted: true,
-    });
-    setData((events) => events.filter((e) => e._id !== event.resource.id));
+    if (isCalendarDeadlineEntry(event)) {
+      editTask(event.resource.id, { deleted: true });
+    } else {
+      editEvent(event.resource.id, { deleted: true });
+    }
   };
 
   const handleCompleteClick = () => {
-    setData((events) => {
-      return updateObjById<EventType>(events, event.resource.id, {
-        completed: true,
-      });
-    });
-    axios.patch("/api/events", {
-      eventId: event.resource.id,
-      completed: true,
-    });
+    if (isCalendarDeadlineEntry(event)) {
+      editTask(event.resource.id, { completed: true });
+    } else {
+      editEvent(event.resource.id, { completed: true });
+    }
+  };
+
+  const handleSendBackToListClick = async () => {
+    editTask(event.resource.id, { deadline: null });
   };
 
   if (event.resource.type === "journal" || event.resource.type === "weather") {
@@ -153,12 +155,10 @@ const CalendarEvent: FC<CalendarEventProps> = ({
           </div>
         </ContextMenuTrigger>
         <ContextMenuContent className="w-64">
-          {isCalendarEventEntry(event) && (
-            <ContextMenuItem inset onClick={handleDeleteClick}>
-              Delete
-            </ContextMenuItem>
-          )}
-          {!event.resource.completed && isCalendarEventEntry(event) && (
+          <ContextMenuItem inset onClick={handleDeleteClick}>
+            Delete
+          </ContextMenuItem>
+          {!event.resource.completed && (
             <ContextMenuItem inset onClick={handleCompleteClick}>
               Complete
             </ContextMenuItem>
@@ -171,6 +171,11 @@ const CalendarEvent: FC<CalendarEventProps> = ({
           {isCalendarDeadlineEntry(event) && (
             <ContextMenuItem inset onClick={() => setTaskFormOpen(true)}>
               Edit
+            </ContextMenuItem>
+          )}
+          {isCalendarDeadlineEntry(event) && (
+            <ContextMenuItem inset onClick={handleSendBackToListClick}>
+              Move back to list
             </ContextMenuItem>
           )}
         </ContextMenuContent>

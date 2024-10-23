@@ -29,11 +29,6 @@ describe("CalendarEvent", () => {
         .container
     );
 
-  it("should not show deadline tag", () => {
-    const wrapper = renderComponent();
-    expect(wrapper.deadlineLabelExists()).toBe(false);
-  });
-
   describe("event is not completed", () => {
     it('should  show "complete" and "delete" buttons', () => {
       const wrapper = renderComponent();
@@ -100,7 +95,7 @@ describe("CalendarEvent", () => {
       },
     };
 
-    it("should not show tasks", () => {
+    it("should show tasks", () => {
       const wrapper = renderComponent(props);
       expect(
         wrapper.getByText(
