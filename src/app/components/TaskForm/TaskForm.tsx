@@ -99,7 +99,7 @@ const TaskForm: FC<TaskFormProps> = ({
     defaultValues: {
       title: "",
       description: "",
-      eta: 0,
+      eta: 0.5,
       project: defaultProject?._id,
       deadline: null,
       isActive: false,
