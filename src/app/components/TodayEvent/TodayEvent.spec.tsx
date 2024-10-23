@@ -1,7 +1,7 @@
 import { generateTask } from "@/app/utils/mocks/task";
 import TodayEvent, { TodayEventProps } from "./TodayEvent";
 import { getTodayEventTestkit } from "./TodayEvent.testkit";
-import { render } from "@/config/utils/test-utils";
+import { render, screen, userEvent } from "@/config/utils/test-utils";
 import mockAxios from "jest-mock-axios";
 
 describe("TodayEvent", () => {
@@ -34,7 +34,15 @@ describe("TodayEvent", () => {
     expect(wrapper.getComponent().textContent).toBe("Title");
   });
 
-  describe("event is a task with a deadline", () => {
+  it('should not show "move back to list" icon', () => {
+    renderComponent();
+
+    expect(
+      screen.queryByRole("button", { name: /move back to list/i })
+    ).not.toBeInTheDocument();
+  });
+
+  describe("event is a task", () => {
     const props: TodayEventProps = {
       event: {
         title: "Title",
@@ -47,11 +55,17 @@ describe("TodayEvent", () => {
       },
     };
 
-    it("should should not show deadline label", () => {
-      const wrapper = renderComponent(props);
-      expect(wrapper.getComponent().textContent).toBe(
-        "Titletask description 1"
-      );
+    it("should move back to list", async () => {
+      renderComponent(props);
+
+      const button = screen.getByRole("button", { name: /move back to list/i });
+      expect(button).toBeInTheDocument();
+      await userEvent.click(button);
+
+      expect(mockAxios.patch).toHaveBeenCalledWith("/api/tasks/v2", {
+        deadline: null,
+        taskId: props.event.resource.id,
+      });
     });
   });
 

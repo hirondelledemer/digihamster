@@ -16,6 +16,8 @@ import { useDroppable } from "@dnd-kit/core";
 import useEditEvent from "@/app/utils/hooks/use-edit-events";
 import useEditTask from "@/app/utils/hooks/use-edit-task";
 import useProjects from "@/app/utils/hooks/use-projects";
+import { Button } from "../ui/button";
+import { ChevronRightIcon } from "lucide-react";
 
 export interface TodayEventProps {
   testId?: string;
@@ -43,6 +45,10 @@ const TodayEvent: FC<TodayEventProps> = ({
     } else {
       editEvent(event.resource.id, { completed: val });
     }
+  };
+
+  const handleSendBackToListClick = async () => {
+    editTask(event.resource.id, { deadline: null });
   };
 
   const project = useMemo(
@@ -107,7 +113,18 @@ const TodayEvent: FC<TodayEventProps> = ({
           </div>
         </div>
 
-        <div className="flex justify-end self-baseline">
+        <div className="flex justify-end self-baseline gap-1">
+          {isCalendarDeadlineEntry(event) && (
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-[16px] w-[16px] rounded-sm"
+              aria-label="Move back to list"
+              onClick={handleSendBackToListClick}
+            >
+              <ChevronRightIcon className="h-4 w-4" size={1} name="ass" />
+            </Button>
+          )}
           <Checkbox
             checked={event.resource.completed}
             onCheckedChange={handleCompleteClick}
