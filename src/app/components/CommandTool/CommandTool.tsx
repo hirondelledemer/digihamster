@@ -11,7 +11,7 @@ import {
   CommandList,
 } from "../ui/command";
 import useHotKeys from "@/app/utils/hooks/use-hotkeys";
-import { HOME, PROJECTS, TASKS } from "@/app/utils/consts/routes";
+import { HABITS, HOME, PROJECTS, TASKS } from "@/app/utils/consts/routes";
 import { DialogTitle } from "@radix-ui/react-dialog";
 import TaskFormModal from "../TaskFormModal";
 import useEditTask from "@/app/utils/hooks/use-edit-task";
@@ -39,7 +39,7 @@ const CommandTool: FC<CommandToolProps> = (): JSX.Element => {
 
   const handleFilter = (value: string, search: string): 1 | 0 => {
     if (value.includes(search)) return 1;
-    if (value === "add quick task") return 1;
+    if (value === "add quick task" && !search.startsWith("/")) return 1;
     return 0;
   };
 
@@ -53,6 +53,10 @@ const CommandTool: FC<CommandToolProps> = (): JSX.Element => {
 
   const goToHome = useCallback(() => {
     router.push(HOME);
+  }, [router]);
+
+  const goToHabits = useCallback(() => {
+    router.push(HABITS);
   }, [router]);
 
   const close = () => {
@@ -116,9 +120,10 @@ const CommandTool: FC<CommandToolProps> = (): JSX.Element => {
             <CommandItem onSelect={createQuickTask}>Add Quick Task</CommandItem>
           </CommandGroup>
           <CommandGroup heading="Go to">
-            <CommandItem onSelect={goToHome}>Home</CommandItem>
-            <CommandItem onSelect={gotToTasks}>Tasks</CommandItem>
-            <CommandItem onSelect={gotToProjects}>Projects</CommandItem>
+            <CommandItem onSelect={goToHome}>/home</CommandItem>
+            <CommandItem onSelect={gotToTasks}>/tasks</CommandItem>
+            <CommandItem onSelect={gotToProjects}>/projects</CommandItem>
+            <CommandItem onSelect={goToHabits}>/habits</CommandItem>
           </CommandGroup>
         </CommandList>
       </CommandDialog>
