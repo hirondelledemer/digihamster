@@ -15,7 +15,7 @@ import { Habit } from "@/models/habit";
 
 type FieldsRequired = "title" | "category" | "timesPerMonth";
 
-export const HabitsContext = createContext<{
+export interface HabitsContextValue {
   data: Habit[];
   setData: Dispatch<SetStateAction<Habit[]>>;
   error?: unknown;
@@ -28,7 +28,9 @@ export const HabitsContext = createContext<{
     onDone?: () => void
   ): void;
   createHabit(data: Pick<Habit, FieldsRequired>): void;
-}>({
+}
+
+export const HabitsContext = createContext<HabitsContextValue>({
   data: [],
   setData: () => {},
   loading: false,

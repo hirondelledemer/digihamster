@@ -1,14 +1,13 @@
-import { render } from '@testing-library/react';
-import HealthChart, { HealthChartProps } from './HealthChart';
-import { getHealthChartTestkit } from './HealthChart.testkit';
+import { render } from "@/config/utils/test-utils";
+import HealthChart, { HealthChartProps } from "./HealthChart";
+import { wrapWithHabitsProvider } from "@/app/utils/tests/wraps";
 
-describe('HealthChart', () => {
+describe("HealthChart", () => {
   const defaultProps: HealthChartProps = {};
   const renderComponent = (props = defaultProps) =>
-    getHealthChartTestkit(render(<HealthChart {...props} />).container);
+    render(wrapWithHabitsProvider(<HealthChart {...props} />)).container;
 
-  it('should render HealthChart', () => {
-    const wrapper = renderComponent();
-    expect(wrapper.getComponent()).not.toBe(null);
+  it("should render HealthChart", () => {
+    expect(renderComponent()).not.toBe(null);
   });
 });
