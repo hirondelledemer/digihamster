@@ -7,15 +7,12 @@ import {
   wrapWithProjectsProvider,
   wrapWithTasksProvider,
 } from "@/app/utils/tests/wraps";
-import { useRouter } from "next/navigation";
 
 jest.mock("next/navigation", () => ({
   useRouter: () => ({
     push: jest.fn(),
   }),
 }));
-
-const useRouterMock = useRouter as unknown as jest.Mock;
 
 describe("CommandTool", () => {
   afterEach(() => {
@@ -29,10 +26,10 @@ describe("CommandTool", () => {
         wrapWithProjectsProvider(
           wrapWithTasksProvider(<CommandTool {...props} />, { data: [] }),
           {
-            projects: [],
             defaultProject: {
               _id: "project1",
               title: "Project",
+              disabled: false,
               color: "project-color",
               deleted: false,
               order: 1,
