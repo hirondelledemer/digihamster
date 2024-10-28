@@ -49,7 +49,6 @@ const ProjectBurnDownChart: FC<ProjectBurnDownChartProps> = ({
     const endDate = now();
 
     return eachDayOfInterval({ start: startDate, end: endDate }).map((date) => {
-      console.log(filteredTasks);
       const completedTasksCount = filteredTasks.filter(
         (t) =>
           t.completedAt && new Date(t.completedAt).getTime() <= date.getTime()
@@ -72,7 +71,7 @@ const ProjectBurnDownChart: FC<ProjectBurnDownChartProps> = ({
           <CardTitle>Progress</CardTitle>
         </CardHeader>
         <CardContent>
-          <ChartContainer config={chartConfig}>
+          <ChartContainer config={chartConfig} height={200}>
             <AreaChart
               accessibilityLayer
               data={getData()}

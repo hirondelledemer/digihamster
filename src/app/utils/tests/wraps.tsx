@@ -10,6 +10,10 @@ import { EventsContext, EventsContextValues } from "../hooks/use-events";
 import { generateListOfEvents } from "../mocks/event";
 import { generateListOfJournalEntries } from "../mocks/journal-entry";
 import { EntriesContext, EntriesContextValue } from "../hooks/use-entry";
+import { HabitsContext, HabitsContextValue } from "../hooks/use-habits";
+import { generateListOfHabits } from "../mocks/habit";
+
+/* Projects */
 
 const defaultProjects = generateListOfProjects(5);
 const defaultProject = defaultProjects[0];
@@ -34,6 +38,8 @@ export const wrapWithProjectsProvider = (
   </ProjectsContext.Provider>
 );
 
+/* Tags */
+
 export const wrapWithTagsProvider = (component: JSX.Element, value: Tag[]) => (
   <TagsContext.Provider
     value={{
@@ -45,6 +51,8 @@ export const wrapWithTagsProvider = (component: JSX.Element, value: Tag[]) => (
     {component}
   </TagsContext.Provider>
 );
+
+/* Tasks */
 
 const defaultTasks = generateListOfTasks(5);
 const defaultTasksValue: TasksContextValues = {
@@ -65,6 +73,8 @@ export const wrapWithTasksProvider = (
     {component}
   </TasksContext.Provider>
 );
+
+/* Events */
 
 const defaultEvents = generateListOfEvents(5);
 const defaultEventsValue: EventsContextValues = {
@@ -87,6 +97,8 @@ export const wrapWithEventProvider = (
   </EventsContext.Provider>
 );
 
+/* Journal Entries  */
+
 const defaultEntries = generateListOfJournalEntries(5);
 const defaultEntriesValue: EntriesContextValue = {
   data: defaultEntries,
@@ -105,4 +117,30 @@ export const wrapWithEntriesProvider = (
   >
     {component}
   </EntriesContext.Provider>
+);
+
+/* Habits */
+
+const defaultHabits = generateListOfHabits(5);
+const defaultHabitsValue: HabitsContextValue = {
+  data: defaultHabits,
+  setData: jest.fn(),
+  loading: false,
+  updateHabit: jest.fn(),
+  deleteHabit: jest.fn(),
+  addLog: jest.fn(),
+  createHabit: jest.fn(),
+};
+export const wrapWithHabitsProvider = (
+  component: JSX.Element,
+  value?: Partial<HabitsContextValue>
+) => (
+  <HabitsContext.Provider
+    value={{
+      ...defaultHabitsValue,
+      ...value,
+    }}
+  >
+    {component}
+  </HabitsContext.Provider>
 );

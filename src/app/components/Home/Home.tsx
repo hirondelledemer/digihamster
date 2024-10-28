@@ -9,6 +9,7 @@ import Calendar from "../Calendar";
 import ActiveTaskList from "../ActiveTaskList";
 import CommandTool from "../CommandTool";
 import PinnedNotes from "../PinnedNotes";
+import HealthChart from "../HealthChart";
 
 export const Home = (): JSX.Element => {
   return (
@@ -35,8 +36,11 @@ export const Home = (): JSX.Element => {
           <div className="flex p-6 pb-12">
             <ActiveTaskList />
           </div>
-          <div className="flex p-6 pl-0 pb-12">
-            <PinnedNotes />
+          <div className="flex p-6 pl-0 pb-12 flex-col">
+            <div className="max-h-[400px] mb-4">
+              <PinnedNotes />
+            </div>
+            <HealthChart />
           </div>
         </div>
       </ResizablePanel>

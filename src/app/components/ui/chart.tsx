@@ -45,6 +45,7 @@ const ChartContainer = React.forwardRef<
     children: React.ComponentProps<
       typeof RechartsPrimitive.ResponsiveContainer
     >["children"];
+    height: number;
   }
 >(({ id, className, children, config, ...props }, ref) => {
   const uniqueId = React.useId();
@@ -63,7 +64,7 @@ const ChartContainer = React.forwardRef<
       >
         {/* <div className="absolute h-full"> */}
         <ChartStyle id={chartId} config={config} />
-        <RechartsPrimitive.ResponsiveContainer height={200}>
+        <RechartsPrimitive.ResponsiveContainer height={props.height}>
           {children}
         </RechartsPrimitive.ResponsiveContainer>
         {/* </div> */}
@@ -147,6 +148,7 @@ const ChartTooltipContent = React.forwardRef<
       const [item] = payload;
       const key = `${labelKey || item.dataKey || item.name || "value"}`;
       const itemConfig = getPayloadConfigFromPayload(config, item, key);
+
       const value =
         !labelKey && typeof label === "string"
           ? config[label as keyof typeof config]?.label || label
@@ -241,7 +243,7 @@ const ChartTooltipContent = React.forwardRef<
                       <div className="grid gap-1.5">
                         {nestLabel ? tooltipLabel : null}
                         <span className="text-muted-foreground">
-                          {itemConfig?.label || item.name}
+                          {itemConfig?.label || item.payload.label || item.name}
                         </span>
                       </div>
                       {item.value && (
