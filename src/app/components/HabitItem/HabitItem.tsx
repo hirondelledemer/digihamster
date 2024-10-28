@@ -3,10 +3,9 @@ import useHabits from "@/app/utils/hooks/use-habits";
 import { Habit } from "@/models/habit";
 import { now } from "@/app/utils/date/date";
 import { Checkbox } from "../ui/checkbox";
-import { format } from "date-fns";
+import { format, subDays } from "date-fns";
 import { Button } from "../ui/button";
 import HabitFormModal from "../HabitFormModal";
-import { DAY } from "@/app/utils/consts/dates";
 
 export interface HabitItemProps {
   testId?: string;
@@ -21,8 +20,8 @@ const HabitItem: FC<HabitItemProps> = ({ testId, habit }): JSX.Element => {
   today.setHours(0, 0, 0, 0);
 
   const todayTimestamp = today.getTime();
-  const yesterdayTimestamp = todayTimestamp - DAY;
-  const twoDayAgoTimestamp = todayTimestamp - 2 * DAY;
+  const yesterdayTimestamp = subDays(today, 1).getTime();
+  const twoDayAgoTimestamp = subDays(today, 2).getTime();
 
   const todayHabit = habit.log.find((log) => log.at === todayTimestamp);
   const yesterdayHabit = habit.log.find((log) => log.at === yesterdayTimestamp);

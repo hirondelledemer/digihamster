@@ -27,10 +27,10 @@ export const getCommandToolTestkit = (component: HTMLElement) => ({
     fireEvent.click(screen.getByText("Create Task"));
   },
   clickGoToTasks: () => {
-    fireEvent.click(screen.getByText("Tasks"));
+    fireEvent.click(screen.getByText("/tasks"));
   },
   clickGoToHome: () => {
-    fireEvent.click(screen.getByText("Home"));
+    fireEvent.click(screen.getByText("/home"));
   },
   enterSearch: (value: string) => {
     fireEvent.change(screen.getByRole("combobox"), { target: { value } });
