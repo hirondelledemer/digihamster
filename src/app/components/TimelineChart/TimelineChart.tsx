@@ -23,7 +23,7 @@ const TimelineChart: FC<TimelineChartProps> = ({ chartConfig, chartData }) => {
   return (
     <Card className="h-full">
       <CardContent>
-        <ChartContainer config={chartConfig}>
+        <ChartContainer config={chartConfig} height={200}>
           <BarChart accessibilityLayer data={chartData}>
             <CartesianGrid vertical={false} />
             <XAxis

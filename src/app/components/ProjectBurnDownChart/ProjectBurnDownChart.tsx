@@ -72,7 +72,7 @@ const ProjectBurnDownChart: FC<ProjectBurnDownChartProps> = ({
           <CardTitle>Progress</CardTitle>
         </CardHeader>
         <CardContent>
-          <ChartContainer config={chartConfig}>
+          <ChartContainer config={chartConfig} height={200}>
             <AreaChart
               accessibilityLayer
               data={getData()}
