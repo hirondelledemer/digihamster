@@ -12,13 +12,14 @@ import {
   CollapsibleTrigger,
 } from "../ui/collapsible";
 import { cn } from "../utils";
-import { differenceInDays, lightFormat } from "date-fns";
+import { closestIndexTo, differenceInDays, lightFormat } from "date-fns";
 import { CalendarEventType } from "../CalendarEvent";
 import {
   CalendarDeadlineEntry,
   isCalendarDeadlineEntry,
   isCalendarEventEntry,
   isCalendarJournalEntry,
+  isCalendarWeatherEntry,
 } from "../CalendarEvent/CalendarEvent.types";
 import useHabits from "@/app/utils/hooks/use-habits";
 import TodayHabit from "../TodayHabit";
@@ -29,6 +30,7 @@ export const upcomingEventsTestId = "Today-upcoming-events-test-id";
 export interface TodayProps {
   testId?: string;
   events: CalendarEventType[];
+  backgroundEvents: CalendarEventType[];
   date: Date;
   localizer: {
     endOf: (date: Date, view: View) => Date;
@@ -36,7 +38,13 @@ export interface TodayProps {
   };
 }
 
-function Today({ localizer, events, date }: TodayProps) {
+function Today({
+  localizer,
+  events,
+  date,
+  backgroundEvents,
+  ...rest
+}: TodayProps) {
   const max = localizer.endOf(date, "day");
   const min = localizer.startOf(date, "day");
 
@@ -85,9 +93,32 @@ function Today({ localizer, events, date }: TodayProps) {
       );
     }
 
+    const weatherEvents = backgroundEvents.filter(isCalendarWeatherEntry);
     if (isCalendarEventEntry(event) || isCalendarDeadlineEntry(event)) {
+      // console.log(rest);
+
+      const weatherEventDates = weatherEvents.map((event) => event.start);
+
+      const closestWeatherEventIndex = closestIndexTo(
+        event.start,
+        weatherEventDates
+      );
+      console.log(
+        closestWeatherEventIndex
+          ? weatherEvents[closestWeatherEventIndex]
+          : undefined
+      );
       return (
-        <TodayEvent key={event.resource.id} testId={todayEvent} event={event} />
+        <TodayEvent
+          key={event.resource.id}
+          testId={todayEvent}
+          event={event}
+          weatherEvent={
+            closestWeatherEventIndex
+              ? weatherEvents[closestWeatherEventIndex]
+              : undefined
+          }
+        />
       );
     }
   };

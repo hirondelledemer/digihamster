@@ -8,6 +8,7 @@ import styles from "./TodayEvent.module.scss";
 import {
   CalendarDeadlineEntry,
   CalendarEventEntry,
+  CalendarWeatherEntry,
   isCalendarDeadlineEntry,
   isCalendarEventEntry,
 } from "../CalendarEvent/CalendarEvent.types";
@@ -18,17 +19,20 @@ import useEditTask from "@/app/utils/hooks/use-edit-task";
 import useProjects from "@/app/utils/hooks/use-projects";
 import { Button } from "../ui/button";
 import { ChevronRightIcon } from "lucide-react";
+import CalendarWeatherEvent from "../CalendarWeatherEvent";
 
 export interface TodayEventProps {
   testId?: string;
   showDate?: boolean;
   event: CalendarEventEntry | CalendarDeadlineEntry;
+  weatherEvent?: CalendarWeatherEntry;
 }
 
 const TodayEvent: FC<TodayEventProps> = ({
   testId,
   showDate,
   event,
+  weatherEvent,
 }): JSX.Element => {
   const { editEvent } = useEditEvent();
   const { editTask } = useEditTask();
@@ -77,9 +81,12 @@ const TodayEvent: FC<TodayEventProps> = ({
               <div>{format(event.start, "MMM d, EEEEE")}</div>
             )}
             {event.start && event.end && (
-              <div>
-                {lightFormat(event.start, "H:mm")}-
-                {lightFormat(event.end, "H:mm")}
+              <div className="flex items-center gap-1">
+                <div>
+                  {lightFormat(event.start, "H:mm")}-
+                  {lightFormat(event.end, "H:mm")}
+                </div>
+                {weatherEvent && <CalendarWeatherEvent event={weatherEvent} />}
               </div>
             )}
           </div>

@@ -11,6 +11,7 @@ export interface WeatherData {
     };
     weather: {
       main: string;
+      description: string;
     }[];
   }[];
 }
@@ -27,16 +28,18 @@ export interface CalendarJournalEntry extends Event {
 
 export interface CalendarWeatherEntry extends Event {
   title: string;
+  start: Date;
   resource: {
     id: string;
     type: "weather";
     temp: number;
-    weather: { main: string }[];
+    weather: { main: string; description: string }[];
   };
 }
 
 export interface CalendarDeadlineEntry extends Event {
   title: string;
+  start: Date;
   resource: {
     type: "deadline";
     id: string;
@@ -47,6 +50,7 @@ export interface CalendarDeadlineEntry extends Event {
 
 export interface CalendarEventEntry extends Event {
   title: string;
+  start: Date;
   resource: {
     id: string;
     completed?: boolean;

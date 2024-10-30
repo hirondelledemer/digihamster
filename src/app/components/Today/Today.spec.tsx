@@ -9,6 +9,7 @@ describe("Today", () => {
   const defaultProps: TodayProps = {
     localizer: { endOf: (date) => date, startOf: (date) => date },
     date: new Date(0),
+    backgroundEvents: [],
     events: [
       {
         start: new Date(0),

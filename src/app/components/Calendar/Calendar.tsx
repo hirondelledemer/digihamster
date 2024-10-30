@@ -256,7 +256,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
       return <CalendarEvent event={event} />;
     }
     if (isCalendarWeatherEntry(event)) {
-      return <CalendarWeatherEvent event={event} />;
+      return <CalendarWeatherEvent event={event} className="mt-1" />;
     }
   };
 
