@@ -7,6 +7,7 @@ import {
   generateListOfTasks,
   generateTask,
 } from "@/app/utils/mocks/task";
+import { now } from "@/app/utils/date/date";
 
 const meta: Meta<typeof TodayEvent> = {
   title: "Example/TodayEvent",
@@ -20,6 +21,7 @@ type Story = StoryObj<typeof TodayEvent>;
 const defaultArgs: TodayEventProps = {
   event: {
     title: "Birthday Party",
+    start: now(),
     resource: {
       id: "event1",
       completed: false,
@@ -37,6 +39,7 @@ export const Default: Story = {
 const completedArgs: TodayEventProps = {
   event: {
     title: "Birthday Party",
+    start: now(),
     resource: {
       id: "event1",
       completed: true,
@@ -59,6 +62,7 @@ const tasks = generateCustomTasksList([
 const withTasksArgs: TodayEventProps = {
   event: {
     title: "Birthday Party",
+    start: now(),
     resource: {
       id: "event1",
       completed: false,
@@ -76,6 +80,7 @@ export const WithTasks: Story = {
 const taskEventArgs: TodayEventProps = {
   event: {
     title: "Buy Candles",
+    start: now(),
     resource: {
       id: "event1",
       completed: false,

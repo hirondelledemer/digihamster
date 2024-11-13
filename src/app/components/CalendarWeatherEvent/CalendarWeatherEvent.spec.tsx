@@ -3,11 +3,13 @@ import CalendarWeatherEvent, {
   CalendarWeatherEventProps,
 } from "./CalendarWeatherEvent";
 import { getCalendarWeatherEventTestkit } from "./CalendarWeatherEvent.testkit";
+import { now } from "@/app/utils/date/date";
 
 describe("CalendarWeatherEvent", () => {
   const defaultProps: CalendarWeatherEventProps = {
     event: {
       title: "weather",
+      start: now(),
       resource: {
         type: "weather",
         id: "id",
@@ -15,6 +17,7 @@ describe("CalendarWeatherEvent", () => {
         weather: [
           {
             main: "Clear",
+            description: "",
           },
         ],
       },

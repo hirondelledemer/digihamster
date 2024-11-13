@@ -136,7 +136,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
   const tasksResolved = tasksData
     .filter((task) => !!task.deadline)
     .map<CalendarDeadlineEntry>((task) => ({
-      start: task.deadline ? new Date(task.deadline) : undefined,
+      start: task.deadline ? new Date(task.deadline) : new Date(),
       end: task.deadline ? new Date(task.deadline + HALF_HOUR) : undefined,
       title: task.title,
       allDay: false,
