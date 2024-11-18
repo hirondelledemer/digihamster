@@ -85,7 +85,7 @@ const getDriver = ({ page }: { page: Page }) => {
       login: "/login",
       profile: "/profile",
       base: "/",
-      home: "/home",
+      home: "/",
     },
   };
 };

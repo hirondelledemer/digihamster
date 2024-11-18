@@ -78,7 +78,7 @@ describe("CommandTool", () => {
 
       wrapper.clickGoToHome();
 
-      expect(pushMock).toHaveBeenCalledWith("/home");
+      expect(pushMock).toHaveBeenCalledWith("/");
     });
   });
 
