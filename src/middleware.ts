@@ -26,5 +26,15 @@ export function middleware(request: NextRequest) {
 // It specifies the paths for which this middleware should be executed.
 // In this case, it's applied to '/', '/profile', '/login', and '/signup'.
 export const config = {
-  matcher: ["/", "/profile", "/login", "/signup", "/verifyemail"],
+  matcher: [
+    "/",
+    "/profile",
+    "/login",
+    "/signup",
+    "/verifyemail",
+    "/home",
+    "/habits",
+    "/tasks",
+    "/projects",
+  ],
 };
