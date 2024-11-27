@@ -2,10 +2,6 @@
 
 import React, { FC, useState } from "react";
 
-import axios from "axios";
-import useEvents from "@/app/utils/hooks/use-events";
-import { Event as EventType } from "@/models/event";
-import { updateObjById } from "@/app/utils/common/update-array";
 import {
   ContextMenu,
   ContextMenuContent,
@@ -19,7 +15,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "../ui/sheet";
-import TaskForm from "../EventForm";
+import EventForm from "../EventForm";
 import { FormValues } from "../TaskForm/TaskForm";
 import useEditEvent from "@/app/utils/hooks/use-edit-events";
 import {
@@ -44,7 +40,7 @@ const CalendarEvent: FC<CalendarEventProps> = ({
   event,
 }): JSX.Element | null => {
   const { editTask } = useEditTask();
-  const { setData } = useEvents();
+
   const [taskFormOpen, setTaskFormOpen] = useState<boolean>(false);
   const [eventFormOpen, setEventFormOpen] = useState<boolean>(false);
   const { editEvent } = useEditEvent();
@@ -97,7 +93,7 @@ const CalendarEvent: FC<CalendarEventProps> = ({
             <SheetHeader>
               <SheetTitle>Edit Event</SheetTitle>
               <SheetDescription>
-                <TaskForm
+                <EventForm
                   testId={taskFormTestId}
                   editMode
                   onSubmit={(data: FormValues) =>

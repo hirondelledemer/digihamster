@@ -44,7 +44,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "../ui/sheet";
-import TaskForm from "../EventForm";
+import EventForm from "../EventForm";
 import { FormValues } from "../TaskForm/TaskForm";
 import { useToast } from "../ui/use-toast";
 import { Event as EventType } from "@/models/event";
@@ -381,7 +381,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
           <SheetHeader>
             <SheetTitle>Create Event</SheetTitle>
             <SheetDescription>
-              <TaskForm onSubmit={newEvent} />
+              <EventForm onSubmit={newEvent} />
             </SheetDescription>
           </SheetHeader>
         </SheetContent>
