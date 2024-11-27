@@ -1,7 +1,7 @@
 import { render, waitFor } from "@/config/utils/test-utils";
 import TaskForm, { TaskFormProps } from "./EventForm";
 import { getTaskFormTestkit } from "./EventForm.testkit";
-import { ProjectsContext } from "@/app/utils/hooks/use-projects";
+import { wrapWithProjectsProvider } from "@/app/utils/tests/wraps";
 
 describe("TaskForm", () => {
   const defaultProps: TaskFormProps = {
@@ -18,17 +18,7 @@ describe("TaskForm", () => {
 
   const renderComponent = (props = defaultProps) =>
     getTaskFormTestkit(
-      render(
-        <ProjectsContext.Provider
-          value={{
-            data: projects,
-            loading: false,
-            setData: jest.fn(),
-          }}
-        >
-          <TaskForm {...props} />
-        </ProjectsContext.Provider>
-      ).container
+      render(wrapWithProjectsProvider(<TaskForm {...props} />)).container
     );
 
   it("shows all the inputs", () => {
@@ -36,46 +26,8 @@ describe("TaskForm", () => {
     expect(wrapper.getComponent()).not.toBe(null);
     expect(wrapper.getTitleInputExists()).toBe(true);
     expect(wrapper.getDesriptionInputExists()).toBe(true);
-    expect(wrapper.getETAFieldExists()).toBe(true);
     expect(wrapper.getProjectFieldExists()).toBe(true);
     expect(wrapper.getCreateButtonExists()).toBe(true);
-    expect(wrapper.getDeadlineButtonExists()).toBe(true);
-  });
-
-  describe("showEta is false", () => {
-    const props: TaskFormProps = {
-      ...defaultProps,
-      showEta: false,
-    };
-
-    it("should show all fields exept eta", () => {
-      const wrapper = renderComponent(props);
-      expect(wrapper.getComponent()).not.toBe(null);
-      expect(wrapper.getTitleInputExists()).toBe(true);
-      expect(wrapper.getDesriptionInputExists()).toBe(true);
-      expect(wrapper.getETAFieldExists()).toBe(false);
-      expect(wrapper.getProjectFieldExists()).toBe(true);
-      expect(wrapper.getCreateButtonExists()).toBe(true);
-      expect(wrapper.getDeadlineButtonExists()).toBe(true);
-    });
-  });
-
-  describe("showDeadline is false", () => {
-    const props: TaskFormProps = {
-      ...defaultProps,
-      showDeadline: false,
-    };
-
-    it("should show all fields exept eta", () => {
-      const wrapper = renderComponent(props);
-      expect(wrapper.getComponent()).not.toBe(null);
-      expect(wrapper.getTitleInputExists()).toBe(true);
-      expect(wrapper.getDesriptionInputExists()).toBe(true);
-      expect(wrapper.getETAFieldExists()).toBe(true);
-      expect(wrapper.getProjectFieldExists()).toBe(true);
-      expect(wrapper.getCreateButtonExists()).toBe(true);
-      expect(wrapper.getDeadlineButtonExists()).toBe(false);
-    });
   });
 
   it("shows initial values", () => {
@@ -84,7 +36,6 @@ describe("TaskForm", () => {
       initialValues: {
         title: "title",
         description: "content",
-        eta: 1,
         project: "project1",
       },
     };
@@ -95,11 +46,6 @@ describe("TaskForm", () => {
       props.initialValues!.description
     );
 
-    expect(wrapper.getEtaSelectedByName("eta-0")).toBe(false);
-    expect(wrapper.getEtaSelectedByName("eta-1")).toBe(true);
-    expect(wrapper.getEtaSelectedByName("eta-2")).toBe(false);
-    expect(wrapper.getEtaSelectedByName("eta-3")).toBe(false);
-    expect(wrapper.getEtaSelectedByName("eta-4")).toBe(false);
     expect(wrapper.getProjectInputValue()).toBe(projects[0].title);
   });
 
@@ -118,24 +64,19 @@ describe("TaskForm", () => {
       initialValues: {
         title: "",
         description: "",
-        eta: 0,
         project: projects[0]._id as unknown as string,
-        deadline: null,
       },
     };
     const wrapper = renderComponent(props);
     wrapper.setTitle(newTitle);
     await wrapper.setDescription(newDescription);
-    wrapper.setEta("eta-2");
 
     wrapper.clickCreateButton();
     await waitFor(() => {
       expect(onSubmitSpy).toHaveBeenCalledWith({
         description: newDescription,
-        eta: 2,
         project: "project1",
         title: newTitle,
-        deadline: null,
       });
     });
   });
