@@ -19,19 +19,9 @@ import {
   SelectItem,
 } from "../ui/select";
 import { Button } from "../ui/button";
-import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
-import {
-  IconCalendar,
-  IconComet,
-  IconStar,
-  IconStars,
-} from "@tabler/icons-react";
+
 import useProjects from "@/app/utils/hooks/use-projects";
 import { Textarea } from "../ui/textarea";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { cn } from "../utils";
-import { format } from "date-fns";
-import { Calendar } from "../ui/calendar";
 
 export const minimalNoteTestId = "TaskForm-minimal-note-testId";
 
