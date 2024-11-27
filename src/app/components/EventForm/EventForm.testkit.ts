@@ -2,7 +2,7 @@ import { within, fireEvent } from "@testing-library/react";
 
 import userEvent from "@testing-library/user-event";
 
-export const getTaskFormTestkit = (component: HTMLElement) => ({
+export const getEventFormTestkit = (component: HTMLElement) => ({
   getComponent: () => component,
 
   getTitleInputExists: () =>

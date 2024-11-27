@@ -23,7 +23,7 @@ import { Button } from "../ui/button";
 import useProjects from "@/app/utils/hooks/use-projects";
 import { Textarea } from "../ui/textarea";
 
-export const minimalNoteTestId = "TaskForm-minimal-note-testId";
+export const minimalNoteTestId = "EventForm-minimal-note-testId";
 
 const FormSchema = z.object({
   title: z.string().min(1, { message: "This field has to be filled." }),
@@ -33,14 +33,14 @@ const FormSchema = z.object({
 
 export type FormValues = z.infer<typeof FormSchema>;
 
-export interface TaskFormProps {
+export interface EventFormProps {
   testId?: string;
   initialValues?: Partial<FormValues>;
   onSubmit(values: FormValues): void;
   editMode?: boolean;
 }
 
-const TaskForm: FC<TaskFormProps> = ({
+const EventForm: FC<EventFormProps> = ({
   testId,
   initialValues,
   onSubmit,
@@ -131,4 +131,4 @@ const TaskForm: FC<TaskFormProps> = ({
   );
 };
 
-export default TaskForm;
+export default EventForm;

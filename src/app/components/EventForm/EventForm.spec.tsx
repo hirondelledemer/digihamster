@@ -1,10 +1,10 @@
 import { render, waitFor } from "@/config/utils/test-utils";
-import TaskForm, { TaskFormProps } from "./EventForm";
-import { getTaskFormTestkit } from "./EventForm.testkit";
+import EventForm, { EventFormProps } from "./EventForm";
+import { getEventFormTestkit } from "./EventForm.testkit";
 import { wrapWithProjectsProvider } from "@/app/utils/tests/wraps";
 
-describe("TaskForm", () => {
-  const defaultProps: TaskFormProps = {
+describe("EventForm", () => {
+  const defaultProps: EventFormProps = {
     onSubmit: jest.fn(),
   };
 
@@ -17,8 +17,8 @@ describe("TaskForm", () => {
   }));
 
   const renderComponent = (props = defaultProps) =>
-    getTaskFormTestkit(
-      render(wrapWithProjectsProvider(<TaskForm {...props} />)).container
+    getEventFormTestkit(
+      render(wrapWithProjectsProvider(<EventForm {...props} />)).container
     );
 
   it("shows all the inputs", () => {
@@ -31,7 +31,7 @@ describe("TaskForm", () => {
   });
 
   it("shows initial values", () => {
-    const props: TaskFormProps = {
+    const props: EventFormProps = {
       ...defaultProps,
       initialValues: {
         title: "title",
@@ -58,7 +58,7 @@ describe("TaskForm", () => {
     const newTitle = "new title";
     const newDescription = "new desc";
 
-    const props: TaskFormProps = {
+    const props: EventFormProps = {
       ...defaultProps,
       onSubmit: onSubmitSpy,
       initialValues: {
@@ -83,7 +83,7 @@ describe("TaskForm", () => {
 
   describe("editMode", () => {
     it("should show edit mode", () => {
-      const props: TaskFormProps = {
+      const props: EventFormProps = {
         ...defaultProps,
         editMode: true,
       };
