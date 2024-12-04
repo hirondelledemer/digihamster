@@ -55,7 +55,7 @@ import {
 import CalendarWeatherEvent from "../CalendarWeatherEvent";
 import CalendarSlot from "../CalendarSlot";
 import useEditTask from "@/app/utils/hooks/use-edit-task";
-import { HALF_HOUR } from "@/app/utils/consts/dates";
+import { HOUR } from "@/app/utils/consts/dates";
 import useProjects from "@/app/utils/hooks/use-projects";
 
 import useCycle from "@/app/utils/hooks/use-cycle";
@@ -131,7 +131,9 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
     .filter((task) => !!task.deadline)
     .map<CalendarDeadlineEntry>((task) => ({
       start: task.deadline ? new Date(task.deadline) : new Date(),
-      end: task.deadline ? new Date(task.deadline + HALF_HOUR) : undefined,
+      end: task.deadline
+        ? new Date(task.deadline + (task.estimate || 0.5) * HOUR)
+        : undefined,
       title: task.title,
       allDay: false,
       resource: {
