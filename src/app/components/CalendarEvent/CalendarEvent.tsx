@@ -2,10 +2,6 @@
 
 import React, { FC, useState } from "react";
 
-import axios from "axios";
-import useEvents from "@/app/utils/hooks/use-events";
-import { Event as EventType } from "@/models/event";
-import { updateObjById } from "@/app/utils/common/update-array";
 import {
   ContextMenu,
   ContextMenuContent,
@@ -19,8 +15,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "../ui/sheet";
-import TaskForm from "../EventForm";
-import { FormValues } from "../TaskForm/TaskForm";
+import EventForm from "../EventForm";
 import useEditEvent from "@/app/utils/hooks/use-edit-events";
 import {
   CalendarEventType,
@@ -44,7 +39,7 @@ const CalendarEvent: FC<CalendarEventProps> = ({
   event,
 }): JSX.Element | null => {
   const { editTask } = useEditTask();
-  const { setData } = useEvents();
+
   const [taskFormOpen, setTaskFormOpen] = useState<boolean>(false);
   const [eventFormOpen, setEventFormOpen] = useState<boolean>(false);
   const { editEvent } = useEditEvent();
@@ -97,25 +92,23 @@ const CalendarEvent: FC<CalendarEventProps> = ({
             <SheetHeader>
               <SheetTitle>Edit Event</SheetTitle>
               <SheetDescription>
-                <TaskForm
+                <EventForm
                   testId={taskFormTestId}
                   editMode
-                  onSubmit={(data: FormValues) =>
-                    editEvent(
-                      event.resource.id,
-                      {
-                        title: data.title,
-                        description: data.description,
-                        projectId: data.project,
-                      },
-                      () => setTaskFormOpen(false)
-                    )
-                  }
-                  initialValues={{
+                  event={{
+                    _id: event.resource.id,
                     title: event.title,
-                    project: event.resource.projectId,
-                    description: event.resource.description,
+                    description: event.resource.description || "",
+                    completed: event.resource.completed || false,
+                    deleted: false,
+                    projectId: event.resource.projectId || "",
+                    allDay: event.allDay || false,
+                    startAt: event.start.valueOf(),
+                    endAt: (event.end || 0).valueOf(),
+                    tags: [],
+                    updatedAt: "",
                   }}
+                  onDone={() => setEventFormOpen(false)}
                 />
               </SheetDescription>
             </SheetHeader>

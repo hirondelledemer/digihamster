@@ -37,14 +37,7 @@ import CalendarEvent, { CalendarEventType } from "../CalendarEvent";
 import useJournalEntries from "@/app/utils/hooks/use-entry";
 import useEvents from "@/app/utils/hooks/use-events";
 import { updateObjById } from "@/app/utils/common/update-array";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from "../ui/sheet";
-import TaskForm from "../EventForm";
+
 import { FormValues } from "../TaskForm/TaskForm";
 import { useToast } from "../ui/use-toast";
 import { Event as EventType } from "@/models/event";
@@ -66,6 +59,7 @@ import { HALF_HOUR } from "@/app/utils/consts/dates";
 import useProjects from "@/app/utils/hooks/use-projects";
 
 import useCycle from "@/app/utils/hooks/use-cycle";
+import EventTaskFormModal from "../EventTaskFormModal";
 
 export const now = () => new Date();
 
@@ -373,23 +367,19 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
 
   return (
     <>
-      <Sheet open={!!eventInCreationData}>
-        <SheetContent
-          side="left"
-          onCloseClick={() => setEventInCreationData(null)}
-        >
-          <SheetHeader>
-            <SheetTitle>Create Event</SheetTitle>
-            <SheetDescription>
-              <TaskForm
-                onSubmit={newEvent}
-                showEta={false}
-                showDeadline={false}
-              />
-            </SheetDescription>
-          </SheetHeader>
-        </SheetContent>
-      </Sheet>
+      <EventTaskFormModal
+        open={!!eventInCreationData}
+        onClose={() => setEventInCreationData(null)}
+        onDone={() => setEventInCreationData(null)}
+        initialValues={{
+          startAt: eventInCreationData
+            ? new Date(eventInCreationData!.start).getTime()
+            : 0,
+          endAt: eventInCreationData
+            ? new Date(eventInCreationData!.end).getTime()
+            : 0,
+        }}
+      />
       <DnDropCalendar
         selectable
         localizer={localizer}

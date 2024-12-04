@@ -5,11 +5,14 @@ import { getCalendarEventTestkit } from "./CalendarEvent.testkit";
 import mockAxios from "jest-mock-axios";
 import { generateListOfTasks, generateTask } from "@/app/utils/mocks/task";
 import { CalendarEventEntry } from "./CalendarEvent.types";
+import { HOUR } from "@/app/utils/consts/dates";
 
 describe("CalendarEvent", () => {
   const defaultProps: CalendarEventProps = {
     event: {
       title: "Event",
+      start: new Date(0),
+      end: new Date(HOUR),
       resource: {
         completed: false,
         id: "event1",
@@ -67,6 +70,8 @@ describe("CalendarEvent", () => {
     const props: CalendarEventProps = {
       event: {
         title: "Event",
+        start: new Date(0),
+        end: new Date(HOUR),
         resource: {
           completed: true,
           id: "event1",
@@ -86,6 +91,8 @@ describe("CalendarEvent", () => {
     const props: CalendarEventProps = {
       event: {
         title: "Event",
+        start: new Date(0),
+        end: new Date(HOUR),
         resource: {
           completed: false,
           id: "event1",

@@ -1,6 +1,6 @@
 import { connect } from "@/config/database/connection";
 import { getDataFromToken } from "@/app/helpers/getDataFromToken";
-import Project, { IProject } from "@/models/project";
+import Project from "@/models/project";
 import { NextRequest, NextResponse } from "next/server";
 import User from "@/models/user";
 

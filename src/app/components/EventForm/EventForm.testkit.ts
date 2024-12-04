@@ -1,8 +1,8 @@
 import { within, fireEvent } from "@testing-library/react";
 
-import userEvent, { UserEvent } from "@testing-library/user-event";
+import userEvent from "@testing-library/user-event";
 
-export const getTaskFormTestkit = (component: HTMLElement) => ({
+export const getEventFormTestkit = (component: HTMLElement) => ({
   getComponent: () => component,
 
   getTitleInputExists: () =>
@@ -14,17 +14,6 @@ export const getTaskFormTestkit = (component: HTMLElement) => ({
   setTitle: (value: string) => {
     const input = within(component).getByRole("textbox", { name: /title/i });
     fireEvent.change(input, { target: { value } });
-  },
-
-  getETAFieldExists: () =>
-    within(component).queryAllByRole("group").length === 1,
-  getEtaSelectedByName: (name: string) =>
-    within(component)
-      .getByRole("radio", { name })
-      .getAttribute("data-state") === "on",
-  setEta: (name: string) => {
-    const input = within(component).getByRole("radio", { name });
-    fireEvent.click(input);
   },
 
   getProjectFieldExists: () =>

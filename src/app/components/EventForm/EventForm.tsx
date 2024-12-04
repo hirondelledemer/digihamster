@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, useCallback } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -19,64 +19,140 @@ import {
   SelectItem,
 } from "../ui/select";
 import { Button } from "../ui/button";
-import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
-import {
-  IconCalendar,
-  IconComet,
-  IconStar,
-  IconStars,
-} from "@tabler/icons-react";
+import { Event } from "@/models/event";
+
 import useProjects from "@/app/utils/hooks/use-projects";
 import { Textarea } from "../ui/textarea";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { cn } from "../utils";
-import { format } from "date-fns";
-import { Calendar } from "../ui/calendar";
+import useEvents from "@/app/utils/hooks/use-events";
+import axios from "axios";
+import { updateObjById } from "@/app/utils/common/update-array";
+import { useToast } from "../ui/use-toast";
+import useEditEvent from "@/app/utils/hooks/use-edit-events";
 
-export const minimalNoteTestId = "TaskForm-minimal-note-testId";
+export const minimalNoteTestId = "EventForm-minimal-note-testId";
 
 const FormSchema = z.object({
   title: z.string().min(1, { message: "This field has to be filled." }),
   description: z.string(),
-  eta: z.number(),
-  deadline: z.union([z.number(), z.null(), z.undefined()]),
   project: z.string().min(1, { message: "This field has to be filled." }),
+  startAt: z.number(),
+  endAt: z.number(),
+  allDay: z.boolean(),
 });
 
 export type FormValues = z.infer<typeof FormSchema>;
 
-export interface TaskFormProps {
+interface CommonProps {
   testId?: string;
-  initialValues?: Partial<FormValues>;
-  onSubmit(values: FormValues): void;
-  showEta?: boolean;
-  showDeadline?: boolean;
-  editMode?: boolean;
+  onDone(): void;
 }
 
-const TaskForm: FC<TaskFormProps> = ({
+export interface EventFormRegularProps extends CommonProps {
+  editMode?: undefined | false;
+  initialValues?: Partial<FormValues>;
+}
+export interface EventFormEditModeProps extends CommonProps {
+  event: Event;
+  editMode: true;
+}
+
+export type EventFormProps = EventFormRegularProps | EventFormEditModeProps;
+
+const EventForm: FC<EventFormProps> = ({
   testId,
-  initialValues,
-  onSubmit,
-  showEta = true,
-  showDeadline = true,
-  editMode,
+  onDone,
+  ...restProps
 }): JSX.Element => {
   const { data: projects, defaultProject } = useProjects();
+  const { data: eventsData, setData: setEventsData } = useEvents();
+  const { editEvent } = useEditEvent();
+  const { toast } = useToast();
+
+  const getInitialValues = useCallback(() => {
+    if (restProps.editMode) {
+      return {
+        title: restProps.event.title,
+        description: restProps.event.description || "",
+        project: restProps.event.projectId || defaultProject?._id,
+        allDay: restProps.event.allDay,
+        startAt: restProps.event.startAt,
+        endAt: restProps.event.endAt,
+      };
+    }
+
+    return restProps.initialValues;
+  }, [defaultProject, restProps]);
+
   const form = useForm<FormValues>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       title: "",
       description: "",
-      eta: 0,
       project: defaultProject?._id,
-      deadline: null,
-      ...initialValues,
+      allDay: false,
+      ...getInitialValues(),
     },
   });
 
-  const handleSubmit = (values: any) => {
-    onSubmit(values);
+  const handleSubmit = async (data: FormValues) => {
+    if (restProps.editMode) {
+      editEvent(
+        restProps.event._id,
+        {
+          title: data.title,
+          description: data.description,
+          projectId: data.project,
+        },
+        onDone
+      );
+      return;
+    }
+
+    type FieldsRequired =
+      | "title"
+      | "description"
+      | "projectId"
+      | "allDay"
+      | "startAt"
+      | "endAt";
+
+    const eventData: Pick<Event, FieldsRequired> = {
+      title: data.title,
+      description: data.description,
+      projectId: data.project,
+      allDay: data.allDay,
+      startAt: data.startAt,
+      endAt: data.endAt,
+    };
+    const tempId = "temp-id";
+
+    const tempEvent: Event = {
+      _id: tempId,
+      completed: false,
+      deleted: false,
+      createdAt: "",
+      updatedAt: "",
+      tags: [],
+      ...eventData,
+    };
+    setEventsData((e) => [...e, tempEvent]);
+
+    try {
+      const response = await axios.post<Event>("/api/events", eventData);
+      setEventsData((e) => updateObjById<Event>(e, tempId, response.data));
+      toast({
+        title: "Success",
+        description: "Event has been created",
+      });
+    } catch (e) {
+      toast({
+        title: "Error",
+        description: JSON.stringify(e),
+        variant: "destructive",
+      });
+    } finally {
+      onDone();
+    }
   };
 
   return (
@@ -90,53 +166,12 @@ const TaskForm: FC<TaskFormProps> = ({
               <FormItem>
                 <FormLabel>Title</FormLabel>
                 <FormControl>
-                  <Input placeholder="Title" {...field} />
+                  <Input autoFocus placeholder="Title" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-          {showEta && (
-            <FormField
-              control={form.control}
-              name="eta"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>ETA</FormLabel>
-                  <FormControl>
-                    <ToggleGroup
-                      type="single"
-                      className="justify-start"
-                      value={field.value.toString()}
-                      onValueChange={(value) => {
-                        field.onChange(Number(value));
-                      }}
-                    >
-                      <ToggleGroupItem value="0" aria-label="eta-0">
-                        <IconComet className="h-4 w-4" color="#65a30d" />
-                      </ToggleGroupItem>
-                      <ToggleGroupItem value="1" aria-label="eta-1">
-                        <IconStar className="h-4 w-4" color="#0284c7" />
-                      </ToggleGroupItem>
-                      <ToggleGroupItem value="2" aria-label="eta-2">
-                        <IconStar className="h-4 w-4" color="#0284c7" />
-                        <IconStar className="h-4 w-4" color="#0284c7" />
-                      </ToggleGroupItem>
-                      <ToggleGroupItem value="3" aria-label="eta-3">
-                        <IconStar className="h-4 w-4" color="#0284c7" />
-                        <IconStar className="h-4 w-4" color="#0284c7" />
-                        <IconStar className="h-4 w-4" color="#0284c7" />
-                      </ToggleGroupItem>
-                      <ToggleGroupItem value="4" aria-label="eta-4">
-                        <IconStars className="h-4 w-4" color="#e11d48" />
-                      </ToggleGroupItem>
-                    </ToggleGroup>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          )}
           {/* todo: make it with filter */}
           <FormField
             control={form.control}
@@ -183,55 +218,13 @@ const TaskForm: FC<TaskFormProps> = ({
               </FormItem>
             )}
           />
-          {showDeadline && (
-            <FormField
-              control={form.control}
-              name="deadline"
-              render={({ field }) => (
-                <FormItem className="flex flex-col">
-                  <FormLabel>Deadline</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant={"outline"}
-                          className={cn(
-                            "pl-3 text-left font-normal",
-                            !field.value && "text-muted-foreground"
-                          )}
-                        >
-                          {field.value ? (
-                            format(field.value, "yyyy-MM-dd")
-                          ) : (
-                            <span>Pick a date</span>
-                          )}
-                          <IconCalendar className="ml-auto h-4 w-4 opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={
-                          field.value ? new Date(field.value) : undefined
-                        }
-                        onSelect={(date) => {
-                          console.log("aaa", date);
-                          field.onChange(date ? date.getTime() : undefined);
-                        }}
-                      />
-                    </PopoverContent>
-                  </Popover>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          )}
-          <Button type="submit">{editMode ? "Save" : "Create"}</Button>
+          <Button type="submit">
+            {restProps.editMode ? "Save" : "Create"}
+          </Button>
         </form>
       </Form>
     </div>
   );
 };
 
-export default TaskForm;
+export default EventForm;
