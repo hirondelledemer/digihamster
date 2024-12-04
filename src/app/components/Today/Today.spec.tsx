@@ -76,56 +76,5 @@ describe("Today", () => {
         wrapper.getEventAt(2).getTitle(defaultProps.events[2].title as string)
       ).toBeInTheDocument();
     });
-
-    it('should not show "upcoming events" button', () => {
-      const wrapper = renderComponent();
-      expect(wrapper.getUpcomingEventsBtn()).not.toBeInTheDocument();
-    });
-  });
-
-  describe("there are future tasks", () => {
-    const props: TodayProps = {
-      ...defaultProps,
-      events: [
-        ...defaultProps.events,
-        {
-          start: new Date(DAY + 20000),
-          end: new Date(DAY + 30000),
-          resource: {
-            type: "event",
-            id: "event4",
-            completed: false,
-            description: "",
-            projectId: "project1",
-            tasks: [],
-          },
-          title: "Event 4",
-        },
-        {
-          start: new Date(6 * DAY + 20000),
-          end: new Date(6 * DAY + 30000),
-          resource: {
-            type: "event",
-            id: "event5",
-            completed: false,
-            description: "",
-            projectId: "project1",
-            tasks: [],
-          },
-          title: "Event 5",
-        },
-      ],
-    };
-
-    it('should show "Upcoming Tasks" button', () => {
-      const wrapper = renderComponent(props);
-      expect(wrapper.getUpcomingEventsBtn()).toBeInTheDocument();
-    });
-
-    it("should render rest tasks on button click", async () => {
-      const wrapper = renderComponent(props);
-      wrapper.clickUpcomingBtn();
-      expect(wrapper.getEventCount()).toBe(5);
-    });
   });
 });

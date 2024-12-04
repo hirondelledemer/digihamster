@@ -26,7 +26,7 @@ import TodayHabit from "../TodayHabit";
 import { Habit } from "@/models/habit";
 
 export const todayEvent = "Today-today-event-test-id";
-export const upcomingEventsTestId = "Today-upcoming-events-test-id";
+
 export interface TodayProps {
   testId?: string;
   events: CalendarEventType[];
@@ -38,13 +38,7 @@ export interface TodayProps {
   };
 }
 
-function Today({
-  localizer,
-  events,
-  date,
-  backgroundEvents,
-  ...rest
-}: TodayProps) {
+function Today({ localizer, events, date, backgroundEvents }: TodayProps) {
   const max = localizer.endOf(date, "day");
   const min = localizer.startOf(date, "day");
 
@@ -52,10 +46,6 @@ function Today({
 
   const sortByTime = (event1: CalendarEventType, event2: CalendarEventType) =>
     (event1.start?.getTime() || 0) - (event2.start?.getTime() || 0);
-
-  const upcomingEvents = events.filter((event: CalendarEventType) =>
-    event.start ? dates.gt(event.start, max, "day") : false
-  );
 
   const allDayEvents = events.filter((event: CalendarEventType) =>
     event.allDay && event.start
@@ -95,19 +85,13 @@ function Today({
 
     const weatherEvents = backgroundEvents.filter(isCalendarWeatherEntry);
     if (isCalendarEventEntry(event) || isCalendarDeadlineEntry(event)) {
-      // console.log(rest);
-
       const weatherEventDates = weatherEvents.map((event) => event.start);
 
       const closestWeatherEventIndex = closestIndexTo(
         event.start,
         weatherEventDates
       );
-      console.log(
-        closestWeatherEventIndex
-          ? weatherEvents[closestWeatherEventIndex]
-          : undefined
-      );
+
       return (
         <TodayEvent
           key={event.resource.id}
@@ -167,7 +151,7 @@ function Today({
                 <IconChevronDown />
               </div>
             </CollapsibleTrigger>
-            <CollapsibleContent data-testid={upcomingEventsTestId}>
+            <CollapsibleContent>
               {readyHabits.map((habit) => (
                 <TodayHabit key={habit._id} habit={habit} date={min} />
               ))}
@@ -183,33 +167,10 @@ function Today({
                 <IconChevronDown />
               </div>
             </CollapsibleTrigger>
-            <CollapsibleContent data-testid={upcomingEventsTestId}>
+            <CollapsibleContent>
               {restHabits.map((habit) => (
                 <TodayHabit key={habit._id} habit={habit} date={min} />
               ))}
-            </CollapsibleContent>
-          </Collapsible>
-        )}
-
-        {!!upcomingEvents.length && (
-          <Collapsible>
-            <CollapsibleTrigger>
-              <div className="flex mt-6">
-                Upcoming Events
-                <IconChevronDown />
-              </div>
-            </CollapsibleTrigger>
-            <CollapsibleContent data-testid={upcomingEventsTestId}>
-              {upcomingEvents
-                .sort(sortByTime)
-                .map((event: CalendarEventType) => (
-                  <TodayEvent
-                    key={event.resource.id}
-                    testId={todayEvent}
-                    showDate
-                    event={event as CalendarDeadlineEntry}
-                  />
-                ))}
             </CollapsibleContent>
           </Collapsible>
         )}
