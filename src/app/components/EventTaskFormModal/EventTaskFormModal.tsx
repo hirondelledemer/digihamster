@@ -4,37 +4,49 @@ import TaskForm from "../TaskForm";
 import EventForm from "../EventForm";
 import { Switch } from "../ui/switch";
 import { Label } from "../ui/label";
-import { FormValues } from "../EventForm/EventForm";
-import { FormValues as TaskFormValues } from "../TaskForm/TaskForm";
 
 export interface EventTaskFormModalProps {
   testId?: string;
   open: boolean;
   onClose(): void;
-  onSubmit(values: FormValues): void;
-  initialValues: TaskFormValues;
+  onDone(): void;
+  initialValues: {
+    startAt: number;
+    endAt: number;
+  };
 }
 
 const EventTaskFormModal: FC<EventTaskFormModalProps> = ({
   testId,
   open,
   onClose,
-  onSubmit,
+  onDone,
   initialValues,
 }): JSX.Element => {
   const [formMode, setFormMode] = useState<"event" | "task">("event");
+
+  const handleOnClose = () => {
+    setFormMode("event");
+    onClose();
+  };
+  const handleOnDone = () => {
+    setFormMode("event");
+    onDone();
+  };
 
   return (
     <div data-testid={testId}>
       <Sheet open={open}>
         <SheetContent
           side="left"
-          onCloseClick={onClose}
-          onEscapeKeyDown={onClose}
+          onCloseClick={handleOnClose}
+          onEscapeKeyDown={handleOnClose}
           aria-describedby="Task Modal"
         >
           <SheetHeader>
-            <SheetTitle>Create Task</SheetTitle>
+            <SheetTitle>
+              {formMode === "event" ? "Create event" : "Create Task"}
+            </SheetTitle>
           </SheetHeader>
           <Label>Create as task</Label>
           <Switch
@@ -44,11 +56,26 @@ const EventTaskFormModal: FC<EventTaskFormModalProps> = ({
           {formMode === "task" ? (
             <TaskForm
               editMode={false}
-              onDone={onClose}
-              initialValues={initialValues}
+              onDone={handleOnDone}
+              initialValues={{
+                deadline: initialValues.startAt,
+                title: "",
+                description: "",
+                tags: [],
+                eta: 0.5,
+              }}
             />
           ) : (
-            <EventForm onSubmit={onSubmit} />
+            <EventForm
+              editMode={false}
+              onDone={handleOnDone}
+              initialValues={{
+                startAt: initialValues.startAt,
+                endAt: initialValues.endAt,
+                title: "",
+                description: "",
+              }}
+            />
           )}
         </SheetContent>
       </Sheet>

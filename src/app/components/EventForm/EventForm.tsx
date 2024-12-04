@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, useCallback } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -19,9 +19,15 @@ import {
   SelectItem,
 } from "../ui/select";
 import { Button } from "../ui/button";
+import { Event } from "@/models/event";
 
 import useProjects from "@/app/utils/hooks/use-projects";
 import { Textarea } from "../ui/textarea";
+import useEvents from "@/app/utils/hooks/use-events";
+import axios from "axios";
+import { updateObjById } from "@/app/utils/common/update-array";
+import { useToast } from "../ui/use-toast";
+import useEditEvent from "@/app/utils/hooks/use-edit-events";
 
 export const minimalNoteTestId = "EventForm-minimal-note-testId";
 
@@ -29,37 +35,127 @@ const FormSchema = z.object({
   title: z.string().min(1, { message: "This field has to be filled." }),
   description: z.string(),
   project: z.string().min(1, { message: "This field has to be filled." }),
+  startAt: z.number(),
+  endAt: z.number(),
+  allDay: z.boolean(),
 });
 
 export type FormValues = z.infer<typeof FormSchema>;
 
-export interface EventFormProps {
+interface CommonProps {
   testId?: string;
-  initialValues?: Partial<FormValues>;
-  onSubmit(values: FormValues): void;
-  editMode?: boolean;
+  onDone(): void;
 }
+
+export interface EventFormRegularProps extends CommonProps {
+  editMode?: undefined | false;
+  initialValues?: Partial<FormValues>;
+}
+export interface EventFormEditModeProps extends CommonProps {
+  event: Event;
+  editMode: true;
+}
+
+export type EventFormProps = EventFormRegularProps | EventFormEditModeProps;
 
 const EventForm: FC<EventFormProps> = ({
   testId,
-  initialValues,
-  onSubmit,
-  editMode,
+  onDone,
+  ...restProps
 }): JSX.Element => {
   const { data: projects, defaultProject } = useProjects();
+  const { data: eventsData, setData: setEventsData } = useEvents();
+  const { editEvent } = useEditEvent();
+  const { toast } = useToast();
+
+  const getInitialValues = useCallback(() => {
+    if (restProps.editMode) {
+      return {
+        title: restProps.event.title,
+        description: restProps.event.description || "",
+        project: restProps.event.projectId || defaultProject?._id,
+        allDay: restProps.event.allDay,
+        startAt: restProps.event.startAt,
+        endAt: restProps.event.endAt,
+      };
+    }
+
+    return restProps.initialValues;
+  }, [defaultProject, restProps]);
+
   const form = useForm<FormValues>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       title: "",
       description: "",
       project: defaultProject?._id,
-      ...initialValues,
+      allDay: false,
+      ...getInitialValues(),
     },
   });
 
-  const handleSubmit = (values: any) => {
-    onSubmit(values);
+  const handleSubmit = async (data: FormValues) => {
+    if (restProps.editMode) {
+      editEvent(
+        restProps.event._id,
+        {
+          title: data.title,
+          description: data.description,
+          projectId: data.project,
+        },
+        onDone
+      );
+      return;
+    }
+
+    type FieldsRequired =
+      | "title"
+      | "description"
+      | "projectId"
+      | "allDay"
+      | "startAt"
+      | "endAt";
+
+    const eventData: Pick<Event, FieldsRequired> = {
+      title: data.title,
+      description: data.description,
+      projectId: data.project,
+      allDay: data.allDay,
+      startAt: data.startAt,
+      endAt: data.endAt,
+    };
+    const tempId = "temp-id";
+
+    const tempEvent: Event = {
+      _id: tempId,
+      completed: false,
+      deleted: false,
+      createdAt: "",
+      updatedAt: "",
+      tags: [],
+      ...eventData,
+    };
+    setEventsData((e) => [...e, tempEvent]);
+
+    try {
+      const response = await axios.post<Event>("/api/events", eventData);
+      setEventsData((e) => updateObjById<Event>(e, tempId, response.data));
+      toast({
+        title: "Success",
+        description: "Event has been created",
+      });
+    } catch (e) {
+      toast({
+        title: "Error",
+        description: JSON.stringify(e),
+        variant: "destructive",
+      });
+    } finally {
+      onDone();
+    }
   };
+
+  console.log(form.formState.errors);
 
   return (
     <div data-testid={testId}>
@@ -124,7 +220,9 @@ const EventForm: FC<EventFormProps> = ({
               </FormItem>
             )}
           />
-          <Button type="submit">{editMode ? "Save" : "Create"}</Button>
+          <Button type="submit">
+            {restProps.editMode ? "Save" : "Create"}
+          </Button>
         </form>
       </Form>
     </div>

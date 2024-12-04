@@ -370,16 +370,14 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
       <EventTaskFormModal
         open={!!eventInCreationData}
         onClose={() => setEventInCreationData(null)}
-        onSubmit={newEvent}
+        onDone={() => setEventInCreationData(null)}
         initialValues={{
-          deadline: eventInCreationData
+          startAt: eventInCreationData
             ? new Date(eventInCreationData!.start).getTime()
-            : null,
-          title: "",
-          description: "",
-          tags: [],
-          eta: 0.5,
-          project: "",
+            : 0,
+          endAt: eventInCreationData
+            ? new Date(eventInCreationData!.start).getTime()
+            : 0,
         }}
       />
       <DnDropCalendar

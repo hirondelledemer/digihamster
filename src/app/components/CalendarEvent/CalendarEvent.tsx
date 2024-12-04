@@ -16,7 +16,6 @@ import {
   SheetTitle,
 } from "../ui/sheet";
 import EventForm from "../EventForm";
-import { FormValues } from "../TaskForm/TaskForm";
 import useEditEvent from "@/app/utils/hooks/use-edit-events";
 import {
   CalendarEventType,
@@ -96,22 +95,20 @@ const CalendarEvent: FC<CalendarEventProps> = ({
                 <EventForm
                   testId={taskFormTestId}
                   editMode
-                  onSubmit={(data: FormValues) =>
-                    editEvent(
-                      event.resource.id,
-                      {
-                        title: data.title,
-                        description: data.description,
-                        projectId: data.project,
-                      },
-                      () => setTaskFormOpen(false)
-                    )
-                  }
-                  initialValues={{
+                  event={{
+                    _id: event.resource.id,
                     title: event.title,
-                    project: event.resource.projectId,
-                    description: event.resource.description,
+                    description: event.resource.description || "",
+                    completed: event.resource.completed || false,
+                    deleted: false,
+                    projectId: event.resource.projectId || "",
+                    allDay: event.allDay || false,
+                    startAt: event.start.valueOf(),
+                    endAt: (event.end || 0).valueOf(),
+                    tags: [],
+                    updatedAt: "",
                   }}
+                  onDone={() => setEventFormOpen(false)}
                 />
               </SheetDescription>
             </SheetHeader>

@@ -2,10 +2,18 @@ import { render, waitFor } from "@/config/utils/test-utils";
 import EventForm, { EventFormProps } from "./EventForm";
 import { getEventFormTestkit } from "./EventForm.testkit";
 import { wrapWithProjectsProvider } from "@/app/utils/tests/wraps";
+import mockAxios from "jest-mock-axios";
+import { HOUR } from "@/app/utils/consts/dates";
+import { generateEvent } from "@/app/utils/mocks/event";
 
 describe("EventForm", () => {
+  afterEach(() => {
+    mockAxios.reset();
+  });
+
   const defaultProps: EventFormProps = {
-    onSubmit: jest.fn(),
+    editMode: false,
+    onDone: jest.fn(),
   };
 
   const projects = [1, 2].map((n) => ({
@@ -16,7 +24,7 @@ describe("EventForm", () => {
     order: 0,
   }));
 
-  const renderComponent = (props = defaultProps) =>
+  const renderComponent = (props: EventFormProps = defaultProps) =>
     getEventFormTestkit(
       render(wrapWithProjectsProvider(<EventForm {...props} />)).container
     );
@@ -54,17 +62,18 @@ describe("EventForm", () => {
   // todo: test this case in e2e
 
   it("submits form", async () => {
-    const onSubmitSpy = jest.fn();
     const newTitle = "new title";
     const newDescription = "new desc";
 
     const props: EventFormProps = {
       ...defaultProps,
-      onSubmit: onSubmitSpy,
+
       initialValues: {
         title: "",
         description: "",
         project: projects[0]._id as unknown as string,
+        startAt: 0,
+        endAt: HOUR,
       },
     };
     const wrapper = renderComponent(props);
@@ -73,19 +82,24 @@ describe("EventForm", () => {
 
     wrapper.clickCreateButton();
     await waitFor(() => {
-      expect(onSubmitSpy).toHaveBeenCalledWith({
+      expect(mockAxios.post).toHaveBeenCalledWith("/api/events", {
         description: newDescription,
-        project: "project1",
+        projectId: "project1",
         title: newTitle,
+        allDay: false,
+        endAt: HOUR,
+        startAt: 0,
       });
     });
   });
 
   describe("editMode", () => {
     it("should show edit mode", () => {
+      const eventToEdit = generateEvent();
       const props: EventFormProps = {
-        ...defaultProps,
         editMode: true,
+        onDone: jest.fn(),
+        event: eventToEdit,
       };
       const wrapper = renderComponent(props);
       expect(wrapper.getCreateButtonExists()).toBe(false);
