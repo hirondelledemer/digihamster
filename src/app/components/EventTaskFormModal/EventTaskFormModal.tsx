@@ -4,6 +4,7 @@ import TaskForm from "../TaskForm";
 import EventForm from "../EventForm";
 import { Switch } from "../ui/switch";
 import { Label } from "../ui/label";
+import { FormMode } from "./types";
 
 export interface EventTaskFormModalProps {
   testId?: string;
@@ -23,14 +24,15 @@ const EventTaskFormModal: FC<EventTaskFormModalProps> = ({
   onDone,
   initialValues,
 }): JSX.Element => {
-  const [formMode, setFormMode] = useState<"event" | "task">("event");
+  const [formMode, setFormMode] = useState<FormMode>(FormMode.Event);
 
   const handleOnClose = () => {
-    setFormMode("event");
+    setFormMode(FormMode.Event);
     onClose();
   };
+
   const handleOnDone = () => {
-    setFormMode("event");
+    setFormMode(FormMode.Event);
     onDone();
   };
 
@@ -48,11 +50,15 @@ const EventTaskFormModal: FC<EventTaskFormModalProps> = ({
               {formMode === "event" ? "Create event" : "Create Task"}
             </SheetTitle>
           </SheetHeader>
-          <Label>Create as task</Label>
-          <Switch
-            checked={formMode === "task"}
-            onCheckedChange={(val) => setFormMode(val ? "task" : "event")}
-          />
+          <div className="flex items-center my-2 gap-2">
+            <Label>Task?</Label>
+            <Switch
+              checked={formMode === "task"}
+              onCheckedChange={(val) =>
+                setFormMode(val ? FormMode.Task : FormMode.Event)
+              }
+            />
+          </div>
           {formMode === "task" ? (
             <TaskForm
               editMode={false}
