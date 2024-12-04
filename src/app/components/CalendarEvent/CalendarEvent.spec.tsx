@@ -7,7 +7,7 @@ import { generateListOfTasks, generateTask } from "@/app/utils/mocks/task";
 import { CalendarEventEntry } from "./CalendarEvent.types";
 import { HOUR } from "@/app/utils/consts/dates";
 
-describe.only("CalendarEvent", () => {
+describe("CalendarEvent", () => {
   const defaultProps: CalendarEventProps = {
     event: {
       title: "Event",

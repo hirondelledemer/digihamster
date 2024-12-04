@@ -155,8 +155,6 @@ const EventForm: FC<EventFormProps> = ({
     }
   };
 
-  console.log(form.formState.errors);
-
   return (
     <div data-testid={testId}>
       <Form {...form}>
@@ -168,7 +166,7 @@ const EventForm: FC<EventFormProps> = ({
               <FormItem>
                 <FormLabel>Title</FormLabel>
                 <FormControl>
-                  <Input placeholder="Title" {...field} />
+                  <Input autoFocus placeholder="Title" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

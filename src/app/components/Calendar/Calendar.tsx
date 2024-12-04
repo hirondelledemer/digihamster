@@ -376,7 +376,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
             ? new Date(eventInCreationData!.start).getTime()
             : 0,
           endAt: eventInCreationData
-            ? new Date(eventInCreationData!.start).getTime()
+            ? new Date(eventInCreationData!.end).getTime()
             : 0,
         }}
       />
