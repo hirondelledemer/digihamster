@@ -87,6 +87,7 @@ const config = {
         "accordion-up": "accordion-up 0.2s ease-out",
         wiggle: "wiggle 0.1s infinite",
         wiggle2: "wiggle2 0.1s infinite",
+        "spin-slow": "spin 3s linear infinite",
       },
     },
   },

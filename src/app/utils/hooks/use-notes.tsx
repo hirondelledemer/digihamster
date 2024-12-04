@@ -1,22 +1,20 @@
 "use client";
 
-import {
-  Dispatch,
-  SetStateAction,
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
-import { Note } from "@/models/note";
+import { INote, Note } from "@/models/note";
+import { useToast } from "@/app/components/ui/use-toast";
+import { updateObjById } from "../common/update-array";
 
+type UpdateNoteValues = Pick<Note, "title" | "note" | "tags">;
 export const NotesContext = createContext<{
   data: Note[];
-  setData: Dispatch<SetStateAction<Note[]>>;
+  loading: boolean;
+  updateNote(noteId: string, data: UpdateNoteValues): void;
 }>({
   data: [],
-  setData: () => {},
+  updateNote: () => {},
+  loading: false,
 });
 
 const { Provider } = NotesContext;
@@ -26,6 +24,8 @@ export const NotesContextProvider = ({ children }: any) => {
   // todo: look into utilising this
   const [error, setError] = useState<unknown>(null);
   const [loading, setLoading] = useState(false);
+
+  const { toast } = useToast();
 
   useEffect(() => {
     (async function () {
@@ -43,11 +43,40 @@ export const NotesContextProvider = ({ children }: any) => {
     })();
   }, []);
 
-  return <Provider value={{ data, setData }}>{children}</Provider>;
+  const updateNote = async (noteId: string, data: UpdateNoteValues) => {
+    try {
+      setLoading(true);
+      const updatedNote = await axios.patch<INote, INote>("/api/notes", {
+        id: noteId,
+        title: data.title,
+        note: data.note,
+        tags: data.tags,
+      });
+      toast({
+        title: "Success",
+        description: "Note has been updated",
+      });
+      setData((n) =>
+        updateObjById<Note>(n, noteId, {
+          ...updatedNote,
+        })
+      );
+    } catch (e) {
+      toast({
+        title: "Error",
+        description: JSON.stringify(e),
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return <Provider value={{ data, updateNote, loading }}>{children}</Provider>;
 };
 
 export default function useNotes() {
-  const { data, setData } = useContext(NotesContext);
+  const { data, updateNote, loading } = useContext(NotesContext);
 
-  return { data, setData };
+  return { data, updateNote, loading };
 }

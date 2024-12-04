@@ -2,12 +2,11 @@
 
 import React, { FC, ReactNode } from "react";
 import { useRte } from "@/app/utils/rte/rte-hook";
-import axios from "axios";
-import { INote, Note } from "@/models/note";
-import { useToast } from "../ui/use-toast";
+import { Note } from "@/models/note";
 import useNotes from "@/app/utils/hooks/use-notes";
 import RichTextEditor from "../RichTextEditor";
-import { updateObjById } from "@/app/utils/common/update-array";
+import { IconLoader } from "@tabler/icons-react";
+import { cn } from "../utils";
 
 export interface PinnedNoteProps {
   testId?: string;
@@ -20,8 +19,7 @@ const PinnedNote: FC<PinnedNoteProps> = ({ testId, note }): ReactNode => {
     editable: true,
   });
 
-  const { toast } = useToast();
-  const { setData } = useNotes();
+  const { loading, updateNote } = useNotes();
 
   if (!editor) {
     return null;
@@ -29,30 +27,11 @@ const PinnedNote: FC<PinnedNoteProps> = ({ testId, note }): ReactNode => {
 
   const handleSubmit = async () => {
     const { title, content, tags } = getRteValue();
-
-    try {
-      const updatedNote = await axios.patch<INote, INote>("/api/notes", {
-        id: note._id,
-        title: title,
-        note: content,
-        tags: tags,
-      });
-      toast({
-        title: "Success",
-        description: "Note has been updated",
-      });
-      setData((n) =>
-        updateObjById<Note>(n, note._id, {
-          ...updatedNote,
-        })
-      );
-    } catch (e) {
-      toast({
-        title: "Error",
-        description: JSON.stringify(e),
-        variant: "destructive",
-      });
-    }
+    updateNote(note._id, {
+      title,
+      note: content,
+      tags,
+    });
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
@@ -62,8 +41,17 @@ const PinnedNote: FC<PinnedNoteProps> = ({ testId, note }): ReactNode => {
   };
 
   return (
-    <div data-testid={testId}>
-      <RichTextEditor editor={editor} onKeyDown={handleKeyDown} />
+    <div data-testid={testId} className="relative">
+      {loading && (
+        <div className="absolute top-0 bottom-0 left-0 right-0 z-10 flex items-center justify-center">
+          <IconLoader className="animate-spin-slow" />
+        </div>
+      )}
+      <div className={cn(loading && "border border-primary rounded-md")}>
+        <div className={cn(loading && "blur-[2px]")}>
+          <RichTextEditor editor={editor} onKeyDown={handleKeyDown} />
+        </div>
+      </div>
     </div>
   );
 };
