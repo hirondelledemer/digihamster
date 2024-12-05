@@ -32,7 +32,7 @@ export const getProjectPercentages = (
     events: {
       percentage: (eventsCompleteTime / totalEstimate) * 100,
       estimate: eventsCompleteTime,
-      color: "#713f12",
+      color: "#e23670",
       label: "Meetings",
     },
   };

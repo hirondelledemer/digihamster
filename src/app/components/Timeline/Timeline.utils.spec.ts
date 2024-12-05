@@ -46,7 +46,7 @@ describe("Timeline.utils", () => {
         label: "Project 1",
       },
       events: {
-        color: "#713f12",
+        color: "#e23670",
         estimate: 0,
         label: "Meetings",
         percentage: 0,

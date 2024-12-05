@@ -1,7 +1,6 @@
 import { render } from "@/config/utils/test-utils";
 import Today, { TodayProps } from "./Today";
 import { getTodayTestkit } from "./Today.testkit";
-import { DAY } from "@/app/utils/consts/dates";
 
 jest.mock("../../utils/date/date");
 

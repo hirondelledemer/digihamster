@@ -11,6 +11,7 @@ import {
   isAfter,
   isBefore,
   isSameDay,
+  startOfDay,
   startOfWeek,
   sub,
 } from "date-fns";
@@ -131,12 +132,14 @@ const Timeline: FC<TimelineProps> = ({ testId }): JSX.Element => {
           Object.entries(pp).map(([k, v]) => [k, v.estimate])
         );
         return {
-          day: format(date, "MMM, d"),
+          day: format(date, "dd, E"),
+          scrollToValue: startOfDay(date || 0).valueOf(),
           ...newObj,
         };
       }),
     [endDate, events, projects, startDate, tasks]
   );
+
   return (
     <div data-testid={testId} className="p-4">
       This week ({getWeek(now())}):
@@ -194,6 +197,7 @@ const Timeline: FC<TimelineProps> = ({ testId }): JSX.Element => {
                 key={val._id}
                 className="flex items-center"
                 data-testid="event-entry"
+                id={`${startOfDay(val.startAt || 0).valueOf()}`}
               >
                 {getDate(val.startAt)}
                 <div className="basis-[3%]">
@@ -213,6 +217,7 @@ const Timeline: FC<TimelineProps> = ({ testId }): JSX.Element => {
                 key={val._id}
                 data-testid="task-entry"
                 className="flex items-center"
+                id={`${startOfDay(val.completedAt || 0).valueOf()}`}
               >
                 {getDate(val.completedAt)}
                 <div className="basis-[3%]">
@@ -228,7 +233,12 @@ const Timeline: FC<TimelineProps> = ({ testId }): JSX.Element => {
           }
           if (isJournalEntry(val)) {
             return (
-              <div key={val._id} className="flex" data-testid="journal-entry">
+              <div
+                key={val._id}
+                className="flex"
+                data-testid="journal-entry"
+                id={`${startOfDay(val.updatedAt || 0).valueOf()}`}
+              >
                 {getDate(val.updatedAt)}
                 <div className="w-[90%]">
                   <MinimalNote note={val.note} />

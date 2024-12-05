@@ -31,6 +31,19 @@ const TimelineChart: FC<TimelineChartProps> = ({ chartConfig, chartData }) => {
               tickLine={false}
               tickMargin={10}
               axisLine={false}
+              onClick={({ index }: any) => {
+                const element = document.getElementById(
+                  chartData[index].scrollToValue
+                );
+                element?.scrollIntoView({
+                  behavior: "smooth",
+                });
+
+                element?.animate([{ backgroundColor: "#292524" }], {
+                  duration: 500,
+                  iterations: 3,
+                });
+              }}
             />
             <ChartTooltip content={<ChartTooltipContent hideLabel />} />
             <ChartLegend content={<ChartLegendContent />} />
