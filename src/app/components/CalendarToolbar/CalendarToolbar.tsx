@@ -25,9 +25,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import axios from "axios";
-import { useToast } from "../ui/use-toast";
+
 import useCycle from "@/app/utils/hooks/use-cycle";
+import { useDroppable } from "@dnd-kit/core";
+import { isCalendarDeadlineEntry } from "../CalendarEvent/CalendarEvent.types";
+import { cn } from "../utils";
 
 export interface CalendarToolbarProps extends ToolbarProps<CalendarEventType> {
   testId?: string;
@@ -51,8 +53,17 @@ const CalendarToolbar: FC<CalendarToolbarProps> = ({
     ["A", () => onView("agenda")],
     ["M", () => onView("month")],
   ]);
-  const { toast } = useToast();
+
   const { updateCycle } = useCycle();
+
+  const { isOver, setNodeRef } = useDroppable({
+    id: date.getTime(),
+    disabled: view !== "agenda",
+    data: {
+      containerType: "calendar",
+      date: date.getTime(),
+    },
+  });
 
   const addCycle = async () => {
     const startDate = date;
@@ -88,7 +99,10 @@ const CalendarToolbar: FC<CalendarToolbarProps> = ({
           </Button>
         </div>
       </div>
-      <div>{view === "agenda" ? format(date, "EEEE MMM dd") : label}</div>
+
+      <div ref={setNodeRef} className={cn(isOver && "border border-primary")}>
+        <div>{view === "agenda" ? format(date, "EEEE MMM dd") : label}</div>
+      </div>
       <div>
         <div>
           {(view === "agenda" || view === "day") && (
