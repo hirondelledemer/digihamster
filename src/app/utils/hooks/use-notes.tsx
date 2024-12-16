@@ -10,10 +10,10 @@ type UpdateNoteValues = Pick<Note, "title" | "note" | "tags">;
 export const NotesContext = createContext<{
   data: Note[];
   loading: boolean;
-  updateNote(noteId: string, data: UpdateNoteValues): void;
+  updateNote(noteId: string, data: UpdateNoteValues): Promise<void>;
 }>({
   data: [],
-  updateNote: () => {},
+  updateNote: () => Promise.resolve(),
   loading: false,
 });
 

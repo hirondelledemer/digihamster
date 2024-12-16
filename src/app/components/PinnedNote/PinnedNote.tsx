@@ -1,6 +1,6 @@
 "use client";
 
-import React, { FC, ReactNode } from "react";
+import React, { FC, ReactNode, useState } from "react";
 import { useRte } from "@/app/utils/rte/rte-hook";
 import { Note } from "@/models/note";
 import useNotes from "@/app/utils/hooks/use-notes";
@@ -19,7 +19,9 @@ const PinnedNote: FC<PinnedNoteProps> = ({ testId, note }): ReactNode => {
     editable: true,
   });
 
-  const { loading, updateNote } = useNotes();
+  const { updateNote } = useNotes();
+
+  const [loading, setLoading] = useState<boolean>(false);
 
   if (!editor) {
     return null;
@@ -27,11 +29,13 @@ const PinnedNote: FC<PinnedNoteProps> = ({ testId, note }): ReactNode => {
 
   const handleSubmit = async () => {
     const { title, content, tags } = getRteValue();
-    updateNote(note._id, {
+    setLoading(true);
+    await updateNote(note._id, {
       title,
       note: content,
       tags,
     });
+    setLoading(false);
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {

@@ -37,7 +37,7 @@ export const Home = (): JSX.Element => {
             <ActiveTaskList />
           </div>
           <div className="flex p-6 pl-0 pb-12 flex-col">
-            <div className="max-h-[400px] mb-4">
+            <div className="max-h-[400px] mb-4 overflow-auto p-[1px]">
               <PinnedNotes />
             </div>
             <HealthChart />
