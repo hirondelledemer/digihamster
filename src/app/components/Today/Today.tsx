@@ -15,7 +15,6 @@ import { cn } from "../utils";
 import { closestIndexTo, differenceInDays, lightFormat } from "date-fns";
 import { CalendarEventType } from "../CalendarEvent";
 import {
-  CalendarDeadlineEntry,
   isCalendarDeadlineEntry,
   isCalendarEventEntry,
   isCalendarJournalEntry,

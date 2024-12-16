@@ -160,7 +160,9 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
   const weatherResolved = (weatherData?.list || [])
     .filter(
       (entry) =>
-        !entry.dt_txt.includes("03:00:00") && !entry.dt_txt.includes("00:00:00")
+        !entry.dt_txt.includes("03:00:00") &&
+        !entry.dt_txt.includes("00:00:00") &&
+        !entry.dt_txt.includes("06:00:00")
     )
     .map<CalendarWeatherEntry>((entry) => ({
       start: new Date(entry.dt_txt),
