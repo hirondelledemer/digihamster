@@ -65,6 +65,7 @@ const EventTaskFormModal: FC<EventTaskFormModalProps> = ({
               onDone={handleOnDone}
               initialValues={{
                 deadline: initialValues.startAt,
+                isActive: true,
                 title: "",
                 description: "",
                 tags: [],
