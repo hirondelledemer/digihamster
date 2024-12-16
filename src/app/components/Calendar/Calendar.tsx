@@ -38,7 +38,6 @@ import useJournalEntries from "@/app/utils/hooks/use-entry";
 import useEvents from "@/app/utils/hooks/use-events";
 import { updateObjById } from "@/app/utils/common/update-array";
 
-import { FormValues } from "../TaskForm/TaskForm";
 import { useToast } from "../ui/use-toast";
 import { Event as EventType } from "@/models/event";
 import useTasks from "@/app/utils/hooks/use-tasks";
@@ -316,53 +315,6 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
     setEventInCreationData(event);
   };
 
-  const newEvent = async (data: FormValues) => {
-    type FieldsRequired =
-      | "title"
-      | "description"
-      | "projectId"
-      | "allDay"
-      | "startAt"
-      | "endAt";
-
-    const eventData: Pick<EventType, FieldsRequired> = {
-      title: data.title,
-      description: data.description,
-      projectId: data.project,
-      allDay: eventInCreationData!.slots.length == 1,
-      startAt: new Date(eventInCreationData!.start).getTime(),
-      endAt: new Date(eventInCreationData!.end).getTime(),
-    };
-    const tempId = "temp-id";
-
-    const tempEvent: EventType = {
-      _id: tempId,
-      completed: false,
-      deleted: false,
-      createdAt: "",
-      updatedAt: "",
-      tags: [],
-      ...eventData,
-    };
-    setEventsData((e) => [...e, tempEvent]);
-    setEventInCreationData(null);
-
-    try {
-      const response = await axios.post<EventType>("/api/events", eventData);
-      setEventsData((e) => updateObjById<EventType>(e, tempId, response.data));
-      toast({
-        title: "Success",
-        description: "Event has been created",
-      });
-    } catch (e) {
-      toast({
-        title: "Error",
-        description: JSON.stringify(e),
-        variant: "destructive",
-      });
-    }
-  };
-
   if (projectsLoading || isLoading) {
     return <div>Loading...</div>;
   }
@@ -408,7 +360,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
         }}
         min={dates.add(
           dates.startOf(new Date(2015, 17, 1), "day"),
-          +6,
+          +8,
           "hours"
         )}
         views={views}
