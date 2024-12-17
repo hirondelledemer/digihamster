@@ -23,12 +23,28 @@ const HabitItem: FC<HabitItemProps> = ({ testId, habit }): JSX.Element => {
   const todayTimestamp = today.getTime();
   const yesterdayTimestamp = subDays(today, 1).getTime();
   const twoDayAgoTimestamp = subDays(today, 2).getTime();
+  const sixDaysAgoTimestamp = subDays(today, 3).getTime();
+  const fiveDaysAgoTimestamp = subDays(today, 3).getTime();
+  const fourDaysAgoTimestamp = subDays(today, 3).getTime();
+  const threeDaysAgoTimestamp = subDays(today, 3).getTime();
 
   const todayHabit = habit.log.find((log) => log.at === todayTimestamp);
   const yesterdayHabit = habit.log.find((log) => log.at === yesterdayTimestamp);
 
   const twoDaysAgoHabit = habit.log.find(
     (log) => log.at === twoDayAgoTimestamp
+  );
+  const threeDaysAgoHabit = habit.log.find(
+    (log) => log.at === threeDaysAgoTimestamp
+  );
+  const fourDaysAgoHabit = habit.log.find(
+    (log) => log.at === fourDaysAgoTimestamp
+  );
+  const fiveDaysAgoHabit = habit.log.find(
+    (log) => log.at === fiveDaysAgoTimestamp
+  );
+  const sixDaysAgoHabit = habit.log.find(
+    (log) => log.at === sixDaysAgoTimestamp
   );
 
   const handleCompleteClick = (at: number) => (checked: boolean) => {
@@ -50,6 +66,31 @@ const HabitItem: FC<HabitItemProps> = ({ testId, habit }): JSX.Element => {
       <TableRow>
         <TableCell className="font-medium">{habit.category}</TableCell>
         <TableCell>{habit.title}</TableCell>
+        <TableCell>{habit.timesPerMonth}</TableCell>
+        <TableCell>
+          <Checkbox
+            checked={sixDaysAgoHabit && sixDaysAgoHabit.completed}
+            onCheckedChange={handleCompleteClick(sixDaysAgoTimestamp)}
+          />
+        </TableCell>
+        <TableCell>
+          <Checkbox
+            checked={fiveDaysAgoHabit && fiveDaysAgoHabit.completed}
+            onCheckedChange={handleCompleteClick(fiveDaysAgoTimestamp)}
+          />
+        </TableCell>
+        <TableCell>
+          <Checkbox
+            checked={fourDaysAgoHabit && fourDaysAgoHabit.completed}
+            onCheckedChange={handleCompleteClick(fourDaysAgoTimestamp)}
+          />
+        </TableCell>
+        <TableCell>
+          <Checkbox
+            checked={threeDaysAgoHabit && threeDaysAgoHabit.completed}
+            onCheckedChange={handleCompleteClick(threeDaysAgoTimestamp)}
+          />
+        </TableCell>
         <TableCell>
           <Checkbox
             checked={twoDaysAgoHabit && twoDaysAgoHabit.completed}

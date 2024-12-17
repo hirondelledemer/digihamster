@@ -14,8 +14,8 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/table";
-import { format, subDays } from "date-fns";
-import { now } from "@/app/utils/date/date";
+import { format } from "date-fns";
+import { getTimestampsFrom, getToday } from "@/app/utils/date/date";
 
 export interface HabitsProps {
   testId?: string;
@@ -24,11 +24,7 @@ export interface HabitsProps {
 const Habits: FC<HabitsProps> = ({ testId }): JSX.Element => {
   const { data } = useHabits();
   const [habitFormOpen, setHabitFormOpen] = useState<boolean>(false);
-  const today = now();
-  today.setHours(0, 0, 0, 0); // extract today
-  const twoDayAgoTimestamp = subDays(today, 2).getTime(); // extract all the days
-  const yesterdayTimestamp = subDays(today, 1).getTime();
-  const todayTimestamp = today.getTime();
+  const timestamps = getTimestampsFrom(getToday(), 6);
 
   return (
     <div data-testid={testId}>
@@ -45,9 +41,10 @@ const Habits: FC<HabitsProps> = ({ testId }): JSX.Element => {
           <TableRow>
             <TableHead className="w-[100px]">Category</TableHead>
             <TableHead>Habit</TableHead>
-            <TableHead>{format(twoDayAgoTimestamp, "EEEEE")}</TableHead>
-            <TableHead>{format(yesterdayTimestamp, "EEEEE")}</TableHead>
-            <TableHead>{format(todayTimestamp, "EEEEE")}</TableHead>
+            <TableHead>Times per month</TableHead>
+            {timestamps.map((timestamp) => (
+              <TableHead key={timestamp}>{format(timestamp, "E")}</TableHead>
+            ))}
 
             <TableHead className="text-right">Actions</TableHead>
           </TableRow>
