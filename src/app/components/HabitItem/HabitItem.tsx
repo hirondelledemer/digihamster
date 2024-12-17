@@ -6,6 +6,7 @@ import { Checkbox } from "../ui/checkbox";
 import { format, subDays } from "date-fns";
 import { Button } from "../ui/button";
 import HabitFormModal from "../HabitFormModal";
+import { TableCell, TableRow } from "../ui/table";
 
 export interface HabitItemProps {
   testId?: string;
@@ -38,7 +39,7 @@ const HabitItem: FC<HabitItemProps> = ({ testId, habit }): JSX.Element => {
   };
 
   return (
-    <div data-testid={testId} className="flex hover:bg hover:bg-secondary">
+    <>
       <HabitFormModal
         open={habitFormOpen}
         editMode
@@ -46,34 +47,70 @@ const HabitItem: FC<HabitItemProps> = ({ testId, habit }): JSX.Element => {
         onDone={() => setHabitFormOpen(false)}
         onClose={() => setHabitFormOpen(false)}
       />
-      <div className="w-40">{habit.category}</div>
-      <div className="w-80">{habit.title}</div>
-      <div className="w-10">
-        <span>{format(twoDayAgoTimestamp, "EEEEE")}</span>
-        <Checkbox
-          checked={twoDaysAgoHabit && twoDaysAgoHabit.completed}
-          onCheckedChange={handleCompleteClick(twoDayAgoTimestamp)}
-        />
-      </div>
-      <div className="w-10">
-        <span>{format(yesterdayTimestamp, "EEEEE")}</span>
-        <Checkbox
-          checked={yesterdayHabit && yesterdayHabit.completed}
-          onCheckedChange={handleCompleteClick(yesterdayTimestamp)}
-        />
-      </div>
-      <div className="w-10">
-        <span>{format(todayTimestamp, "EEEEE")}</span>
-        <Checkbox
-          checked={todayHabit && todayHabit.completed}
-          onCheckedChange={handleCompleteClick(todayTimestamp)}
-        />
-      </div>
-      <div className="w-10">
-        <Button onClick={() => setHabitFormOpen(true)}>Edit</Button>
-      </div>
-    </div>
+      <TableRow>
+        <TableCell className="font-medium">{habit.category}</TableCell>
+        <TableCell>{habit.title}</TableCell>
+        <TableCell>
+          <Checkbox
+            checked={twoDaysAgoHabit && twoDaysAgoHabit.completed}
+            onCheckedChange={handleCompleteClick(twoDayAgoTimestamp)}
+          />
+        </TableCell>
+        <TableCell>
+          <Checkbox
+            checked={yesterdayHabit && yesterdayHabit.completed}
+            onCheckedChange={handleCompleteClick(yesterdayTimestamp)}
+          />
+        </TableCell>
+        <TableCell>
+          <Checkbox
+            checked={todayHabit && todayHabit.completed}
+            onCheckedChange={handleCompleteClick(todayTimestamp)}
+          />
+        </TableCell>
+        <TableCell className="text-right">
+          <Button onClick={() => setHabitFormOpen(true)}>Edit</Button>
+        </TableCell>
+      </TableRow>
+    </>
   );
+  // return (
+  //   <div data-testid={testId} className="flex hover:bg hover:bg-secondary">
+  //     <HabitFormModal
+  //       open={habitFormOpen}
+  //       editMode
+  //       habit={habit}
+  //       onDone={() => setHabitFormOpen(false)}
+  //       onClose={() => setHabitFormOpen(false)}
+  //     />
+  //     <div className="w-40">{habit.category}</div>
+  //     <div className="w-80">{habit.title}</div>
+  //     <div className="w-10">
+  //       <span>{format(twoDayAgoTimestamp, "EEEEE")}</span>
+  //       <Checkbox
+  //         checked={twoDaysAgoHabit && twoDaysAgoHabit.completed}
+  //         onCheckedChange={handleCompleteClick(twoDayAgoTimestamp)}
+  //       />
+  //     </div>
+  //     <div className="w-10">
+  //       <span>{format(yesterdayTimestamp, "EEEEE")}</span>
+  // <Checkbox
+  //   checked={yesterdayHabit && yesterdayHabit.completed}
+  //   onCheckedChange={handleCompleteClick(yesterdayTimestamp)}
+  // />;
+  //     </div>
+  //     <div className="w-10">
+  //       <span>{format(todayTimestamp, "EEEEE")}</span>
+  // <Checkbox
+  //   checked={todayHabit && todayHabit.completed}
+  //   onCheckedChange={handleCompleteClick(todayTimestamp)}
+  // />
+  //     </div>
+  //     <div className="w-10">
+  //       <Button onClick={() => setHabitFormOpen(true)}>Edit</Button>
+  //     </div>
+  //   </div>
+  // );
 };
 
 export default HabitItem;
