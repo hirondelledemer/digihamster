@@ -1,7 +1,7 @@
 import React, { FC, useState } from "react";
 import useHabits from "@/app/utils/hooks/use-habits";
 import { Habit } from "@/models/habit";
-import { getTodayWithZeroHours } from "@/app/utils/date/date";
+import { getTodayWithZeroHours, now } from "@/app/utils/date/date";
 import { Checkbox } from "../ui/checkbox";
 import { subDays } from "date-fns";
 import { Button } from "../ui/button";
@@ -33,6 +33,13 @@ const HabitItem: FC<HabitItemProps> = ({ testId, habit }): JSX.Element => {
     });
   };
 
+  const earliestDay = subDays(now(), 28).getTime();
+
+  const progress = habit.log.filter(
+    (log) => log.at >= earliestDay && log.completed
+  ).length;
+  const progressPercentage = (progress / habit.timesPerMonth) * 100;
+
   return (
     <>
       <HabitFormModal
@@ -45,6 +52,9 @@ const HabitItem: FC<HabitItemProps> = ({ testId, habit }): JSX.Element => {
       <TableRow>
         <TableCell className="font-medium py-1">{habit.category}</TableCell>
         <TableCell className="py-1">{habit.title}</TableCell>
+        <TableCell className="py-1">
+          {Math.floor(progressPercentage)}%
+        </TableCell>
         <TableCell className="py-1">{habit.timesPerMonth}</TableCell>
         {logs.map((log) => (
           <TableCell className="py-1" key={log.log?.at}>

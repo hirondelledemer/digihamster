@@ -44,6 +44,7 @@ const Habits: FC<HabitsProps> = ({ testId }): JSX.Element => {
           <TableRow>
             <TableHead className="w-[100px]">Category</TableHead>
             <TableHead>Habit</TableHead>
+            <TableHead>Progress</TableHead>
             <TableHead>n/month</TableHead>
             {timestamps.map((timestamp) => (
               <TableHead key={timestamp}>{format(timestamp, "E")}</TableHead>
