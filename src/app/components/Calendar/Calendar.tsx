@@ -69,7 +69,7 @@ moment.locale("ko", {
     doy: 1,
   },
 });
-const DnDropCalendar = withDragAndDrop<CalendarEventType>(Calendar as any);
+const DnDropCalendar = withDragAndDrop<CalendarEventType>(Calendar) as any;
 const localizer = momentLocalizer(moment); // or glo
 
 export interface PlannerProps {
@@ -357,8 +357,8 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
             date: customDate,
             time: customDate,
           },
-          timeSlotWrapper: CalendarSlot,
-          toolbar: CalendarToolbar,
+          timeSlotWrapper: CalendarSlot as any,
+          toolbar: CalendarToolbar as any,
         }}
         min={dates.add(
           dates.startOf(new Date(2015, 17, 1), "day"),

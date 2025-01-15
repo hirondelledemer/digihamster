@@ -8,7 +8,7 @@ export interface CalendarSlotProps {
   resource: null | undefined;
 }
 
-const CalendarSlot: FC<any> = ({
+const CalendarSlot: FC<CalendarSlotProps> = ({
   children,
   value,
   resource,
