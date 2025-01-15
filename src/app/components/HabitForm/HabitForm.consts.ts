@@ -27,4 +27,4 @@ export const TIMES_PER_MONTH = [
     label: "Once a month",
     value: 1,
   },
-];
+] as const;

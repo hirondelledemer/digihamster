@@ -56,8 +56,8 @@ const HabitItem: FC<HabitItemProps> = ({ testId, habit }): JSX.Element => {
           {Math.floor(progressPercentage)}%
         </TableCell>
         <TableCell className="py-1">{habit.timesPerMonth}</TableCell>
-        {logs.map((log) => (
-          <TableCell className="py-1" key={log.log?.at}>
+        {logs.map((log, index) => (
+          <TableCell className="py-1" key={index}>
             <Checkbox
               checked={log.log?.completed}
               onCheckedChange={handleCompleteClick(log.timestamp)}

@@ -124,7 +124,7 @@ const HabitForm: FC<HabitFormProps> = ({
           name="category"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Title</FormLabel>
+              <FormLabel>Category</FormLabel>
               <FormControl>
                 <Input placeholder="Category" {...field} />
               </FormControl>

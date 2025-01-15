@@ -7,19 +7,19 @@ describe("date", () => {
       const startingTimestamp = startingDate.valueOf();
 
       expect(getTimestampsFrom(startingDate, 1)).toStrictEqual([
-        startingTimestamp,
         1706659200000,
+        startingTimestamp,
       ]);
 
       expect(getTimestampsFrom(startingDate, 7)).toStrictEqual([
-        startingTimestamp,
-        1706659200000,
-        1706572800000,
-        1706486400000,
-        1706400000000,
-        1706313600000,
-        1706227200000,
         1706140800000,
+        1706227200000,
+        1706313600000,
+        1706400000000,
+        1706486400000,
+        1706572800000,
+        1706659200000,
+        startingTimestamp,
       ]);
     });
   });
