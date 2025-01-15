@@ -1,12 +1,11 @@
 import React, { FC, useState } from "react";
 import useHabits from "@/app/utils/hooks/use-habits";
 import { Habit } from "@/models/habit";
-import { getTodayWithZeroHours, now } from "@/app/utils/date/date";
+import { now } from "@/app/utils/date/date";
 import { Checkbox } from "../ui/checkbox";
-import { subDays } from "date-fns";
+import { format, subDays } from "date-fns";
 import { Button } from "../ui/button";
 import HabitFormModal from "../HabitFormModal";
-import { TableCell, TableRow } from "../ui/table";
 
 export interface HabitItemProps {
   testId?: string;
@@ -17,14 +16,19 @@ const HabitItem: FC<HabitItemProps> = ({ testId, habit }): JSX.Element => {
   const { addLog } = useHabits();
   const [habitFormOpen, setHabitFormOpen] = useState<boolean>(false);
 
-  const today = getTodayWithZeroHours();
+  const today = now();
+  today.setHours(0, 0, 0, 0);
 
-  const logs = [6, 5, 4, 3, 2, 1, 0]
-    .map((day) => subDays(today, day).getTime())
-    .map((timestamp) => ({
-      log: habit.log.find((log) => log.at === timestamp),
-      timestamp,
-    }));
+  const todayTimestamp = today.getTime();
+  const yesterdayTimestamp = subDays(today, 1).getTime();
+  const twoDayAgoTimestamp = subDays(today, 2).getTime();
+
+  const todayHabit = habit.log.find((log) => log.at === todayTimestamp);
+  const yesterdayHabit = habit.log.find((log) => log.at === yesterdayTimestamp);
+
+  const twoDaysAgoHabit = habit.log.find(
+    (log) => log.at === twoDayAgoTimestamp
+  );
 
   const handleCompleteClick = (at: number) => (checked: boolean) => {
     addLog(habit._id, {
@@ -33,15 +37,8 @@ const HabitItem: FC<HabitItemProps> = ({ testId, habit }): JSX.Element => {
     });
   };
 
-  const earliestDay = subDays(now(), 28).getTime();
-
-  const progress = habit.log.filter(
-    (log) => log.at >= earliestDay && log.completed
-  ).length;
-  const progressPercentage = (progress / habit.timesPerMonth) * 100;
-
   return (
-    <>
+    <div data-testid={testId} className="flex hover:bg hover:bg-secondary">
       <HabitFormModal
         open={habitFormOpen}
         editMode
@@ -49,27 +46,33 @@ const HabitItem: FC<HabitItemProps> = ({ testId, habit }): JSX.Element => {
         onDone={() => setHabitFormOpen(false)}
         onClose={() => setHabitFormOpen(false)}
       />
-      <TableRow>
-        <TableCell className="font-medium py-1">{habit.category}</TableCell>
-        <TableCell className="py-1">{habit.title}</TableCell>
-        <TableCell className="py-1">
-          {Math.floor(progressPercentage)}%
-        </TableCell>
-        <TableCell className="py-1">{habit.timesPerMonth}</TableCell>
-        {logs.map((log) => (
-          <TableCell className="py-1" key={log.log?.at}>
-            <Checkbox
-              checked={log.log?.completed}
-              onCheckedChange={handleCompleteClick(log.timestamp)}
-            />
-          </TableCell>
-        ))}
-
-        <TableCell className="text-right py-1">
-          <Button onClick={() => setHabitFormOpen(true)}>Edit</Button>
-        </TableCell>
-      </TableRow>
-    </>
+      <div className="w-40">{habit.category}</div>
+      <div className="w-80">{habit.title}</div>
+      <div className="w-10">
+        <span>{format(twoDayAgoTimestamp, "EEEEE")}</span>
+        <Checkbox
+          checked={twoDaysAgoHabit && twoDaysAgoHabit.completed}
+          onCheckedChange={handleCompleteClick(twoDayAgoTimestamp)}
+        />
+      </div>
+      <div className="w-10">
+        <span>{format(yesterdayTimestamp, "EEEEE")}</span>
+        <Checkbox
+          checked={yesterdayHabit && yesterdayHabit.completed}
+          onCheckedChange={handleCompleteClick(yesterdayTimestamp)}
+        />
+      </div>
+      <div className="w-10">
+        <span>{format(todayTimestamp, "EEEEE")}</span>
+        <Checkbox
+          checked={todayHabit && todayHabit.completed}
+          onCheckedChange={handleCompleteClick(todayTimestamp)}
+        />
+      </div>
+      <div className="w-10">
+        <Button onClick={() => setHabitFormOpen(true)}>Edit</Button>
+      </div>
+    </div>
   );
 };
 
