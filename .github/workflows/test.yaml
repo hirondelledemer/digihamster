@@ -18,7 +18,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 20
       - run: sleep 30
       - name: vercel-preview-url
         uses: zentered/vercel-preview-url@v1.1.9
@@ -55,7 +55,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - name: Upgrade Yarn
         run: yarn upgrade
       - name: Install modules

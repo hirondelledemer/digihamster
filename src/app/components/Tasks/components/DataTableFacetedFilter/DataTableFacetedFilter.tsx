@@ -36,7 +36,11 @@ export function DataTableFacetedFilter<TData, TValue>({
 }: DataTableFacetedFilterProps<TData, TValue>) {
   const facets = column?.getFacetedUniqueValues();
 
-  const selectedValues = new Set(column?.getFilterValue() as string[]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const selectedValues = useMemo(
+    () => new Set(column?.getFilterValue() as string[]),
+    [column]
+  );
 
   const optionsToShow = useMemo(
     () => sort(options, (o) => (selectedValues.has(o.value) ? 0 : 1)),
