@@ -12,12 +12,14 @@ import axios from "axios";
 import { useToast } from "@/app/components/ui/use-toast";
 import { Tag } from "@/models/tag";
 
-export const TagsContext = createContext<{
+interface TagsContextValues {
   data: Tag[];
   setData: Dispatch<SetStateAction<Tag[]>>;
   error?: unknown;
   loading: boolean;
-}>({
+}
+
+export const TagsContext = createContext<TagsContextValues>({
   data: [],
   setData: () => {},
   loading: false,

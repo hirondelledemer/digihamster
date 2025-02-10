@@ -10,14 +10,17 @@ export async function connect() {
     const connection = mongoose.connection;
 
     connection.on("connected", () => {
+      // eslint-disable-next-line no-console
       console.log("MongoDB connected successfully");
     });
 
     connection.on("error", (err) => {
+      // eslint-disable-next-line no-console
       console.log("MongoDB connection error" + err);
       process.exit();
     });
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.log(error);
   }
 }

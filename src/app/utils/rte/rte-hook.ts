@@ -1,15 +1,57 @@
 import { JSONContent, useEditor } from "@tiptap/react";
 import Mention from "@tiptap/extension-mention";
 import StarterKit from "@tiptap/starter-kit";
-import { suggestionsConfig } from "./suggestions";
+import { projectSuggestionsConfig, suggestionsConfig } from "./suggestions";
 import { reduce } from "remeda";
 import styles from "./rte-hook.module.scss";
+import { PluginKey } from "@tiptap/pm/state";
 
 export interface RteValue {
   title: string;
   content: string;
   tags: string[];
+  tasks: string[];
+  textContent: string;
+  contentJSON: JSONContent;
+  projectId?: string;
+  isActive: boolean;
 }
+
+const CustomMentionOne = Mention.extend({
+  name: "mention",
+}).configure({
+  suggestion: {
+    char: "@",
+    pluginKey: new PluginKey("tagsSuggestion"),
+  },
+});
+
+const ProjectMention = Mention.extend({
+  name: "projectMention",
+}).configure({
+  suggestion: {
+    char: "/p ",
+    pluginKey: new PluginKey("projectSuggestion"),
+    allow: ({ editor }) => {
+      const json = editor.getJSON();
+      if (!json || !json.content) {
+        return false;
+      }
+      return (
+        reduce(
+          json.content,
+          (acc: Record<string, any>[], curr: JSONContent) => [
+            ...acc,
+            ...(
+              curr.content?.filter((val) => val.type === "projectMention") || []
+            ).map((mention) => mention?.attrs!),
+          ],
+          []
+        ).length < 1
+      );
+    },
+  },
+});
 
 export function useRte({
   value,
@@ -21,11 +63,17 @@ export function useRte({
   const editor = useEditor({
     extensions: [
       StarterKit,
-      Mention.configure({
+      CustomMentionOne.configure({
         HTMLAttributes: {
           class: styles.tag,
         },
         suggestion: suggestionsConfig,
+      }),
+      ProjectMention.configure({
+        HTMLAttributes: {
+          class: styles.project,
+        },
+        suggestion: projectSuggestionsConfig,
       }),
     ],
     editorProps: {
@@ -44,6 +92,11 @@ export function useRte({
       title: "",
       content: "",
       tags: [],
+      tasks: [],
+      textContent: "",
+      contentJSON: [],
+      projectId: undefined,
+      isActive: false,
     };
     if (!editor) {
       return defaultValue;
@@ -56,22 +109,73 @@ export function useRte({
 
     const value = editor.getHTML() || "";
 
+    console.log(editor.getHTML());
+
+    const textContent = editor.getText();
+
     const title = value.startsWith("<p><br></p>")
       ? ""
-      : value.split("</p>")[0].replace("<p>", "");
+      : textContent.split("\n")[0];
 
     const tags = reduce(
       json.content,
-      (acc: string[], curr: JSONContent) => [
+      (acc: Record<string, any>[], curr: JSONContent) => [
         ...acc,
         ...(curr.content?.filter((val) => val.type === "mention") || []).map(
-          (mention) => mention?.attrs?.id
+          (mention) => mention?.attrs!
         ),
       ],
       []
-    ).map((tagId) => tagId.split(":")[0]);
+    );
 
-    return { title, content: value, tags };
+    const project = reduce(
+      json.content,
+      (acc: Record<string, any>[], curr: JSONContent) => [
+        ...acc,
+        ...(
+          curr.content?.filter((val) => val.type === "projectMention") || []
+        ).map((mention) => mention?.attrs!),
+      ],
+      []
+    )[0];
+
+    const projectId = project ? project.id.split(":")[0] : undefined;
+
+    const regularTags = tags
+      .filter((tag) => tag.label !== "task" && tag.label !== "active")
+      .map((tag) => tag.id.split(":")[0]);
+
+    const isActive = tags.filter((tag) => tag.label === "active").length > 0;
+
+    const tasks = reduce(
+      json.content,
+      (acc: string[], curr: JSONContent) => {
+        const taskMentionExists = curr.content?.find(
+          (val) => val.type === "mention" && val.attrs?.label === "task"
+        );
+        if (!!taskMentionExists) {
+          return [
+            ...acc,
+            ...(curr.content?.filter((val) => val.type === "text") || []).map(
+              (val) => val?.text!
+            ),
+          ];
+        }
+        return [...acc];
+      },
+      []
+    ).map((task) => task.trim());
+
+    return {
+      title,
+      content: value,
+      tags: regularTags,
+      tasks,
+      textContent,
+      contentJSON: json,
+      projectId,
+      isActive,
+    };
   };
 
   return { editor, getRteValue };

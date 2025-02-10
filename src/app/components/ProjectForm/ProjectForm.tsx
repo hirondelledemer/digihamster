@@ -117,7 +117,7 @@ const ProjectForm: FC<ProjectFormProps> = ({
           name="color"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Project</FormLabel>
+              <FormLabel>Color</FormLabel>
               <Select
                 onValueChange={field.onChange}
                 defaultValue={field.value}

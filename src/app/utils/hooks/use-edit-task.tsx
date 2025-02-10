@@ -18,7 +18,9 @@ export const useEditTask = () => {
   const { setData: setTasksData } = useTasks();
   const { toast } = useToast();
 
-  const createNewTask = async (data: Pick<Task, FieldsRequired>) => {
+  const createNewTask = async (
+    data: Pick<Task, FieldsRequired> & { subtasks: string[] }
+  ) => {
     const tempId = "temp-id";
 
     const tempTask: Task = {
@@ -87,7 +89,10 @@ export const useEditTask = () => {
   ) => {
     try {
       setTasksData((tasks) => tasks.filter((task) => task._id !== taskId));
-      onDone && onDone();
+      if (onDone) {
+        onDone();
+      }
+
       await axios.patch("/api/tasks/v2", {
         taskId,
         deleted: true,

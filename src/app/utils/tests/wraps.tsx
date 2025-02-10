@@ -1,7 +1,5 @@
-import { Project } from "@/models/project";
 import { ProjectsContext, ProjectsContextValue } from "../hooks/use-projects";
 import { TasksContext, TasksContextValues } from "../hooks/use-tasks";
-import { TaskV2 as Task } from "@/models/taskV2";
 import { Tag } from "@/models/tag";
 import { TagsContext } from "../hooks/use-tags";
 import { generateListOfProjects } from "../mocks/project";

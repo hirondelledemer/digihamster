@@ -70,6 +70,7 @@ const CommandTool: FC<CommandToolProps> = (): JSX.Element => {
       isActive: true,
       tags: [],
       projectId: defaultProject?._id || "",
+      subtasks: [],
     });
     setOpen(false);
   }, [createNewTask, searchValue, defaultProject?._id]);
@@ -81,7 +82,6 @@ const CommandTool: FC<CommandToolProps> = (): JSX.Element => {
           testId={taskFormTestId}
           onDone={close}
           initialValues={{
-            isActive: taskFormOpen.taskIsActive,
             title: searchValue,
           }}
           onClose={close}
@@ -106,13 +106,6 @@ const CommandTool: FC<CommandToolProps> = (): JSX.Element => {
             <CommandItem
               onSelect={() => {
                 setTaskFormOpen({ open: true, taskIsActive: true });
-              }}
-            >
-              Create Active Task
-            </CommandItem>
-            <CommandItem
-              onSelect={() => {
-                setTaskFormOpen({ open: true, taskIsActive: false });
               }}
             >
               Create Task

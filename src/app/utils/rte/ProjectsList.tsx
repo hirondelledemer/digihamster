@@ -4,46 +4,27 @@ import React, {
   useImperativeHandle,
   useState,
 } from "react";
-import { COLORS_V2, colorMapper } from "../consts/colors";
-import { getRandomInt } from "../common/random-int";
-import axios from "axios";
-import { ITag, Tag } from "@/models/tag";
-import { Card, CardContent } from "@/app/components/ui/card";
-import { Button } from "@/app/components/ui/button";
-import { Badge } from "@/app/components/ui/badge";
-import useTags from "../hooks/use-tags";
 
-export interface MentionListProps {
+import { Card, CardContent } from "@/app/components/ui/card";
+
+import { Badge } from "@/app/components/ui/badge";
+import useProjects from "../hooks/use-projects";
+import { Project } from "@/models/project";
+
+export interface ProjectMentionsProps {
   command: any;
   query: string;
 }
 
-export const MentionList = forwardRef(
-  ({ command, query }: MentionListProps, ref) => {
+export const ProjectMentions = forwardRef(
+  ({ command, query }: ProjectMentionsProps, ref) => {
     const [selectedIndex, setSelectedIndex] = useState(0);
 
-    const { data: tags } = useTags();
+    const { data: projects } = useProjects();
 
     useEffect(() => {
       setSelectedIndex(0);
-    }, [tags]);
-
-    const handleAddTag = async (title: string) => {
-      // todo: handle error
-      // TODO: use hook
-      const response = await axios.post<any, { data: ITag }>("/api/tags", {
-        title,
-        color:
-          tags.length < COLORS_V2.length
-            ? COLORS_V2[tags.length]
-            : COLORS_V2[getRandomInt(COLORS_V2.length)],
-      });
-
-      command({
-        id: `${response.data._id}:${response.data.color}`,
-        label: response.data.title,
-      });
-    };
+    }, [projects]);
 
     useImperativeHandle(ref, () => ({
       onKeyDown: ({ event }: any) => {
@@ -66,8 +47,10 @@ export const MentionList = forwardRef(
       },
     }));
 
-    const items = tags
-      .filter((tag) => tag.title.toLowerCase().startsWith(query.toLowerCase()))
+    const items = projects
+      .filter((project) =>
+        project.title.toLowerCase().startsWith(query.toLowerCase())
+      )
       .slice(0, 5);
 
     const selectItem = (index: number) => {
@@ -77,9 +60,8 @@ export const MentionList = forwardRef(
         command({
           id: `${item._id}:${item.color}`,
           label: item.title,
+          aa: "aa",
         });
-      } else {
-        handleAddTag(query);
       }
     };
 
@@ -99,19 +81,26 @@ export const MentionList = forwardRef(
       <Card>
         <CardContent className="py-2 px-4">
           {items.length ? (
-            items.map((tag: Tag, index: number) => (
-              <div key={tag._id}>
+            items.map((project: Project, index: number) => (
+              <div key={project._id}>
                 <Badge
-                  variant={selectedIndex === index ? "default" : "outline"}
+                  variant={selectedIndex === index ? "secondary" : "outline"}
                   onClick={() => selectItem(index)}
-                  color={colorMapper[tag.color]}
+                  // className="text-amber-700"
+                  style={{
+                    color: project.color,
+                    border:
+                      selectedIndex === index
+                        ? `1px solid ${project.color}`
+                        : undefined,
+                  }}
                 >
-                  {tag.title}
+                  {project.title}
                 </Badge>
               </div>
             ))
           ) : (
-            <Button>{`Create"${query}"`}</Button>
+            <div>No such project</div>
           )}
         </CardContent>
       </Card>
@@ -119,4 +108,4 @@ export const MentionList = forwardRef(
   }
 );
 
-MentionList.displayName = "MentionList";
+ProjectMentions.displayName = "ProjectMentions";

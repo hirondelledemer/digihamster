@@ -28,7 +28,6 @@ import {
   IconCircle,
 } from "@tabler/icons-react";
 import useProjects from "@/app/utils/hooks/use-projects";
-import { Textarea } from "../ui/textarea";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { cn } from "../utils";
 import { format } from "date-fns";
@@ -37,6 +36,7 @@ import { TaskV2 as Task } from "@/models/taskV2";
 import { useEditTask } from "@/app/utils/hooks/use-edit-task";
 import Filter from "../Filter";
 import useTags from "@/app/utils/hooks/use-tags";
+import { Textarea } from "../ui/textarea";
 
 export const minimalNoteTestId = "TaskForm-minimal-note-testId" as const;
 export const taskFormTestId = "TaskForm-form-testid" as const;
@@ -127,6 +127,7 @@ const TaskForm: FC<TaskFormProps> = ({
         estimate: values.eta,
         deadline: values.deadline || null,
         tags: values.tags,
+        subtasks: [],
       };
       createNewTask(taskData);
     }
@@ -268,6 +269,7 @@ const TaskForm: FC<TaskFormProps> = ({
             </FormItem>
           )}
         />
+
         <FormField
           control={form.control}
           name="description"
