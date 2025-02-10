@@ -38,7 +38,6 @@ import useJournalEntries from "@/app/utils/hooks/use-entry";
 import useEvents from "@/app/utils/hooks/use-events";
 import { updateObjById } from "@/app/utils/common/update-array";
 
-import { useToast } from "../ui/use-toast";
 import { Event as EventType } from "@/models/event";
 import useTasks from "@/app/utils/hooks/use-tasks";
 import {
@@ -85,15 +84,14 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
 
   const [isLoading, setLoading] = useState<boolean>(false);
 
-  const { toast } = useToast();
-
   useEffect(() => {
     (async function () {
       try {
         setLoading(true);
         const weatherResponse = await axios.get<WeatherData>("/api/weather");
         setWeatherData(weatherResponse.data);
-      } catch (err) {
+      } catch (error: unknown) {
+        console.log(error);
       } finally {
         setLoading(false);
       }

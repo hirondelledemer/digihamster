@@ -1,14 +1,14 @@
 import { connect } from "@/config/database/connection";
-import { getDataFromToken } from "@/app/helpers/getDataFromToken";
-import Task, { ITask } from "@/models/task";
-import User from "@/models/user";
+// import { getDataFromToken } from "@/app/helpers/getDataFromToken";
+// import Task, { ITask } from "@/models/task";
+// import User from "@/models/user";
 import { NextRequest, NextResponse } from "next/server";
-import TaskV2 from "@/models/taskV2";
-import Event, { IEvent } from "@/models/event";
+// import TaskV2 from "@/models/taskV2";
+// import Event, { IEvent } from "@/models/event";
 
 connect();
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     // Extract user ID from the authentication token
     // const userId: string = await getDataFromToken(request);

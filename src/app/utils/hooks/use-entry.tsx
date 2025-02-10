@@ -26,8 +26,8 @@ const { Provider } = EntriesContext;
 export const EntriesContextProvider = ({ children }: any) => {
   const [data, setData] = useState<JournalEntry[]>([]);
   // todo: look into utilising this
-  const [error, setError] = useState<unknown>(null);
-  const [loading, setLoading] = useState(false);
+  const [_error, setError] = useState<unknown>(null);
+  const [_loading, setLoading] = useState(false);
 
   useEffect(() => {
     (async function () {

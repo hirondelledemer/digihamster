@@ -44,7 +44,7 @@ const ProjectMention = Mention.extend({
             ...acc,
             ...(
               curr.content?.filter((val) => val.type === "projectMention") || []
-            ).map((mention) => mention?.attrs!),
+            ).map((mention) => mention!.attrs!),
           ],
           []
         ).length < 1
@@ -109,8 +109,6 @@ export function useRte({
 
     const value = editor.getHTML() || "";
 
-    console.log(editor.getHTML());
-
     const textContent = editor.getText();
 
     const title = value.startsWith("<p><br></p>")
@@ -122,7 +120,7 @@ export function useRte({
       (acc: Record<string, any>[], curr: JSONContent) => [
         ...acc,
         ...(curr.content?.filter((val) => val.type === "mention") || []).map(
-          (mention) => mention?.attrs!
+          (mention) => mention!.attrs!
         ),
       ],
       []
@@ -134,7 +132,7 @@ export function useRte({
         ...acc,
         ...(
           curr.content?.filter((val) => val.type === "projectMention") || []
-        ).map((mention) => mention?.attrs!),
+        ).map((mention) => mention!.attrs!),
       ],
       []
     )[0];
@@ -157,7 +155,7 @@ export function useRte({
           return [
             ...acc,
             ...(curr.content?.filter((val) => val.type === "text") || []).map(
-              (val) => val?.text!
+              (val) => val!.text!
             ),
           ];
         }

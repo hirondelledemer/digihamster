@@ -3,7 +3,7 @@ import TaskCard, { TaskCardProps } from "./TaskCard";
 import { getTaskCardTestkit } from "./TaskCard.testkit";
 import { TasksContext, TasksContextValues } from "@/app/utils/hooks/use-tasks";
 import { generateTask } from "@/app/utils/mocks/task";
-import { render, act, screen } from "@/config/utils/test-utils";
+import { render, act } from "@/config/utils/test-utils";
 
 import mockAxios from "jest-mock-axios";
 import { wrapWithProjectsProvider } from "@/app/utils/tests/wraps";
@@ -62,25 +62,25 @@ describe("TaskCard", () => {
     );
 
   it("should render TaskCard", () => {
-    const wrapper = renderComponent();
-    expect(wrapper.getComponent()).not.toBe(null);
+    const { getComponent } = renderComponent();
+    expect(getComponent()).not.toBe(null);
   });
 
   it("shows task title, project name, description, tags", () => {
-    const wrapper = renderComponent();
-    expect(wrapper.getComponent().textContent).toBe(
+    const { getComponent } = renderComponent();
+    expect(getComponent().textContent).toBe(
       "Task 1Project 1task description 1"
     );
   });
 
   it("should not show stale indicator", () => {
-    const wrapper = renderComponent();
-    expect(wrapper.staleIndicatorIsVisible()).toBe(false);
+    const { staleIndicatorIsVisible } = renderComponent();
+    expect(staleIndicatorIsVisible()).toBe(false);
   });
 
   it("should deactivate task", () => {
-    const wrapper = renderComponent(defaultProps);
-    wrapper.clickDeactivate();
+    const { clickDeactivate } = renderComponent(defaultProps);
+    clickDeactivate();
     expect(mockAxios.patch).toHaveBeenCalledWith("/api/tasks/v2", {
       isActive: false,
       taskId: defaultTask._id,
@@ -88,25 +88,31 @@ describe("TaskCard", () => {
   });
 
   it("should open task form", () => {
-    const wrapper = renderComponent(defaultProps);
-    wrapper.clickEdit();
-    expect(wrapper.taskFormIsOpen()).toBe(true);
-    expect(wrapper.getTaskFormTitleValue()).toBe(defaultProps.task.title);
-    expect(wrapper.getTaskFormDescriptionValue()).toBe(
-      defaultProps.task.description
-    );
-    expect(wrapper.getTaskFormEtaValue("eta-0")).toBe(true);
-    expect(wrapper.getTaskFormProjectValue()).toBe("Project 1");
+    const {
+      clickEdit,
+      taskFormIsOpen,
+      getTaskFormTitleValue,
+      getTaskFormDescriptionValue,
+      getTaskFormEtaValue,
+      getTaskFormProjectValue,
+    } = renderComponent(defaultProps);
+    clickEdit();
+    expect(taskFormIsOpen()).toBe(true);
+    expect(getTaskFormTitleValue()).toBe(defaultProps.task.title);
+    expect(getTaskFormDescriptionValue()).toBe(defaultProps.task.description);
+    expect(getTaskFormEtaValue("eta-0")).toBe(true);
+    expect(getTaskFormProjectValue()).toBe("Project 1");
   });
 
   it("should edit task", async () => {
-    const wrapper = renderComponent(defaultProps);
-    wrapper.clickEdit();
-    wrapper.enterTitle("new title");
-    await wrapper.enterDescription("new desc");
-    wrapper.setEta("eta-3");
+    const { clickEdit, enterTitle, enterDescription, setEta, submitForm } =
+      renderComponent(defaultProps);
+    clickEdit();
+    enterTitle("new title");
+    await enterDescription("new desc");
+    setEta("eta-3");
     await act(() => {
-      wrapper.submitForm();
+      submitForm();
     });
 
     expect(mockAxios.patch).toHaveBeenCalledWith("/api/tasks/v2", {
@@ -127,8 +133,11 @@ describe("TaskCard", () => {
         ...defaultTasksContextValues,
         setData: setTasksMock,
       };
-      const wrapper = renderComponent(defaultProps, tasksContextValues);
-      wrapper.clickComplete();
+      const { clickComplete } = renderComponent(
+        defaultProps,
+        tasksContextValues
+      );
+      clickComplete();
       expect(mockAxios.patch).toHaveBeenCalledWith("/api/tasks/v2", {
         completed: true,
         taskId: defaultTask._id,
@@ -137,10 +146,11 @@ describe("TaskCard", () => {
     });
 
     it("should show task without opacity and full info", () => {
-      const wrapper = renderComponent();
-      expect(wrapper.cardIsFaded()).toBe(false);
-      expect(wrapper.cardTextIsStriked()).toBe(false);
-      expect(wrapper.getComponent().textContent).toBe(
+      const { cardIsFaded, cardTextIsStriked, getComponent } =
+        renderComponent();
+      expect(cardIsFaded()).toBe(false);
+      expect(cardTextIsStriked()).toBe(false);
+      expect(getComponent().textContent).toBe(
         "Task 1Project 1task description 1"
       );
     });
@@ -153,8 +163,8 @@ describe("TaskCard", () => {
     };
 
     it("should undo the task", async () => {
-      const wrapper = renderComponent(props);
-      wrapper.clickUndo();
+      const { clickUndo } = renderComponent(props);
+      clickUndo();
       expect(mockAxios.patch).toHaveBeenCalledWith("/api/tasks/v2", {
         completed: false,
         taskId: defaultTask._id,
@@ -162,10 +172,11 @@ describe("TaskCard", () => {
     });
 
     it("should show task as with opacity and limited info", () => {
-      const wrapper = renderComponent(props);
-      expect(wrapper.cardIsFaded()).toBe(true);
-      expect(wrapper.cardTextIsStriked()).toBe(true);
-      expect(wrapper.getComponent().textContent).toBe("Task 1");
+      const { cardIsFaded, cardTextIsStriked, getComponent } =
+        renderComponent(props);
+      expect(cardIsFaded()).toBe(true);
+      expect(cardTextIsStriked()).toBe(true);
+      expect(getComponent().textContent).toBe("Task 1");
     });
   });
 
@@ -178,8 +189,8 @@ describe("TaskCard", () => {
     };
 
     it("show stale indicator", () => {
-      const wrapper = renderComponent(props);
-      expect(wrapper.staleIndicatorIsVisible()).toBe(true);
+      const { staleIndicatorIsVisible } = renderComponent(props);
+      expect(staleIndicatorIsVisible()).toBe(true);
     });
   });
 
@@ -189,8 +200,8 @@ describe("TaskCard", () => {
     };
 
     it("should remove event", () => {
-      const wrapper = renderComponent(props);
-      wrapper.clickRemoveEvent();
+      const { clickRemoveEvent } = renderComponent(props);
+      clickRemoveEvent();
       expect(mockAxios.patch).toHaveBeenCalledWith("/api/tasks/v2", {
         eventId: null,
         taskId: props.task._id,
@@ -198,8 +209,8 @@ describe("TaskCard", () => {
     });
 
     it("should not allow to deactivate it", () => {
-      const wrapper = renderComponent(props);
-      expect(wrapper.deactivateButtonExists()).toBe(false);
+      const { deactivateButtonExists } = renderComponent(props);
+      expect(deactivateButtonExists()).toBe(false);
     });
   });
 });

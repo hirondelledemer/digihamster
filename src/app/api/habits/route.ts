@@ -1,6 +1,5 @@
 import { connect } from "@/config/database/connection";
 import { getDataFromToken } from "@/app/helpers/getDataFromToken";
-import User from "@/models/user";
 import { NextRequest, NextResponse } from "next/server";
 import Habit, { IHabit } from "@/models/habit";
 

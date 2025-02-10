@@ -102,7 +102,9 @@ export const HabitsContextProvider = ({ children }: any) => {
   ) => {
     try {
       setData((habits) => habits.filter((h) => h._id !== habitId));
-      onDone && onDone();
+      if (onDone) {
+        onDone();
+      }
       await axios.patch("/api/habits", {
         id: habitId,
         deleted: true,
@@ -131,7 +133,9 @@ export const HabitsContextProvider = ({ children }: any) => {
           ...props,
         })
       );
-      onDone && onDone();
+      if (onDone) {
+        onDone();
+      }
       await axios.patch("/api/habits", {
         id: habitId,
         ...props,
@@ -160,7 +164,9 @@ export const HabitsContextProvider = ({ children }: any) => {
           log: [props],
         })
       );
-      onDone && onDone();
+      if (onDone) {
+        onDone();
+      }
       await axios.patch("/api/habits/logs", {
         id: habitId,
         completed: props.completed,

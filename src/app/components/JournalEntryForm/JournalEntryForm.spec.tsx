@@ -1,4 +1,4 @@
-import { act, waitFor, cleanup } from "@testing-library/react";
+import { act, waitFor } from "@testing-library/react";
 
 import JournalEntryForm, { JournalEntryFormProps } from "./JournalEntryForm";
 import { getJournalEntryFormTestkit } from "./JournalEntryForm.testkit";
@@ -23,7 +23,6 @@ describe("JournalEntryForm", () => {
 
   afterEach(() => {
     MockAxios.reset();
-    cleanup();
   });
 
   it("should render JournalEntryForm", () => {
@@ -66,10 +65,10 @@ describe("JournalEntryForm", () => {
         tags: [],
         title: "test",
       });
-      expect(toastSpy).toHaveBeenCalledWith({
-        title: "Success",
-        description: "Note has been submitted",
-      });
+    });
+    expect(toastSpy).toHaveBeenCalledWith({
+      title: "Success",
+      description: "Note has been submitted",
     });
   });
 
@@ -92,11 +91,11 @@ describe("JournalEntryForm", () => {
           tags: [],
           title: "test",
         });
-        expect(toastSpy).toHaveBeenCalledWith({
-          description: '{"data":{}}',
-          title: "Error",
-          variant: "destructive",
-        });
+      });
+      expect(toastSpy).toHaveBeenCalledWith({
+        description: '{"data":{}}',
+        title: "Error",
+        variant: "destructive",
       });
     });
   });

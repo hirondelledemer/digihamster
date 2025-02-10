@@ -64,7 +64,9 @@ export const useEditTask = () => {
           ...props,
         })
       );
-      onDone && onDone();
+      if (onDone) {
+        onDone();
+      }
       await axios.patch("/api/tasks/v2", {
         taskId,
         ...props,

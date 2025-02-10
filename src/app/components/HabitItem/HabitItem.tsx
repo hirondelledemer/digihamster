@@ -13,7 +13,7 @@ export interface HabitItemProps {
   habit: Habit;
 }
 
-const HabitItem: FC<HabitItemProps> = ({ testId, habit }): JSX.Element => {
+const HabitItem: FC<HabitItemProps> = ({ habit }): JSX.Element => {
   const { addLog } = useHabits();
   const [habitFormOpen, setHabitFormOpen] = useState<boolean>(false);
 

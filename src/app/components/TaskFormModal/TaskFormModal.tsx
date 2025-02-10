@@ -9,7 +9,8 @@ import CreateTaskForm from "../CreateTaskForm";
 export const minimalNoteTestId = "TaskForm-minimal-note-testId" as const;
 export const taskFormTestId = "TaskForm-form-testid" as const;
 
-type TaskFormModalProps = Omit<TaskModalProps, "children"> & TaskFormProps;
+export type TaskFormModalProps = Omit<TaskModalProps, "children"> &
+  TaskFormProps;
 
 const TaskFormModal: FC<TaskFormModalProps> = ({
   testId,

@@ -25,7 +25,6 @@ describe("CreateTaskForm", () => {
 
   it("should render CreateTaskForm", () => {
     renderComponent();
-    screen.logTestingPlaygroundURL();
 
     expect(screen.getByTestId(rteTestId)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /create/i })).toBeInTheDocument();
@@ -38,7 +37,7 @@ describe("CreateTaskForm", () => {
 
     rteWrapper.enterValue("<p>test</p><p>note</p>");
     rteWrapper.blur();
-    userEvent.click(screen.getByRole("button", { name: /create/i }));
+    await userEvent.click(screen.getByRole("button", { name: /create/i }));
 
     await waitFor(() => {
       expect(mockAxios.post).toHaveBeenCalledWith("/api/tasks/v2", {
@@ -84,7 +83,7 @@ describe("CreateTaskForm", () => {
       '<p>feed the cat</p><p><span data-type="projectMention" class="rte-hook_project__UsSIv" data-id="679cbfd01c93c55e18e183dd:#3b82f6" data-label="perfect cat">/p perfect cat</span> </p><p></p><p><span data-type="mention" class="rte-hook_tag__Ghi7L" data-id="678a222ffc21119042d789b7:#364FC7" data-label="task">@task</span> get the water</p><p><span data-type="mention" class="rte-hook_tag__Ghi7L" data-id="678a222ffc21119042d789b7:#364FC7" data-label="task">@task</span> get the food</p><p></p><p>cat has to be fed!!!!!!</p><p><span data-type="mention" class="rte-hook_tag__Ghi7L" data-id="67a353c60ce48e8aa5881859:#087F5B" data-label="active">@active</span> </p><p></p><p><span data-type="mention" class="rte-hook_tag__Ghi7L" data-id="65c6a43d38a23c2c6627d07c:#FF6B6B" data-label="mmm">@mmm</span> </p>'
     );
     rteWrapper.blur();
-    userEvent.click(screen.getByRole("button", { name: /create/i }));
+    await userEvent.click(screen.getByRole("button", { name: /create/i }));
 
     await waitFor(() => {
       expect(mockAxios.post).toHaveBeenCalledWith("/api/tasks/v2", {
@@ -207,12 +206,12 @@ describe("CreateTaskForm", () => {
 
       rteWrapper.enterValue("<p></p><p>note</p>");
       rteWrapper.blur();
-      userEvent.click(screen.getByRole("button", { name: /create/i }));
+      await userEvent.click(screen.getByRole("button", { name: /create/i }));
 
       await waitFor(() => {
         expect(screen.getByText("title: required")).toBeInTheDocument();
-        expect(mockAxios.post).not.toHaveBeenCalled();
       });
+      expect(mockAxios.post).not.toHaveBeenCalled();
     });
   });
 });

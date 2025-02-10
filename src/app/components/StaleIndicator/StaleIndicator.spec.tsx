@@ -10,7 +10,7 @@ describe("StaleIndicator", () => {
     getStaleIndicatorTestkit(render(<StaleIndicator {...props} />).container);
 
   it("should render StaleIndicator", () => {
-    const wrapper = renderComponent();
-    expect(wrapper.getComponent()).not.toBe(null);
+    const { getComponent } = renderComponent();
+    expect(getComponent()).not.toBe(null);
   });
 });

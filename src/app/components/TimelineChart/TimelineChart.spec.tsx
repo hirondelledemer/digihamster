@@ -53,7 +53,7 @@ describe("TimelineChart", () => {
     getTimelineChartTestkit(render(<TimelineChart {...props} />).container);
 
   it("should render TimelineChart", () => {
-    const wrapper = renderComponent();
-    expect(wrapper.getComponent()).not.toBe(null);
+    const { getComponent } = renderComponent();
+    expect(getComponent()).not.toBe(null);
   });
 });

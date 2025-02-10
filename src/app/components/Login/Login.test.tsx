@@ -54,10 +54,10 @@ describe("Login", () => {
 
       await waitFor(() => {
         const emailError = screen.getByText(/this is not a valid email\./i);
-        const passwordError = screen.getByText(/this is not a valid email\./i);
         expect(emailError).toBeInTheDocument();
-        expect(passwordError).toBeInTheDocument();
       });
+      const passwordError = screen.getByText(/this is not a valid email\./i);
+      expect(passwordError).toBeInTheDocument();
 
       expect(mockAxios.post).not.toHaveBeenCalled();
     });
@@ -78,14 +78,13 @@ describe("Login", () => {
         fireEvent.click(loginButton);
 
         await waitFor(() => {
-          const error = screen.getByText("server error");
-
           expect(mockAxios.post).toHaveBeenCalledWith("/api/users/login", {
             email: "test@test.com",
             password: "password",
           });
-          expect(error).toBeInTheDocument();
         });
+        const error = screen.getByText("server error");
+        expect(error).toBeInTheDocument();
       });
     });
   });

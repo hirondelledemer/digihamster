@@ -10,7 +10,7 @@ export const getTodayWithZeroHours = () => {
 
 // TODO: add commentary. Maybe rename
 export const getTimestampsFrom = (startingDate: Date, howMany: number) => {
-  let array = [];
+  const array = [];
   for (let i = 0; i <= howMany; i++) {
     array.push(subDays(startingDate, i).getTime());
   }

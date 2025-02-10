@@ -2,11 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 
 import TodayEvent from ".";
 import { TodayEventProps } from "./TodayEvent";
-import {
-  generateCustomTasksList,
-  generateListOfTasks,
-  generateTask,
-} from "@/app/utils/mocks/task";
+import { generateCustomTasksList, generateTask } from "@/app/utils/mocks/task";
 import { now } from "@/app/utils/date/date";
 
 const meta: Meta<typeof TodayEvent> = {
