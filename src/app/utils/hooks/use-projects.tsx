@@ -114,7 +114,9 @@ export const ProjectsContextProvider = ({ children }: any) => {
           ...props,
         })
       );
-      onDone && onDone();
+      if (onDone) {
+        onDone();
+      }
       await axios.patch("/api/projects", {
         id: projectId,
         ...props,
@@ -143,7 +145,11 @@ export const ProjectsContextProvider = ({ children }: any) => {
       const newArray = arrayMove(data, oldIndex, newIndex);
 
       setData(newArray);
-      onDone && onDone();
+
+      if (onDone) {
+        onDone();
+      }
+
       await axios.patch("/api/projects/sort", {
         sortOrder: newArray.map((p, index) => ({
           projectId: p._id,

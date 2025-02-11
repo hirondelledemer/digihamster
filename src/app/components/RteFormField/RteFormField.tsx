@@ -9,7 +9,7 @@ interface RteFormFieldProps {
   onChange(val: RteValue): void;
 }
 
-const MinimalNote: FC<RteFormFieldProps> = ({
+const RteFormField: FC<RteFormFieldProps> = ({
   testId,
   value,
   onChange,
@@ -32,4 +32,4 @@ const MinimalNote: FC<RteFormFieldProps> = ({
   );
 };
 
-export default MinimalNote;
+export default RteFormField;

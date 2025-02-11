@@ -3,7 +3,8 @@ import { getMentionListTestkit } from "./MentionList.testkit";
 import React from "react";
 import { act, render, waitFor } from "@/config/utils/test-utils";
 import MockAxios from "jest-mock-axios";
-import { COLORS_V2 } from "../consts/colors";
+import { wrapWithTagsProvider } from "../tests/wraps";
+import { generateListOfTags } from "../mocks/tag";
 
 jest.mock("../common/random-int", () => ({
   getRandomInt: () => 0,
@@ -18,50 +19,37 @@ describe("MentionList", () => {
     query: "",
   };
   const renderComponent = (props = defaultProps) =>
-    getMentionListTestkit(render(<MentionList {...props} />).container);
+    getMentionListTestkit(
+      render(
+        wrapWithTagsProvider(<MentionList {...props} />, generateListOfTags(2))
+      ).container
+    );
 
   it("should render MentionList", () => {
-    const wrapper = renderComponent();
-    expect(wrapper.getComponent()).not.toBe(null);
+    const { getComponent } = renderComponent();
+    expect(getComponent()).not.toBe(null);
   });
 
   it("should show tags", async () => {
-    MockAxios.get.mockResolvedValueOnce({
-      data: [
-        { _id: "tag1", title: "Tag 1", color: COLORS_V2[0] },
-        { _id: "tag2", title: "Tag 2", color: COLORS_V2[2] },
-      ],
-    });
-
-    const wrapper = renderComponent();
+    const { getComponent } = renderComponent();
 
     await waitFor(() => {
-      expect(wrapper.getComponent().textContent).toBe("Tag 1Tag 2");
+      expect(getComponent().textContent).toBe("Tag 0Tag 1");
     });
   });
 
   describe("selecting tag", () => {
     it("should select tag", async () => {
-      const tags = [
-        { _id: "tag1", title: "Tag 1", color: COLORS_V2[0] },
-        { _id: "tag2", title: "Tag 2", color: COLORS_V2[1] },
-        { _id: "tag3", title: "Tag 3", color: COLORS_V2[2] },
-      ];
-
-      MockAxios.get.mockResolvedValueOnce({
-        data: tags,
-      });
-
       const ref = React.createRef();
       const command = jest.fn();
-      const wrapper = renderComponent({
+      const { getComponent } = renderComponent({
         ...defaultProps,
         ref,
         command,
       } as any);
 
       await waitFor(() => {
-        expect(wrapper.getComponent().textContent).toContain("Tag 1Tag 2");
+        expect(getComponent().textContent).toContain("Tag 0Tag 1");
       });
 
       act(() => {
@@ -72,8 +60,8 @@ describe("MentionList", () => {
       (ref.current as any).onKeyDown({ event: { key: "Enter" } });
 
       expect(command).toHaveBeenCalledWith({
-        id: `${tags[1]._id}:${tags[1].color}`,
-        label: tags[1].title,
+        id: "tag1:tag-color-1",
+        label: "Tag 1",
       });
     });
 
@@ -89,7 +77,7 @@ describe("MentionList", () => {
         },
       });
 
-      const wrapper = renderComponent({
+      const { getCreateButton } = renderComponent({
         ...defaultProps,
         query,
         ref,
@@ -97,7 +85,7 @@ describe("MentionList", () => {
       } as any);
 
       await waitFor(() => {
-        expect(wrapper.getCreateButton()).toBeInTheDocument();
+        expect(getCreateButton()).toBeInTheDocument();
       });
 
       act(() => {
@@ -106,13 +94,13 @@ describe("MentionList", () => {
 
       await waitFor(() => {
         expect(MockAxios.post).toHaveBeenCalledWith("/api/tags", {
-          color: "#ADB5BD",
+          color: "#C92A2A",
           title: "new",
         });
-        expect(command).toHaveBeenCalledWith({
-          id: "newTag1:#F06595",
-          label: "new",
-        });
+      });
+      expect(command).toHaveBeenCalledWith({
+        id: "newTag1:#F06595",
+        label: "new",
       });
     });
   });
@@ -121,12 +109,12 @@ describe("MentionList", () => {
     describe("tag exists by query", () => {
       const query = "Tag 1";
       it("should show tags filtered by query", async () => {
-        const wrapper = renderComponent({
+        const { getComponent } = renderComponent({
           ...defaultProps,
           query,
         });
         await waitFor(() => {
-          expect(wrapper.getComponent()).toHaveTextContent("Tag 1");
+          expect(getComponent()).toHaveTextContent("Tag 1");
         });
       });
     });
@@ -134,12 +122,12 @@ describe("MentionList", () => {
     describe("tag does not exists by query", () => {
       const query = "new";
       it('should show show "create button"', async () => {
-        const wrapper = renderComponent({
+        const { getCreateButton } = renderComponent({
           ...defaultProps,
           query,
         });
         await waitFor(() => {
-          expect(wrapper.getCreateButton()).toBeInTheDocument();
+          expect(getCreateButton()).toBeInTheDocument();
         });
       });
     });

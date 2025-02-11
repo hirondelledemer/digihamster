@@ -5,6 +5,7 @@ const nextConfig = {
     more information here https://github.com/vercel/next.js/issues/56206
 	*/
   reactStrictMode: false,
+  productionBrowserSourceMaps: true,
 };
 
 export default nextConfig;

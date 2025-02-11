@@ -12,6 +12,7 @@ describe("TodayEvent", () => {
   const defaultProps: TodayEventProps = {
     event: {
       title: "Title",
+      start: new Date(),
       resource: {
         completed: false,
         id: "event1",
@@ -25,13 +26,13 @@ describe("TodayEvent", () => {
     getTodayEventTestkit(render(<TodayEvent {...props} />).container);
 
   it("should render TodayEvent", () => {
-    const wrapper = renderComponent();
-    expect(wrapper.getComponent()).not.toBe(null);
+    const { getComponent } = renderComponent();
+    expect(getComponent()).not.toBe(null);
   });
 
   it("should not show deadline label", () => {
-    const wrapper = renderComponent();
-    expect(wrapper.getComponent().textContent).toBe("Title");
+    const { getComponent } = renderComponent();
+    expect(getComponent().textContent).toBe("Title");
   });
 
   it('should not show "move back to list" icon', () => {
@@ -46,6 +47,7 @@ describe("TodayEvent", () => {
     const props: TodayEventProps = {
       event: {
         title: "Title",
+        start: new Date(),
         resource: {
           completed: false,
           id: "event1",
@@ -74,6 +76,7 @@ describe("TodayEvent", () => {
       event: {
         title: "Title",
         allDay: true,
+        start: new Date(),
         resource: {
           completed: false,
           id: "event1",
@@ -85,24 +88,24 @@ describe("TodayEvent", () => {
     };
 
     it("should show label all day", () => {
-      const wrapper = renderComponent(props);
-      expect(wrapper.getAllDayLabel()).toBeInTheDocument();
+      const { getAllDayLabel } = renderComponent(props);
+      expect(getAllDayLabel()).toBeInTheDocument();
     });
 
     it("should show title", () => {
-      const wrapper = renderComponent(props);
-      expect(wrapper.getTitle(props.event.title as string)).toBeInTheDocument();
+      const { getTitle } = renderComponent(props);
+      expect(getTitle(props.event.title as string)).toBeInTheDocument();
     });
 
     it("should show checkbox in red", () => {
-      const wrapper = renderComponent(props);
-      expect(wrapper.getCheckbox()).toBeInTheDocument();
-      expect(wrapper.checkboxIsPrimary()).toBe(true);
+      const { getCheckbox, checkboxIsPrimary } = renderComponent(props);
+      expect(getCheckbox()).toBeInTheDocument();
+      expect(checkboxIsPrimary()).toBe(true);
     });
 
     it("should complete task", () => {
-      const wrapper = renderComponent(props);
-      wrapper.clickCheckbox();
+      const { clickCheckbox } = renderComponent(props);
+      clickCheckbox();
       expect(mockAxios.patch).toHaveBeenCalledWith("/api/events", {
         completed: true,
         eventId: "event1",
@@ -127,18 +130,18 @@ describe("TodayEvent", () => {
     };
 
     it("should show label with time", () => {
-      const wrapper = renderComponent(props);
-      expect(wrapper.getTimeLabel("0:00-6:13")).toBeInTheDocument();
+      const { getTimeLabel } = renderComponent(props);
+      expect(getTimeLabel("0:00-6:13")).toBeInTheDocument();
     });
 
     it("should show title", () => {
-      const wrapper = renderComponent(props);
-      expect(wrapper.getTitle(props.event.title as string)).toBeInTheDocument();
+      const { getTitle } = renderComponent(props);
+      expect(getTitle(props.event.title as string)).toBeInTheDocument();
     });
 
     it("should show checkbox", () => {
-      const wrapper = renderComponent(props);
-      expect(wrapper.getCheckbox()).toBeInTheDocument();
+      const { getCheckbox } = renderComponent(props);
+      expect(getCheckbox()).toBeInTheDocument();
     });
   });
 
@@ -159,15 +162,15 @@ describe("TodayEvent", () => {
     };
 
     it.skip("should show strike-through", () => {
-      const wrapper = renderComponent(props);
-      expect(wrapper.getTitle(props.event.title as string)).toBeInTheDocument();
+      const { getTitle } = renderComponent(props);
+      expect(getTitle(props.event.title as string)).toBeInTheDocument();
       // todo: find out how to test
       // expect(wrapper.componentHasAStrike(props.title as string)).toBe(true);
     });
 
     it("shold show grey checkbox", () => {
-      const wrapper = renderComponent(props);
-      expect(wrapper.checkboxIsSecondary()).toBe(true);
+      const { checkboxIsSecondary } = renderComponent(props);
+      expect(checkboxIsSecondary()).toBe(true);
     });
   });
 });

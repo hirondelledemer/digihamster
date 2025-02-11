@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function PATCH(request: NextRequest) {
   try {
-    const userId = await getDataFromToken(request);
+    await getDataFromToken(request);
     const reqBody = await request.json();
     const args: { sortOrder: { projectId: string; order: number }[] } = reqBody;
 

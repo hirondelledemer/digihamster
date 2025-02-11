@@ -14,7 +14,7 @@ describe("ProjectBurnDownChart", () => {
     );
 
   it("should render ProjectBurnDownChart", () => {
-    const wrapper = renderComponent();
-    expect(wrapper.getComponent()).not.toBe(null);
+    const { getComponent } = renderComponent();
+    expect(getComponent()).not.toBe(null);
   });
 });

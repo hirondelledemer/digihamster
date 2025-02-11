@@ -21,6 +21,7 @@ export const sendEmail = async ({ email, emailType, userId }: any) => {
     }
 
     // Create a nodemailer transport
+    // eslint-disable-next-line no-var
     var transport = nodemailer.createTransport({
       host: "sandbox.smtp.mailtrap.io",
       port: 2525,

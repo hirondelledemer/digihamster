@@ -22,7 +22,7 @@ const { Provider } = NotesContext;
 export const NotesContextProvider = ({ children }: any) => {
   const [data, setData] = useState<Note[]>([]);
   // todo: look into utilising this
-  const [error, setError] = useState<unknown>(null);
+  const [_error, setError] = useState<unknown>(null);
   const [loading, setLoading] = useState(false);
 
   const { toast } = useToast();

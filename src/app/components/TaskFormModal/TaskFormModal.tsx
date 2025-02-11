@@ -4,11 +4,13 @@ import TaskModal from "../TaskModal";
 import TaskForm from "../TaskForm";
 import { TaskModalProps } from "../TaskModal/TaskModal";
 import { TaskFormProps } from "../TaskForm/TaskForm";
+import CreateTaskForm from "../CreateTaskForm";
 
 export const minimalNoteTestId = "TaskForm-minimal-note-testId" as const;
 export const taskFormTestId = "TaskForm-form-testid" as const;
 
-type TaskFormModalProps = Omit<TaskModalProps, "children"> & TaskFormProps;
+export type TaskFormModalProps = Omit<TaskModalProps, "children"> &
+  TaskFormProps;
 
 const TaskFormModal: FC<TaskFormModalProps> = ({
   testId,
@@ -19,7 +21,11 @@ const TaskFormModal: FC<TaskFormModalProps> = ({
   return (
     <div data-testid={testId}>
       <TaskModal open={open} onClose={onClose}>
-        <TaskForm {...taskFormProps} />
+        {taskFormProps.editMode ? (
+          <TaskForm {...taskFormProps} />
+        ) : (
+          <CreateTaskForm {...taskFormProps} />
+        )}
       </TaskModal>
     </div>
   );

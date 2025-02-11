@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import React, { useEffect } from "react";
+import React from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 
@@ -14,7 +14,7 @@ export default function SignupPage() {
 
   const onSignup = async () => {
     try {
-      const response = await axios.post("/api/users/signup", user);
+      await axios.post("/api/users/signup", user);
       router.push("/login");
     } catch (error: any) {
       console.log("Signup failed", error.message);

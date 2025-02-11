@@ -19,7 +19,9 @@ const useEditEvent = () => {
           ...props,
         })
       );
-      onDone && onDone();
+      if (onDone) {
+        onDone();
+      }
       await axios.patch("/api/events", {
         eventId,
         ...props,

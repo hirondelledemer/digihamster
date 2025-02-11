@@ -1,5 +1,5 @@
 import { act } from "react";
-import { cleanup, renderHook } from "@testing-library/react";
+import { renderHook } from "@testing-library/react";
 import useEditTask from "./use-edit-task";
 import mockAxios from "jest-mock-axios";
 
@@ -16,7 +16,6 @@ describe("use-edit-task", () => {
 
   afterEach(() => {
     mockAxios.reset();
-    cleanup();
   });
 
   it("should update task", async () => {

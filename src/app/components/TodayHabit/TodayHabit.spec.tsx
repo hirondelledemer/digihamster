@@ -22,8 +22,8 @@ describe("TodayHabit", () => {
     getTodayHabitTestkit(render(<TodayHabit {...props} />).container);
 
   it("should render TodayHabit", () => {
-    const wrapper = renderComponent();
-    expect(wrapper.getComponent()).not.toBe(null);
+    const { getComponent } = renderComponent();
+    expect(getComponent()).not.toBe(null);
   });
 
   describe("no logs", () => {

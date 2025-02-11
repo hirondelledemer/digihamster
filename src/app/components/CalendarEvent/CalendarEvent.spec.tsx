@@ -3,7 +3,7 @@ import { CalendarEventProps } from "./CalendarEvent";
 import CalendarEvent from "./CalendarEvent";
 import { getCalendarEventTestkit } from "./CalendarEvent.testkit";
 import mockAxios from "jest-mock-axios";
-import { generateListOfTasks, generateTask } from "@/app/utils/mocks/task";
+import { generateListOfTasks } from "@/app/utils/mocks/task";
 import { CalendarEventEntry } from "./CalendarEvent.types";
 import { HOUR } from "@/app/utils/consts/dates";
 
@@ -103,14 +103,14 @@ describe("CalendarEvent", () => {
     };
 
     it("should show tasks", () => {
-      const wrapper = renderComponent(props);
+      renderComponent(props);
       expect(
-        wrapper.getByText(
+        screen.getByText(
           `${(props.event as CalendarEventEntry).resource.tasks[0].title}`
         )
       ).toBeInTheDocument();
       expect(
-        wrapper.getByText(
+        screen.getByText(
           `${(props.event as CalendarEventEntry).resource.tasks[1].title}`
         )
       ).toBeInTheDocument();

@@ -1,9 +1,8 @@
 import ActiveTaskList, { ActiveTaskListProps } from "./ActiveTaskList";
 import { getActiveTaskListTestkit } from "./ActiveTaskList.testkit";
 import { generateCustomTasksList } from "@/app/utils/mocks/task";
-import { ProjectsContext } from "@/app/utils/hooks/use-projects";
 import { TasksContext } from "@/app/utils/hooks/use-tasks";
-import { fireEvent, render, screen } from "@/config/utils/test-utils";
+import { fireEvent, render } from "@/config/utils/test-utils";
 import { TagsContext } from "@/app/utils/hooks/use-tags";
 import { wrapWithProjectsProvider } from "@/app/utils/tests/wraps";
 

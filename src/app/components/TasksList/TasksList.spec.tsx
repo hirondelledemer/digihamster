@@ -11,13 +11,11 @@ describe("TasksList", () => {
   };
   const renderComponent = (props = defaultProps) =>
     getTasksListTestkit(
-      render(
-        wrapWithProjectsProvider(<TasksList {...props} />, { projects: [] })
-      ).container
+      render(wrapWithProjectsProvider(<TasksList {...props} />)).container
     );
 
   it("should render TasksList", () => {
-    const wrapper = renderComponent();
-    expect(wrapper.getComponent()).not.toBe(null);
+    const { getComponent } = renderComponent();
+    expect(getComponent()).not.toBe(null);
   });
 });

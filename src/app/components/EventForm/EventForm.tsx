@@ -64,7 +64,7 @@ const EventForm: FC<EventFormProps> = ({
   ...restProps
 }): JSX.Element => {
   const { data: projects, defaultProject } = useProjects();
-  const { data: eventsData, setData: setEventsData } = useEvents();
+  const { setData: setEventsData } = useEvents();
   const { editEvent } = useEditEvent();
   const { toast } = useToast();
 

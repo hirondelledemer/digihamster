@@ -28,7 +28,7 @@ import {
 
 import useCycle from "@/app/utils/hooks/use-cycle";
 import { useDroppable } from "@dnd-kit/core";
-import { isCalendarDeadlineEntry } from "../CalendarEvent/CalendarEvent.types";
+
 import { cn } from "../utils";
 
 export interface CalendarToolbarProps extends ToolbarProps<CalendarEventType> {

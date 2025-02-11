@@ -69,8 +69,8 @@ describe("Timeline", () => {
     );
 
   it("should render Timeline", () => {
-    const wrapper = renderComponent();
-    expect(wrapper.getComponent()).not.toBe(null);
+    const { getComponent } = renderComponent();
+    expect(getComponent()).not.toBe(null);
   });
 
   describe("initial load", () => {

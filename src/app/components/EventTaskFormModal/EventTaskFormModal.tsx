@@ -1,10 +1,11 @@
 import React, { FC, useState } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "../ui/sheet";
-import TaskForm from "../TaskForm";
+
 import EventForm from "../EventForm";
 import { Switch } from "../ui/switch";
 import { Label } from "../ui/label";
 import { FormMode } from "./types";
+import CreateTaskForm from "../CreateTaskForm";
 
 export interface EventTaskFormModalProps {
   testId?: string;
@@ -60,18 +61,7 @@ const EventTaskFormModal: FC<EventTaskFormModalProps> = ({
             />
           </div>
           {formMode === "task" ? (
-            <TaskForm
-              editMode={false}
-              onDone={handleOnDone}
-              initialValues={{
-                deadline: initialValues.startAt,
-                isActive: true,
-                title: "",
-                description: "",
-                tags: [],
-                eta: 0.5,
-              }}
-            />
+            <CreateTaskForm onDone={handleOnDone} />
           ) : (
             <EventForm
               editMode={false}

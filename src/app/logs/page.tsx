@@ -1,4 +1,3 @@
-import { Home as HomeComp } from "../components/Home/Home";
 import Timeline from "../components/Timeline";
 import { EntriesContextProvider } from "../utils/hooks/use-entry";
 import { EventsContextProvider } from "../utils/hooks/use-events";

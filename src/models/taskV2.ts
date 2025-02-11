@@ -5,6 +5,7 @@ export interface TaskV2 extends Taggable, TimeStamps {
   _id: string;
   title: string;
   description?: string | null;
+  descriptionFull?: object | null;
   completed: boolean;
   isActive: boolean;
   deleted: boolean;
@@ -24,6 +25,7 @@ const TaskV2Schema = new mongoose.Schema(
   {
     title: { type: String, required: true },
     description: { type: String, required: false },
+    descriptionFull: { type: Object, required: false },
     userId: { type: String, required: true },
     completed: { type: Boolean, required: true },
     isActive: { type: Boolean, required: true },

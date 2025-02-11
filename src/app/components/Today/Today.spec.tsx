@@ -57,22 +57,22 @@ describe("Today", () => {
     getTodayTestkit(render(<Today {...props} />).container);
 
   it("should render Today", () => {
-    const wrapper = renderComponent();
-    expect(wrapper.getComponent()).not.toBe(null);
+    const { getComponent } = renderComponent();
+    expect(getComponent()).not.toBe(null);
   });
 
   describe("only todays tasks exists", () => {
     it("should show todays tasks", () => {
-      const wrapper = renderComponent();
-      expect(wrapper.getEventCount()).toBe(3);
+      const { getEventCount, getEventAt } = renderComponent();
+      expect(getEventCount()).toBe(3);
       expect(
-        wrapper.getEventAt(0).getTitle(defaultProps.events[1].title as string)
+        getEventAt(0).getTitle(defaultProps.events[1].title as string)
       ).toBeInTheDocument();
       expect(
-        wrapper.getEventAt(1).getTitle(defaultProps.events[0].title as string)
+        getEventAt(1).getTitle(defaultProps.events[0].title as string)
       ).toBeInTheDocument();
       expect(
-        wrapper.getEventAt(2).getTitle(defaultProps.events[2].title as string)
+        getEventAt(2).getTitle(defaultProps.events[2].title as string)
       ).toBeInTheDocument();
     });
   });

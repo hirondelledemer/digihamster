@@ -86,8 +86,8 @@ describe("ProjectCard", () => {
     });
 
     it("should not show completed tasks count", () => {
-      const wrapper = renderComponent(defaultProps, tasks);
-      expect(wrapper.getComponent().textContent).toBe("Project 1");
+      const { getComponent } = renderComponent(defaultProps, tasks);
+      expect(getComponent().textContent).toBe("Project 1");
     });
 
     it("should show completed icon", () => {
@@ -108,8 +108,8 @@ describe("ProjectCard", () => {
     });
 
     it("should not show completed tasks count", () => {
-      const wrapper = renderComponent(props);
-      expect(wrapper.getComponent().textContent).toBe("Project 0");
+      const { getComponent } = renderComponent(props);
+      expect(getComponent().textContent).toBe("Project 0");
     });
 
     it("should show disabled icon", () => {
