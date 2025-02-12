@@ -12,6 +12,7 @@ import { Button } from "../ui/button";
 export interface CreateTaskFormProps {
   testId?: string;
   onDone(): void;
+  deadline?: number;
 }
 
 export const rteTestId = "CreateTaskForm-rte-testId";
@@ -34,6 +35,7 @@ export type FormValues = z.infer<typeof FormSchema>;
 const CreateTaskForm: FC<CreateTaskFormProps> = ({
   testId,
   onDone,
+  deadline,
 }): JSX.Element => {
   const { defaultProject } = useProjects();
   const { createNewTask } = useEditTask();
@@ -62,6 +64,7 @@ const CreateTaskForm: FC<CreateTaskFormProps> = ({
       isActive: values.description.isActive || false,
       tags: values.description.tags,
       subtasks: values.description.tasks,
+      deadline,
     };
 
     createNewTask(taskData);

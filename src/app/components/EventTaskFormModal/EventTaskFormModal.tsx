@@ -61,7 +61,10 @@ const EventTaskFormModal: FC<EventTaskFormModalProps> = ({
             />
           </div>
           {formMode === "task" ? (
-            <CreateTaskForm onDone={handleOnDone} />
+            <CreateTaskForm
+              onDone={handleOnDone}
+              deadline={initialValues.startAt}
+            />
           ) : (
             <EventForm
               editMode={false}
