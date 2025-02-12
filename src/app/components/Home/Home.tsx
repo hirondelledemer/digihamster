@@ -10,6 +10,7 @@ import ActiveTaskList from "../ActiveTaskList";
 import CommandTool from "../CommandTool";
 import PinnedNotes from "../PinnedNotes";
 import HealthChart from "../HealthChart";
+import DailyProgress from "../DailyProgress";
 
 export const Home = (): JSX.Element => {
   return (
@@ -37,6 +38,9 @@ export const Home = (): JSX.Element => {
             <ActiveTaskList />
           </div>
           <div className="flex p-6 pl-0 pb-12 flex-col">
+            <div className="min-h-16 mb-4 overflow-auto p-[1px]">
+              <DailyProgress />
+            </div>
             <div className="max-h-[400px] mb-4 overflow-auto p-[1px]">
               <PinnedNotes />
             </div>
