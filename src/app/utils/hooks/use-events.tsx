@@ -1,71 +1,123 @@
 "use client";
 
 import {
-  Dispatch,
-  SetStateAction,
+  ReactNode,
   createContext,
   useContext,
   useEffect,
-  useState,
+  useReducer,
 } from "react";
 import axios from "axios";
 import { Event } from "@/models/event";
 import { useToast } from "@/app/components/ui/use-toast";
 
-export interface EventsContextValues {
+interface EventsState {
   data: Event[];
-  setData: Dispatch<SetStateAction<Event[]>>;
-  error?: unknown;
-  loading: boolean;
+  isLoading: boolean;
+  errorMessage?: unknown;
 }
 
-export const EventsContext = createContext<EventsContextValues>({
+export const EventsContext = createContext<EventsState>({
   data: [],
-  setData: () => {},
-  error: undefined,
-  loading: false,
+  errorMessage: undefined,
+  isLoading: false,
 });
 
 const { Provider } = EventsContext;
 
-/*
-  todo: 
-  because of the tasks with the deadline, events and tasks became related (task can become an event and vice versa if deadline is set)
-  think about merging use-events and use-tasks
-*/
+enum EventsStateActionType {
+  StartLoading = "START_LOADING",
+  FinishLoading = "FINISH_LOADING",
+  Error = "ERROR",
+}
 
-export const EventsContextProvider = ({ children }: any) => {
-  const [data, setData] = useState<Event[]>([]);
-  const [error, setError] = useState<unknown>(null);
-  const [loading, setLoading] = useState(false);
+interface EventsLoadAction {
+  type: EventsStateActionType.StartLoading;
+}
+interface EventsFinishLoadingAction {
+  type: EventsStateActionType.FinishLoading;
+  payload: {
+    data: Event[];
+  };
+}
+
+interface EventsErrorAction {
+  type: EventsStateActionType.Error;
+  payload: {
+    errorMessage: unknown;
+  };
+}
+
+type EventsStateAction =
+  | EventsLoadAction
+  | EventsFinishLoadingAction
+  | EventsErrorAction;
+
+function reducer(state: EventsState, action: EventsStateAction) {
+  switch (action.type) {
+    case EventsStateActionType.StartLoading: {
+      return {
+        isLoading: true,
+        data: [],
+      };
+    }
+    case EventsStateActionType.FinishLoading: {
+      return {
+        isLoading: false,
+        data: action.payload.data,
+      };
+    }
+    case EventsStateActionType.Error: {
+      return {
+        isLoading: false,
+        data: [],
+        errorMessage: action.payload.errorMessage,
+      };
+    }
+    default: {
+      throw Error("Unknown action");
+    }
+  }
+}
+
+export const EventsContextProvider = ({
+  children,
+}: {
+  children: ReactNode;
+}) => {
+  const [state, dispatch] = useReducer(reducer, {
+    isLoading: false,
+    data: [],
+  });
+
   const { toast } = useToast();
 
   useEffect(() => {
     (async function () {
       try {
-        setLoading(true);
+        dispatch({ type: EventsStateActionType.StartLoading });
         const eventsResponse = await axios.get<Event[]>("/api/events");
-        setData(eventsResponse.data);
+        dispatch({
+          type: EventsStateActionType.FinishLoading,
+          payload: {
+            data: eventsResponse.data,
+          },
+        });
       } catch (err) {
-        setError(err);
+        dispatch({
+          type: EventsStateActionType.Error,
+          payload: { errorMessage: err },
+        });
         toast({
           title: "Error",
           description: "error while getting events",
           variant: "destructive",
         });
-      } finally {
-        setLoading(false);
       }
     })();
   }, [toast]);
 
-  return (
-    <Provider value={{ data, setData, error, loading }}>{children}</Provider>
-  );
+  return <Provider value={state}>{children}</Provider>;
 };
 
-export default function useEvents() {
-  const { data, setData } = useContext(EventsContext);
-
-  return { data, setData };
-}
+export const useEvents = () => useContext(EventsContext);
