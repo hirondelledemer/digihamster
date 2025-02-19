@@ -208,7 +208,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
         return {
           className: style.today,
           style: {
-            backgroundColor: dayIsCycleDay ? " #340411" : "",
+            backgroundColor: dayIsCycleDay ? " #340411" : "#1b1614",
           },
         };
       }
