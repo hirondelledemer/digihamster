@@ -1,6 +1,7 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import {
   CreateEventAction,
+  DeleteEventAction,
   EventsContextProvider,
   EventsErrorAction,
   EventsFinishLoadingAction,
@@ -77,7 +78,7 @@ describe("EventsContext reducer", () => {
     const newState = reducer(initialState, action);
 
     expect(newState).toStrictEqual({
-      isLoading: false,
+      isLoading: true,
       data: [event],
     });
   });
@@ -103,6 +104,28 @@ describe("EventsContext reducer", () => {
     expect(newState).toStrictEqual({
       isLoading: false,
       data: [editedEvent],
+    });
+  });
+
+  it("should handle DELETE_EVENT action", () => {
+    const events = generateListOfEvents(2);
+    const initialState = {
+      isLoading: true,
+      data: events,
+      errorMessage: undefined,
+    };
+
+    const idToDelete = events[0]._id;
+
+    const action: DeleteEventAction = {
+      type: EventsStateActionType.DeleteEvent,
+      payload: { id: idToDelete },
+    };
+    const newState = reducer(initialState, action);
+
+    expect(newState).toStrictEqual({
+      isLoading: false,
+      data: [events[1]],
     });
   });
 });
@@ -219,5 +242,50 @@ describe("EventsContextProvider", () => {
       expect(screen.findByText("new event")).resolves.toBeInTheDocument()
     );
     expect(mockAxios.post).toHaveBeenCalledWith("/api/events", mockEvent);
+  });
+
+  it("should delete an event and update the state", async () => {
+    const events = generateListOfEvents(2);
+
+    mockAxios.get.mockResolvedValueOnce({ data: events });
+
+    const TestComponent = () => {
+      const { data, deleteEvent } = useEvents();
+      return (
+        <div>
+          <div>
+            {data.map((event) => (
+              <div key={event._id}>
+                <div>{event.title}</div>
+                <button onClick={() => deleteEvent(event._id)}>Delete</button>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    };
+
+    render(
+      <ToastProvider>
+        <EventsContextProvider>
+          <TestComponent />
+        </EventsContextProvider>
+      </ToastProvider>
+    );
+
+    await expect(screen.findByText("Event 0")).resolves.toBeInTheDocument();
+    await expect(screen.findByText("Event 1")).resolves.toBeInTheDocument();
+
+    // Simulate clicking the "Create Event" button
+    await userEvent.click(screen.getAllByRole("button")[0]);
+
+    await waitFor(() =>
+      expect(screen.findByText("Event 1")).resolves.toBeInTheDocument()
+    );
+    expect(screen.queryByText("Event 0")).not.toBeInTheDocument();
+    expect(mockAxios.patch).toHaveBeenCalledWith("/api/events", {
+      deleted: true,
+      eventId: events[0]._id,
+    });
   });
 });
