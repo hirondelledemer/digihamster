@@ -35,10 +35,8 @@ import axios from "axios";
 
 import CalendarEvent, { CalendarEventType } from "../CalendarEvent";
 import useJournalEntries from "@/app/utils/hooks/use-entry";
-import useEvents from "@/app/utils/hooks/use-events";
-import { updateObjById } from "@/app/utils/common/update-array";
+import { useEvents } from "@/app/utils/hooks/use-events";
 
-import { Event as EventType } from "@/models/event";
 import useTasks from "@/app/utils/hooks/use-tasks";
 import {
   CalendarDeadlineEntry,
@@ -99,7 +97,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
   }, []);
 
   const { data: journalEntriesData } = useJournalEntries();
-  const { data: eventsData, setData: setEventsData } = useEvents();
+  const { data: eventsData, updateEvent } = useEvents();
   const { data: cycleData } = useCycle();
   const { loading: projectsLoading } = useProjects();
 
@@ -266,20 +264,11 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
     isAllDay,
   }: EventInteractionArgs<CalendarEventType>) => {
     if (isCalendarEventEntry(event)) {
-      axios.patch("/api/events", {
-        eventId: event.resource.id,
+      updateEvent(event.resource.id, {
         allDay: isAllDay || false,
         startAt: new Date(start).getTime(),
         endAt: new Date(end).getTime(),
       });
-
-      setEventsData((e) =>
-        updateObjById<EventType>(e, event.resource.id, {
-          allDay: isAllDay || false,
-          startAt: new Date(start).getTime(),
-          endAt: new Date(end).getTime(),
-        })
-      );
     } else if (isCalendarDeadlineEntry(event)) {
       editTask(event.resource.id, {
         deadline: new Date(start).getTime(),
@@ -296,19 +285,11 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
     start: stringOrDate;
     end: stringOrDate;
   }) => {
-    axios.patch("/api/events", {
-      eventId: event.resource.id,
+    updateEvent(event.resource.id, {
+      allDay: false,
       startAt: new Date(start).getTime(),
       endAt: new Date(end).getTime(),
     });
-
-    setEventsData((e) =>
-      updateObjById<EventType>(e, event.resource.id, {
-        allDay: false,
-        startAt: new Date(start).getTime(),
-        endAt: new Date(end).getTime(),
-      })
-    );
   };
 
   const openEventForm = (event: SlotInfo) => {

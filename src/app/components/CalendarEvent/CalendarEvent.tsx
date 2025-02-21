@@ -16,7 +16,7 @@ import {
   SheetTitle,
 } from "../ui/sheet";
 import EventForm from "../EventForm";
-import useEditEvent from "@/app/utils/hooks/use-edit-events";
+
 import {
   CalendarEventType,
   isCalendarDeadlineEntry,
@@ -26,6 +26,7 @@ import { cn } from "../utils";
 import useProjects from "@/app/utils/hooks/use-projects";
 import TaskFormModal from "../TaskFormModal";
 import useEditTask from "@/app/utils/hooks/use-edit-task";
+import { useEvents } from "@/app/utils/hooks/use-events";
 
 export interface CalendarEventProps {
   testId?: string;
@@ -42,14 +43,14 @@ const CalendarEvent: FC<CalendarEventProps> = ({
 
   const [taskFormOpen, setTaskFormOpen] = useState<boolean>(false);
   const [eventFormOpen, setEventFormOpen] = useState<boolean>(false);
-  const { editEvent } = useEditEvent();
+  const { updateEvent } = useEvents();
   const { getProjectById } = useProjects();
 
   const handleDeleteClick = async () => {
     if (isCalendarDeadlineEntry(event)) {
       editTask(event.resource.id, { deleted: true });
     } else {
-      editEvent(event.resource.id, { deleted: true });
+      updateEvent(event.resource.id, { deleted: true });
     }
   };
 
@@ -57,7 +58,7 @@ const CalendarEvent: FC<CalendarEventProps> = ({
     if (isCalendarDeadlineEntry(event)) {
       editTask(event.resource.id, { completed: true });
     } else {
-      editEvent(event.resource.id, { completed: true });
+      // editEvent(event.resource.id, { completed: true });
     }
   };
 
