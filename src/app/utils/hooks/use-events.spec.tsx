@@ -9,7 +9,8 @@ import {
   EventsStateActionType,
   reducer,
   UpdateEventAction,
-  useEvents,
+  useEventsActions,
+  useEventsState,
 } from "./use-events";
 import mockAxios from "jest-mock-axios";
 import { generateEvent, generateListOfEvents } from "../mocks/event";
@@ -140,7 +141,7 @@ describe("EventsContextProvider", () => {
     mockAxios.get.mockResolvedValueOnce({ data: mockData });
 
     const TestComponent = () => {
-      const { data, isLoading } = useEvents();
+      const { data, isLoading } = useEventsState();
       return (
         <div>
           {isLoading
@@ -170,7 +171,7 @@ describe("EventsContextProvider", () => {
     mockAxios.get.mockRejectedValueOnce(new Error("Internal Server Error"));
 
     const TestComponent = () => {
-      const { errorMessage, isLoading } = useEvents();
+      const { errorMessage, isLoading } = useEventsState();
       return (
         <div>
           {isLoading ? (
@@ -213,7 +214,8 @@ describe("EventsContextProvider", () => {
     mockAxios.post.mockResolvedValueOnce({ data: [] });
 
     const TestComponent = () => {
-      const { data, createEvent } = useEvents();
+      const { data } = useEventsState();
+      const { createEvent } = useEventsActions();
       return (
         <div>
           <button onClick={() => createEvent(mockEvent)}>Create Event</button>
@@ -250,7 +252,8 @@ describe("EventsContextProvider", () => {
     mockAxios.get.mockResolvedValueOnce({ data: events });
 
     const TestComponent = () => {
-      const { data, deleteEvent } = useEvents();
+      const { data } = useEventsState();
+      const { deleteEvent } = useEventsActions();
       return (
         <div>
           <div>

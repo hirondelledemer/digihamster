@@ -19,7 +19,7 @@ import useProjects from "@/app/utils/hooks/use-projects";
 import { Button } from "../ui/button";
 import { ChevronRightIcon } from "lucide-react";
 import CalendarWeatherEvent from "../CalendarWeatherEvent";
-import { useEvents } from "@/app/utils/hooks/use-events";
+import { useEventsActions } from "@/app/utils/hooks/use-events";
 
 export interface TodayEventProps {
   testId?: string;
@@ -34,7 +34,7 @@ const TodayEvent: FC<TodayEventProps> = ({
   event,
   weatherEvent,
 }): JSX.Element => {
-  const { updateEvent } = useEvents();
+  const { updateEvent } = useEventsActions();
   const { editTask } = useEditTask();
   const { getProjectById } = useProjects();
 

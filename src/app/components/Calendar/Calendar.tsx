@@ -35,7 +35,6 @@ import axios from "axios";
 
 import CalendarEvent, { CalendarEventType } from "../CalendarEvent";
 import useJournalEntries from "@/app/utils/hooks/use-entry";
-import { useEvents } from "@/app/utils/hooks/use-events";
 
 import useTasks from "@/app/utils/hooks/use-tasks";
 import {
@@ -56,6 +55,7 @@ import useProjects from "@/app/utils/hooks/use-projects";
 
 import useCycle from "@/app/utils/hooks/use-cycle";
 import EventTaskFormModal from "../EventTaskFormModal";
+import { useEventsActions, useEventsState } from "@/app/utils/hooks/use-events";
 
 export const now = () => new Date();
 
@@ -97,7 +97,8 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
   }, []);
 
   const { data: journalEntriesData } = useJournalEntries();
-  const { data: eventsData, updateEvent } = useEvents();
+  const { data: eventsData } = useEventsState();
+  const { updateEvent } = useEventsActions();
   const { data: cycleData } = useCycle();
   const { loading: projectsLoading } = useProjects();
 

@@ -26,7 +26,7 @@ import { cn } from "../utils";
 import useProjects from "@/app/utils/hooks/use-projects";
 import TaskFormModal from "../TaskFormModal";
 import useEditTask from "@/app/utils/hooks/use-edit-task";
-import { useEvents } from "@/app/utils/hooks/use-events";
+import { useEventsActions } from "@/app/utils/hooks/use-events";
 
 export interface CalendarEventProps {
   testId?: string;
@@ -43,14 +43,14 @@ const CalendarEvent: FC<CalendarEventProps> = ({
 
   const [taskFormOpen, setTaskFormOpen] = useState<boolean>(false);
   const [eventFormOpen, setEventFormOpen] = useState<boolean>(false);
-  const { updateEvent } = useEvents();
+  const { deleteEvent, updateEvent } = useEventsActions();
   const { getProjectById } = useProjects();
 
   const handleDeleteClick = async () => {
     if (isCalendarDeadlineEntry(event)) {
       editTask(event.resource.id, { deleted: true });
     } else {
-      updateEvent(event.resource.id, { deleted: true });
+      deleteEvent(event.resource.id);
     }
   };
 
@@ -58,7 +58,7 @@ const CalendarEvent: FC<CalendarEventProps> = ({
     if (isCalendarDeadlineEntry(event)) {
       editTask(event.resource.id, { completed: true });
     } else {
-      // editEvent(event.resource.id, { completed: true });
+      updateEvent(event.resource.id, { completed: true });
     }
   };
 

@@ -3,6 +3,7 @@
 import {
   ReactNode,
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useReducer,
@@ -18,7 +19,9 @@ interface EventsState {
   errorMessage?: unknown;
 }
 
-interface EventContextValue extends EventsState {
+type EventContextValue = EventsState;
+
+interface EventActionsContextValue {
   createEvent(event: Pick<Event, FieldsRequired>, onDone?: () => void): void;
   updateEvent(
     eventId: string,
@@ -28,16 +31,24 @@ interface EventContextValue extends EventsState {
   deleteEvent(eventId: string, onDone?: () => void): void;
 }
 
-export const EventsContext = createContext<EventContextValue>({
+const DEFAULT_EVENTS_STATE: EventsState = {
   data: [],
-  errorMessage: undefined,
   isLoading: false,
+  errorMessage: undefined,
+} as const;
+
+export const EventsStateContext =
+  createContext<EventContextValue>(DEFAULT_EVENTS_STATE);
+
+const DEFAULT_EVENTS_ACTIONS: EventActionsContextValue = {
   createEvent: () => {},
   updateEvent: () => {},
   deleteEvent: () => {},
-});
+} as const;
 
-const { Provider } = EventsContext;
+export const EventsActionsContext = createContext<EventActionsContextValue>(
+  DEFAULT_EVENTS_ACTIONS
+);
 
 export enum EventsStateActionType {
   StartLoading = "START_LOADING",
@@ -93,13 +104,43 @@ type EventsStateAction =
   | UpdateEventAction
   | DeleteEventAction;
 
-export type FieldsRequired =
-  | "title"
-  | "description"
-  | "projectId"
-  | "allDay"
-  | "startAt"
-  | "endAt";
+const api = {
+  getEvents: () => axios.get<Event[]>("/api/events"),
+  createEvent: (data: Pick<Event, FieldsRequired>) =>
+    axios.post<Event>("/api/events", data),
+  updateEvent: (eventId: string, props: Partial<Event>) =>
+    axios.patch("/api/events", { eventId, ...props }),
+  deleteEvent: (eventId: string) =>
+    axios.patch("/api/events", { eventId, deleted: true }),
+};
+
+export type FieldsRequired = keyof Pick<
+  Event,
+  "title" | "description" | "projectId" | "allDay" | "startAt" | "endAt"
+>;
+
+const handleApiError = (
+  error: any,
+  toast: ReturnType<typeof useToast>["toast"]
+) => {
+  const errorMessage =
+    error.response?.data?.message || "An unexpected error occurred";
+  toast({
+    title: "Error",
+    description: errorMessage,
+    variant: "destructive",
+  });
+};
+
+const handleSuccessToast = (
+  toast: ReturnType<typeof useToast>["toast"],
+  message: string
+) => {
+  toast({
+    title: "Success",
+    description: message,
+  });
+};
 
 const fetchEvents = async (
   dispatch: React.Dispatch<EventsStateAction>,
@@ -107,7 +148,8 @@ const fetchEvents = async (
 ) => {
   try {
     dispatch({ type: EventsStateActionType.StartLoading });
-    const eventsResponse = await axios.get<Event[]>("/api/events");
+    const eventsResponse = await api.getEvents();
+    console.log("AAAA fething", eventsResponse);
     dispatch({
       type: EventsStateActionType.FinishLoading,
       payload: { data: eventsResponse.data },
@@ -117,11 +159,7 @@ const fetchEvents = async (
       type: EventsStateActionType.Error,
       payload: { errorMessage: err },
     });
-    toast({
-      title: "Error",
-      description: "Error while getting events",
-      variant: "destructive",
-    });
+    handleApiError(err, toast);
   }
 };
 
@@ -186,137 +224,125 @@ export const EventsContextProvider = ({
 
   const { toast } = useToast();
 
-  useEffect(() => {
+  const fetchEventsMemoized = useCallback(() => {
     fetchEvents(dispatch, toast);
   }, [toast]);
 
-  const createEvent = async (
-    data: Pick<Event, FieldsRequired>,
-    onDone?: () => void
-  ) => {
-    const tempId = "temp-id";
+  useEffect(() => {
+    fetchEventsMemoized();
+  }, [fetchEventsMemoized]);
 
-    const tempEvent: Event = {
-      _id: tempId,
-      completed: false,
-      deleted: false,
-      createdAt: "",
-      updatedAt: "",
-      tags: [],
-      ...data,
-    };
-    dispatch({
-      type: EventsStateActionType.CreateEvent,
-      payload: { event: tempEvent },
-    });
+  const createEvent = useCallback(
+    async (data: Pick<Event, FieldsRequired>, onDone?: () => void) => {
+      const tempId = "temp-id";
 
-    if (onDone) {
-      onDone();
-    }
-
-    try {
-      const response = await axios.post<Event>("/api/events", data);
-
+      const tempEvent: Event = {
+        _id: tempId,
+        completed: false,
+        deleted: false,
+        createdAt: "",
+        updatedAt: "",
+        tags: [],
+        ...data,
+      };
       dispatch({
-        type: EventsStateActionType.UpdateEvent,
-        payload: {
-          id: tempId,
-          event: response.data,
-        },
+        type: EventsStateActionType.CreateEvent,
+        payload: { event: tempEvent },
       });
 
-      toast({
-        title: "Success",
-        description: "Event has been created",
-      });
-    } catch (e: any) {
-      // todo: fix
-      dispatch({
-        type: EventsStateActionType.DeleteEvent,
-        payload: {
-          id: tempId,
-        },
-      });
-      const errorMessage =
-        e.response?.data?.message || "An unexpected error occurred";
-      toast({
-        title: "Error",
-        description: errorMessage,
-        variant: "destructive",
-      });
-    }
-  };
-
-  const updateEvent = async (
-    eventId: string,
-    props: Partial<Event>,
-    onDone?: () => void
-  ) => {
-    try {
-      dispatch({
-        type: EventsStateActionType.UpdateEvent,
-        payload: {
-          id: eventId,
-          event: props,
-        },
-      });
       if (onDone) {
         onDone();
       }
-      await axios.patch("/api/events", {
-        eventId,
-        ...props,
-      });
-      toast({
-        title: "Success",
-        description: "Event has been updated",
-      });
-    } catch (e: any) {
-      const errorMessage =
-        e.response?.data?.message || "An unexpected error occurred";
-      toast({
-        title: "Error",
-        description: errorMessage,
-        variant: "destructive",
-      });
-    }
-  };
 
-  const deleteEvent = async (eventId: string, onDone?: () => void) => {
-    try {
-      dispatch({
-        type: EventsStateActionType.DeleteEvent,
-        payload: {
-          id: eventId,
-        },
-      });
-      if (onDone) {
-        onDone();
+      try {
+        const response = await api.createEvent(data);
+
+        dispatch({
+          type: EventsStateActionType.UpdateEvent,
+          payload: {
+            id: tempId,
+            event: response.data,
+          },
+        });
+
+        handleSuccessToast(toast, "Event has been created");
+      } catch (e: any) {
+        // todo: fix
+        dispatch({
+          type: EventsStateActionType.DeleteEvent,
+          payload: {
+            id: tempId,
+          },
+        });
+        const errorMessage =
+          e.response?.data?.message || "An unexpected error occurred";
+        handleApiError(errorMessage, toast);
       }
-      await axios.patch("/api/events", {
-        eventId,
-        deleted: true,
-      });
-      toast({
-        title: "Success",
-        description: "Event has been deleted",
-      });
-    } catch (e: any) {
-      const errorMessage =
-        e.response?.data?.message || "An unexpected error occurred";
-      toast({
-        title: "Error",
-        description: errorMessage,
-        variant: "destructive",
-      });
-    }
-  };
+    },
+    [toast]
+  );
+
+  const updateEvent = useCallback(
+    async (eventId: string, props: Partial<Event>, onDone?: () => void) => {
+      try {
+        dispatch({
+          type: EventsStateActionType.UpdateEvent,
+          payload: {
+            id: eventId,
+            event: props,
+          },
+        });
+        if (onDone) {
+          onDone();
+        }
+
+        await api.updateEvent(eventId, props);
+
+        handleSuccessToast(toast, "Event has been updated");
+      } catch (e: any) {
+        const errorMessage =
+          e.response?.data?.message || "An unexpected error occurred";
+        handleApiError(errorMessage, toast);
+      }
+    },
+    [toast]
+  );
+
+  const deleteEvent = useCallback(
+    async (eventId: string, onDone?: () => void) => {
+      try {
+        dispatch({
+          type: EventsStateActionType.DeleteEvent,
+          payload: {
+            id: eventId,
+          },
+        });
+        if (onDone) {
+          onDone();
+        }
+
+        await api.deleteEvent(eventId);
+
+        handleSuccessToast(toast, "Event has been deleted");
+      } catch (e: any) {
+        const errorMessage =
+          e.response?.data?.message || "An unexpected error occurred";
+        handleApiError(errorMessage, toast);
+      }
+    },
+    [toast]
+  );
 
   return (
-    <Provider value={{ ...state, createEvent, updateEvent, deleteEvent }}>
-      {children}
-    </Provider>
+    <EventsStateContext.Provider value={state}>
+      <EventsActionsContext.Provider
+        value={{ createEvent, updateEvent, deleteEvent }}
+      >
+        {children}
+      </EventsActionsContext.Provider>
+    </EventsStateContext.Provider>
   );
 };
 
-export const useEvents = () => useContext(EventsContext);
+export const useEventsState = () => useContext(EventsStateContext);
+export const useEventsActions = () => useContext(EventsActionsContext);
