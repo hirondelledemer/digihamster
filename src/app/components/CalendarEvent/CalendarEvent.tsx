@@ -26,7 +26,7 @@ import { cn } from "../utils";
 import useProjects from "@/app/utils/hooks/use-projects";
 import TaskFormModal from "../TaskFormModal";
 import useEditTask from "@/app/utils/hooks/use-edit-task";
-import { useEventsActions } from "@/app/utils/hooks/use-events";
+import { useEventsActions } from "@/app/utils/hooks/use-events/actions-context";
 
 export interface CalendarEventProps {
   testId?: string;

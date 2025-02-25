@@ -6,7 +6,7 @@ import mockAxios from "jest-mock-axios";
 import { generateListOfTasks } from "@/app/utils/mocks/task";
 import { CalendarEventEntry } from "./CalendarEvent.types";
 import { HOUR } from "@/app/utils/consts/dates";
-import { EventsContextProvider } from "@/app/utils/hooks/use-events";
+import { EventsContextProvider } from "@/app/utils/hooks/use-events/provider";
 
 describe("CalendarEvent", () => {
   const defaultProps: CalendarEventProps = {

@@ -19,7 +19,7 @@ import useProjects from "@/app/utils/hooks/use-projects";
 import { Button } from "../ui/button";
 import { ChevronRightIcon } from "lucide-react";
 import CalendarWeatherEvent from "../CalendarWeatherEvent";
-import { useEventsActions } from "@/app/utils/hooks/use-events";
+import { useEventsActions } from "@/app/utils/hooks/use-events/actions-context";
 
 export interface TodayEventProps {
   testId?: string;

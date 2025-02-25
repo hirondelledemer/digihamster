@@ -1,123 +1,15 @@
 "use client";
-
-import {
-  ReactNode,
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useReducer,
-} from "react";
-import axios from "axios";
-import { Event } from "@/models/event";
+import { ReactNode, useCallback, useEffect, useReducer } from "react";
 import { useToast } from "@/app/components/ui/use-toast";
-import { updateObjById } from "../common/update-array";
 
-interface EventsState {
-  data: Event[];
-  isLoading: boolean;
-  errorMessage?: unknown;
-}
+import { reducer } from "./reducer";
 
-type EventContextValue = EventsState;
+import { Event } from "@/models/event";
 
-interface EventActionsContextValue {
-  createEvent(event: Pick<Event, FieldsRequired>, onDone?: () => void): void;
-  updateEvent(
-    eventId: string,
-    event: Partial<Event>,
-    onDone?: () => void
-  ): void;
-  deleteEvent(eventId: string, onDone?: () => void): void;
-}
-
-const DEFAULT_EVENTS_STATE: EventsState = {
-  data: [],
-  isLoading: false,
-  errorMessage: undefined,
-} as const;
-
-export const EventsStateContext =
-  createContext<EventContextValue>(DEFAULT_EVENTS_STATE);
-
-const DEFAULT_EVENTS_ACTIONS: EventActionsContextValue = {
-  createEvent: () => {},
-  updateEvent: () => {},
-  deleteEvent: () => {},
-} as const;
-
-export const EventsActionsContext = createContext<EventActionsContextValue>(
-  DEFAULT_EVENTS_ACTIONS
-);
-
-export enum EventsStateActionType {
-  StartLoading = "START_LOADING",
-  FinishLoading = "FINISH_LOADING",
-  Error = "ERROR",
-  CreateEvent = "CREATE_EVENT",
-  UpdateEvent = "UPDATE_EVENT",
-  DeleteEvent = "DELETE_EVENT",
-}
-
-export interface EventsLoadAction {
-  type: EventsStateActionType.StartLoading;
-}
-export interface EventsFinishLoadingAction {
-  type: EventsStateActionType.FinishLoading;
-  payload: {
-    data: Event[];
-  };
-}
-
-export interface EventsErrorAction {
-  type: EventsStateActionType.Error;
-  payload: {
-    errorMessage: unknown;
-  };
-}
-export interface CreateEventAction {
-  type: EventsStateActionType.CreateEvent;
-  payload: {
-    event: Event;
-  };
-}
-
-export interface UpdateEventAction {
-  type: EventsStateActionType.UpdateEvent;
-  payload: {
-    id: string;
-    event: Partial<Event>;
-  };
-}
-export interface DeleteEventAction {
-  type: EventsStateActionType.DeleteEvent;
-  payload: {
-    id: string;
-  };
-}
-
-type EventsStateAction =
-  | EventsLoadAction
-  | EventsFinishLoadingAction
-  | EventsErrorAction
-  | CreateEventAction
-  | UpdateEventAction
-  | DeleteEventAction;
-
-const api = {
-  getEvents: () => axios.get<Event[]>("/api/events"),
-  createEvent: (data: Pick<Event, FieldsRequired>) =>
-    axios.post<Event>("/api/events", data),
-  updateEvent: (eventId: string, props: Partial<Event>) =>
-    axios.patch("/api/events", { eventId, ...props }),
-  deleteEvent: (eventId: string) =>
-    axios.patch("/api/events", { eventId, deleted: true }),
-};
-
-export type FieldsRequired = keyof Pick<
-  Event,
-  "title" | "description" | "projectId" | "allDay" | "startAt" | "endAt"
->;
+import { EventsStateAction, EventsStateActionType } from "./actions";
+import { api, FieldsRequired } from "./api";
+import { EventsStateContext } from "./state-context";
+import { EventsActionsContext } from "./actions-context";
 
 const handleApiError = (
   error: any,
@@ -149,7 +41,7 @@ const fetchEvents = async (
   try {
     dispatch({ type: EventsStateActionType.StartLoading });
     const eventsResponse = await api.getEvents();
-    console.log("AAAA fething", eventsResponse);
+
     dispatch({
       type: EventsStateActionType.FinishLoading,
       payload: { data: eventsResponse.data },
@@ -162,55 +54,6 @@ const fetchEvents = async (
     handleApiError(err, toast);
   }
 };
-
-export function reducer(state: EventsState, action: EventsStateAction) {
-  switch (action.type) {
-    case EventsStateActionType.StartLoading: {
-      return {
-        isLoading: true,
-        data: [],
-      };
-    }
-    case EventsStateActionType.FinishLoading: {
-      return {
-        isLoading: false,
-        data: action.payload.data,
-      };
-    }
-    case EventsStateActionType.Error: {
-      return {
-        isLoading: false,
-        data: [],
-        errorMessage: action.payload.errorMessage,
-      };
-    }
-    case EventsStateActionType.CreateEvent: {
-      return {
-        isLoading: true,
-        data: [...state.data, action.payload.event],
-      };
-    }
-    case EventsStateActionType.UpdateEvent: {
-      return {
-        isLoading: false,
-        data: updateObjById<Event>(
-          state.data,
-          action.payload.id,
-          action.payload.event
-        ),
-      };
-    }
-    case EventsStateActionType.DeleteEvent: {
-      return {
-        isLoading: false,
-        data: state.data.filter((event) => event._id !== action.payload.id),
-      };
-    }
-    default: {
-      throw Error("Unknown action");
-    }
-  }
-}
 
 export const EventsContextProvider = ({
   children,
@@ -343,6 +186,3 @@ export const EventsContextProvider = ({
     </EventsStateContext.Provider>
   );
 };
-
-export const useEventsState = () => useContext(EventsStateContext);
-export const useEventsActions = () => useContext(EventsActionsContext);

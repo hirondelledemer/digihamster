@@ -3,7 +3,7 @@ import TodayEvent, { TodayEventProps } from "./TodayEvent";
 import { getTodayEventTestkit } from "./TodayEvent.testkit";
 import { render, screen, userEvent } from "@/config/utils/test-utils";
 import mockAxios from "jest-mock-axios";
-import { EventsContextProvider } from "@/app/utils/hooks/use-events";
+import { EventsContextProvider } from "@/app/utils/hooks/use-events/provider";
 
 describe("TodayEvent", () => {
   afterEach(() => {

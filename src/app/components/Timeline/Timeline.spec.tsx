@@ -9,8 +9,9 @@ import { generateCustomTasksList } from "@/app/utils/mocks/task";
 import { DAY, WEEK } from "@/app/utils/consts/dates";
 import { generateCustomEventList } from "@/app/utils/mocks/event";
 import { generateCustomListOfJournalEntries } from "@/app/utils/mocks/journal-entry";
-import { EventsContextProvider } from "@/app/utils/hooks/use-events";
+
 import mockAxios from "jest-mock-axios";
+import { EventsContextProvider } from "@/app/utils/hooks/use-events/provider";
 
 jest.mock("../../utils/date/date");
 

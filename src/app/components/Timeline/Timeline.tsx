@@ -1,7 +1,6 @@
 "use client";
 import React, { FC, useCallback, useMemo, useState } from "react";
 import useTasks from "@/app/utils/hooks/use-tasks";
-import { useEventsState } from "@/app/utils/hooks/use-events";
 import useJournalEntries from "@/app/utils/hooks/use-entry";
 import {
   eachDayOfInterval,
@@ -34,6 +33,7 @@ import { addEstimates } from "@/app/utils/tasks/estimates";
 import PercentagesBar from "../PercentagesBar";
 import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
 import TimelineChart from "../TimelineChart";
+import { useEventsState } from "@/app/utils/hooks/use-events/state-context";
 
 export interface TimelineProps {
   testId?: string;

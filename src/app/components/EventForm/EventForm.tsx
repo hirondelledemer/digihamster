@@ -23,7 +23,8 @@ import { Event } from "@/models/event";
 
 import useProjects from "@/app/utils/hooks/use-projects";
 import { Textarea } from "../ui/textarea";
-import { FieldsRequired, useEventsActions } from "@/app/utils/hooks/use-events";
+import { useEventsActions } from "@/app/utils/hooks/use-events/actions-context";
+import { FieldsRequired } from "@/app/utils/hooks/use-events/api";
 
 export const minimalNoteTestId = "EventForm-minimal-note-testId";
 

@@ -55,7 +55,8 @@ import useProjects from "@/app/utils/hooks/use-projects";
 
 import useCycle from "@/app/utils/hooks/use-cycle";
 import EventTaskFormModal from "../EventTaskFormModal";
-import { useEventsActions, useEventsState } from "@/app/utils/hooks/use-events";
+import { useEventsState } from "@/app/utils/hooks/use-events/state-context";
+import { useEventsActions } from "@/app/utils/hooks/use-events/actions-context";
 
 export const now = () => new Date();
 

@@ -5,7 +5,7 @@ import { wrapWithProjectsProvider } from "@/app/utils/tests/wraps";
 import mockAxios from "jest-mock-axios";
 import { HOUR } from "@/app/utils/consts/dates";
 import { generateEvent } from "@/app/utils/mocks/event";
-import { EventsContextProvider } from "@/app/utils/hooks/use-events";
+import { EventsContextProvider } from "@/app/utils/hooks/use-events/provider";
 
 describe("EventForm", () => {
   afterEach(() => {
