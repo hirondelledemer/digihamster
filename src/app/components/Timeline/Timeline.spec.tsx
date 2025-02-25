@@ -3,13 +3,16 @@ import Timeline, { TimelineProps } from "./Timeline";
 import { getTimelineTestkit } from "./Timeline.testkit";
 import {
   wrapWithEntriesProvider,
-  wrapWithEventProvider,
   wrapWithTasksProvider,
 } from "@/app/utils/tests/wraps";
 import { generateCustomTasksList } from "@/app/utils/mocks/task";
 import { DAY, WEEK } from "@/app/utils/consts/dates";
 import { generateCustomEventList } from "@/app/utils/mocks/event";
 import { generateCustomListOfJournalEntries } from "@/app/utils/mocks/journal-entry";
+
+import mockAxios from "jest-mock-axios";
+import { EventsContextProvider } from "@/app/utils/hooks/use-events/provider";
+
 jest.mock("../../utils/date/date");
 
 const getThisWeekButton = () =>
@@ -18,6 +21,10 @@ const get2WeeksButton = () => screen.getByRole("radio", { name: /2 weeks/i });
 const getMonthButton = () => screen.getByRole("radio", { name: /month/i });
 
 describe("Timeline", () => {
+  afterEach(() => {
+    mockAxios.reset();
+  });
+
   const defaultProps: TimelineProps = {};
   const defaultTasks = generateCustomTasksList([
     {
@@ -53,14 +60,15 @@ describe("Timeline", () => {
     getTimelineTestkit(
       render(
         wrapWithTasksProvider(
-          wrapWithEventProvider(
-            wrapWithEntriesProvider(<Timeline {...props} />, {
-              data: defaultEntires,
-            }),
+          wrapWithEntriesProvider(
+            <EventsContextProvider>
+              <Timeline {...props} />
+            </EventsContextProvider>,
             {
-              data: defaultEvents,
+              data: defaultEntires,
             }
           ),
+
           {
             data: defaultTasks,
           }
@@ -89,10 +97,12 @@ describe("Timeline", () => {
     expect(getMonthButton().getAttribute("data-state")).toBe("off");
   });
 
-  it("should filter tasks, events, journal entries completed this week", () => {
+  it("should filter tasks, events, journal entries completed this week", async () => {
+    mockAxios.get.mockResolvedValue({ data: defaultEvents });
+
     renderComponent();
     const taskEntries = screen.getAllByTestId("task-entry");
-    const eventEntries = screen.getAllByTestId("event-entry");
+    const eventEntries = await screen.findAllByTestId("event-entry");
     const journalEntries = screen.getAllByTestId("journal-entry");
 
     expect(taskEntries.length).toBe(1);

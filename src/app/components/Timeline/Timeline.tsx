@@ -1,7 +1,6 @@
 "use client";
 import React, { FC, useCallback, useMemo, useState } from "react";
 import useTasks from "@/app/utils/hooks/use-tasks";
-import useEvents from "@/app/utils/hooks/use-events";
 import useJournalEntries from "@/app/utils/hooks/use-entry";
 import {
   eachDayOfInterval,
@@ -34,6 +33,7 @@ import { addEstimates } from "@/app/utils/tasks/estimates";
 import PercentagesBar from "../PercentagesBar";
 import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
 import TimelineChart from "../TimelineChart";
+import { useEventsState } from "@/app/utils/hooks/use-events/state-context";
 
 export interface TimelineProps {
   testId?: string;
@@ -42,7 +42,9 @@ type IPeriod = "this_week" | "month" | "last_week" | "last_2_weeks";
 
 const Timeline: FC<TimelineProps> = ({ testId }): JSX.Element => {
   const { data: tasks } = useTasks();
-  const { data: events } = useEvents();
+  const { data: events } = useEventsState();
+
+  console.log("events", events);
   const { data: journalEntries } = useJournalEntries();
   const { data: projects } = useProjects();
   const [period, setPeriod] = useState<IPeriod>("this_week");

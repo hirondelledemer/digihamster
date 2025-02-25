@@ -4,8 +4,8 @@ import { Tag } from "@/models/tag";
 import { TagsContext } from "../hooks/use-tags";
 import { generateListOfProjects } from "../mocks/project";
 import { generateListOfTasks } from "../mocks/task";
-import { EventsContext, EventsContextValues } from "../hooks/use-events";
-import { generateListOfEvents } from "../mocks/event";
+// import { EventsContextProvider } from "../hooks/use-events";
+// import { generateListOfEvents } from "../mocks/event";
 import { generateListOfJournalEntries } from "../mocks/journal-entry";
 import { EntriesContext, EntriesContextValue } from "../hooks/use-entry";
 import { HabitsContext, HabitsContextValue } from "../hooks/use-habits";
@@ -74,26 +74,26 @@ export const wrapWithTasksProvider = (
 
 /* Events */
 
-const defaultEvents = generateListOfEvents(5);
-const defaultEventsValue: EventsContextValues = {
-  data: defaultEvents,
-  setData: jest.fn(),
-  loading: false,
-};
+// const defaultEvents = generateListOfEvents(5);
+// const defaultEventsValue: EventsContextValues = {
+//   data: defaultEvents,
+//   setData: jest.fn(),
+//   loading: false,
+// };
 
-export const wrapWithEventProvider = (
-  component: JSX.Element,
-  value?: Partial<EventsContextValues>
-) => (
-  <EventsContext.Provider
-    value={{
-      ...defaultEventsValue,
-      ...value,
-    }}
-  >
-    {component}
-  </EventsContext.Provider>
-);
+// export const wrapWithEventProvider = (
+//   component: JSX.Element,
+//   value?: Partial<EventsContextValues>
+// ) => (
+//   <EventsContext.Provider
+//     value={{
+//       ...defaultEventsValue,
+//       ...value,
+//     }}
+//   >
+//     {component}
+//   </EventsContext.Provider>
+// );
 
 /* Journal Entries  */
 

@@ -14,12 +14,12 @@ import {
 } from "../CalendarEvent/CalendarEvent.types";
 import TaskCard from "../TaskCard";
 import { useDroppable } from "@dnd-kit/core";
-import useEditEvent from "@/app/utils/hooks/use-edit-events";
 import useEditTask from "@/app/utils/hooks/use-edit-task";
 import useProjects from "@/app/utils/hooks/use-projects";
 import { Button } from "../ui/button";
 import { ChevronRightIcon } from "lucide-react";
 import CalendarWeatherEvent from "../CalendarWeatherEvent";
+import { useEventsActions } from "@/app/utils/hooks/use-events/actions-context";
 
 export interface TodayEventProps {
   testId?: string;
@@ -34,7 +34,7 @@ const TodayEvent: FC<TodayEventProps> = ({
   event,
   weatherEvent,
 }): JSX.Element => {
-  const { editEvent } = useEditEvent();
+  const { updateEvent } = useEventsActions();
   const { editTask } = useEditTask();
   const { getProjectById } = useProjects();
 
@@ -47,7 +47,7 @@ const TodayEvent: FC<TodayEventProps> = ({
     if (isCalendarDeadlineEntry(event)) {
       editTask(event.resource.id, { completed: val });
     } else {
-      editEvent(event.resource.id, { completed: val });
+      updateEvent(event.resource.id, { completed: val });
     }
   };
 

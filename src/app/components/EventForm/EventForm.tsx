@@ -23,11 +23,8 @@ import { Event } from "@/models/event";
 
 import useProjects from "@/app/utils/hooks/use-projects";
 import { Textarea } from "../ui/textarea";
-import useEvents from "@/app/utils/hooks/use-events";
-import axios from "axios";
-import { updateObjById } from "@/app/utils/common/update-array";
-import { useToast } from "../ui/use-toast";
-import useEditEvent from "@/app/utils/hooks/use-edit-events";
+import { useEventsActions } from "@/app/utils/hooks/use-events/actions-context";
+import { FieldsRequired } from "@/app/utils/hooks/use-events/api";
 
 export const minimalNoteTestId = "EventForm-minimal-note-testId";
 
@@ -64,9 +61,7 @@ const EventForm: FC<EventFormProps> = ({
   ...restProps
 }): JSX.Element => {
   const { data: projects, defaultProject } = useProjects();
-  const { setData: setEventsData } = useEvents();
-  const { editEvent } = useEditEvent();
-  const { toast } = useToast();
+  const { createEvent, updateEvent } = useEventsActions();
 
   const getInitialValues = useCallback(() => {
     if (restProps.editMode) {
@@ -96,7 +91,7 @@ const EventForm: FC<EventFormProps> = ({
 
   const handleSubmit = async (data: FormValues) => {
     if (restProps.editMode) {
-      editEvent(
+      updateEvent(
         restProps.event._id,
         {
           title: data.title,
@@ -108,14 +103,6 @@ const EventForm: FC<EventFormProps> = ({
       return;
     }
 
-    type FieldsRequired =
-      | "title"
-      | "description"
-      | "projectId"
-      | "allDay"
-      | "startAt"
-      | "endAt";
-
     const eventData: Pick<Event, FieldsRequired> = {
       title: data.title,
       description: data.description,
@@ -124,35 +111,8 @@ const EventForm: FC<EventFormProps> = ({
       startAt: data.startAt,
       endAt: data.endAt,
     };
-    const tempId = "temp-id";
 
-    const tempEvent: Event = {
-      _id: tempId,
-      completed: false,
-      deleted: false,
-      createdAt: "",
-      updatedAt: "",
-      tags: [],
-      ...eventData,
-    };
-    setEventsData((e) => [...e, tempEvent]);
-
-    try {
-      const response = await axios.post<Event>("/api/events", eventData);
-      setEventsData((e) => updateObjById<Event>(e, tempId, response.data));
-      toast({
-        title: "Success",
-        description: "Event has been created",
-      });
-    } catch (e) {
-      toast({
-        title: "Error",
-        description: JSON.stringify(e),
-        variant: "destructive",
-      });
-    } finally {
-      onDone();
-    }
+    createEvent(eventData, onDone);
   };
 
   return (
