@@ -3,6 +3,7 @@ import { getDataFromToken } from "@/app/helpers/getDataFromToken";
 import { NextRequest, NextResponse } from "next/server";
 import TaskV2, { ITaskV2 } from "@/models/taskV2";
 import User from "@/models/user";
+import Relationship from "@/models/relationship";
 
 connect();
 
@@ -15,7 +16,39 @@ export async function GET(request: NextRequest) {
       deleted: false,
     });
 
-    return NextResponse.json(tasks);
+    const tasksWithRelationships = await Promise.all(
+      tasks.map(async (task) => {
+        // Find all relations where the current task is either sourceEntity or targetEntity
+        const relationsAsSource = await Relationship.find({
+          sourceEntity: task._id,
+          type: "task",
+        }).populate("targetEntity");
+
+        const relationsAsTarget = await Relationship.find({
+          targetEntity: task._id,
+          type: "task",
+        }).populate("sourceEntity");
+
+        // Extract related tasks from both sets of relations
+        const relatedTasksIds = [
+          ...relationsAsSource.map((relation) => relation.targetEntity),
+          ...relationsAsTarget.map((relation) => relation.sourceEntity),
+        ];
+
+        const relatedTasks = tasks
+          .filter((task) => {
+            return relatedTasksIds.includes(task._id.toString());
+          })
+          .map((task) => ({ ...task.toObject(), relatedTasks: undefined }));
+
+        return {
+          ...task.toObject(),
+          relatedTasks,
+        };
+      })
+    );
+
+    return NextResponse.json(tasksWithRelationships);
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 400 });
   }
@@ -44,7 +77,7 @@ export async function POST(request: NextRequest) {
 
     const projectId = args.projectId || user.defaultProjectId;
 
-    const task = new TaskV2({
+    const parentTask = new TaskV2({
       userId: user.id,
       title: args.title,
       description: args.description,
@@ -62,26 +95,47 @@ export async function POST(request: NextRequest) {
       activatedAt: args.isActive ? new Date() : undefined,
     });
 
-    args.subtasks.forEach(async (subTask) => {
-      const newSubtask = new TaskV2({
-        userId: user.id,
-        title: subTask,
-        projectId,
-        completed: false,
-        deleted: false,
-        isActive: args.isActive === undefined ? false : args.isActive,
-        estimate: 0,
-        sortOrder: tasks.length,
-        parentTaskId: task._id,
-        tags: args.tags,
-        deadline: args.deadline,
-        eventId: args.eventId,
-        activatedAt: args.isActive ? new Date() : undefined,
-      });
-      await newSubtask.save();
-    });
+    const savedTask = await parentTask.save();
 
-    const savedTask = await task.save();
+    const childTasksArgs = args.subtasks.map((subTask) => ({
+      userId: user.id,
+      title: subTask,
+      projectId,
+      completed: false,
+      deleted: false,
+      isActive: args.isActive === undefined ? false : args.isActive,
+      estimate: 0,
+      sortOrder: tasks.length,
+      parentTaskId: parentTask._id,
+      tags: args.tags,
+      deadline: args.deadline,
+      eventId: args.eventId,
+      activatedAt: args.isActive ? new Date() : undefined,
+    }));
+
+    const childTasks = await TaskV2.insertMany(childTasksArgs);
+
+    const parentChildRelations = childTasks.map((childTask) => ({
+      userId,
+      sourceEntity: parentTask._id,
+      targetEntity: childTask._id,
+      type: "task",
+    }));
+
+    await Relationship.insertMany(parentChildRelations);
+
+    const childChildRelations = [];
+    for (let i = 0; i < childTasks.length; i++) {
+      for (let j = i + 1; j < childTasks.length; j++) {
+        childChildRelations.push({
+          userId,
+          sourceEntity: childTasks[i]._id,
+          targetEntity: childTasks[j]._id,
+          type: "task",
+        });
+      }
+    }
+    await Relationship.insertMany(childChildRelations);
 
     return NextResponse.json<ITaskV2>(savedTask);
   } catch (error: any) {

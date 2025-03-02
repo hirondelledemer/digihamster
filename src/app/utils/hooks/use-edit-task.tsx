@@ -39,7 +39,12 @@ export const useEditTask = () => {
 
     try {
       const response = await axios.post<Task>("/api/tasks/v2", data);
-      setTasksData((e) => updateObjById<Task>(e, tempId, response.data));
+
+      console.log(response);
+      setTasksData((e) => {
+        console.log("array", e);
+        return updateObjById<Task>(e, tempId, response.data);
+      });
       toast({
         title: "Success",
         description: "Task has been created",

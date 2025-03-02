@@ -81,6 +81,10 @@ const config = {
           "75%": { transform: "translate(0, 0) rotate(0deg)" },
           "100%": { transform: "translate(0, 0) rotate(0deg)" },
         },
+        fadeIn: {
+          from: { opacity: "0" },
+          to: { opacity: "1" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -88,6 +92,7 @@ const config = {
         wiggle: "wiggle 0.1s infinite",
         wiggle2: "wiggle2 0.1s infinite",
         "spin-slow": "spin 3s linear infinite",
+        fade: "fadeIn .5s ease-in-out",
       },
     },
   },

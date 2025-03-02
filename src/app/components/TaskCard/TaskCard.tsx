@@ -1,5 +1,4 @@
 import React, { CSSProperties, FC, useState } from "react";
-import { TaskV2 as Task } from "@/models/taskV2";
 import useProjects from "@/app/utils/hooks/use-projects";
 import {
   Card,
@@ -23,6 +22,8 @@ import useTags from "@/app/utils/hooks/use-tags";
 import TaskFormModal from "../TaskFormModal";
 import StaleIndicator from "../StaleIndicator";
 import { useDraggable } from "@dnd-kit/core";
+import { Button } from "../ui/button";
+import { TaskV2 } from "@/models/taskV2";
 
 export const titleTestId = "TaskCard-title-testid";
 export const cardTestId = "TaskCard-card-testid";
@@ -30,7 +31,12 @@ export const cardTestId = "TaskCard-card-testid";
 export interface TaskCardProps {
   testId?: string;
   className?: string;
-  task: Task;
+  task: TaskV2;
+  dragId: string;
+  relatedTasksCta?: {
+    label: string;
+    onClick(): void;
+  };
 }
 
 export const taskFormTestId = "TaskCard-task-form-test-id";
@@ -39,15 +45,21 @@ const TaskCard: FC<TaskCardProps> = ({
   testId,
   task,
   className,
+  relatedTasksCta,
+  dragId,
 }): JSX.Element => {
   const { data: projects } = useProjects();
   const { data: tags } = useTags();
+
   const [taskFormOpen, setTaskFormOpen] = useState<boolean>(false);
   const { editTask } = useEditTask();
 
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
-    id: task._id,
+    id: dragId,
     disabled: task.completed || !!task.eventId,
+    data: {
+      id: task._id,
+    },
   });
 
   const style: CSSProperties | undefined = transform
@@ -78,9 +90,9 @@ const TaskCard: FC<TaskCardProps> = ({
         <ContextMenuTrigger>
           <Card
             data-testid={cardTestId}
-            className={`w-[350px] p-0 rounded-md ${
+            className={`p-0 rounded-md ${
               task.completed ? "opacity-40 line-through" : ""
-            }`}
+            } ${relatedTasksCta ? "w-[350px]" : "w-[296px]"}`}
             ref={setNodeRef}
             style={style}
             {...listeners}
@@ -118,7 +130,7 @@ const TaskCard: FC<TaskCardProps> = ({
                 {task.description}
               </CardContent>
             )}
-            {(task.deadline || !!taskTags.length) && (
+            {(task.deadline || !!taskTags.length || relatedTasksCta) && (
               <CardFooter className="p-4">
                 <div className="space-x-1">
                   {task.deadline && (
@@ -129,6 +141,18 @@ const TaskCard: FC<TaskCardProps> = ({
                       {tag.title}
                     </Badge>
                   ))}
+                  {relatedTasksCta && (
+                    <Button
+                      variant="link"
+                      onMouseDown={(e) => {
+                        console.log("clickHappened");
+                        e.stopPropagation();
+                        relatedTasksCta.onClick();
+                      }}
+                    >
+                      {relatedTasksCta.label}
+                    </Button>
+                  )}
                 </div>
               </CardFooter>
             )}

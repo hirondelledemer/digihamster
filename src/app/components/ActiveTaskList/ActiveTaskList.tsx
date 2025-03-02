@@ -2,7 +2,7 @@
 //todo: make this component server. need to rethink how it gets its data
 
 import React, { FC, useMemo, useState } from "react";
-import TaskCard from "../TaskCard";
+
 import useTasks from "@/app/utils/hooks/use-tasks";
 
 import { ScrollArea } from "../ui/scroll-area";
@@ -11,6 +11,7 @@ import useTags from "@/app/utils/hooks/use-tags";
 import TagsFilter from "./TagsFilter";
 import { IconCircle, IconCircleCheck } from "@tabler/icons-react";
 import { addEstimates } from "@/app/utils/tasks/estimates";
+import TaskWithRelations from "../TaskWithRelations";
 
 export const taskTestId = "ActiveTaskList-task-testid";
 
@@ -94,14 +95,9 @@ const ActiveTaskList: FC<ActiveTaskListProps> = ({
         {completedTasksCount}
       </div>
       <ScrollArea className="h-full">
-        <div className="pr-6">
+        <div className="pr-6 flex flex-col gap-4">
           {filteredTasks.map((task) => (
-            <TaskCard
-              key={task._id}
-              testId={taskTestId}
-              task={task}
-              className="mb-4"
-            />
+            <TaskWithRelations key={task._id} task={task} testId={taskTestId} />
           ))}
         </div>
       </ScrollArea>

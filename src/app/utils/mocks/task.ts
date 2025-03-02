@@ -1,9 +1,9 @@
-import { TaskV2 as Task } from "@/models/taskV2";
+import { TaskWithRelatedTasks } from "../types/task";
 
-export const generateTask: (i?: number, properties?: Partial<Task>) => Task = (
-  i = 1,
-  properties
-) => {
+export const generateTask: (
+  i?: number,
+  properties?: Partial<TaskWithRelatedTasks>
+) => TaskWithRelatedTasks = (i = 1, properties) => {
   return {
     _id: `task${i}`,
     title: `Task ${i}`,
@@ -22,17 +22,20 @@ export const generateTask: (i?: number, properties?: Partial<Task>) => Task = (
     createdAt: "",
     updatedAt: "",
     deadline: null,
+    relatedTasks: [],
     ...properties,
   };
 };
 
-export const generateListOfTasks: (count: number) => Task[] = (count) => {
+export const generateListOfTasks: (count: number) => TaskWithRelatedTasks[] = (
+  count
+) => {
   return [...Array(count)].map((_v, i) => generateTask(i));
 };
 
-export const generateCustomTasksList: (taskInfo: Partial<Task>[]) => Task[] = (
-  taskInfo
-) => {
+export const generateCustomTasksList: (
+  taskInfo: Partial<TaskWithRelatedTasks>[]
+) => TaskWithRelatedTasks[] = (taskInfo) => {
   return taskInfo.map((taskProperties, i) => ({
     ...generateTask(i, taskProperties),
   }));

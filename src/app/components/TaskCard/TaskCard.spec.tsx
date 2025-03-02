@@ -2,8 +2,12 @@ import { TagsContext } from "@/app/utils/hooks/use-tags";
 import TaskCard, { TaskCardProps } from "./TaskCard";
 import { getTaskCardTestkit } from "./TaskCard.testkit";
 import { TasksContext, TasksContextValues } from "@/app/utils/hooks/use-tasks";
-import { generateTask } from "@/app/utils/mocks/task";
-import { render, act } from "@/config/utils/test-utils";
+import {
+  generateCustomTasksList,
+  generateListOfTasks,
+  generateTask,
+} from "@/app/utils/mocks/task";
+import { render, act, screen, userEvent } from "@/config/utils/test-utils";
 
 import mockAxios from "jest-mock-axios";
 import { wrapWithProjectsProvider } from "@/app/utils/tests/wraps";
@@ -18,6 +22,7 @@ describe("TaskCard", () => {
   const defaultTask = generateTask();
   const defaultProps: TaskCardProps = {
     task: defaultTask,
+    dragId: "drag-id",
   };
 
   const defaultTasksContextValues: TasksContextValues = {
@@ -160,6 +165,7 @@ describe("TaskCard", () => {
     const task = generateTask(1, { completed: true });
     const props: TaskCardProps = {
       task,
+      dragId: "dragId",
     };
 
     it("should undo the task", async () => {
@@ -186,6 +192,7 @@ describe("TaskCard", () => {
 
     const props: TaskCardProps = {
       task: generateTask(0, { activatedAt: (weekInMs + dayInMs) * -1 }),
+      dragId: "dragId",
     };
 
     it("show stale indicator", () => {
