@@ -17,42 +17,44 @@ export async function GET(request: NextRequest) {
     });
 
     const tasksWithRelationships = await Promise.all(
-      tasks.map(async (task) => {
-        // Find all relations where the current task is either sourceEntity or targetEntity
-        const relationsAsSource = await Relationship.find({
-          sourceEntity: task._id,
-          type: "task",
-        }).populate("targetEntity");
-        console.log("relationsAsSource", relationsAsSource);
+      tasks
+        .filter((task) => task.isActive)
+        .map(async (task) => {
+          // Find all relations where the current task is either sourceEntity or targetEntity
+          const relationsAsSource = await Relationship.find({
+            sourceEntity: task._id,
+            type: "task",
+          }).populate("targetEntity");
+          console.log("relationsAsSource", relationsAsSource);
 
-        const relationsAsTarget = await Relationship.find({
-          targetEntity: task._id,
-          type: "task",
-        }).populate("sourceEntity");
+          const relationsAsTarget = await Relationship.find({
+            targetEntity: task._id,
+            type: "task",
+          }).populate("sourceEntity");
 
-        console.log("relationsAsTarget", relationsAsTarget);
+          console.log("relationsAsTarget", relationsAsTarget);
 
-        // Extract related tasks from both sets of relations
-        const relatedTasksIds = [
-          ...relationsAsSource.map((relation) => relation.targetEntity),
-          ...relationsAsTarget.map((relation) => relation.sourceEntity),
-        ];
+          // Extract related tasks from both sets of relations
+          const relatedTasksIds = [
+            ...relationsAsSource.map((relation) => relation.targetEntity),
+            ...relationsAsTarget.map((relation) => relation.sourceEntity),
+          ];
 
-        console.log("relatedTasksIds", relatedTasksIds);
+          console.log("relatedTasksIds", relatedTasksIds);
 
-        const relatedTasks = tasks
-          .filter((task) => {
-            return relatedTasksIds.includes(task._id.toString());
-          })
-          .map((task) => ({ ...task.toObject(), relatedTasks: undefined }));
+          const relatedTasks = tasks
+            .filter((task) => {
+              return relatedTasksIds.includes(task._id.toString());
+            })
+            .map((task) => ({ ...task.toObject(), relatedTasks: undefined }));
 
-        console.log("relatedTasks", relatedTasks);
+          console.log("relatedTasks", relatedTasks);
 
-        return {
-          ...task.toObject(),
-          relatedTasks,
-        };
-      })
+          return {
+            ...task.toObject(),
+            relatedTasks,
+          };
+        })
     );
 
     console.log(tasksWithRelationships);
