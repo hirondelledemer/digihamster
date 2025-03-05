@@ -16,8 +16,8 @@ interface CommonProps {
   testId?: string;
   note: string;
 }
-type MinimalNoteProps = RegularProps & CommonProps;
-type MinimalNoteEditableProps = EditableProps & CommonProps;
+export type MinimalNoteProps = RegularProps & CommonProps;
+export type MinimalNoteEditableProps = EditableProps & CommonProps;
 
 function isEditable(
   restProps: RegularProps | EditableProps

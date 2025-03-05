@@ -11,6 +11,7 @@ describe("TodayEvent", () => {
   });
 
   const defaultProps: TodayEventProps = {
+    isFocused: false,
     event: {
       title: "Title",
       start: new Date(),
@@ -52,6 +53,7 @@ describe("TodayEvent", () => {
 
   describe("event is a task", () => {
     const props: TodayEventProps = {
+      isFocused: false,
       event: {
         title: "Title",
         start: new Date(),
@@ -80,6 +82,7 @@ describe("TodayEvent", () => {
 
   describe("event is all day", () => {
     const props: TodayEventProps = {
+      isFocused: false,
       event: {
         title: "Title",
         allDay: true,
@@ -122,6 +125,7 @@ describe("TodayEvent", () => {
 
   describe("event is not all day", () => {
     const props: TodayEventProps = {
+      isFocused: false,
       event: {
         title: "Title",
         start: new Date(0),
@@ -154,6 +158,7 @@ describe("TodayEvent", () => {
 
   describe("event is completed", () => {
     const props: TodayEventProps = {
+      isFocused: false,
       event: {
         title: "Title",
         start: new Date(0),

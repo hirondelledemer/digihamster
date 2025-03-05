@@ -6,7 +6,7 @@ import { generateCustomTasksList, generateTask } from "@/app/utils/mocks/task";
 import { now } from "@/app/utils/date/date";
 
 const meta: Meta<typeof TodayEvent> = {
-  title: "Example/TodayEvent",
+  title: "Today/TodayEvent",
   component: TodayEvent,
   tags: ["autodocs"],
 };
@@ -15,6 +15,7 @@ export default meta;
 type Story = StoryObj<typeof TodayEvent>;
 
 const defaultArgs: TodayEventProps = {
+  isFocused: false,
   event: {
     title: "Birthday Party",
     start: now(),
@@ -32,7 +33,27 @@ export const Default: Story = {
   args: defaultArgs,
 };
 
+const focusedArgs: TodayEventProps = {
+  isFocused: true,
+  event: {
+    title: "Birthday Party",
+    start: now(),
+    resource: {
+      id: "event1",
+      completed: false,
+      type: "event",
+      description: "don't forget to bring the birthday cake",
+      tasks: [],
+    },
+  },
+};
+
+export const Focused: Story = {
+  args: focusedArgs,
+};
+
 const completedArgs: TodayEventProps = {
+  isFocused: false,
   event: {
     title: "Birthday Party",
     start: now(),
@@ -56,6 +77,7 @@ const tasks = generateCustomTasksList([
 ]);
 
 const withTasksArgs: TodayEventProps = {
+  isFocused: false,
   event: {
     title: "Birthday Party",
     start: now(),
@@ -74,6 +96,7 @@ export const WithTasks: Story = {
 };
 
 const taskEventArgs: TodayEventProps = {
+  isFocused: false,
   event: {
     title: "Buy Candles",
     start: now(),
