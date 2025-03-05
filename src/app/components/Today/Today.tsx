@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { Navigate, View } from "react-big-calendar";
 import * as dates from "date-arithmetic";
 import TodayEvent from "../TodayEvent";
@@ -23,8 +23,7 @@ import {
 import useHabits from "@/app/utils/hooks/use-habits";
 import TodayHabit from "../TodayHabit";
 import { Habit } from "@/models/habit";
-
-export const todayEvent = "Today-today-event-test-id";
+import useHotKeys from "@/app/utils/hooks/use-hotkeys";
 
 export interface TodayProps {
   testId?: string;
@@ -41,70 +40,102 @@ function Today({ localizer, events, date, backgroundEvents }: TodayProps) {
   const max = localizer.endOf(date, "day");
   const min = localizer.startOf(date, "day");
 
+  const [currentFocused, setCurrentFocused] = useState(-1);
+
   const { data: habits } = useHabits();
 
   const sortByTime = (event1: CalendarEventType, event2: CalendarEventType) =>
     (event1.start?.getTime() || 0) - (event2.start?.getTime() || 0);
 
-  const allDayEvents = events.filter((event: CalendarEventType) =>
-    event.allDay && event.start
-      ? dates.inRange(event.start, min, max, "day")
-      : false
+  const allDayEvents = useMemo(
+    () =>
+      events.filter((event: CalendarEventType) =>
+        event.allDay && event.start
+          ? dates.inRange(event.start, min, max, "day")
+          : false
+      ),
+    [events, max, min]
   );
 
-  const regularEvents = events.filter((event: CalendarEventType) =>
-    !event.allDay && event.start
-      ? dates.inRange(event.start, min, max, "day")
-      : false
+  const regularEvents = useMemo(
+    () =>
+      events.filter((event: CalendarEventType) =>
+        !event.allDay && event.start
+          ? dates.inRange(event.start, min, max, "day")
+          : false
+      ),
+    [events, max, min]
   );
 
-  const getTodayEventComp = (event: CalendarEventType) => {
-    if (isCalendarJournalEntry(event)) {
-      return (
-        <div
-          key={event.resource.id}
-          className={cn([
-            "grid grid-cols-3 gap-4 italic mt-4 text-muted-foreground",
-          ])}
-        >
-          <div>{event.start ? lightFormat(event.start, "H:mm") : "???"}</div>
-          <div className="col-span-2">
-            <Collapsible>
-              <CollapsibleTrigger className="italic">
-                {event.title || "-"}
-              </CollapsibleTrigger>
-              <CollapsibleContent>
-                <MinimalNote note={event.resource.note} />
-              </CollapsibleContent>
-            </Collapsible>
+  useHotKeys([
+    [
+      "ArrowDown",
+      () => {
+        if (currentFocused + 1 < regularEvents.length + allDayEvents.length)
+          setCurrentFocused((val) => val + 1);
+      },
+    ],
+    [
+      "ArrowUp",
+      () => {
+        if (currentFocused > 0) {
+          setCurrentFocused((val) => val - 1);
+        }
+      },
+    ],
+  ]);
+
+  const getTodayEventComp =
+    // eslint-disable-next-line react/display-name
+    (initialIndex: number) => (event: CalendarEventType, i: number) => {
+      const index = initialIndex + i;
+      if (isCalendarJournalEntry(event)) {
+        return (
+          <div
+            key={event.resource.id}
+            className={cn([
+              "grid grid-cols-3 gap-4 italic p-2 text-muted-foreground",
+              index === currentFocused ? "bg-muted" : "",
+            ])}
+          >
+            <div>{event.start ? lightFormat(event.start, "H:mm") : "???"}</div>
+            <div className="col-span-2">
+              <Collapsible autoFocus={index === currentFocused}>
+                <CollapsibleTrigger className="italic">
+                  {event.title || "-"}
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <MinimalNote note={event.resource.note} />
+                </CollapsibleContent>
+              </Collapsible>
+            </div>
           </div>
-        </div>
-      );
-    }
+        );
+      }
 
-    const weatherEvents = backgroundEvents.filter(isCalendarWeatherEntry);
-    if (isCalendarEventEntry(event) || isCalendarDeadlineEntry(event)) {
-      const weatherEventDates = weatherEvents.map((event) => event.start);
+      const weatherEvents = backgroundEvents.filter(isCalendarWeatherEntry);
+      if (isCalendarEventEntry(event) || isCalendarDeadlineEntry(event)) {
+        const weatherEventDates = weatherEvents.map((event) => event.start);
 
-      const closestWeatherEventIndex = closestIndexTo(
-        event.start,
-        weatherEventDates
-      );
+        const closestWeatherEventIndex = closestIndexTo(
+          event.start,
+          weatherEventDates
+        );
 
-      return (
-        <TodayEvent
-          key={event.resource.id}
-          testId={todayEvent}
-          event={event}
-          weatherEvent={
-            closestWeatherEventIndex
-              ? weatherEvents[closestWeatherEventIndex]
-              : undefined
-          }
-        />
-      );
-    }
-  };
+        return (
+          <TodayEvent
+            key={event.resource.id}
+            isFocused={index === currentFocused}
+            event={event}
+            weatherEvent={
+              closestWeatherEventIndex
+                ? weatherEvents[closestWeatherEventIndex]
+                : undefined
+            }
+          />
+        );
+      }
+    };
 
   const filteredHabits = useMemo(
     () =>
@@ -139,8 +170,10 @@ function Today({ localizer, events, date, backgroundEvents }: TodayProps) {
         {!allDayEvents.length &&
           !regularEvents.length &&
           "There are not events today."}
-        {allDayEvents.map(getTodayEventComp)}
-        {regularEvents.sort(sortByTime).map(getTodayEventComp)}
+        {allDayEvents.map(getTodayEventComp(0))}
+        {regularEvents
+          .sort(sortByTime)
+          .map(getTodayEventComp(allDayEvents.length))}
 
         {!!readyHabits.length && (
           <Collapsible>

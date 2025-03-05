@@ -1,7 +1,7 @@
 "use client";
 
 import { lightFormat, format } from "date-fns";
-import React, { FC, useMemo } from "react";
+import React, { FC, useEffect, useMemo, useRef } from "react";
 import { Checkbox } from "../ui/checkbox";
 import { cn } from "../utils";
 import styles from "./TodayEvent.module.scss";
@@ -20,23 +20,31 @@ import { Button } from "../ui/button";
 import { ChevronRightIcon } from "lucide-react";
 import CalendarWeatherEvent from "../CalendarWeatherEvent";
 import { useEventsActions } from "@/app/utils/hooks/use-events/actions-context";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "../ui/sheet";
 
 export interface TodayEventProps {
-  testId?: string;
   showDate?: boolean;
   event: CalendarEventEntry | CalendarDeadlineEntry;
   weatherEvent?: CalendarWeatherEntry;
+  isFocused: boolean;
 }
 
 const TodayEvent: FC<TodayEventProps> = ({
-  testId,
   showDate,
   event,
   weatherEvent,
+  isFocused,
 }): JSX.Element => {
   const { updateEvent } = useEventsActions();
   const { editTask } = useEditTask();
   const { getProjectById } = useProjects();
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (isFocused && ref.current) {
+      ref.current.scrollIntoView(false);
+    }
+  }, [isFocused]);
 
   const { isOver, setNodeRef } = useDroppable({
     id: event.resource.id,
@@ -65,13 +73,34 @@ const TodayEvent: FC<TodayEventProps> = ({
 
   return (
     <div ref={setNodeRef} className={cn(isOver ? "border border-primary" : "")}>
+      {isCalendarDeadlineEntry(event) &&
+        !!event.resource.task.relatedTasks.length && (
+          <Sheet open={isFocused}>
+            <SheetContent
+              side="right"
+              aria-describedby="Task Modal"
+              onCloseClick={() => {}}
+              showOverlay={false}
+            >
+              <SheetHeader>
+                <SheetTitle>Related tasks</SheetTitle>
+              </SheetHeader>
+              <div className={cn(["flex flex-col gap-2"])}>
+                {event.resource.task.relatedTasks.map((rTask) => (
+                  <TaskCard task={rTask} key={rTask._id} dragId={rTask._id} />
+                ))}
+              </div>
+            </SheetContent>
+          </Sheet>
+        )}
       <div
         className={cn([
-          "grid grid-cols-3 gap-4 italic mt-4",
+          "grid grid-cols-3 gap-4 italic p-2",
           event.resource.completed ? "text-muted-foreground" : "",
           event.resource.completed ? styles.container : "",
+          isFocused ? "bg-muted" : "",
         ])}
-        data-testid={testId}
+        data-testid={"today-event-container"}
       >
         {isCalendarEventEntry(event) && event.allDay ? (
           <div className="flex">All Day</div>
@@ -92,7 +121,7 @@ const TodayEvent: FC<TodayEventProps> = ({
           </div>
         )}
         <div>
-          <div>
+          <div ref={ref}>
             {event.title}
             {project && (
               <span
@@ -115,7 +144,7 @@ const TodayEvent: FC<TodayEventProps> = ({
             )}
             {isCalendarEventEntry(event) &&
               event.resource.tasks.map((t) => (
-                <TaskCard key={t._id} task={t} />
+                <TaskCard key={t._id} task={t} dragId={t._id} />
               ))}
           </div>
         </div>

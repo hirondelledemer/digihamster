@@ -1,3 +1,4 @@
+import { TaskWithRelatedTasks } from "@/app/utils/types/task";
 import { TaskV2 } from "@/models/taskV2";
 import { Event } from "react-big-calendar";
 
@@ -44,7 +45,7 @@ export interface CalendarDeadlineEntry extends Event {
     type: "deadline";
     id: string;
     completed?: boolean;
-    task: TaskV2;
+    task: TaskWithRelatedTasks;
   };
 }
 
