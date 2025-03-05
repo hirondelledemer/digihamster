@@ -23,11 +23,14 @@ export async function GET(request: NextRequest) {
           sourceEntity: task._id,
           type: "task",
         }).populate("targetEntity");
+        console.log("relationsAsSource", relationsAsSource);
 
         const relationsAsTarget = await Relationship.find({
           targetEntity: task._id,
           type: "task",
         }).populate("sourceEntity");
+
+        console.log("relationsAsTarget", relationsAsTarget);
 
         // Extract related tasks from both sets of relations
         const relatedTasksIds = [
@@ -35,11 +38,15 @@ export async function GET(request: NextRequest) {
           ...relationsAsTarget.map((relation) => relation.sourceEntity),
         ];
 
+        console.log("relatedTasksIds", relatedTasksIds);
+
         const relatedTasks = tasks
           .filter((task) => {
             return relatedTasksIds.includes(task._id.toString());
           })
           .map((task) => ({ ...task.toObject(), relatedTasks: undefined }));
+
+        console.log("relatedTasks", relatedTasks);
 
         return {
           ...task.toObject(),
