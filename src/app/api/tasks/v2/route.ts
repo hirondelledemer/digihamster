@@ -14,39 +14,60 @@ export async function GET(request: NextRequest) {
     const tasks = await TaskV2.find<ITaskV2>({
       userId,
       deleted: false,
+    }).lean(); // Use `.lean()` for faster read-only queries
+
+    // Fetch all relationships for the user's tasks in a single query
+    const taskIds = tasks.map((task) => (task._id as any).toString()); // Ensure task IDs are strings
+    const relationships = await Relationship.find({
+      $or: [
+        { sourceEntity: { $in: taskIds }, type: "task" },
+        { targetEntity: { $in: taskIds }, type: "task" },
+      ],
     });
 
-    const tasksWithRelationships = await Promise.all(
-      tasks.map(async (task) => {
-        // Find all relations where the current task is either sourceEntity or targetEntity
-        const relationsAsSource = await Relationship.find({
-          sourceEntity: task._id,
-          type: "task",
-        }).populate("targetEntity");
+    // Create a map to store related tasks for each task
+    const relatedTasksMap = new Map<string, ITaskV2[]>();
 
-        const relationsAsTarget = await Relationship.find({
-          targetEntity: task._id,
-          type: "task",
-        }).populate("sourceEntity");
+    // Process relationships to build the map
+    relationships.forEach((relationship) => {
+      const sourceId = relationship.sourceEntity.toString(); // sourceEntity is a string ID
+      const targetId = relationship.targetEntity.toString(); // targetEntity is a string ID
 
-        // Extract related tasks from both sets of relations
-        const relatedTasksIds = [
-          ...relationsAsSource.map((relation) => relation.targetEntity),
-          ...relationsAsTarget.map((relation) => relation.sourceEntity),
-        ];
+      // Add target task to source task's related tasks
+      if (!relatedTasksMap.has(sourceId)) {
+        relatedTasksMap.set(sourceId, []);
+      }
+      const targetTask = tasks.find(
+        (task) => (task._id as any).toString() === targetId
+      );
+      if (targetTask) {
+        relatedTasksMap.get(sourceId)?.push(targetTask as any);
+      }
 
-        const relatedTasks = tasks
-          .filter((task) => {
-            return relatedTasksIds.includes(task._id.toString());
-          })
-          .map((task) => ({ ...task.toObject(), relatedTasks: undefined }));
+      // Add source task to target task's related tasks
+      if (!relatedTasksMap.has(targetId)) {
+        relatedTasksMap.set(targetId, []);
+      }
+      const sourceTask = tasks.find(
+        (task) => (task._id as any).toString() === sourceId
+      );
+      if (sourceTask) {
+        relatedTasksMap.get(targetId)?.push(sourceTask as any);
+      }
+    });
 
-        return {
-          ...task.toObject(),
-          relatedTasks,
-        };
-      })
-    );
+    // Build the final response
+    const tasksWithRelationships = tasks.map((task) => {
+      const relatedTasks =
+        relatedTasksMap.get((task._id as any).toString()) || [];
+      return {
+        ...task,
+        relatedTasks: relatedTasks.map((relatedTask) => ({
+          ...relatedTask,
+          relatedTasks: undefined, // Avoid circular references
+        })),
+      };
+    });
 
     return NextResponse.json(tasksWithRelationships);
   } catch (error: any) {
