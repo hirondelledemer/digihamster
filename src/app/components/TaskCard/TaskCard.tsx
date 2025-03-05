@@ -33,6 +33,7 @@ export interface TaskCardProps {
   className?: string;
   task: TaskV2;
   dragId: string;
+  fullHeight?: boolean;
   relatedTasksCta?: {
     label: string;
     onClick(): void;
@@ -47,6 +48,7 @@ const TaskCard: FC<TaskCardProps> = ({
   className,
   relatedTasksCta,
   dragId,
+  fullHeight = false,
 }): JSX.Element => {
   const { data: projects } = useProjects();
   const { data: tags } = useTags();
@@ -92,7 +94,7 @@ const TaskCard: FC<TaskCardProps> = ({
             data-testid={cardTestId}
             className={`p-0 rounded-md ${
               task.completed ? "opacity-40 line-through" : ""
-            } ${relatedTasksCta ? "w-[350px]" : "w-[296px]"}`}
+            } ${fullHeight ? "w-[296px]" : "w-[267px]"}`}
             ref={setNodeRef}
             style={style}
             {...listeners}

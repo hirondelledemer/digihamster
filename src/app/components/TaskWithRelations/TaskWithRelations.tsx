@@ -27,6 +27,7 @@ const TaskWithRelations: FC<TaskWithRelationsProps> = ({
         task={task}
         relatedTasksCta={relatedTasksCta}
         dragId={task._id}
+        fullHeight
       />
       {isRelatedTasksOpen && (
         <div className="flex flex-col gap-1 mt-1 animate-fade">
