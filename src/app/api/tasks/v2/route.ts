@@ -48,6 +48,7 @@ export async function GET(request: NextRequest) {
       })
     );
 
+    console.log(tasksWithRelationships);
     return NextResponse.json(tasksWithRelationships);
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 400 });
