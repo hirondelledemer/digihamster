@@ -2,12 +2,8 @@ import { TagsContext } from "@/app/utils/hooks/use-tags";
 import TaskCard, { TaskCardProps } from "./TaskCard";
 import { getTaskCardTestkit } from "./TaskCard.testkit";
 import { TasksContext, TasksContextValues } from "@/app/utils/hooks/use-tasks";
-import {
-  generateCustomTasksList,
-  generateListOfTasks,
-  generateTask,
-} from "@/app/utils/mocks/task";
-import { render, act, screen, userEvent } from "@/config/utils/test-utils";
+import { generateTask } from "@/app/utils/mocks/task";
+import { render, act } from "@/config/utils/test-utils";
 
 import mockAxios from "jest-mock-axios";
 import { wrapWithProjectsProvider } from "@/app/utils/tests/wraps";
@@ -204,6 +200,7 @@ describe("TaskCard", () => {
   describe("task has an event", () => {
     const props: TaskCardProps = {
       task: generateTask(0, { eventId: "event1" }),
+      dragId: "",
     };
 
     it("should remove event", () => {
