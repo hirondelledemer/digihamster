@@ -2,8 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 
 import TimelineChart from ".";
 import { TimelineChartProps } from "./TimelineChart";
-import { format, sub } from "date-fns";
-import { now } from "@/app/utils/date/date";
+import { format } from "date-fns";
 
 const meta: Meta<typeof TimelineChart> = {
   title: "Example/TimelineChart",
