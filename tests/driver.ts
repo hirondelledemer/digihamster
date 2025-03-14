@@ -68,9 +68,7 @@ export class HomePage {
   async openTaskForm() {
     await this.page.keyboard.press("Meta+KeyK");
     await expect(this.commandInput).toBeVisible();
-    // await this.commandInput.fill("Create Task");
     await this.page.keyboard.press("Enter");
-    // await expect(this.commandInput).toBeHidden();
     await expect(this.taskFormDialog).toBeVisible();
   }
 
