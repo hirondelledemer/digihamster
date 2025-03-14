@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 
 import TimelineChart from ".";
 import { TimelineChartProps } from "./TimelineChart";
-import { sub } from "date-fns";
+import { format, sub } from "date-fns";
 import { now } from "@/app/utils/date/date";
 
 const meta: Meta<typeof TimelineChart> = {
@@ -31,25 +31,19 @@ const defaultArgs: TimelineChartProps = {
   },
   chartData: [
     {
-      day: sub(now(), {
-        days: 1,
-      }),
+      day: format("2025-3-23", "dd, E"),
       project1: 1,
       project2: 4,
       project3: 3,
     },
     {
-      day: sub(now(), {
-        days: 2,
-      }),
+      day: format("2025-3-24", "dd, E"),
       project1: 3,
       project2: 0,
       project3: 3,
     },
     {
-      day: sub(now(), {
-        days: 3,
-      }),
+      day: format("2025-3-25", "dd, E"),
       project1: 4,
       project2: 2,
       project3: 1,
