@@ -19,22 +19,16 @@ export const configureSnapshotPath =
 
 test.beforeEach(configureSnapshotPath());
 
-// todo: figure out the way to mock user
-// maybe redo the testkit
-
 test.describe("tasks", () => {
   test("should create task", async ({ page }) => {
     const driver = new HomePage(page);
-    // const taskName = `new task (${new Date().getTime()})`;
 
-    // login
     await driver.goto(HOME);
 
     await driver.login();
 
     await driver.waitForUrl(HOME);
 
-    // create task
     await driver.openTaskForm();
     await driver.createActiveTask();
   });
