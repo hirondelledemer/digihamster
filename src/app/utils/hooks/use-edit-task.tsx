@@ -33,21 +33,17 @@ export const useEditTask = () => {
       parentTaskId: null,
       createdAt: now().toDateString(),
       updatedAt: now().toDateString(),
-      relatedTasks: [],
+      relatedTaskIds: [],
       ...data,
     };
     setTasksData((e) => [...e, tempTask]);
 
     try {
-      const response = await axios.post<TaskWithRelatedTasks>(
-        "/api/tasks/v2",
-        data
-      );
+      await axios.post<TaskWithRelatedTasks>("/api/tasks/v2", data);
 
-      console.log(response);
-      setTasksData((e) => {
-        return updateObjById<TaskWithRelatedTasks>(e, tempId, response.data);
-      });
+      const response = await axios.get<TaskWithRelatedTasks[]>("/api/tasks/v2");
+
+      setTasksData(response.data);
       toast({
         title: "Success",
         description: "Task has been created",
