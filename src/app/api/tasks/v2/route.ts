@@ -37,11 +37,11 @@ export async function GET(request: NextRequest) {
       if (!relatedTasksMap.has(sourceId)) {
         relatedTasksMap.set(sourceId, []);
       }
-      const targetTask = tasks.find(
-        (task) => (task._id as any).toString() === targetId
-      );
-      if (targetTask) {
-        relatedTasksMap.get(sourceId)?.push(targetTask as any);
+      // const targetTask = tasks.find(
+      //   (task) => (task._id as any).toString() === targetId
+      // );
+      if (targetId) {
+        relatedTasksMap.get(sourceId)?.push(targetId);
       }
 
       // Add source task to target task's related tasks
@@ -124,7 +124,7 @@ export async function POST(request: NextRequest) {
       projectId,
       completed: false,
       deleted: false,
-      isActive: args.isActive === undefined ? false : args.isActive,
+      isActive: false,
       estimate: 0,
       sortOrder: tasks.length,
       parentTaskId: parentTask._id,
@@ -158,7 +158,11 @@ export async function POST(request: NextRequest) {
     }
     await Relationship.insertMany(childChildRelations);
 
-    return NextResponse.json<ITaskV2>(savedTask);
+    // todo: this might be not needed
+    return NextResponse.json<ITaskV2>({
+      ...savedTask,
+      relatedTasks: childTasks,
+    });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 400 });
   }

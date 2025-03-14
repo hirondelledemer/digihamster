@@ -10,6 +10,7 @@
     "test": "TZ=UTC jest",
     "test:watch": "TZ=UTC jest --watch",
     "test:e2e": "npx playwright test",
+    "test:e2e-ui": "npx playwright test --ui",
     "test:e2e-r": "npx playwright test && npx playwright show-report",
     "gen-comp": "node ./tools/generate-comp.js",
     "storybook": "storybook dev -p 6006",

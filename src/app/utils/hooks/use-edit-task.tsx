@@ -46,7 +46,6 @@ export const useEditTask = () => {
 
       console.log(response);
       setTasksData((e) => {
-        console.log("array", e);
         return updateObjById<TaskWithRelatedTasks>(e, tempId, response.data);
       });
       toast({
