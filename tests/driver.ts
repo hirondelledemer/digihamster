@@ -35,17 +35,23 @@ export class HomePage {
     await this.page.goto(route);
   }
 
-  async login(
-    { email, password }: { email: string; password: string } = {
+  async login(params?: { email: string; password: string }) {
+    const { email, password } = params || {
       email: "test-e2e@email.com",
       password: "testtest",
-    }
-  ) {
+    };
+
     await this.emailInput.fill(email);
     await this.passwordInput.fill(password);
     await this.loginButton.click();
-    if (!email) {
-      await this.page.waitForURL(HOME);
+
+    /*
+      if no login data is passed, it is assumed that login is correct
+    */
+    if (!params) {
+      await this.page.waitForURL(HOME, {
+        waitUntil: "networkidle",
+      });
     }
   }
 

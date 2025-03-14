@@ -20,14 +20,12 @@ export const configureSnapshotPath =
 test.beforeEach(configureSnapshotPath());
 
 test.describe("tasks", () => {
-  test("should create task", async ({ page }) => {
+  test("should create active task with 2 child tasks", async ({ page }) => {
     const driver = new HomePage(page);
 
     await driver.goto(HOME);
 
     await driver.login();
-
-    await driver.waitForUrl(HOME);
 
     await driver.openTaskForm();
     await driver.createActiveTask();

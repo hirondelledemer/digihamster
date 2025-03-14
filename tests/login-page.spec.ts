@@ -27,7 +27,6 @@ test.describe("login page", () => {
       await driver.goto(HOME);
       await driver.login();
 
-      await driver.waitForUrl(HOME);
       await driver.homePage();
     });
   });
