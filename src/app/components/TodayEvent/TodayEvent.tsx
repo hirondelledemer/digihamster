@@ -21,6 +21,7 @@ import { ChevronRightIcon } from "lucide-react";
 import CalendarWeatherEvent from "../CalendarWeatherEvent";
 import { useEventsActions } from "@/app/utils/hooks/use-events/actions-context";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "../ui/sheet";
+import useTasks from "@/app/utils/hooks/use-tasks";
 
 export interface TodayEventProps {
   showDate?: boolean;
@@ -37,8 +38,13 @@ const TodayEvent: FC<TodayEventProps> = ({
 }): JSX.Element => {
   const { updateEvent } = useEventsActions();
   const { editTask } = useEditTask();
+  const { data: tasks } = useTasks();
   const { getProjectById } = useProjects();
   const ref = useRef<HTMLDivElement>(null);
+
+  const relatedTasks = isCalendarDeadlineEntry(event)
+    ? tasks.filter((t) => event.resource.task.relatedTaskIds.includes(t._id))
+    : [];
 
   useEffect(() => {
     if (isFocused && ref.current) {
@@ -74,7 +80,7 @@ const TodayEvent: FC<TodayEventProps> = ({
   return (
     <div ref={setNodeRef} className={cn(isOver ? "border border-primary" : "")}>
       {isCalendarDeadlineEntry(event) &&
-        !!event.resource.task.relatedTasks.length && (
+        !!event.resource.task.relatedTaskIds.length && (
           <Sheet open={isFocused}>
             <SheetContent
               side="right"
@@ -86,7 +92,7 @@ const TodayEvent: FC<TodayEventProps> = ({
                 <SheetTitle>Related tasks</SheetTitle>
               </SheetHeader>
               <div className={cn(["flex flex-col gap-2"])}>
-                {event.resource.task.relatedTasks.map((rTask) => (
+                {relatedTasks.map((rTask) => (
                   <TaskCard task={rTask} key={rTask._id} dragId={rTask._id} />
                 ))}
               </div>

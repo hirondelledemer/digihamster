@@ -48,7 +48,9 @@ describe("Today", () => {
           type: "deadline",
           id: "event3",
           completed: false,
-          task: generateTask(0, { relatedTasks: relatedTasks }),
+          task: generateTask(0, {
+            relatedTaskIds: relatedTasks.map((t) => t._id),
+          }),
         },
         title: "Deadline event",
       },

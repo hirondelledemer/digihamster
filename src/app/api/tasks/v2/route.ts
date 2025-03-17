@@ -3,7 +3,7 @@ import { getDataFromToken } from "@/app/helpers/getDataFromToken";
 import { NextRequest, NextResponse } from "next/server";
 import TaskV2, { ITaskV2 } from "@/models/taskV2";
 import User from "@/models/user";
-import Relationship from "@/models/relationship";
+import Relationship, { IRelationship } from "@/models/relationship";
 
 connect();
 
@@ -14,60 +14,32 @@ export async function GET(request: NextRequest) {
     const tasks = await TaskV2.find<ITaskV2>({
       userId,
       deleted: false,
-    }).lean(); // Use `.lean()` for faster read-only queries
+    });
 
-    // Fetch all relationships for the user's tasks in a single query
-    const taskIds = tasks.map((task) => (task._id as any).toString()); // Ensure task IDs are strings
-    const relationships = await Relationship.find({
+    const taskIds = tasks.map((task) => task._id.toString());
+    const relationships = await Relationship.find<IRelationship>({
       $or: [
         { sourceEntity: { $in: taskIds }, type: "task" },
         { targetEntity: { $in: taskIds }, type: "task" },
       ],
     });
 
-    // Create a map to store related tasks for each task
-    const relatedTasksMap = new Map<string, ITaskV2[]>();
+    console.log(relationships);
 
-    // Process relationships to build the map
-    relationships.forEach((relationship) => {
-      const sourceId = relationship.sourceEntity.toString(); // sourceEntity is a string ID
-      const targetId = relationship.targetEntity.toString(); // targetEntity is a string ID
-
-      // Add target task to source task's related tasks
-      if (!relatedTasksMap.has(sourceId)) {
-        relatedTasksMap.set(sourceId, []);
-      }
-      const targetTask = tasks.find(
-        (task) => (task._id as any).toString() === targetId
-      );
-      if (targetTask) {
-        relatedTasksMap.get(sourceId)?.push(targetTask as any);
-      }
-
-      // Add source task to target task's related tasks
-      if (!relatedTasksMap.has(targetId)) {
-        relatedTasksMap.set(targetId, []);
-      }
-      const sourceTask = tasks.find(
-        (task) => (task._id as any).toString() === sourceId
-      );
-      if (sourceTask) {
-        relatedTasksMap.get(targetId)?.push(sourceTask as any);
-      }
-    });
-
-    // Build the final response
-    const tasksWithRelationships = tasks.map((task) => {
-      const relatedTasks =
-        relatedTasksMap.get((task._id as any).toString()) || [];
-      return {
-        ...task,
-        relatedTasks: relatedTasks.map((relatedTask) => ({
-          ...relatedTask,
-          relatedTasks: undefined, // Avoid circular references
-        })),
-      };
-    });
+    const tasksWithRelationships = tasks.map((t) => ({
+      ...t.toObject(),
+      relatedTaskIds: relationships
+        .filter((r) => {
+          console.log(r.sourceEntity, r.targetEntity, t._id);
+          return (
+            r.sourceEntity === t._id.toString() ||
+            r.targetEntity === t._id.toString()
+          );
+        })
+        .map((r) =>
+          r.sourceEntity === t._id.toString() ? r.targetEntity : r.sourceEntity
+        ),
+    }));
 
     return NextResponse.json(tasksWithRelationships);
   } catch (error: any) {
@@ -124,7 +96,7 @@ export async function POST(request: NextRequest) {
       projectId,
       completed: false,
       deleted: false,
-      isActive: args.isActive === undefined ? false : args.isActive,
+      isActive: false,
       estimate: 0,
       sortOrder: tasks.length,
       parentTaskId: parentTask._id,
@@ -143,8 +115,6 @@ export async function POST(request: NextRequest) {
       type: "task",
     }));
 
-    await Relationship.insertMany(parentChildRelations);
-
     const childChildRelations = [];
     for (let i = 0; i < childTasks.length; i++) {
       for (let j = i + 1; j < childTasks.length; j++) {
@@ -156,9 +126,19 @@ export async function POST(request: NextRequest) {
         });
       }
     }
-    await Relationship.insertMany(childChildRelations);
 
-    return NextResponse.json<ITaskV2>(savedTask);
+    await Relationship.insertMany([
+      ...childChildRelations,
+      ...parentChildRelations,
+    ]);
+
+    const childTaskIds = childTasks.map((t) => t._id);
+
+    // todo: this might be not needed
+    return NextResponse.json<ITaskV2>({
+      ...savedTask,
+      relatedTaskIds: childTaskIds,
+    });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 400 });
   }

@@ -3,6 +3,7 @@ import React, { FC, useState } from "react";
 import { TaskWithRelatedTasks } from "@/app/utils/types/task";
 import TaskCard from "../TaskCard";
 import { IconCornerDownRight } from "@tabler/icons-react";
+import useTasks from "@/app/utils/hooks/use-tasks";
 
 export interface TaskWithRelationsProps {
   task: TaskWithRelatedTasks;
@@ -14,10 +15,12 @@ const TaskWithRelations: FC<TaskWithRelationsProps> = ({
   testId,
 }): JSX.Element => {
   const [isRelatedTasksOpen, setIsRelatedTasksOpen] = useState<boolean>(false);
+  const { data: tasks } = useTasks();
+  const relatedTasks = tasks.filter((t) => task.relatedTaskIds.includes(t._id));
 
-  const relatedTasksCta = !!task.relatedTasks.length
+  const relatedTasksCta = !!task.relatedTaskIds.length
     ? {
-        label: `${task.relatedTasks.length} related tasks`,
+        label: `${task.relatedTaskIds.length} related tasks`,
         onClick: () => setIsRelatedTasksOpen((val) => !val),
       }
     : undefined;
@@ -31,7 +34,7 @@ const TaskWithRelations: FC<TaskWithRelationsProps> = ({
       />
       {isRelatedTasksOpen && (
         <div className="flex flex-col gap-1 mt-1 animate-fade">
-          {task.relatedTasks.map((rTask) => (
+          {relatedTasks.map((rTask) => (
             <div key={`${task._id}-${rTask._id}`} className="flex gap-1">
               <div className="flex items-center">
                 {/* todo: change color */}

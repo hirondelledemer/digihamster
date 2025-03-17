@@ -1,4 +1,6 @@
-import { test, expect, Page, TestInfo } from "@playwright/test";
+import { test, expect, TestInfo } from "@playwright/test";
+import { HomePage } from "./driver";
+import { HOME, LOGIN } from "@/app/utils/consts/routes";
 
 export const configureSnapshotPath =
   (options?: {}) =>
@@ -20,72 +22,40 @@ test.beforeEach(configureSnapshotPath());
 test.describe("login page", () => {
   test.describe("happy path", () => {
     test("user logs in", async ({ page }) => {
-      const { vals, urls, ...driver } = getDriver({ page });
+      const driver = new HomePage(page);
 
-      await driver.goto(urls.base);
+      await driver.goto(HOME);
+      await driver.login();
 
-      await expect(page).toHaveScreenshot("login-page.png");
-
-      await driver.fillEmail(vals.email);
-      await driver.fillPassword(vals.password);
-      await driver.clickLogin();
-
-      await expect(page).toHaveURL(urls.home);
+      await driver.homePage();
     });
   });
 
   test.describe("errors", () => {
     test("user does not exists", async ({ page }) => {
-      const { vals, urls, ...driver } = getDriver({ page });
+      const driver = new HomePage(page);
 
-      await driver.goto(urls.base);
-      await driver.fillEmail("incorrect@user.com");
-      await driver.fillPassword(vals.password);
-      await driver.clickLogin();
+      await driver.goto(HOME);
 
-      await expect(driver.noUserError).toBeVisible();
-      await expect(page).toHaveURL(urls.login);
-      await expect(page).toHaveScreenshot("login-error-no-user.png");
+      await driver.login({
+        email: "incorrect@user.com",
+        password: "testtest",
+      });
+
+      await driver.getNoUserError();
+      await expect(page).toHaveURL(LOGIN);
     });
 
     test("password is incorrect", async ({ page }) => {
-      const { vals, urls, ...driver } = getDriver({ page });
-      await driver.goto(urls.base);
+      const driver = new HomePage(page);
+      await driver.goto(HOME);
 
-      await driver.fillEmail(vals.email);
-      await driver.fillPassword("incorrect");
-      await driver.clickLogin();
+      await driver.login({
+        email: "test@test.com",
+        password: "incorrect",
+      });
 
-      await expect(driver.wrongPasswordError).toBeVisible();
-      await expect(page).toHaveURL(urls.login);
-      await expect(page).toHaveScreenshot("login-error-bad-password.png");
+      await driver.getWrongPassword();
     });
   });
 });
-
-const getDriver = ({ page }: { page: Page }) => {
-  const emailInput = page.getByPlaceholder("email");
-  const passwordInput = page.getByPlaceholder("password");
-  const loginButton = page.getByRole("button", { name: "Login" });
-  const wrongPasswordError = page.getByText("Invalid password");
-  const noUserError = page.getByText("User does not exist");
-
-  return {
-    fillEmail: (email: string) => emailInput.fill(email),
-    fillPassword: (password: string) => passwordInput.fill(password),
-    clickLogin: () => loginButton.click(),
-    wrongPasswordError,
-    noUserError,
-    goto: (location: string) => page.goto(location),
-    vals: {
-      email: "test@test.com",
-      password: "testtest",
-    },
-    urls: {
-      login: "/login",
-      profile: "/profile",
-      base: "/",
-      home: "/",
-    },
-  };
-};

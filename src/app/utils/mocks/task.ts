@@ -22,7 +22,7 @@ export const generateTask: (
     createdAt: "",
     updatedAt: "",
     deadline: null,
-    relatedTasks: [],
+    relatedTaskIds: [],
     ...properties,
   };
 };

@@ -23,7 +23,10 @@ const relatedTasks = generateCustomTasksList([
 ]);
 
 const defaultArgs: TaskWithRelationsProps = {
-  task: generateTask(0, { title: "Prepare for birthday party", relatedTasks }),
+  task: generateTask(0, {
+    title: "Prepare for birthday party",
+    relatedTaskIds: relatedTasks.map((t) => t._id),
+  }),
 };
 
 export const Default: Story = {
