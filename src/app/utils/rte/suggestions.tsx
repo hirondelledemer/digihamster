@@ -2,12 +2,7 @@ import { ReactRenderer } from "@tiptap/react";
 import tippy, { Instance, Props } from "tippy.js";
 
 import { ComponentType } from "react";
-
-interface MentionsConfigProps {
-  // TODO: extract and extend in the components
-  command: any;
-  query: string;
-}
+import { MentionsConfigProps } from "./types";
 
 export const getMentionsConfig = (
   Component: ComponentType<MentionsConfigProps>

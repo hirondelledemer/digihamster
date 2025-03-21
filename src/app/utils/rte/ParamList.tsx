@@ -8,24 +8,25 @@ import React, {
 import { Card, CardContent } from "@/app/components/ui/card";
 
 import { Badge } from "@/app/components/ui/badge";
+import { SuggestionKeyDownProps } from "@tiptap/suggestion";
+import { MentionsConfigProps } from "./types";
 
-export interface ParamsMentionsProps {
-  command: any;
-  query: string;
-}
+export type ParamsListProps = MentionsConfigProps;
 
-interface ParamType {
-  value: string;
+export type RteParamType = "active" | "today" | "tmr";
+
+interface ParamOptionType {
+  value: RteParamType;
   label: string;
 }
 const PARAMS = [
   { value: "active", label: "active" },
   { value: "today", label: "today" },
   { value: "tmr", label: "tmr" },
-] as const satisfies Array<ParamType>;
+] as const satisfies Array<ParamOptionType>;
 
 export const ParamsList = forwardRef(
-  ({ command, query }: ParamsMentionsProps, ref) => {
+  ({ command, query }: ParamsListProps, ref) => {
     const [selectedIndex, setSelectedIndex] = useState(0);
 
     useEffect(() => {
@@ -33,7 +34,7 @@ export const ParamsList = forwardRef(
     }, []);
 
     useImperativeHandle(ref, () => ({
-      onKeyDown: ({ event }: any) => {
+      onKeyDown: ({ event }: SuggestionKeyDownProps) => {
         if (event.key === "ArrowUp") {
           upHandler();
           return true;
@@ -84,7 +85,7 @@ export const ParamsList = forwardRef(
       <Card>
         <CardContent className="py-2 px-4">
           {items.length ? (
-            items.map((param: ParamType, index: number) => (
+            items.map((param: ParamOptionType, index: number) => (
               <div key={param.value}>
                 <Badge
                   variant={selectedIndex === index ? "secondary" : "outline"}
@@ -103,4 +104,4 @@ export const ParamsList = forwardRef(
   }
 );
 
-ParamsList.displayName = "ProjectMentions";
+ParamsList.displayName = "ParamList";

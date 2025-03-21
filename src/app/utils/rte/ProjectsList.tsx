@@ -10,13 +10,12 @@ import { Card, CardContent } from "@/app/components/ui/card";
 import { Badge } from "@/app/components/ui/badge";
 import useProjects from "../hooks/use-projects";
 import { Project } from "@/models/project";
+import { MentionsConfigProps } from "./types";
+import { SuggestionKeyDownProps } from "@tiptap/suggestion";
 
-export interface ProjectMentionsProps {
-  command: any;
-  query: string;
-}
+export type ProjectMentionsProps = MentionsConfigProps;
 
-export const ProjectMentions = forwardRef(
+export const ProjectsList = forwardRef(
   ({ command, query }: ProjectMentionsProps, ref) => {
     const [selectedIndex, setSelectedIndex] = useState(0);
 
@@ -27,7 +26,7 @@ export const ProjectMentions = forwardRef(
     }, [projects]);
 
     useImperativeHandle(ref, () => ({
-      onKeyDown: ({ event }: any) => {
+      onKeyDown: ({ event }: SuggestionKeyDownProps) => {
         if (event.key === "ArrowUp") {
           upHandler();
           return true;
@@ -85,7 +84,6 @@ export const ProjectMentions = forwardRef(
                 <Badge
                   variant={selectedIndex === index ? "secondary" : "outline"}
                   onClick={() => selectItem(index)}
-                  // className="text-amber-700"
                   style={{
                     color: project.color,
                     border:
@@ -107,4 +105,4 @@ export const ProjectMentions = forwardRef(
   }
 );
 
-ProjectMentions.displayName = "ProjectMentions";
+ProjectsList.displayName = "ProjectsList";

@@ -6,7 +6,7 @@ import styles from "./rte-hook.module.scss";
 import { PluginKey } from "@tiptap/pm/state";
 import { getMentionsConfig } from "./suggestions";
 import { MentionList } from "./MentionList";
-import { ProjectMentions } from "./ProjectsList";
+import { ProjectsList } from "./ProjectsList";
 import { ParamsList } from "./ParamList";
 
 export interface RteValue {
@@ -43,7 +43,7 @@ const ProjectMention = Mention.extend({
       return (
         reduce(
           json.content,
-          (acc: Record<string, any>[], curr: JSONContent) => [
+          (acc: Record<string, object>[], curr: JSONContent) => [
             ...acc,
             ...(
               curr.content?.filter((val) => val.type === "projectMention") || []
@@ -85,7 +85,7 @@ export function useRte({
         HTMLAttributes: {
           class: styles.project,
         },
-        suggestion: getMentionsConfig(ProjectMentions),
+        suggestion: getMentionsConfig(ProjectsList),
       }),
       ParamsMention.configure({
         HTMLAttributes: {
@@ -135,7 +135,7 @@ export function useRte({
 
     const tags = reduce(
       json.content,
-      (acc: Record<string, any>[], curr: JSONContent) => [
+      (acc: Record<string, object>[], curr: JSONContent) => [
         ...acc,
         ...(curr.content?.filter((val) => val.type === "mention") || []).map(
           (mention) => mention!.attrs!
@@ -146,7 +146,7 @@ export function useRte({
 
     const project = reduce(
       json.content,
-      (acc: Record<string, any>[], curr: JSONContent) => [
+      (acc: Record<string, object>[], curr: JSONContent) => [
         ...acc,
         ...(
           curr.content?.filter((val) => val.type === "projectMention") || []
@@ -157,7 +157,7 @@ export function useRte({
 
     const params = reduce(
       json.content,
-      (acc: Record<string, any>[], curr: JSONContent) => [
+      (acc: Record<string, object>[], curr: JSONContent) => [
         ...acc,
         ...(
           curr.content?.filter((val) => val.type === "paramsMention") || []
