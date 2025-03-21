@@ -86,6 +86,7 @@ const ProjectBurnDownChart: FC<ProjectBurnDownChartProps> = ({
                 tickLine={false}
                 axisLine={false}
                 tickMargin={8}
+                data-chromatic="ignore"
               />
               <ChartTooltip
                 cursor={false}

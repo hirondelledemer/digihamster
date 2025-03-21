@@ -31,6 +31,7 @@ const TimelineChart: FC<TimelineChartProps> = ({ chartConfig, chartData }) => {
               tickLine={false}
               tickMargin={10}
               axisLine={false}
+              data-chromatic="ignore"
               onClick={({ index }: any) => {
                 const element = document.getElementById(
                   chartData[index].scrollToValue
