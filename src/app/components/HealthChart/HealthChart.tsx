@@ -64,9 +64,12 @@ const HealthChart: FC<HealthChartProps> = (): JSX.Element => {
             );
           }, 0);
 
-          const progressPercentage = (progress / total) * 100;
+          const progressPercentage = Math.min((progress / total) * 100, 100);
 
-          const lastMonthProgressPercentage = (lastMonthProgress / total) * 100;
+          const lastMonthProgressPercentage = Math.min(
+            (lastMonthProgress / total) * 100,
+            100
+          );
 
           return [
             ...prev,
