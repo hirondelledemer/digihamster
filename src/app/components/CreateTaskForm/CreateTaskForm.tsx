@@ -8,6 +8,8 @@ import useProjects from "@/app/utils/hooks/use-projects";
 import { Form, FormControl, FormField, FormItem, RteMessage } from "../ui/form";
 import RteFormField from "../RteFormField";
 import { Button } from "../ui/button";
+import { now } from "@/app/utils/date/date";
+import { addDays, addHours } from "date-fns";
 
 export interface CreateTaskFormProps {
   testId?: string;
@@ -26,7 +28,7 @@ const FormSchema = z.object({
     textContent: z.string(),
     contentJSON: z.any(),
     projectId: z.string().optional(),
-    isActive: z.boolean().optional(),
+    params: z.array(z.string()),
   }),
 });
 
@@ -61,10 +63,14 @@ const CreateTaskForm: FC<CreateTaskFormProps> = ({
       description: values.description.textContent,
       descriptionFull: values.description.contentJSON,
       projectId: values.description.projectId || defaultProject?._id || null,
-      isActive: values.description.isActive || false,
+      isActive: values.description.params.includes("active"),
       tags: values.description.tags,
       subtasks: values.description.tasks,
-      deadline,
+      deadline: values.description.params.includes("tmr")
+        ? addDays(now(), 1).valueOf()
+        : values.description.params.includes("today")
+        ? addHours(now(), 2).valueOf()
+        : deadline,
     };
 
     createNewTask(taskData);

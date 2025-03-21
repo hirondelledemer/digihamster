@@ -1,7 +1,11 @@
 import { JSONContent, useEditor } from "@tiptap/react";
 import Mention from "@tiptap/extension-mention";
 import StarterKit from "@tiptap/starter-kit";
-import { projectSuggestionsConfig, suggestionsConfig } from "./suggestions";
+import {
+  paramsSuggestionsConfig,
+  projectSuggestionsConfig,
+  suggestionsConfig,
+} from "./suggestions";
 import { reduce } from "remeda";
 import styles from "./rte-hook.module.scss";
 import { PluginKey } from "@tiptap/pm/state";
@@ -14,10 +18,10 @@ export interface RteValue {
   textContent: string;
   contentJSON: JSONContent;
   projectId?: string;
-  isActive: boolean;
+  params: string[];
 }
 
-const CustomMentionOne = Mention.extend({
+const CustomMention = Mention.extend({
   name: "mention",
 }).configure({
   suggestion: {
@@ -53,6 +57,15 @@ const ProjectMention = Mention.extend({
   },
 });
 
+const ParamsMention = Mention.extend({
+  name: "paramsMention",
+}).configure({
+  suggestion: {
+    char: "$",
+    pluginKey: new PluginKey("paramsSuggestion"),
+  },
+});
+
 export function useRte({
   value,
   editable,
@@ -63,7 +76,7 @@ export function useRte({
   const editor = useEditor({
     extensions: [
       StarterKit,
-      CustomMentionOne.configure({
+      CustomMention.configure({
         HTMLAttributes: {
           class: styles.tag,
         },
@@ -74,6 +87,12 @@ export function useRte({
           class: styles.project,
         },
         suggestion: projectSuggestionsConfig,
+      }),
+      ParamsMention.configure({
+        HTMLAttributes: {
+          class: styles.project,
+        },
+        suggestion: paramsSuggestionsConfig,
       }),
     ],
     editorProps: {
@@ -96,7 +115,7 @@ export function useRte({
       textContent: "",
       contentJSON: [],
       projectId: undefined,
-      isActive: false,
+      params: [],
     };
     if (!editor) {
       return defaultValue;
@@ -137,13 +156,22 @@ export function useRte({
       []
     )[0];
 
+    const params = reduce(
+      json.content,
+      (acc: Record<string, any>[], curr: JSONContent) => [
+        ...acc,
+        ...(
+          curr.content?.filter((val) => val.type === "paramsMention") || []
+        ).map((mention) => mention!.attrs!.id),
+      ],
+      []
+    );
+
     const projectId = project ? project.id.split(":")[0] : undefined;
 
     const regularTags = tags
-      .filter((tag) => tag.label !== "task" && tag.label !== "active")
+      .filter((tag) => tag.label !== "task")
       .map((tag) => tag.id.split(":")[0]);
-
-    const isActive = tags.filter((tag) => tag.label === "active").length > 0;
 
     const tasks = reduce(
       json.content,
@@ -172,7 +200,7 @@ export function useRte({
       textContent,
       contentJSON: json,
       projectId,
-      isActive,
+      params,
     };
   };
 

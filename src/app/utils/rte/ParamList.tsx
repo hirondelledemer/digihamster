@@ -8,23 +8,29 @@ import React, {
 import { Card, CardContent } from "@/app/components/ui/card";
 
 import { Badge } from "@/app/components/ui/badge";
-import useProjects from "../hooks/use-projects";
-import { Project } from "@/models/project";
 
-export interface ProjectMentionsProps {
+export interface ParamsMentionsProps {
   command: any;
   query: string;
 }
 
-export const ProjectMentions = forwardRef(
-  ({ command, query }: ProjectMentionsProps, ref) => {
-    const [selectedIndex, setSelectedIndex] = useState(0);
+interface ParamType {
+  value: string;
+  label: string;
+}
+const PARAMS = [
+  { value: "active", label: "active" },
+  { value: "today", label: "today" },
+  { value: "tmr", label: "tmr" },
+] as const satisfies Array<ParamType>;
 
-    const { data: projects } = useProjects();
+export const ParamsList = forwardRef(
+  ({ command, query }: ParamsMentionsProps, ref) => {
+    const [selectedIndex, setSelectedIndex] = useState(0);
 
     useEffect(() => {
       setSelectedIndex(0);
-    }, [projects]);
+    }, []);
 
     useImperativeHandle(ref, () => ({
       onKeyDown: ({ event }: any) => {
@@ -47,19 +53,17 @@ export const ProjectMentions = forwardRef(
       },
     }));
 
-    const items = projects
-      .filter((project) =>
-        project.title.toLowerCase().startsWith(query.toLowerCase())
-      )
-      .slice(0, 5);
+    const items = PARAMS.filter((param) =>
+      param.label.toLowerCase().startsWith(query.toLowerCase())
+    ).slice(0, 5);
 
     const selectItem = (index: number) => {
       const item = items[index];
 
       if (item) {
         command({
-          id: `${item._id}:${item.color}`,
-          label: item.title,
+          id: item.value,
+          label: item.label,
         });
       }
     };
@@ -80,26 +84,18 @@ export const ProjectMentions = forwardRef(
       <Card>
         <CardContent className="py-2 px-4">
           {items.length ? (
-            items.map((project: Project, index: number) => (
-              <div key={project._id}>
+            items.map((param: ParamType, index: number) => (
+              <div key={param.value}>
                 <Badge
                   variant={selectedIndex === index ? "secondary" : "outline"}
                   onClick={() => selectItem(index)}
-                  // className="text-amber-700"
-                  style={{
-                    color: project.color,
-                    border:
-                      selectedIndex === index
-                        ? `1px solid ${project.color}`
-                        : undefined,
-                  }}
                 >
-                  {project.title}
+                  {param.label}
                 </Badge>
               </div>
             ))
           ) : (
-            <div>No such project</div>
+            <div>no command found</div>
           )}
         </CardContent>
       </Card>
@@ -107,4 +103,4 @@ export const ProjectMentions = forwardRef(
   }
 );
 
-ProjectMentions.displayName = "ProjectMentions";
+ParamsList.displayName = "ProjectMentions";
