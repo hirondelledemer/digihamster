@@ -1,14 +1,13 @@
 import { JSONContent, useEditor } from "@tiptap/react";
 import Mention from "@tiptap/extension-mention";
 import StarterKit from "@tiptap/starter-kit";
-import {
-  paramsSuggestionsConfig,
-  projectSuggestionsConfig,
-  suggestionsConfig,
-} from "./suggestions";
 import { reduce } from "remeda";
 import styles from "./rte-hook.module.scss";
 import { PluginKey } from "@tiptap/pm/state";
+import { getMentionsConfig } from "./suggestions";
+import { MentionList } from "./MentionList";
+import { ProjectMentions } from "./ProjectsList";
+import { ParamsList } from "./ParamList";
 
 export interface RteValue {
   title: string;
@@ -80,19 +79,19 @@ export function useRte({
         HTMLAttributes: {
           class: styles.tag,
         },
-        suggestion: suggestionsConfig,
+        suggestion: getMentionsConfig(MentionList),
       }),
       ProjectMention.configure({
         HTMLAttributes: {
           class: styles.project,
         },
-        suggestion: projectSuggestionsConfig,
+        suggestion: getMentionsConfig(ProjectMentions),
       }),
       ParamsMention.configure({
         HTMLAttributes: {
-          class: styles.project,
+          class: styles.param,
         },
-        suggestion: paramsSuggestionsConfig,
+        suggestion: getMentionsConfig(ParamsList),
       }),
     ],
     editorProps: {
