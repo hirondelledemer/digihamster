@@ -86,7 +86,7 @@ export class HomePage {
     await this.page.keyboard.press("Enter");
 
     // add active tag
-    await this.page.keyboard.press("@");
+    await this.page.keyboard.press("$");
     await this.page.keyboard.type("act");
     await this.page.keyboard.press("Enter");
     await this.page.keyboard.press("Enter");
@@ -125,7 +125,7 @@ export class HomePage {
 
     await expect(parentTask).toBeVisible();
     await expect(parentTask).toHaveText(
-      `${title}default project${title}\n\n@active\n@task buy food\n@task poor water\ncat needs to be happy2 related tasks`
+      `${title}default project${title}\n\n$active\n@task buy food\n@task poor water\ncat needs to be happy2 related tasks`
     );
 
     const childTask1 = this.page

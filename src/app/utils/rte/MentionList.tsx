@@ -12,11 +12,10 @@ import { Card, CardContent } from "@/app/components/ui/card";
 import { Button } from "@/app/components/ui/button";
 import { Badge } from "@/app/components/ui/badge";
 import useTags from "../hooks/use-tags";
+import { MentionsConfigProps } from "./types";
+import { SuggestionKeyDownProps } from "@tiptap/suggestion";
 
-export interface MentionListProps {
-  command: any;
-  query: string;
-}
+export type MentionListProps = MentionsConfigProps;
 
 export const MentionList = forwardRef(
   ({ command, query }: MentionListProps, ref) => {
@@ -31,7 +30,7 @@ export const MentionList = forwardRef(
     const handleAddTag = async (title: string) => {
       // todo: handle error
       // TODO: use hook
-      const response = await axios.post<any, { data: ITag }>("/api/tags", {
+      const response = await axios.post<unknown, { data: ITag }>("/api/tags", {
         title,
         color:
           tags.length < COLORS_V2.length
@@ -46,7 +45,7 @@ export const MentionList = forwardRef(
     };
 
     useImperativeHandle(ref, () => ({
-      onKeyDown: ({ event }: any) => {
+      onKeyDown: ({ event }: SuggestionKeyDownProps) => {
         if (event.key === "ArrowUp") {
           upHandler();
           return true;

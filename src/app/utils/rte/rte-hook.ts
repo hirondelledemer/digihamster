@@ -1,10 +1,13 @@
 import { JSONContent, useEditor } from "@tiptap/react";
 import Mention from "@tiptap/extension-mention";
 import StarterKit from "@tiptap/starter-kit";
-import { projectSuggestionsConfig, suggestionsConfig } from "./suggestions";
 import { reduce } from "remeda";
 import styles from "./rte-hook.module.scss";
 import { PluginKey } from "@tiptap/pm/state";
+import { getMentionsConfig } from "./suggestions";
+import { MentionList } from "./MentionList";
+import { ProjectsList } from "./ProjectsList";
+import { ParamsList } from "./ParamList";
 
 export interface RteValue {
   title: string;
@@ -14,10 +17,10 @@ export interface RteValue {
   textContent: string;
   contentJSON: JSONContent;
   projectId?: string;
-  isActive: boolean;
+  params: string[];
 }
 
-const CustomMentionOne = Mention.extend({
+const CustomMention = Mention.extend({
   name: "mention",
 }).configure({
   suggestion: {
@@ -40,7 +43,7 @@ const ProjectMention = Mention.extend({
       return (
         reduce(
           json.content,
-          (acc: Record<string, any>[], curr: JSONContent) => [
+          (acc: Record<string, object>[], curr: JSONContent) => [
             ...acc,
             ...(
               curr.content?.filter((val) => val.type === "projectMention") || []
@@ -50,6 +53,15 @@ const ProjectMention = Mention.extend({
         ).length < 1
       );
     },
+  },
+});
+
+const ParamsMention = Mention.extend({
+  name: "paramsMention",
+}).configure({
+  suggestion: {
+    char: "$",
+    pluginKey: new PluginKey("paramsSuggestion"),
   },
 });
 
@@ -63,17 +75,23 @@ export function useRte({
   const editor = useEditor({
     extensions: [
       StarterKit,
-      CustomMentionOne.configure({
+      CustomMention.configure({
         HTMLAttributes: {
           class: styles.tag,
         },
-        suggestion: suggestionsConfig,
+        suggestion: getMentionsConfig(MentionList),
       }),
       ProjectMention.configure({
         HTMLAttributes: {
           class: styles.project,
         },
-        suggestion: projectSuggestionsConfig,
+        suggestion: getMentionsConfig(ProjectsList),
+      }),
+      ParamsMention.configure({
+        HTMLAttributes: {
+          class: styles.param,
+        },
+        suggestion: getMentionsConfig(ParamsList),
       }),
     ],
     editorProps: {
@@ -96,7 +114,7 @@ export function useRte({
       textContent: "",
       contentJSON: [],
       projectId: undefined,
-      isActive: false,
+      params: [],
     };
     if (!editor) {
       return defaultValue;
@@ -117,7 +135,7 @@ export function useRte({
 
     const tags = reduce(
       json.content,
-      (acc: Record<string, any>[], curr: JSONContent) => [
+      (acc: Record<string, object>[], curr: JSONContent) => [
         ...acc,
         ...(curr.content?.filter((val) => val.type === "mention") || []).map(
           (mention) => mention!.attrs!
@@ -128,7 +146,7 @@ export function useRte({
 
     const project = reduce(
       json.content,
-      (acc: Record<string, any>[], curr: JSONContent) => [
+      (acc: Record<string, object>[], curr: JSONContent) => [
         ...acc,
         ...(
           curr.content?.filter((val) => val.type === "projectMention") || []
@@ -137,13 +155,22 @@ export function useRte({
       []
     )[0];
 
+    const params = reduce(
+      json.content,
+      (acc: Record<string, object>[], curr: JSONContent) => [
+        ...acc,
+        ...(
+          curr.content?.filter((val) => val.type === "paramsMention") || []
+        ).map((mention) => mention!.attrs!.id),
+      ],
+      []
+    );
+
     const projectId = project ? project.id.split(":")[0] : undefined;
 
     const regularTags = tags
-      .filter((tag) => tag.label !== "task" && tag.label !== "active")
+      .filter((tag) => tag.label !== "task")
       .map((tag) => tag.id.split(":")[0]);
-
-    const isActive = tags.filter((tag) => tag.label === "active").length > 0;
 
     const tasks = reduce(
       json.content,
@@ -172,7 +199,7 @@ export function useRte({
       textContent,
       contentJSON: json,
       projectId,
-      isActive,
+      params,
     };
   };
 
