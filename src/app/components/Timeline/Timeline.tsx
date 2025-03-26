@@ -44,7 +44,6 @@ const Timeline: FC<TimelineProps> = ({ testId }): JSX.Element => {
   const { data: tasks } = useTasks();
   const { data: events } = useEventsState();
 
-  console.log("events", events);
   const { data: journalEntries } = useJournalEntries();
   const { data: projects } = useProjects();
   const [period, setPeriod] = useState<IPeriod>("this_week");

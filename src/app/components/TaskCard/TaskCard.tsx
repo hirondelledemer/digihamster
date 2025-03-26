@@ -16,7 +16,6 @@ import {
 } from "../ui/context-menu";
 import { Badge } from "../ui/badge";
 import { format } from "date-fns";
-import Estimate from "../Estimate";
 import useEditTask from "@/app/utils/hooks/use-edit-task";
 import useTags from "@/app/utils/hooks/use-tags";
 import TaskFormModal from "../TaskFormModal";
@@ -24,6 +23,8 @@ import StaleIndicator from "../StaleIndicator";
 import { useDraggable } from "@dnd-kit/core";
 import { Button } from "../ui/button";
 import { TaskV2 } from "@/models/taskV2";
+import { IconCalendar } from "@tabler/icons-react";
+import { useCalendarDate } from "../../utils/hooks/use-calendar-date";
 
 export const titleTestId = "TaskCard-title-testid";
 export const cardTestId = "TaskCard-card-testid";
@@ -52,6 +53,7 @@ const TaskCard: FC<TaskCardProps> = ({
 }): JSX.Element => {
   const { data: projects } = useProjects();
   const { data: tags } = useTags();
+  const { setSelectedDate } = useCalendarDate();
 
   const [taskFormOpen, setTaskFormOpen] = useState<boolean>(false);
   const { editTask } = useEditTask();
@@ -118,7 +120,15 @@ const TaskCard: FC<TaskCardProps> = ({
                     date={task.activatedAt || 0}
                     className="mr-2"
                   />
-                  <Estimate estimate={task.estimate || 0} />
+                  {!!task.deadline && (
+                    <IconCalendar
+                      size={18}
+                      onClick={() => {
+                        console.log("clicking", new Date(task.deadline!));
+                        setSelectedDate(new Date(task.deadline!));
+                      }}
+                    />
+                  )}
                 </div>
               </CardTitle>
               {!task.completed && (

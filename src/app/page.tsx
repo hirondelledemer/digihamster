@@ -10,6 +10,7 @@ import { DraggableTasksContextProvider } from "./utils/hooks/use-draggable-tasks
 import { HabitsContextProvider } from "./utils/hooks/use-habits";
 import { CycleContextProvider } from "./utils/hooks/use-cycle";
 import { EventsContextProvider } from "./utils/hooks/use-events/provider";
+import { CalendarDateContextProvider } from "./utils/hooks/use-calendar-date";
 
 export default function HomePage() {
   return (
@@ -22,7 +23,9 @@ export default function HomePage() {
                 <HabitsContextProvider>
                   <CycleContextProvider>
                     <DraggableTasksContextProvider>
-                      <HomeComp />
+                      <CalendarDateContextProvider>
+                        <HomeComp />
+                      </CalendarDateContextProvider>
                     </DraggableTasksContextProvider>
                   </CycleContextProvider>
                 </HabitsContextProvider>
