@@ -1,7 +1,7 @@
 import { JSONContent, useEditor } from "@tiptap/react";
 import Mention from "@tiptap/extension-mention";
 import StarterKit from "@tiptap/starter-kit";
-import { reduce } from "remeda";
+import { drop, reduce } from "remeda";
 import styles from "./rte-hook.module.scss";
 import { PluginKey } from "@tiptap/pm/state";
 import { getMentionsConfig } from "./suggestions";
@@ -191,12 +191,38 @@ export function useRte({
       []
     ).map((task) => task.trim());
 
+    const textContent2 = reduce(
+      json.content,
+      (acc: string[], curr: JSONContent) => {
+        const taskMentionExists = curr.content?.find(
+          (val) => val.type === "mention" && val.attrs?.label === "task"
+        );
+        return [
+          ...acc,
+          ...(
+            curr.content?.filter(
+              (val) =>
+                val.type !== "projectMention" &&
+                val.type !== "paramsMention" &&
+                !taskMentionExists
+            ) || []
+          ).map((content) => content.text || ""),
+        ];
+      },
+      []
+    ).filter((text) => !!text);
+
+    const textContent3 =
+      textContent2[0] === title
+        ? drop(1)(textContent2).join("\n")
+        : textContent2.join("\n");
+
     return {
       title,
       content: value,
       tags: regularTags,
       tasks,
-      textContent,
+      textContent: textContent3,
       contentJSON: json,
       projectId,
       params,

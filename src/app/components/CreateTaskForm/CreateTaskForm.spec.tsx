@@ -43,7 +43,7 @@ describe("CreateTaskForm", () => {
 
     await waitFor(() => {
       expect(mockAxios.post).toHaveBeenCalledWith("/api/tasks/v2", {
-        description: `test\n\nnote`,
+        description: `note`,
         descriptionFull: {
           content: [
             {
@@ -89,8 +89,7 @@ describe("CreateTaskForm", () => {
 
     await waitFor(() => {
       expect(mockAxios.post).toHaveBeenCalledWith("/api/tasks/v2", {
-        description:
-          "feed the cat\n\n/p perfect cat\n\n\n\n@task get the water\n\n@task get the food\n\n\n\ncat has to be fed!!!!!!\n\n\n\n$active\n\n@mmm",
+        description: "cat has to be fed!!!!!!",
         descriptionFull: {
           content: [
             {
@@ -216,7 +215,7 @@ describe("CreateTaskForm", () => {
       await waitFor(() => {
         expect(mockAxios.post).toHaveBeenCalledWith("/api/tasks/v2", {
           deadline: 7200000,
-          description: "new task\n\n$today",
+          description: "",
           descriptionFull: {
             content: [
               {
@@ -266,7 +265,7 @@ describe("CreateTaskForm", () => {
       await waitFor(() => {
         expect(mockAxios.post).toHaveBeenCalledWith("/api/tasks/v2", {
           deadline: 86400000,
-          description: "new task\n\n$tmr",
+          description: "",
           descriptionFull: {
             content: [
               {

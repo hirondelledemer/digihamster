@@ -112,7 +112,7 @@ describe("CommandTool", () => {
 
       await waitFor(() => {
         expect(mockAxios.post).toHaveBeenCalledWith("/api/tasks/v2", {
-          description: "new task title\n\nnew desc",
+          description: "new desc",
           descriptionFull: {
             content: [
               {
