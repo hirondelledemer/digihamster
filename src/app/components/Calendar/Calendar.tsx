@@ -57,6 +57,7 @@ import useCycle from "@/app/utils/hooks/use-cycle";
 import EventTaskFormModal from "../EventTaskFormModal";
 import { useEventsState } from "@/app/utils/hooks/use-events/state-context";
 import { useEventsActions } from "@/app/utils/hooks/use-events/actions-context";
+import { useCalendarDate } from "../../utils/hooks/use-calendar-date";
 
 export const now = () => new Date();
 
@@ -79,6 +80,9 @@ export interface PlannerProps {
 export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
   const [eventInCreationData, setEventInCreationData] =
     useState<SlotInfo | null>(null);
+
+  const { selectedDate, setSelectedDate } = useCalendarDate();
+
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
 
   const [isLoading, setLoading] = useState<boolean>(false);
@@ -318,6 +322,8 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
         }}
       />
       <DnDropCalendar
+        date={selectedDate}
+        onNavigate={setSelectedDate}
         selectable
         localizer={localizer}
         resizableAccessor={isCalendarEventEntry}
