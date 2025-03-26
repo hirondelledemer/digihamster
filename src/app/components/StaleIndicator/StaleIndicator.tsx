@@ -41,7 +41,7 @@ const StaleIndicator: FC<StaleIndicatorProps> = ({
 
   return (
     <TooltipProvider>
-      <Tooltip>
+      <Tooltip delayDuration={0}>
         <TooltipTrigger>
           {<DinosaurIcon className={cn("h-4 w-4", color, className)} />}
         </TooltipTrigger>
