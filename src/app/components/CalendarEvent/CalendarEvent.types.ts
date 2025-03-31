@@ -1,6 +1,5 @@
 import { TaskWithRelatedTasks } from "@/app/utils/types/task";
 import { JournalEntry } from "@/models/entry";
-import { INote } from "@/models/note";
 import { TaskV2 } from "@/models/taskV2";
 import { Event } from "react-big-calendar";
 
