@@ -5,6 +5,7 @@ import { act, render, waitFor } from "@/config/utils/test-utils";
 import MockAxios from "jest-mock-axios";
 import { wrapWithTagsProvider } from "../tests/wraps";
 import { generateListOfTags } from "../mocks/tag";
+import { Editor } from "@tiptap/react";
 
 jest.mock("../common/random-int", () => ({
   getRandomInt: () => 0,
@@ -17,7 +18,16 @@ describe("MentionList", () => {
   const defaultProps: MentionListProps = {
     command: jest.fn(),
     query: "",
+    editor: {} as Editor,
+    range: {
+      from: 0,
+      to: 1,
+    },
+    text: "",
+    items: [],
+    decorationNode: null,
   };
+
   const renderComponent = (props = defaultProps) =>
     getMentionListTestkit(
       render(

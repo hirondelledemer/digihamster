@@ -5,6 +5,7 @@ export interface JournalEntry extends Taggable, TimeStamps {
   _id: string;
   title: string;
   note: string;
+  jsonNote: object;
 }
 
 export type IJournalEntry = JournalEntry & mongoose.Document<string>;
@@ -13,6 +14,7 @@ const JournalEntrySchema = new mongoose.Schema<string>(
   {
     title: { type: String },
     note: { type: String, required: true },
+    jsonNote: { type: Object, required: true },
     userId: { type: String, required: true },
     tags: { type: [String] },
   },

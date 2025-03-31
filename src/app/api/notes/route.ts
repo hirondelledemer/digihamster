@@ -42,6 +42,7 @@ export async function PATCH(request: NextRequest) {
       {
         title: args.title || note.title,
         note: args.note || note.note,
+        jsonNote: args.jsonNote || note.jsonNote,
         tags: args.tags || note.tags,
         isActive: args.isActive === undefined ? note.isActive : args.isActive,
         deleted: args.deleted === undefined ? note.deleted : args.deleted,

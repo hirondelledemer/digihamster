@@ -28,11 +28,12 @@ const PinnedNote: FC<PinnedNoteProps> = ({ testId, note }): ReactNode => {
   }
 
   const handleSubmit = async () => {
-    const { title, content, tags } = getRteValue();
+    const { title, textContent, contentJSON, tags } = getRteValue();
     setLoading(true);
     await updateNote(note._id, {
       title,
-      note: content,
+      note: textContent,
+      jsonNote: contentJSON,
       tags,
     });
     setLoading(false);

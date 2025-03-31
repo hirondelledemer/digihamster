@@ -58,6 +58,7 @@ const CreateTaskForm: FC<CreateTaskFormProps> = ({
   });
 
   const handleSubmit = (values: FormValues) => {
+    console.log("aaaaa", values.description.title);
     const taskData = {
       title: values.description.title,
       description: values.description.textContent,

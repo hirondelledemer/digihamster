@@ -8,6 +8,7 @@ export const generateJournalEntry: (
     _id: `entry${i}`,
     title: `Entry ${i}`,
     note: `entry ${i} note`,
+    jsonNote: {},
     updatedAt: "",
     tags: [],
     ...properties,

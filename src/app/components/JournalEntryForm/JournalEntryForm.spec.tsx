@@ -61,7 +61,30 @@ describe("JournalEntryForm", () => {
     wrapper.clickButton();
     await waitFor(() => {
       expect(MockAxios.post).toHaveBeenCalledWith("/api/entries", {
-        note: newText,
+        jsonNote: {
+          content: [
+            {
+              content: [
+                {
+                  text: "test",
+                  type: "text",
+                },
+              ],
+              type: "paragraph",
+            },
+            {
+              content: [
+                {
+                  text: "note",
+                  type: "text",
+                },
+              ],
+              type: "paragraph",
+            },
+          ],
+          type: "doc",
+        },
+        note: "note",
         tags: [],
         title: "test",
       });
@@ -87,7 +110,30 @@ describe("JournalEntryForm", () => {
       wrapper.clickButton();
       await waitFor(() => {
         expect(MockAxios.post).toHaveBeenCalledWith("/api/entries", {
-          note: newText,
+          jsonNote: {
+            content: [
+              {
+                content: [
+                  {
+                    text: "test",
+                    type: "text",
+                  },
+                ],
+                type: "paragraph",
+              },
+              {
+                content: [
+                  {
+                    text: "note",
+                    type: "text",
+                  },
+                ],
+                type: "paragraph",
+              },
+            ],
+            type: "doc",
+          },
+          note: "note",
           tags: [],
           title: "test",
         });
@@ -113,7 +159,33 @@ describe("JournalEntryForm", () => {
     wrapper.getTextarea().pressCtrlEnter();
     await waitFor(() => {
       expect(MockAxios.post).toHaveBeenCalledWith("/api/entries", {
-        note: "<p>test</p><p>note<br></p>",
+        jsonNote: {
+          content: [
+            {
+              content: [
+                {
+                  text: "test",
+                  type: "text",
+                },
+              ],
+              type: "paragraph",
+            },
+            {
+              content: [
+                {
+                  text: "note",
+                  type: "text",
+                },
+                {
+                  type: "hardBreak",
+                },
+              ],
+              type: "paragraph",
+            },
+          ],
+          type: "doc",
+        },
+        note: "note",
         tags: [],
         title: "test",
       });

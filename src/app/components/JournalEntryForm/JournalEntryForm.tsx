@@ -31,14 +31,15 @@ const JournalEntryForm: FC<JournalEntryFormProps> = ({
   }
 
   const handleSubmit = async () => {
-    const { title, content: note, tags } = getRteValue();
+    const { title, textContent, tags, contentJSON } = getRteValue();
     setLoading(true);
     try {
       const response = await axios.post<IJournalEntry, { data: IJournalEntry }>(
         "/api/entries",
         {
           title: title,
-          note: note,
+          note: textContent || "(no content)",
+          jsonNote: contentJSON,
           tags: tags,
         }
       );
