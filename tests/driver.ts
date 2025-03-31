@@ -125,7 +125,7 @@ export class HomePage {
 
     await expect(parentTask).toBeVisible();
     await expect(parentTask).toHaveText(
-      `${title}default project${title}\n\n$active\n@task buy food\n@task poor water\ncat needs to be happy2 related tasks`
+      `${title}default project cat needs to be happy2 related tasks`
     );
 
     const childTask1 = this.page
