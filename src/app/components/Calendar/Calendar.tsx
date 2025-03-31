@@ -152,9 +152,8 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
       allDay: false,
       resource: {
         type: "journal",
+        note: entry,
         id: entry._id,
-        title: entry.title,
-        note: entry.note,
       },
     })
   );

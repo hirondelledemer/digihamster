@@ -6,7 +6,7 @@ import { INote, Note } from "@/models/note";
 import { useToast } from "@/app/components/ui/use-toast";
 import { updateObjById } from "../common/update-array";
 
-type UpdateNoteValues = Pick<Note, "title" | "note" | "tags">;
+type UpdateNoteValues = Pick<Note, "title" | "note" | "tags" | "jsonNote">;
 export const NotesContext = createContext<{
   data: Note[];
   loading: boolean;

@@ -3,6 +3,7 @@ import React, { FC, useEffect } from "react";
 import RichTextEditor from "../RichTextEditor";
 import { useRte } from "@/app/utils/rte/rte-hook";
 import { useToast } from "../ui/use-toast";
+import { Content } from "@tiptap/react";
 
 interface RegularProps {
   editable?: false;
@@ -14,7 +15,7 @@ interface EditableProps {
 }
 interface CommonProps {
   testId?: string;
-  note: string;
+  note: Content;
 }
 export type MinimalNoteProps = RegularProps & CommonProps;
 export type MinimalNoteEditableProps = EditableProps & CommonProps;

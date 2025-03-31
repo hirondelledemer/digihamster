@@ -34,6 +34,7 @@ export async function POST(request: NextRequest) {
       userId,
       title: args.title,
       note: args.note,
+      jsonNote: args.jsonNote,
       tags: args.tags,
     });
 

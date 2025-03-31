@@ -8,6 +8,7 @@ describe("PinnedNote", () => {
       _id: "note1",
       title: "",
       note: "note",
+      jsonNote: {},
       isActive: false,
       deleted: false,
       userId: "",
