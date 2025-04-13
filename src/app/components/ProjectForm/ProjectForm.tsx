@@ -24,11 +24,14 @@ import {
 import { colors } from "./ProjectForm.consts";
 import { Button } from "../ui/button";
 import { Switch } from "../ui/switch";
+import RteFormField from "../RteFormField";
 
 interface CommonProps {
   testId?: string;
   onDone(): void;
 }
+
+export const rteTestId = "ProjectForm-rte-testid";
 
 export interface ProjectFormRegularProps extends CommonProps {
   editMode?: undefined | false;
@@ -47,6 +50,7 @@ const FormSchema = z.object({
   title: z.string().min(1, { message: "Required." }),
   color: z.string().min(1, { message: "Required." }),
   disabled: z.boolean(),
+  jsonDescription: z.any(),
 });
 
 export type FormValues = z.infer<typeof FormSchema>;
@@ -74,6 +78,15 @@ const ProjectForm: FC<ProjectFormProps> = ({
       title: "",
       color: "#e11d48",
       disabled: false,
+      jsonDescription: {
+        title: "",
+        content: "",
+        tags: [],
+        tasks: [],
+        textContent: "",
+        contentJSON: {},
+        projectId: "",
+      },
       ...getInitialValues(),
     },
   });
@@ -84,12 +97,14 @@ const ProjectForm: FC<ProjectFormProps> = ({
         title: values.title,
         color: values.color,
         disabled: values.disabled,
+        jsonDescription: values.jsonDescription,
       });
     } else {
       createProject({
         title: values.title,
         color: values.color,
         disabled: values.disabled,
+        jsonDescription: values.jsonDescription,
       });
     }
     onDone();
@@ -108,6 +123,22 @@ const ProjectForm: FC<ProjectFormProps> = ({
                 <Input placeholder="Title" {...field} />
               </FormControl>
               <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="jsonDescription"
+          render={({ field }) => (
+            <FormItem className="flex flex-col">
+              <FormControl>
+                <RteFormField
+                  testId={rteTestId}
+                  value={field.value.content}
+                  onChange={field.onChange}
+                />
+              </FormControl>
             </FormItem>
           )}
         />

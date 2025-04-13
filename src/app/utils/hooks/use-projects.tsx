@@ -14,7 +14,7 @@ import { useToast } from "@/app/components/ui/use-toast";
 import { updateObjById } from "../common/update-array";
 import { arrayMove } from "@dnd-kit/sortable";
 
-type FieldsRequired = "title" | "color" | "disabled";
+type FieldsRequired = "title" | "color" | "disabled" | "jsonDescription";
 
 export interface ProjectsContextValue {
   data: Project[];
