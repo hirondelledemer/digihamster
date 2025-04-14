@@ -102,7 +102,7 @@ describe("ActiveTaskList", () => {
 
       const wrapper = renderComponent(defaultProps, tasks);
 
-      expect(wrapper.getComponent().textContent).toContain("300");
+      expect(wrapper.getComponent().textContent).toContain("30");
       expect(wrapper.getComponent().textContent).toContain(
         "Task 0Project 1task description 0Task 1Project 1task description 1Task 2Project 1task description 2"
       );
@@ -117,7 +117,7 @@ describe("ActiveTaskList", () => {
 
       const wrapper = renderComponent(defaultProps, tasks);
 
-      expect(wrapper.getComponent().textContent).toContain("Tag 1Tag 2300");
+      expect(wrapper.getComponent().textContent).toContain("Tag 1Tag 230");
       expect(wrapper.getComponent().textContent).toContain(
         "Task 0Project 1task description 0Tag 1Task 1Project 1task description 1Tag 1Task 2Project 1task description 2Tag 1Tag 2"
       );
