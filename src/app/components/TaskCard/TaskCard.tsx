@@ -1,5 +1,4 @@
 import React, { CSSProperties, FC, useState } from "react";
-import useProjects from "@/app/utils/hooks/use-projects";
 import {
   Card,
   CardContent,
@@ -27,6 +26,7 @@ import { IconCalendar } from "@tabler/icons-react";
 import { useCalendarDate } from "../../utils/hooks/use-calendar-date";
 import { Tooltip, TooltipContent, TooltipProvider } from "../ui/tooltip";
 import { TooltipTrigger } from "@radix-ui/react-tooltip";
+import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
 
 export const titleTestId = "TaskCard-title-testid";
 export const cardTestId = "TaskCard-card-testid";
@@ -53,7 +53,8 @@ const TaskCard: FC<TaskCardProps> = ({
   dragId,
   fullHeight = false,
 }): JSX.Element => {
-  const { data: projects } = useProjects();
+  const { data: projects } = useProjectsState();
+  console.log(projects);
   const { data: tags } = useTags();
   const { setSelectedDate } = useCalendarDate();
 

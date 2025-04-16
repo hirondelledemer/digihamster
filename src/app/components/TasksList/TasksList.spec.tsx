@@ -2,7 +2,7 @@ import { render } from "@testing-library/react";
 import TasksList, { TasksListProps } from "./TasksList";
 import { getTasksListTestkit } from "./TasksList.testkit";
 import { generateListOfTasks } from "@/app/utils/mocks/task";
-import { wrapWithProjectsProvider } from "@/app/utils/tests/wraps";
+import { ProjectsContextProvider } from "@/app/utils/hooks/use-projects/provider";
 
 describe("TasksList", () => {
   const tasks = generateListOfTasks(2);
@@ -11,7 +11,11 @@ describe("TasksList", () => {
   };
   const renderComponent = (props = defaultProps) =>
     getTasksListTestkit(
-      render(wrapWithProjectsProvider(<TasksList {...props} />)).container
+      render(
+        <ProjectsContextProvider>
+          <TasksList {...props} />
+        </ProjectsContextProvider>
+      ).container
     );
 
   it("should render TasksList", () => {

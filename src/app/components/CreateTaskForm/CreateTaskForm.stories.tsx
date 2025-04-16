@@ -2,11 +2,10 @@ import type { Meta, StoryObj } from "@storybook/react";
 
 import CreateTaskForm from ".";
 import { CreateTaskFormProps } from "./CreateTaskForm";
-import { ProjectsContext } from "@/app/utils/hooks/use-projects";
-import { generateListOfProjects } from "@/app/utils/mocks/project";
-import { Project } from "@/models/project";
+
 import { generateListOfTags } from "@/app/utils/mocks/tag";
 import { TagsContext } from "@/app/utils/hooks/use-tags";
+import { ProjectsContextProvider } from "@/app/utils/hooks/use-projects/provider";
 
 const meta: Meta<typeof CreateTaskForm> = {
   title: "Example/CreateTaskForm",
@@ -21,19 +20,9 @@ const meta: Meta<typeof CreateTaskForm> = {
           setData: () => {},
         }}
       >
-        <ProjectsContext.Provider
-          value={{
-            data: generateListOfProjects(3),
-            updateProject: () => {},
-            createProject: () => {},
-            getProjectById: () => ({} as Project),
-            updateProjectsOrder: () => {},
-            loading: false,
-            setData: () => {},
-          }}
-        >
+        <ProjectsContextProvider>
           <Story />
-        </ProjectsContext.Provider>
+        </ProjectsContextProvider>
       </TagsContext.Provider>
     ),
   ],

@@ -1,0 +1,22 @@
+import axios from "axios";
+import { Project } from "@/models/project";
+
+export type FieldsRequired = keyof Pick<
+  Project,
+  "title" | "color" | "disabled" | "jsonDescription"
+>;
+export const api = {
+  getProjects: () =>
+    axios.get<{
+      projects: Project[];
+      defaultProject: Project;
+    }>("/api/projects"),
+  createProject: (data: Pick<Project, FieldsRequired>) =>
+    axios.post<Project>("/api/projects", data),
+  updateProject: (id: string, props: Partial<Project>) =>
+    axios.patch("/api/projects", { id, ...props }),
+  deleteProject: (id: string) =>
+    axios.patch("/api/projects", { id, deleted: true }),
+  updateOrder: (params: { projectId: string; order: number }[]) =>
+    axios.patch("/api/projects/sort", params),
+} as const;

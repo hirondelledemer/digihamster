@@ -15,7 +15,7 @@ import { HABITS, HOME, PROJECTS, TASKS } from "@/app/utils/consts/routes";
 import { DialogTitle } from "@radix-ui/react-dialog";
 import TaskFormModal from "../TaskFormModal";
 import useEditTask from "@/app/utils/hooks/use-edit-task";
-import useProjects from "@/app/utils/hooks/use-projects";
+import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
 
 export interface CommandToolProps {
   testId?: string;
@@ -33,7 +33,7 @@ const CommandTool: FC<CommandToolProps> = (): JSX.Element => {
 
   useHotKeys([["mod+K", () => setOpen((open) => !open)]]);
   const { createNewTask } = useEditTask();
-  const { defaultProject } = useProjects();
+  const { defaultProject } = useProjectsState();
   const [searchValue, setSearchValue] = useState<string>("");
   const router = useRouter();
 

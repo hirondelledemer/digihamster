@@ -2,9 +2,11 @@ import ActiveTaskList, { ActiveTaskListProps } from "./ActiveTaskList";
 import { getActiveTaskListTestkit } from "./ActiveTaskList.testkit";
 import { generateCustomTasksList } from "@/app/utils/mocks/task";
 import { TasksContext } from "@/app/utils/hooks/use-tasks";
-import { fireEvent, render } from "@/config/utils/test-utils";
+import { fireEvent, render, screen } from "@/config/utils/test-utils";
 import { TagsContext } from "@/app/utils/hooks/use-tags";
-import { wrapWithProjectsProvider } from "@/app/utils/tests/wraps";
+import { ProjectsContextProvider } from "@/app/utils/hooks/use-projects/provider";
+import mockAxios from "jest-mock-axios";
+import { generateListOfProjects } from "@/app/utils/mocks/project";
 
 describe("ActiveTaskList", () => {
   const defaultTasks = generateCustomTasksList([
@@ -17,10 +19,14 @@ describe("ActiveTaskList", () => {
   ]);
   const defaultProps: ActiveTaskListProps = {};
 
+  afterEach(() => {
+    mockAxios.reset();
+  });
+
   const renderComponent = (props = defaultProps, tasks = defaultTasks) =>
     getActiveTaskListTestkit(
       render(
-        wrapWithProjectsProvider(
+        <ProjectsContextProvider>
           <TagsContext.Provider
             value={{
               data: [
@@ -51,7 +57,7 @@ describe("ActiveTaskList", () => {
               <ActiveTaskList {...props} />
             </TasksContext.Provider>
           </TagsContext.Provider>
-        )
+        </ProjectsContextProvider>
       ).container
     );
 
@@ -93,7 +99,12 @@ describe("ActiveTaskList", () => {
   });
 
   describe("tags filter", () => {
-    it("should not show any tags if there are no", () => {
+    it("should not show any tags if there are no", async () => {
+      const mockData = {
+        projects: generateListOfProjects(3),
+        defaultProject: null,
+      };
+      mockAxios.get.mockResolvedValue({ data: mockData });
       const tasks = generateCustomTasksList([
         { isActive: true },
         { isActive: true },
@@ -102,13 +113,19 @@ describe("ActiveTaskList", () => {
 
       const wrapper = renderComponent(defaultProps, tasks);
 
-      expect(wrapper.getComponent().textContent).toContain("30");
+      await expect(screen.findByText("30")).resolves.toBeInTheDocument();
       expect(wrapper.getComponent().textContent).toContain(
         "Task 0Project 1task description 0Task 1Project 1task description 1Task 2Project 1task description 2"
       );
     });
 
-    it("should show tags if there are tasks with tags", () => {
+    it("should show tags if there are tasks with tags", async () => {
+      const mockData = {
+        projects: generateListOfProjects(3),
+        defaultProject: null,
+      };
+      mockAxios.get.mockResolvedValue({ data: mockData });
+
       const tasks = generateCustomTasksList([
         { isActive: true, tags: ["tag1"] },
         { isActive: true, tags: ["tag1"] },
@@ -117,7 +134,7 @@ describe("ActiveTaskList", () => {
 
       const wrapper = renderComponent(defaultProps, tasks);
 
-      expect(wrapper.getComponent().textContent).toContain("Tag 1Tag 230");
+      await expect(screen.findByText("30")).resolves.toBeInTheDocument();
       expect(wrapper.getComponent().textContent).toContain(
         "Task 0Project 1task description 0Tag 1Task 1Project 1task description 1Tag 1Task 2Project 1task description 2Tag 1Tag 2"
       );

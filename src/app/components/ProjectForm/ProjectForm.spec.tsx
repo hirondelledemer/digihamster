@@ -1,6 +1,15 @@
-import { render } from "@testing-library/react";
-import ProjectForm, { ProjectFormProps } from "./ProjectForm";
-import { getProjectFormTestkit } from "./ProjectForm.testkit";
+import {
+  act,
+  render,
+  screen,
+  userEvent,
+  waitFor,
+} from "@/config/utils/test-utils";
+import ProjectForm, { ProjectFormProps, rteTestId } from "./ProjectForm";
+
+import mockAxios from "jest-mock-axios";
+import { ProjectsContextProvider } from "@/app/utils/hooks/use-projects/provider";
+import { getRichTextEditorTestkit } from "../RichTextEditor/RichTextEditor.testkit";
 
 describe("ProjectForm", () => {
   const defaultProps: ProjectFormProps = {
@@ -9,10 +18,61 @@ describe("ProjectForm", () => {
     onDone: jest.fn(),
   };
   const renderComponent = (props = defaultProps) =>
-    getProjectFormTestkit(render(<ProjectForm {...props} />).container);
+    render(
+      <ProjectsContextProvider>
+        <ProjectForm {...props} />{" "}
+      </ProjectsContextProvider>
+    );
 
-  it("should render ProjectForm", () => {
-    const { getComponent } = renderComponent();
-    expect(getComponent()).not.toBe(null);
+  afterEach(() => {
+    mockAxios.reset();
+  });
+
+  it("should create project", async () => {
+    renderComponent();
+
+    // eslint-disable-next-line testing-library/no-unnecessary-act
+    await act(async () => {
+      expect(
+        screen.getByRole("textbox", {
+          name: /title/i,
+        })
+      ).toBeInTheDocument();
+      await userEvent.type(
+        screen.getByRole("textbox", {
+          name: /title/i,
+        }),
+        "Title"
+      );
+
+      const rte = screen.getByTestId(rteTestId);
+      const rteWrapper = getRichTextEditorTestkit(rte);
+
+      rteWrapper.enterValue("<p>description</p>");
+      rteWrapper.blur();
+      await userEvent.click(screen.getByRole("button", { name: /create/i }));
+
+      await waitFor(() => {
+        expect(mockAxios.post).toHaveBeenCalledWith("/api/projects", {
+          color: "#e11d48",
+          disabled: false,
+          jsonDescription: {
+            content: [
+              {
+                content: [
+                  {
+                    text: "description",
+                    type: "text",
+                  },
+                ],
+                type: "paragraph",
+              },
+            ],
+            type: "doc",
+          },
+          title: "Title",
+        });
+      });
+    });
   });
 });

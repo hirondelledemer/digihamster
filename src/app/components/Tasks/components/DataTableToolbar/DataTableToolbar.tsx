@@ -6,8 +6,8 @@ import { Input } from "../../../ui/input";
 import { DataTableFacetedFilter } from "../DataTableFacetedFilter/DataTableFacetedFilter";
 import { Button } from "../../../ui/button";
 import { DataTableViewOptions } from "../DataTableViewOptions/DataTableViewOptions";
-import useProjects from "@/app/utils/hooks/use-projects";
 import useTags from "@/app/utils/hooks/use-tags";
+import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
@@ -17,7 +17,7 @@ export function DataTableToolbar<TData>({
   table,
 }: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0;
-  const { data: projects } = useProjects();
+  const { data: projects, isLoading } = useProjectsState();
   const { data: tags } = useTags();
 
   const projectOptions = projects.map((project) => ({
@@ -29,6 +29,10 @@ export function DataTableToolbar<TData>({
     label: tag.title,
     value: tag._id,
   }));
+
+  if (isLoading || !projects) {
+    return "loading";
+  }
 
   return (
     <div className="flex items-center justify-between">

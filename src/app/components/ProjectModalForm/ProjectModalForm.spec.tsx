@@ -1,6 +1,5 @@
-import { render } from "@testing-library/react";
+import { render, screen } from "@/config/utils/test-utils";
 import ProjectModalForm, { ProjectModalFormProps } from "./ProjectModalForm";
-import { getProjectModalFormTestkit } from "./ProjectModalForm.testkit";
 
 describe("ProjectModalForm", () => {
   const defaultProps: ProjectModalFormProps = {
@@ -9,13 +8,13 @@ describe("ProjectModalForm", () => {
     editMode: false,
     onDone: jest.fn(),
   };
-  const renderComponent = (props = defaultProps) =>
-    getProjectModalFormTestkit(
-      render(<ProjectModalForm {...props} />).container
-    );
 
-  it("should render ProjectModalForm", () => {
-    const { getComponent } = renderComponent();
-    expect(getComponent()).not.toBe(null);
+  const renderComponent = (props = defaultProps) =>
+    render(<ProjectModalForm {...props} />);
+
+  it("should create project", async () => {
+    renderComponent();
+
+    expect(screen.getByText("Project")).toBeInTheDocument();
   });
 });

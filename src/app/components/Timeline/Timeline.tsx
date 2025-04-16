@@ -28,12 +28,12 @@ import {
   isJournalEntry,
   isTask,
 } from "./Timeline.utils";
-import useProjects from "@/app/utils/hooks/use-projects";
 import { addEstimates } from "@/app/utils/tasks/estimates";
 import PercentagesBar from "../PercentagesBar";
 import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
 import TimelineChart from "../TimelineChart";
 import { useEventsState } from "@/app/utils/hooks/use-events/state-context";
+import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
 
 export interface TimelineProps {
   testId?: string;
@@ -45,7 +45,7 @@ const Timeline: FC<TimelineProps> = ({ testId }): JSX.Element => {
   const { data: events } = useEventsState();
 
   const { data: journalEntries } = useJournalEntries();
-  const { data: projects } = useProjects();
+  const { data: projects } = useProjectsState();
   const [period, setPeriod] = useState<IPeriod>("this_week");
 
   const endOfThisWeek = endOfWeek(now(), { weekStartsOn: 1 });

@@ -27,7 +27,6 @@ import {
   IconStars,
   IconCircle,
 } from "@tabler/icons-react";
-import useProjects from "@/app/utils/hooks/use-projects";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { cn } from "../utils";
 import { format } from "date-fns";
@@ -37,6 +36,7 @@ import { useEditTask } from "@/app/utils/hooks/use-edit-task";
 import Filter from "../Filter";
 import useTags from "@/app/utils/hooks/use-tags";
 import { Textarea } from "../ui/textarea";
+import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
 
 export const minimalNoteTestId = "TaskForm-minimal-note-testId" as const;
 export const taskFormTestId = "TaskForm-form-testid" as const;
@@ -74,7 +74,7 @@ const TaskForm: FC<TaskFormProps> = ({
   onDone,
   ...restProps
 }): JSX.Element => {
-  const { data: projects, defaultProject } = useProjects();
+  const { data: projects, defaultProject } = useProjectsState();
   const { data: tags } = useTags();
   const { editTask, deleteTask, createNewTask } = useEditTask();
 

@@ -1,4 +1,3 @@
-import useProjects from "@/app/utils/hooks/use-projects";
 import { Project } from "@/models/project";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React, { FC, useCallback } from "react";
@@ -24,11 +23,15 @@ import {
 import { colors } from "./ProjectForm.consts";
 import { Button } from "../ui/button";
 import { Switch } from "../ui/switch";
+import RteFormField from "../RteFormField";
+import { useProjectsActions } from "@/app/utils/hooks/use-projects/actions-context";
 
 interface CommonProps {
   testId?: string;
   onDone(): void;
 }
+
+export const rteTestId = "ProjectForm-rte-testid";
 
 export interface ProjectFormRegularProps extends CommonProps {
   editMode?: undefined | false;
@@ -47,6 +50,7 @@ const FormSchema = z.object({
   title: z.string().min(1, { message: "Required." }),
   color: z.string().min(1, { message: "Required." }),
   disabled: z.boolean(),
+  jsonDescription: z.any(),
 });
 
 export type FormValues = z.infer<typeof FormSchema>;
@@ -56,13 +60,24 @@ const ProjectForm: FC<ProjectFormProps> = ({
   onDone,
   ...restProps
 }): JSX.Element => {
-  const { updateProject, createProject } = useProjects();
+  const { updateProject, createProject } = useProjectsActions();
+
   const getInitialValues = useCallback(() => {
     if (restProps.editMode) {
+      console.log("description", restProps.project.jsonDescription);
       return {
         title: restProps.project.title,
         color: restProps.project.color,
         disabled: restProps.project.disabled,
+        jsonDescription: {
+          title: "",
+          content: "",
+          tags: [],
+          tasks: [],
+          textContent: "",
+          contentJSON: restProps.project.jsonDescription,
+          projectId: "",
+        },
       };
     }
     return restProps.initialValues;
@@ -74,6 +89,15 @@ const ProjectForm: FC<ProjectFormProps> = ({
       title: "",
       color: "#e11d48",
       disabled: false,
+      jsonDescription: {
+        title: "",
+        content: "",
+        tags: [],
+        tasks: [],
+        textContent: "",
+        contentJSON: {},
+        projectId: "",
+      },
       ...getInitialValues(),
     },
   });
@@ -84,12 +108,14 @@ const ProjectForm: FC<ProjectFormProps> = ({
         title: values.title,
         color: values.color,
         disabled: values.disabled,
+        jsonDescription: values.jsonDescription.contentJSON,
       });
     } else {
       createProject({
         title: values.title,
         color: values.color,
         disabled: values.disabled,
+        jsonDescription: values.jsonDescription.contentJSON,
       });
     }
     onDone();
@@ -108,6 +134,23 @@ const ProjectForm: FC<ProjectFormProps> = ({
                 <Input placeholder="Title" {...field} />
               </FormControl>
               <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="jsonDescription"
+          render={({ field }) => (
+            <FormItem className="flex flex-col">
+              <FormLabel>Goal</FormLabel>
+              <FormControl>
+                <RteFormField
+                  testId={rteTestId}
+                  value={field.value.contentJSON}
+                  onChange={field.onChange}
+                />
+              </FormControl>
             </FormItem>
           )}
         />

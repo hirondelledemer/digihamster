@@ -1,11 +1,8 @@
-import { ProjectsContext, ProjectsContextValue } from "../hooks/use-projects";
 import { TasksContext, TasksContextValues } from "../hooks/use-tasks";
 import { Tag } from "@/models/tag";
 import { TagsContext } from "../hooks/use-tags";
-import { generateListOfProjects } from "../mocks/project";
+
 import { generateListOfTasks } from "../mocks/task";
-// import { EventsContextProvider } from "../hooks/use-events";
-// import { generateListOfEvents } from "../mocks/event";
 import { generateListOfJournalEntries } from "../mocks/journal-entry";
 import { EntriesContext, EntriesContextValue } from "../hooks/use-entry";
 import { HabitsContext, HabitsContextValue } from "../hooks/use-habits";
@@ -13,28 +10,28 @@ import { generateListOfHabits } from "../mocks/habit";
 
 /* Projects */
 
-const defaultProjects = generateListOfProjects(5);
-const defaultProject = defaultProjects[0];
+// const defaultProjects = generateListOfProjects(5);
+// const defaultProject = defaultProjects[0];
 
-const defaultProjectsValue: ProjectsContextValue = {
-  data: defaultProjects,
-  defaultProject,
-  setData: jest.fn(),
-  loading: false,
-  updateProject: jest.fn(),
-  updateProjectsOrder: jest.fn(),
-  createProject: jest.fn(),
-  getProjectById: jest.fn(),
-};
+// const defaultProjectsValue: ProjectsContextValue = {
+//   data: defaultProjects,
+//   defaultProject,
+//   setData: jest.fn(),
+//   loading: false,
+//   updateProject: jest.fn(),
+//   updateProjectsOrder: jest.fn(),
+//   createProject: jest.fn(),
+//   getProjectById: jest.fn(),
+// };
 
-export const wrapWithProjectsProvider = (
-  component: JSX.Element,
-  value: Partial<ProjectsContextValue> = {}
-) => (
-  <ProjectsContext.Provider value={{ ...defaultProjectsValue, ...value }}>
-    {component}
-  </ProjectsContext.Provider>
-);
+// export const wrapWithProjectsProvider = (
+//   component: JSX.Element,
+//   value: Partial<ProjectsContextValue> = {}
+// ) => (
+//   <ProjectsContext.Provider value={{ ...defaultProjectsValue, ...value }}>
+//     {component}
+//   </ProjectsContext.Provider>
+// );
 
 /* Tags */
 

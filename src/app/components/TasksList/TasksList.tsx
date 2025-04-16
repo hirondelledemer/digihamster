@@ -14,9 +14,9 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/table";
-import useProjects from "@/app/utils/hooks/use-projects";
 import { Project } from "@/models/project";
 import { lightFormat } from "date-fns";
+import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
 
 export interface TasksListProps {
   testId?: string;
@@ -66,7 +66,7 @@ const getColumns: (projects: Project[]) => ColumnDef<Task>[] = (projects) => [
 ];
 
 const TasksList: FC<TasksListProps> = ({ testId, data }): JSX.Element => {
-  const { data: projects } = useProjects();
+  const { data: projects } = useProjectsState();
   const columns = getColumns(projects);
   const table = useReactTable({
     data,

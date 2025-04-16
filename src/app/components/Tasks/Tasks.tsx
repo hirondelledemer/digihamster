@@ -3,11 +3,11 @@ import React, { FC, useState } from "react";
 import useTasks from "@/app/utils/hooks/use-tasks";
 import { DataTable } from "./components/DataTable/DataTable";
 import { getColumns } from "./components/columns";
-import useProjects from "@/app/utils/hooks/use-projects";
 import { TaskV2 } from "@/models/taskV2";
 
 import useTags from "@/app/utils/hooks/use-tags";
 import TaskFormModal from "../TaskFormModal";
+import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
 
 export interface TasksProps {
   testId?: string;
@@ -15,7 +15,7 @@ export interface TasksProps {
 
 const Tasks: FC<TasksProps> = ({ testId }): JSX.Element => {
   const { data: tasks } = useTasks();
-  const { data: projects } = useProjects();
+  const { data: projects, isLoading } = useProjectsState();
   const { data: tags } = useTags();
   const [selectedTask, setSelectedTask] = useState<TaskV2 | null>(null);
 
@@ -33,6 +33,10 @@ const Tasks: FC<TasksProps> = ({ testId }): JSX.Element => {
   };
 
   const columns = getColumns(projects, tags);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
   return (
     <div className="h-full w-full p-6" data-testid={testId}>
       {selectedTask && (

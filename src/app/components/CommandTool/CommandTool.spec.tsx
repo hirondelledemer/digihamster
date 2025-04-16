@@ -2,13 +2,12 @@ import { act } from "react";
 import CommandTool, { CommandToolProps } from "./CommandTool";
 import { getCommandToolTestkit } from "./CommandTool.testkit";
 import mockAxios from "jest-mock-axios";
-import {
-  wrapWithProjectsProvider,
-  wrapWithTasksProvider,
-} from "@/app/utils/tests/wraps";
+import { wrapWithTasksProvider } from "@/app/utils/tests/wraps";
 import { render, screen, userEvent, waitFor } from "@/config/utils/test-utils";
 import { rteTestId } from "../CreateTaskForm/CreateTaskForm";
 import { getRichTextEditorTestkit } from "../RichTextEditor/RichTextEditor.testkit";
+import { ProjectsContextProvider } from "@/app/utils/hooks/use-projects/provider";
+import { generateListOfProjects } from "@/app/utils/mocks/project";
 
 jest.mock("next/navigation", () => ({
   useRouter: () => ({
@@ -25,18 +24,11 @@ describe("CommandTool", () => {
   const renderComponent = (props = defaultProps) =>
     getCommandToolTestkit(
       render(
-        wrapWithProjectsProvider(
-          wrapWithTasksProvider(<CommandTool {...props} />, { data: [] }),
-          {
-            defaultProject: {
-              _id: "project1",
-              title: "Project",
-              disabled: false,
-              color: "project-color",
-              deleted: false,
-              order: 1,
-            },
-          }
+        wrapWithTasksProvider(
+          <ProjectsContextProvider>
+            <CommandTool {...props} />
+          </ProjectsContextProvider>,
+          { data: [] }
         )
       ).container
     );
@@ -88,6 +80,12 @@ describe("CommandTool", () => {
 
   describe("create task actions", () => {
     it("should create task", async () => {
+      const mockData = {
+        projects: generateListOfProjects(3),
+        defaultProject: generateListOfProjects(3)[1],
+      };
+      mockAxios.get.mockResolvedValue({ data: mockData });
+
       const { pressCmdK, commandToolOpen, clickCreateTask } = renderComponent();
 
       act(() => {
@@ -173,7 +171,7 @@ describe("CommandTool", () => {
       await waitFor(() => {
         expect(mockAxios.post).toHaveBeenCalledWith("/api/tasks/v2", {
           isActive: true,
-          projectId: "project1",
+          projectId: "",
           title: "new task title",
           tags: [],
           subtasks: [],
