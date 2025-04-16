@@ -10,7 +10,6 @@ import { unique } from "remeda";
 import useTags from "@/app/utils/hooks/use-tags";
 import TagsFilter from "./TagsFilter";
 import { IconCircle, IconCircleCheck } from "@tabler/icons-react";
-import { addEstimates } from "@/app/utils/tasks/estimates";
 import TaskWithRelations from "../TaskWithRelations";
 
 export const taskTestId = "ActiveTaskList-task-testid";
@@ -58,17 +57,12 @@ const ActiveTaskList: FC<ActiveTaskListProps> = ({
   );
 
   const pendingTasksCount = useMemo(
-    () => filteredTasks.filter((t) => !t.completed).reduce(addEstimates, 0),
-    [filteredTasks]
-  );
-
-  const unestimatedTasksCount = useMemo(
-    () => filteredTasks.filter((t) => !t.estimate).length,
+    () => filteredTasks.filter((t) => !t.completed).length,
     [filteredTasks]
   );
 
   const completedTasksCount = useMemo(
-    () => filteredTasks.filter((t) => t.completed).reduce(addEstimates, 0),
+    () => filteredTasks.filter((t) => t.completed).length,
     [filteredTasks]
   );
 
@@ -82,8 +76,6 @@ const ActiveTaskList: FC<ActiveTaskListProps> = ({
         />
       </div>
       <div className="text-sm flex items-center mb-3 space-x-2">
-        <IconCircle size={16} color="#eab308" className="mr-1" />
-        {unestimatedTasksCount}
         <IconCircle size={16} color="green" className="mr-1" />
         {pendingTasksCount}
         <IconCircleCheck
