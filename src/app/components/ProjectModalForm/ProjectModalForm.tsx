@@ -11,12 +11,12 @@ const ProjectModalForm: FC<ProjectModalFormProps> = ({
   testId,
   open,
   onClose,
-  ...taskFormProps
+  ...projectFormProps
 }): JSX.Element => {
   return (
     <div data-testid={testId}>
       <ProjectModal open={open} onClose={onClose}>
-        <ProjectForm {...taskFormProps} />
+        <ProjectForm {...projectFormProps} />
       </ProjectModal>
     </div>
   );

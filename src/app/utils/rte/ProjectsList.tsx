@@ -8,10 +8,10 @@ import React, {
 import { Card, CardContent } from "@/app/components/ui/card";
 
 import { Badge } from "@/app/components/ui/badge";
-import useProjects from "../hooks/use-projects";
 import { Project } from "@/models/project";
 import { MentionsConfigProps } from "./types";
 import { SuggestionKeyDownProps } from "@tiptap/suggestion";
+import { useProjectsState } from "../hooks/use-projects/state-context";
 
 export type ProjectMentionsProps = MentionsConfigProps;
 
@@ -19,7 +19,7 @@ export const ProjectsList = forwardRef(
   ({ command, query }: ProjectMentionsProps, ref) => {
     const [selectedIndex, setSelectedIndex] = useState(0);
 
-    const { data: projects } = useProjects();
+    const { data: projects } = useProjectsState();
 
     useEffect(() => {
       setSelectedIndex(0);

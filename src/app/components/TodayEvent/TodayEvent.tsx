@@ -15,13 +15,13 @@ import {
 import TaskCard from "../TaskCard";
 import { useDroppable } from "@dnd-kit/core";
 import useEditTask from "@/app/utils/hooks/use-edit-task";
-import useProjects from "@/app/utils/hooks/use-projects";
 import { Button } from "../ui/button";
 import { ChevronRightIcon } from "lucide-react";
 import CalendarWeatherEvent from "../CalendarWeatherEvent";
 import { useEventsActions } from "@/app/utils/hooks/use-events/actions-context";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "../ui/sheet";
 import useTasks from "@/app/utils/hooks/use-tasks";
+import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
 
 export interface TodayEventProps {
   showDate?: boolean;
@@ -39,7 +39,7 @@ const TodayEvent: FC<TodayEventProps> = ({
   const { updateEvent } = useEventsActions();
   const { editTask } = useEditTask();
   const { data: tasks } = useTasks();
-  const { getProjectById } = useProjects();
+  const { getProjectById } = useProjectsState();
   const ref = useRef<HTMLDivElement>(null);
 
   const relatedTasks = isCalendarDeadlineEntry(event)

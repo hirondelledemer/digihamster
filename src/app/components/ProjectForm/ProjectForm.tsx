@@ -1,4 +1,3 @@
-import useProjects from "@/app/utils/hooks/use-projects";
 import { Project } from "@/models/project";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React, { FC, useCallback } from "react";
@@ -25,6 +24,7 @@ import { colors } from "./ProjectForm.consts";
 import { Button } from "../ui/button";
 import { Switch } from "../ui/switch";
 import RteFormField from "../RteFormField";
+import { useProjectsActions } from "@/app/utils/hooks/use-projects/actions-context";
 
 interface CommonProps {
   testId?: string;
@@ -60,13 +60,24 @@ const ProjectForm: FC<ProjectFormProps> = ({
   onDone,
   ...restProps
 }): JSX.Element => {
-  const { updateProject, createProject } = useProjects();
+  const { updateProject, createProject } = useProjectsActions();
+
   const getInitialValues = useCallback(() => {
     if (restProps.editMode) {
+      console.log("description", restProps.project.jsonDescription);
       return {
         title: restProps.project.title,
         color: restProps.project.color,
         disabled: restProps.project.disabled,
+        jsonDescription: {
+          title: "",
+          content: "",
+          tags: [],
+          tasks: [],
+          textContent: "",
+          contentJSON: restProps.project.jsonDescription,
+          projectId: "",
+        },
       };
     }
     return restProps.initialValues;
@@ -97,14 +108,14 @@ const ProjectForm: FC<ProjectFormProps> = ({
         title: values.title,
         color: values.color,
         disabled: values.disabled,
-        jsonDescription: values.jsonDescription,
+        jsonDescription: values.jsonDescription.contentJSON,
       });
     } else {
       createProject({
         title: values.title,
         color: values.color,
         disabled: values.disabled,
-        jsonDescription: values.jsonDescription,
+        jsonDescription: values.jsonDescription.contentJSON,
       });
     }
     onDone();
@@ -132,10 +143,11 @@ const ProjectForm: FC<ProjectFormProps> = ({
           name="jsonDescription"
           render={({ field }) => (
             <FormItem className="flex flex-col">
+              <FormLabel>Goal</FormLabel>
               <FormControl>
                 <RteFormField
                   testId={rteTestId}
-                  value={field.value.content}
+                  value={field.value.contentJSON}
                   onChange={field.onChange}
                 />
               </FormControl>

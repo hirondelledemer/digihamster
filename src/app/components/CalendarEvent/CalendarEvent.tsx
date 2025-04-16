@@ -23,10 +23,10 @@ import {
   isCalendarEventEntry,
 } from "./CalendarEvent.types";
 import { cn } from "../utils";
-import useProjects from "@/app/utils/hooks/use-projects";
 import TaskFormModal from "../TaskFormModal";
 import useEditTask from "@/app/utils/hooks/use-edit-task";
 import { useEventsActions } from "@/app/utils/hooks/use-events/actions-context";
+import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
 
 export interface CalendarEventProps {
   testId?: string;
@@ -44,7 +44,7 @@ const CalendarEvent: FC<CalendarEventProps> = ({
   const [taskFormOpen, setTaskFormOpen] = useState<boolean>(false);
   const [eventFormOpen, setEventFormOpen] = useState<boolean>(false);
   const { deleteEvent, updateEvent } = useEventsActions();
-  const { getProjectById } = useProjects();
+  const { getProjectById } = useProjectsState();
 
   const handleDeleteClick = async () => {
     if (isCalendarDeadlineEntry(event)) {
@@ -123,7 +123,7 @@ const CalendarEvent: FC<CalendarEventProps> = ({
             style={{
               border: isCalendarDeadlineEntry(event)
                 ? `2px solid ${
-                    getProjectById(event.resource.task.projectId || "").color
+                    getProjectById(event.resource.task.projectId || "")!.color
                   }`
                 : "",
             }}

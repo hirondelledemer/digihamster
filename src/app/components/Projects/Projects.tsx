@@ -1,7 +1,6 @@
 "use client";
 import React, { FC, useState } from "react";
 
-import useProjects from "@/app/utils/hooks/use-projects";
 import { DataTable } from "../Tasks/components/DataTable/DataTable";
 import useTasks from "@/app/utils/hooks/use-tasks";
 import useTags from "@/app/utils/hooks/use-tags";
@@ -28,13 +27,16 @@ import { Switch } from "../ui/switch";
 import { Label } from "../ui/label";
 import ProjectBurnDownChart from "../ProjectBurnDownChart";
 import { getColumns } from "./columns";
+import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
+import { useProjectsActions } from "@/app/utils/hooks/use-projects/actions-context";
 
 export interface ProjectsProps {
   testId?: string;
 }
 
 const Projects: FC<ProjectsProps> = ({ testId }): JSX.Element => {
-  const { data: projects, defaultProject, updateProjectsOrder } = useProjects();
+  const { data: projects, defaultProject, isLoading } = useProjectsState();
+  const { updateOrder } = useProjectsActions();
   const { data: tasks } = useTasks();
   const { data: tags } = useTags();
 
@@ -72,9 +74,13 @@ const Projects: FC<ProjectsProps> = ({ testId }): JSX.Element => {
     const { active, over } = event;
 
     if (active.id !== over.id) {
-      updateProjectsOrder(active.id, over.id);
+      updateOrder(active.id, over.id);
     }
   };
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div data-testid={testId}>

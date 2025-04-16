@@ -6,9 +6,9 @@ import { getTaskFormTestkit } from "./TaskForm.testkit";
 
 import { TasksContext } from "@/app/utils/hooks/use-tasks";
 import mockAxios from "jest-mock-axios";
-import { wrapWithProjectsProvider } from "@/app/utils/tests/wraps";
-import { ProjectsContextValue } from "@/app/utils/hooks/use-projects";
+
 import { generateCustomProjectsList } from "@/app/utils/mocks/project";
+import { ProjectsStateContext } from "@/app/utils/hooks/use-projects/state-context";
 
 jest.mock("../../utils/date/date");
 
@@ -16,11 +16,13 @@ describe("TaskForm", () => {
   const defaultProps: TaskFormProps = { onDone: jest.fn() };
   const renderComponent = (
     props: TaskFormProps = defaultProps,
-    projectsProps?: Partial<ProjectsContextValue>
+    projectsProps: any = {
+      data: [],
+    }
   ) =>
     getTaskFormTestkit(
       render(
-        wrapWithProjectsProvider(
+        <ProjectsStateContext.Provider value={projectsProps}>
           <TasksContext.Provider
             value={{
               data: [],
@@ -29,19 +31,13 @@ describe("TaskForm", () => {
             }}
           >
             <TaskForm {...props} />
-          </TasksContext.Provider>,
-          projectsProps
-        )
+          </TasksContext.Provider>
+        </ProjectsStateContext.Provider>
       ).container
     );
 
   afterEach(() => {
     mockAxios.reset();
-  });
-
-  it("should render TaskForm", () => {
-    const { getComponent } = renderComponent();
-    expect(getComponent()).not.toBe(null);
   });
 
   it("should non disabled projects in dropdown", async () => {

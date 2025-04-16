@@ -4,12 +4,12 @@ import { useForm } from "react-hook-form";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import useProjects from "@/app/utils/hooks/use-projects";
 import { Form, FormControl, FormField, FormItem, RteMessage } from "../ui/form";
 import RteFormField from "../RteFormField";
 import { Button } from "../ui/button";
 import { now } from "@/app/utils/date/date";
 import { addDays, addHours } from "date-fns";
+import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
 
 export interface CreateTaskFormProps {
   testId?: string;
@@ -39,7 +39,7 @@ const CreateTaskForm: FC<CreateTaskFormProps> = ({
   onDone,
   deadline,
 }): JSX.Element => {
-  const { defaultProject } = useProjects();
+  const { defaultProject } = useProjectsState();
   const { createNewTask } = useEditTask();
 
   const form = useForm<FormValues>({

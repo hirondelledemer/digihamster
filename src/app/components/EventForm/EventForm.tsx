@@ -21,10 +21,10 @@ import {
 import { Button } from "../ui/button";
 import { Event } from "@/models/event";
 
-import useProjects from "@/app/utils/hooks/use-projects";
 import { Textarea } from "../ui/textarea";
 import { useEventsActions } from "@/app/utils/hooks/use-events/actions-context";
 import { FieldsRequired } from "@/app/utils/hooks/use-events/api";
+import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
 
 export const minimalNoteTestId = "EventForm-minimal-note-testId";
 
@@ -60,7 +60,7 @@ const EventForm: FC<EventFormProps> = ({
   onDone,
   ...restProps
 }): JSX.Element => {
-  const { data: projects, defaultProject } = useProjects();
+  const { data: projects, defaultProject } = useProjectsState();
   const { createEvent, updateEvent } = useEventsActions();
 
   const getInitialValues = useCallback(() => {

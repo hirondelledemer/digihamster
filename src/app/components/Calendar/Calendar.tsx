@@ -51,13 +51,13 @@ import CalendarWeatherEvent from "../CalendarWeatherEvent";
 import CalendarSlot from "../CalendarSlot";
 import useEditTask from "@/app/utils/hooks/use-edit-task";
 import { HOUR } from "@/app/utils/consts/dates";
-import useProjects from "@/app/utils/hooks/use-projects";
 
 import useCycle from "@/app/utils/hooks/use-cycle";
 import EventTaskFormModal from "../EventTaskFormModal";
 import { useEventsState } from "@/app/utils/hooks/use-events/state-context";
 import { useEventsActions } from "@/app/utils/hooks/use-events/actions-context";
 import { useCalendarDate } from "../../utils/hooks/use-calendar-date";
+import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
 
 export const now = () => new Date();
 
@@ -105,7 +105,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
   const { data: eventsData } = useEventsState();
   const { updateEvent } = useEventsActions();
   const { data: cycleData } = useCycle();
-  const { loading: projectsLoading } = useProjects();
+  const { isLoading: projectsLoading } = useProjectsState();
 
   //todo: check editing of deadline tasks
   const { data: tasksData } = useTasks(); //todo this is fetching all the tasks. fetch only tasks with deadline

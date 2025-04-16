@@ -13,6 +13,7 @@ export const generateProject: (
     createdAt: 0,
     updatedAt: 0,
     disabled: false,
+    jsonDescription: null,
     ...properties,
   };
 };
