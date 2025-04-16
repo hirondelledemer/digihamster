@@ -178,7 +178,7 @@ describe("ProjectsContextProvider", () => {
     expect(screen.queryByText("Project 0")).not.toBeInTheDocument();
     expect(mockAxios.patch).toHaveBeenCalledWith("/api/projects", {
       deleted: true,
-      projectId: mockData.projects[0]._id,
+      id: mockData.projects[0]._id,
     });
   });
 });

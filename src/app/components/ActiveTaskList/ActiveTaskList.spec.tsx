@@ -113,7 +113,7 @@ describe("ActiveTaskList", () => {
 
       const wrapper = renderComponent(defaultProps, tasks);
 
-      await expect(screen.findByText("300")).resolves.toBeInTheDocument();
+      await expect(screen.findByText("30")).resolves.toBeInTheDocument();
       expect(wrapper.getComponent().textContent).toContain(
         "Task 0Project 1task description 0Task 1Project 1task description 1Task 2Project 1task description 2"
       );
@@ -134,7 +134,7 @@ describe("ActiveTaskList", () => {
 
       const wrapper = renderComponent(defaultProps, tasks);
 
-      await expect(screen.findByText("300")).resolves.toBeInTheDocument();
+      await expect(screen.findByText("30")).resolves.toBeInTheDocument();
       expect(wrapper.getComponent().textContent).toContain(
         "Task 0Project 1task description 0Tag 1Task 1Project 1task description 1Tag 1Task 2Project 1task description 2Tag 1Tag 2"
       );
