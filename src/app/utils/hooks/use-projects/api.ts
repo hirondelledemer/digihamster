@@ -17,6 +17,7 @@ export const api = {
     axios.patch("/api/projects", { id, ...props }),
   deleteProject: (id: string) =>
     axios.patch("/api/projects", { id, deleted: true }),
-  updateOrder: (params: { projectId: string; order: number }[]) =>
-    axios.patch("/api/projects/sort", params),
+  updateOrder: (params: {
+    sortOrder: { projectId: string; order: number }[];
+  }) => axios.patch("/api/projects/sort", params),
 } as const;

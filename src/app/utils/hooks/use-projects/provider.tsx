@@ -194,12 +194,12 @@ export const ProjectsContextProvider = ({
         onDone();
       }
 
-      await api.updateOrder(
-        state.data.map((p, index) => ({
+      await api.updateOrder({
+        sortOrder: state.data.map((p, index) => ({
           projectId: p._id,
           order: index,
-        }))
-      );
+        })),
+      });
       handleSuccessToast(toast, "Project order been updated");
     } catch (e: any) {
       const errorMessage =
