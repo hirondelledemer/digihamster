@@ -10,14 +10,13 @@ export async function GET(request: NextRequest) {
   try {
     // Extract user ID from the authentication token
     const userId = await getDataFromToken(request);
-    const getIsActive =
-      request.nextUrl.searchParams.get("isActive") || undefined;
+    const isActive = request.nextUrl.searchParams.get("isActive") || undefined;
 
     // Find the user in the database based on the user ID
     const notes = await Note.find({
       userId,
       deleted: false,
-      isActive: getIsActive,
+      isActive,
     });
 
     return NextResponse.json(notes);
@@ -46,6 +45,30 @@ export async function PATCH(request: NextRequest) {
         tags: args.tags || note.tags,
         isActive: args.isActive === undefined ? note.isActive : args.isActive,
         deleted: args.deleted === undefined ? note.deleted : args.deleted,
+      }
+    );
+
+    return NextResponse.json(updatedNote);
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 400 });
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    await getDataFromToken(request);
+    const reqBody = await request.json();
+    const args = reqBody;
+
+    const updatedNote = await Note.findOneAndUpdate(
+      { _id: args.id },
+      {
+        title: args.title,
+        note: args.note,
+        jsonNote: args.jsonNote,
+        tags: args.tags,
+        isActive: args.isActive,
+        deleted: false,
       }
     );
 
