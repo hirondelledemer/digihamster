@@ -23,6 +23,7 @@ import { useDraggable } from "@dnd-kit/core";
 import {
   IconCalendar,
   IconLayoutSidebarRightExpand,
+  IconProgressCheck,
 } from "@tabler/icons-react";
 import { useCalendarDate } from "../../utils/hooks/use-calendar-date";
 import { Tooltip, TooltipContent, TooltipProvider } from "../ui/tooltip";
@@ -40,6 +41,7 @@ export interface TaskCardProps {
   task: TaskWithRelatedTasks;
   dragId: string;
   fullHeight?: boolean;
+  indicateActive?: boolean;
 }
 
 export const taskFormTestId = "TaskCard-task-form-test-id";
@@ -50,6 +52,7 @@ const TaskCard: FC<TaskCardProps> = ({
   className,
   dragId,
   fullHeight = false,
+  indicateActive,
 }): JSX.Element => {
   const { data: projects } = useProjectsState();
   const { data: tags } = useTags();
@@ -108,19 +111,13 @@ const TaskCard: FC<TaskCardProps> = ({
                 data-testid={titleTestId}
                 className="font-normal flex items-center justify-between"
               >
-                <div>
-                  {task.title}
-                  {task.deadline && (
-                    <span className="text-destructive ml-4">
-                      {format(new Date(task.deadline), "MM-dd")}
-                    </span>
+                <div>{task.title}</div>
+
+                <div className="flex items-center gap-1">
+                  {indicateActive && task.isActive && (
+                    <IconProgressCheck size={18} color="green" />
                   )}
-                </div>
-                <div className="flex items-center">
-                  <StaleIndicator
-                    date={task.activatedAt || 0}
-                    className="mr-2"
-                  />
+                  <StaleIndicator date={task.activatedAt || 0} />
                   {!!task.relatedTaskIds.length && (
                     <IconLayoutSidebarRightExpand
                       data-testid="task-info-icon"
@@ -137,7 +134,6 @@ const TaskCard: FC<TaskCardProps> = ({
                           <IconCalendar
                             size={18}
                             onClick={() => {
-                              console.log("clicking", new Date(task.deadline!));
                               setSelectedDate(new Date(task.deadline!));
                             }}
                           />
@@ -199,7 +195,7 @@ const TaskCard: FC<TaskCardProps> = ({
               Complete
             </ContextMenuItem>
           )}
-          {!task.eventId && (
+          {!task.eventId && task.isActive && (
             <ContextMenuItem
               inset
               onClick={() =>

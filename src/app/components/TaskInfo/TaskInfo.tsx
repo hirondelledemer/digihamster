@@ -34,13 +34,19 @@ const TaskInfo: FC<TaskInfoProps> = (): JSX.Element | null => {
         aria-describedby="Task info"
         onCloseClick={() => router.replace("/", undefined)}
         showOverlay={false}
+        onEscapeKeyDown={() => router.replace("/", undefined)}
       >
         <SheetHeader>
           <SheetTitle>{selectedTask.title}</SheetTitle>
         </SheetHeader>
         <div className={cn(["flex flex-col gap-2"])}>
           {relatedTasks.map((rTask) => (
-            <TaskCard task={rTask} key={rTask._id} dragId={rTask._id} />
+            <TaskCard
+              task={rTask}
+              key={rTask._id}
+              dragId={rTask._id}
+              indicateActive
+            />
           ))}
         </div>
       </SheetContent>

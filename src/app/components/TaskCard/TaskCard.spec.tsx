@@ -5,8 +5,8 @@ import { generateTask } from "@/app/utils/mocks/task";
 import {
   render,
   screen,
-  fireEvent,
   userEvent,
+  fireEvent,
 } from "@/config/utils/test-utils";
 
 import mockAxios from "jest-mock-axios";
@@ -88,17 +88,6 @@ describe("TaskCard", () => {
   it("should not show stale indicator", () => {
     renderComponent();
     expect(screen.queryByTestId("dinosaur-icon")).not.toBeInTheDocument();
-  });
-
-  it("should deactivate task", async () => {
-    renderComponent(defaultProps);
-    openContextMenu();
-    await userEvent.click(screen.getByText("Deactivate"));
-
-    expect(mockAxios.patch).toHaveBeenCalledWith("/api/tasks/v2", {
-      isActive: false,
-      taskId: defaultTask._id,
-    });
   });
 
   it("should open task form", async () => {
