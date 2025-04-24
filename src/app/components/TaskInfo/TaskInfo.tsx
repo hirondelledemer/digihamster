@@ -53,7 +53,11 @@ const TaskInfo: FC<TaskInfoProps> = (): JSX.Element | null => {
             ))}
           </div>
         </ScrollArea>
-        <CreateTaskForm onDone={() => {}} primaryTaskId={selectedTask._id} />
+        <CreateTaskForm
+          onDone={() => {}}
+          primaryTaskId={selectedTask._id}
+          projectId={selectedTask.projectId || undefined}
+        />
       </SheetContent>
     </Sheet>
   );

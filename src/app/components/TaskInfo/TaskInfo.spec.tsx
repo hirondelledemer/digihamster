@@ -73,6 +73,7 @@ describe("TaskInfo", () => {
     await waitFor(() => {
       expect(mockAxios.post).toHaveBeenCalledWith("/api/tasks/v2", {
         description: `note`,
+        projectId: "project1",
         descriptionFull: {
           content: [
             {
@@ -97,7 +98,6 @@ describe("TaskInfo", () => {
           type: "doc",
         },
         isActive: false,
-        projectId: null,
         subtasks: [],
         tags: [],
         deadline: undefined,
