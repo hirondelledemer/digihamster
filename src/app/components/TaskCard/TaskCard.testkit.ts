@@ -3,6 +3,9 @@ import { cardTestId, titleTestId } from "./TaskCard";
 import { getTaskFormTestkit } from "../TaskForm/TaskForm.testkit";
 import { taskFormTestId } from "../TaskForm/TaskForm";
 
+/**
+ * @deprecated do not use this testkit
+ */
 export const getTaskCardTestkit = (component: HTMLElement) => {
   const openContextMenu = () => {
     const title = within(component).getByTestId(titleTestId);

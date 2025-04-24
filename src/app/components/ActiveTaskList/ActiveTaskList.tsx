@@ -10,7 +10,7 @@ import { unique } from "remeda";
 import useTags from "@/app/utils/hooks/use-tags";
 import TagsFilter from "./TagsFilter";
 import { IconCircle, IconCircleCheck } from "@tabler/icons-react";
-import TaskWithRelations from "../TaskWithRelations";
+import TaskCard from "../TaskCard";
 
 export const taskTestId = "ActiveTaskList-task-testid";
 
@@ -89,7 +89,12 @@ const ActiveTaskList: FC<ActiveTaskListProps> = ({
       <ScrollArea className="h-full">
         <div className="pr-6 flex flex-col gap-4">
           {filteredTasks.map((task) => (
-            <TaskWithRelations key={task._id} task={task} testId={taskTestId} />
+            <TaskCard
+              dragId={task._id}
+              key={task._id}
+              task={task}
+              testId={taskTestId}
+            />
           ))}
         </div>
       </ScrollArea>

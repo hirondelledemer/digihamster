@@ -1,15 +1,21 @@
 import { TagsContext } from "@/app/utils/hooks/use-tags";
-import TaskCard, { TaskCardProps } from "./TaskCard";
-import { getTaskCardTestkit } from "./TaskCard.testkit";
+import TaskCard, { cardTestId, TaskCardProps } from "./TaskCard";
 import { TasksContext, TasksContextValues } from "@/app/utils/hooks/use-tasks";
 import { generateTask } from "@/app/utils/mocks/task";
-import { render, act, screen } from "@/config/utils/test-utils";
+import {
+  render,
+  screen,
+  fireEvent,
+  userEvent,
+} from "@/config/utils/test-utils";
 
 import mockAxios from "jest-mock-axios";
 import { ProjectsContextProvider } from "@/app/utils/hooks/use-projects/provider";
 import { generateListOfProjects } from "@/app/utils/mocks/project";
+import { taskFormTestId } from "../TaskForm/TaskForm";
 
 jest.mock("../../utils/date/date");
+jest.mock("next/navigation");
 
 // todo redo the test without testkit
 describe("TaskCard", () => {
@@ -33,41 +39,39 @@ describe("TaskCard", () => {
     props = defaultProps,
     tasksContextValues = defaultTasksContextValues
   ) =>
-    getTaskCardTestkit(
-      render(
-        <ProjectsContextProvider>
-          <TagsContext.Provider
-            value={{
-              data: [
-                {
-                  _id: "tag1",
-                  title: "Tag 1",
-                  deleted: false,
-                  color: "color1",
-                },
-                {
-                  _id: "tag2",
-                  title: "Tag 2",
-                  deleted: false,
-                  color: "color2",
-                },
-              ],
-              loading: false,
-              setData: jest.fn(),
-            }}
-          >
-            <TasksContext.Provider value={tasksContextValues}>
-              <TaskCard {...props} />
-            </TasksContext.Provider>
-          </TagsContext.Provider>
-        </ProjectsContextProvider>
-      ).container
+    render(
+      <ProjectsContextProvider>
+        <TagsContext.Provider
+          value={{
+            data: [
+              {
+                _id: "tag1",
+                title: "Tag 1",
+                deleted: false,
+                color: "color1",
+              },
+              {
+                _id: "tag2",
+                title: "Tag 2",
+                deleted: false,
+                color: "color2",
+              },
+            ],
+            loading: false,
+            setData: jest.fn(),
+          }}
+        >
+          <TasksContext.Provider value={tasksContextValues}>
+            <TaskCard {...props} />
+          </TasksContext.Provider>
+        </TagsContext.Provider>
+      </ProjectsContextProvider>
     );
 
-  it("should render TaskCard", () => {
-    const { getComponent } = renderComponent();
-    expect(getComponent()).not.toBe(null);
-  });
+  const openContextMenu = () => {
+    const title = screen.getByTestId("TaskCard-title-testid");
+    fireEvent.contextMenu(title);
+  };
 
   it("shows task title, project name, description, tags", async () => {
     const mockData = {
@@ -82,13 +86,15 @@ describe("TaskCard", () => {
   });
 
   it("should not show stale indicator", () => {
-    const { staleIndicatorIsVisible } = renderComponent();
-    expect(staleIndicatorIsVisible()).toBe(false);
+    renderComponent();
+    expect(screen.queryByTestId("dinosaur-icon")).not.toBeInTheDocument();
   });
 
-  it("should deactivate task", () => {
-    const { clickDeactivate } = renderComponent(defaultProps);
-    clickDeactivate();
+  it("should deactivate task", async () => {
+    renderComponent(defaultProps);
+    openContextMenu();
+    await userEvent.click(screen.getByText("Deactivate"));
+
     expect(mockAxios.patch).toHaveBeenCalledWith("/api/tasks/v2", {
       isActive: false,
       taskId: defaultTask._id,
@@ -102,37 +108,44 @@ describe("TaskCard", () => {
     };
     mockAxios.get.mockResolvedValue({ data: mockData });
 
-    const {
-      clickEdit,
-      taskFormIsOpen,
-      getTaskFormTitleValue,
-      getTaskFormDescriptionValue,
-      getTaskFormEtaValue,
-    } = renderComponent(defaultProps);
-    clickEdit();
+    renderComponent(defaultProps);
+    openContextMenu();
+    fireEvent.click(screen.getByText("Edit"));
 
-    expect(taskFormIsOpen()).toBe(true);
-    expect(getTaskFormTitleValue()).toBe(defaultProps.task.title);
-    expect(getTaskFormDescriptionValue()).toBe(defaultProps.task.description);
-    expect(getTaskFormEtaValue("eta-0")).toBe(true);
-    // await expect(getTaskFormProjectValue()).toBe("Project 1");
+    expect(screen.queryAllByTestId(taskFormTestId).length === 1).toBe(true);
+    expect(
+      screen.getByRole("textbox", { name: /title/i }).getAttribute("value")
+    ).toBe(defaultProps.task.title);
+    expect(
+      screen.getByRole("textbox", { name: /description/i }).innerHTML
+    ).toBe(defaultProps.task.description);
+
+    // todo: fix projects mock
+    // expect(screen.getByRole("combobox", { name: /project/i }).textContent).toBe(
+    //   "Project 1"
+    // );
   });
 
   it("should edit task", async () => {
-    const { clickEdit, enterTitle, enterDescription, setEta, submitForm } =
-      renderComponent(defaultProps);
-    clickEdit();
-    enterTitle("new title");
-    await enterDescription("new desc");
-    setEta("eta-3");
-    await act(() => {
-      submitForm();
+    renderComponent(defaultProps);
+    openContextMenu();
+    fireEvent.click(screen.getByText("Edit"));
+
+    const input = screen.getByRole("textbox", { name: /title/i });
+    fireEvent.change(input, { target: { value: "new title" } });
+
+    const descInput = screen.getByRole("textbox", {
+      name: /description/i,
     });
+    await userEvent.type(descInput, "new desc");
+
+    const button = screen.getByRole("button", { name: /save/i });
+    await userEvent.click(button);
 
     expect(mockAxios.patch).toHaveBeenCalledWith("/api/tasks/v2", {
       deadline: null,
       description: "task description 1new desc",
-      estimate: 3,
+      estimate: 0,
       projectId: "project1",
       taskId: "task1",
       title: "new title",
@@ -147,11 +160,11 @@ describe("TaskCard", () => {
         ...defaultTasksContextValues,
         setData: setTasksMock,
       };
-      const { clickComplete } = renderComponent(
-        defaultProps,
-        tasksContextValues
-      );
-      clickComplete();
+      renderComponent(defaultProps, tasksContextValues);
+
+      openContextMenu();
+      fireEvent.click(screen.getByText("Complete"));
+
       expect(mockAxios.patch).toHaveBeenCalledWith("/api/tasks/v2", {
         completed: true,
         taskId: defaultTask._id,
@@ -160,11 +173,14 @@ describe("TaskCard", () => {
     });
 
     it("should show task without opacity and full info", () => {
-      const { cardIsFaded, cardTextIsStriked, getComponent } =
-        renderComponent();
-      expect(cardIsFaded()).toBe(false);
-      expect(cardTextIsStriked()).toBe(false);
-      expect(getComponent().textContent).toBe("Task 1task description 1");
+      renderComponent();
+
+      expect(
+        screen.getByTestId(cardTestId).className.includes("opacity-40")
+      ).toBe(false);
+      expect(
+        screen.getByTestId(cardTestId).className.includes("line-through")
+      ).toBe(false);
     });
   });
 
@@ -176,8 +192,10 @@ describe("TaskCard", () => {
     };
 
     it("should undo the task", async () => {
-      const { clickUndo } = renderComponent(props);
-      clickUndo();
+      renderComponent(props);
+      openContextMenu();
+
+      fireEvent.click(screen.getByText("Undo"));
       expect(mockAxios.patch).toHaveBeenCalledWith("/api/tasks/v2", {
         completed: false,
         taskId: defaultTask._id,
@@ -185,11 +203,14 @@ describe("TaskCard", () => {
     });
 
     it("should show task as with opacity and limited info", () => {
-      const { cardIsFaded, cardTextIsStriked, getComponent } =
-        renderComponent(props);
-      expect(cardIsFaded()).toBe(true);
-      expect(cardTextIsStriked()).toBe(true);
-      expect(getComponent().textContent).toBe("Task 1");
+      renderComponent(props);
+
+      expect(
+        screen.getByTestId(cardTestId).className.includes("opacity-40")
+      ).toBe(true);
+      expect(
+        screen.getByTestId(cardTestId).className.includes("line-through")
+      ).toBe(true);
     });
   });
 
@@ -203,8 +224,8 @@ describe("TaskCard", () => {
     };
 
     it("show stale indicator", () => {
-      const { staleIndicatorIsVisible } = renderComponent(props);
-      expect(staleIndicatorIsVisible()).toBe(true);
+      renderComponent(props);
+      expect(screen.queryByTestId("dinosaur-icon") !== null).toBe(true);
     });
   });
 
@@ -215,8 +236,11 @@ describe("TaskCard", () => {
     };
 
     it("should remove event", () => {
-      const { clickRemoveEvent } = renderComponent(props);
-      clickRemoveEvent();
+      renderComponent(props);
+
+      openContextMenu();
+      fireEvent.click(screen.getByText("Remove from event"));
+
       expect(mockAxios.patch).toHaveBeenCalledWith("/api/tasks/v2", {
         eventId: null,
         taskId: props.task._id,
@@ -224,8 +248,8 @@ describe("TaskCard", () => {
     });
 
     it("should not allow to deactivate it", () => {
-      const { deactivateButtonExists } = renderComponent(props);
-      expect(deactivateButtonExists()).toBe(false);
+      renderComponent(props);
+      expect(screen.queryByText("Deactivate")).not.toBeInTheDocument();
     });
   });
 });

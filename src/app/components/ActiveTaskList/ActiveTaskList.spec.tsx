@@ -8,6 +8,8 @@ import { ProjectsContextProvider } from "@/app/utils/hooks/use-projects/provider
 import mockAxios from "jest-mock-axios";
 import { generateListOfProjects } from "@/app/utils/mocks/project";
 
+jest.mock("next/navigation");
+
 describe("ActiveTaskList", () => {
   const defaultTasks = generateCustomTasksList([
     { isActive: true },
