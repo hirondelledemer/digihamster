@@ -1,5 +1,5 @@
 "use client";
-import React, { FC } from "react";
+import React, { FC, useEffect } from "react";
 import RichTextEditor from "../RichTextEditor";
 import { RteValue, useRte } from "@/app/utils/rte/rte-hook";
 
@@ -18,6 +18,12 @@ const RteFormField: FC<RteFormFieldProps> = ({
     value,
     editable: true,
   });
+
+  useEffect(() => {
+    if (editor) {
+      editor.commands.setContent(value);
+    }
+  }, [editor, value]);
 
   if (!editor) {
     return null;

@@ -19,7 +19,10 @@ export const useEditTask = () => {
   const { toast } = useToast();
 
   const createNewTask = async (
-    data: Pick<TaskWithRelatedTasks, FieldsRequired> & { subtasks: string[] }
+    data: Pick<TaskWithRelatedTasks, FieldsRequired> & {
+      subtasks: string[];
+      primaryTaskId?: string;
+    }
   ) => {
     const tempId = "temp-id";
 

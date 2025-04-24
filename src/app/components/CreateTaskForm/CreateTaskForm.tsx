@@ -15,6 +15,7 @@ export interface CreateTaskFormProps {
   testId?: string;
   onDone(): void;
   deadline?: number;
+  primaryTaskId?: string;
 }
 
 export const rteTestId = "CreateTaskForm-rte-testId";
@@ -38,6 +39,7 @@ const CreateTaskForm: FC<CreateTaskFormProps> = ({
   testId,
   onDone,
   deadline,
+  primaryTaskId,
 }): JSX.Element => {
   const { defaultProject } = useProjectsState();
   const { createNewTask } = useEditTask();
@@ -58,7 +60,6 @@ const CreateTaskForm: FC<CreateTaskFormProps> = ({
   });
 
   const handleSubmit = (values: FormValues) => {
-    console.log("aaaaa", values.description.title);
     const taskData = {
       title: values.description.title,
       description: values.description.textContent,
@@ -72,10 +73,11 @@ const CreateTaskForm: FC<CreateTaskFormProps> = ({
         : values.description.params.includes("today")
         ? addHours(now(), 2).valueOf()
         : deadline,
+      primaryTaskId,
     };
 
     createNewTask(taskData);
-
+    form.resetField("description");
     onDone();
   };
 

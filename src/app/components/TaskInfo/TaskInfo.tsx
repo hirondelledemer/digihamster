@@ -5,6 +5,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { cn } from "../utils";
 import useTasks from "@/app/utils/hooks/use-tasks";
 import TaskCard from "../TaskCard";
+import CreateTaskForm from "../CreateTaskForm";
+import { ScrollArea } from "../ui/scroll-area";
 
 export interface TaskInfoProps {
   testId?: string;
@@ -39,16 +41,19 @@ const TaskInfo: FC<TaskInfoProps> = (): JSX.Element | null => {
         <SheetHeader>
           <SheetTitle>{selectedTask.title}</SheetTitle>
         </SheetHeader>
-        <div className={cn(["flex flex-col gap-2"])}>
-          {relatedTasks.map((rTask) => (
-            <TaskCard
-              task={rTask}
-              key={rTask._id}
-              dragId={rTask._id}
-              indicateActive
-            />
-          ))}
-        </div>
+        <ScrollArea className="h-3/4 mb-2">
+          <div className={cn(["flex flex-col gap-2"])}>
+            {relatedTasks.map((rTask) => (
+              <TaskCard
+                task={rTask}
+                key={rTask._id}
+                dragId={rTask._id}
+                indicateActive
+              />
+            ))}
+          </div>
+        </ScrollArea>
+        <CreateTaskForm onDone={() => {}} primaryTaskId={selectedTask._id} />
       </SheetContent>
     </Sheet>
   );

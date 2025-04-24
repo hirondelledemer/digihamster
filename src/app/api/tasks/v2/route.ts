@@ -24,8 +24,6 @@ export async function GET(request: NextRequest) {
       ],
     });
 
-    console.log(relationships);
-
     const tasksWithRelationships = tasks.map((t) => ({
       ...t.toObject(),
       relatedTaskIds: relationships
@@ -58,6 +56,7 @@ interface TasksPostRequestParams {
   deadline?: number;
   eventId?: string;
   subtasks: string[];
+  primaryTaskId?: string;
 }
 
 export async function POST(request: NextRequest) {
@@ -130,6 +129,16 @@ export async function POST(request: NextRequest) {
     await Relationship.insertMany([
       ...childChildRelations,
       ...parentChildRelations,
+      ...(args.primaryTaskId
+        ? [
+            {
+              userId,
+              sourceEntity: parentTask._id,
+              targetEntity: args.primaryTaskId,
+              type: "task",
+            },
+          ]
+        : []),
     ]);
 
     const childTaskIds = childTasks.map((t) => t._id);
