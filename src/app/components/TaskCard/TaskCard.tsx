@@ -20,13 +20,16 @@ import useTags from "@/app/utils/hooks/use-tags";
 import TaskFormModal from "../TaskFormModal";
 import StaleIndicator from "../StaleIndicator";
 import { useDraggable } from "@dnd-kit/core";
-import { Button } from "../ui/button";
-import { TaskV2 } from "@/models/taskV2";
-import { IconCalendar } from "@tabler/icons-react";
+import {
+  IconCalendar,
+  IconLayoutSidebarRightExpand,
+} from "@tabler/icons-react";
 import { useCalendarDate } from "../../utils/hooks/use-calendar-date";
 import { Tooltip, TooltipContent, TooltipProvider } from "../ui/tooltip";
 import { TooltipTrigger } from "@radix-ui/react-tooltip";
 import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
+import { TaskWithRelatedTasks } from "@/app/utils/types/task";
+import { useRouter } from "next/navigation";
 
 export const titleTestId = "TaskCard-title-testid";
 export const cardTestId = "TaskCard-card-testid";
@@ -34,13 +37,9 @@ export const cardTestId = "TaskCard-card-testid";
 export interface TaskCardProps {
   testId?: string;
   className?: string;
-  task: TaskV2;
+  task: TaskWithRelatedTasks;
   dragId: string;
   fullHeight?: boolean;
-  relatedTasksCta?: {
-    label: string;
-    onClick(): void;
-  };
 }
 
 export const taskFormTestId = "TaskCard-task-form-test-id";
@@ -49,15 +48,12 @@ const TaskCard: FC<TaskCardProps> = ({
   testId,
   task,
   className,
-  relatedTasksCta,
   dragId,
   fullHeight = false,
 }): JSX.Element => {
   const { data: projects } = useProjectsState();
-  console.log(projects);
   const { data: tags } = useTags();
   const { setSelectedDate } = useCalendarDate();
-
   const [taskFormOpen, setTaskFormOpen] = useState<boolean>(false);
   const { editTask } = useEditTask();
 
@@ -82,6 +78,8 @@ const TaskCard: FC<TaskCardProps> = ({
 
   const closeTaskForm = () => setTaskFormOpen(false);
   const taskTags = tags.filter((tag) => task.tags.includes(tag._id));
+
+  const router = useRouter();
 
   return (
     <div data-testid={testId} className={className}>
@@ -123,6 +121,15 @@ const TaskCard: FC<TaskCardProps> = ({
                     date={task.activatedAt || 0}
                     className="mr-2"
                   />
+                  {!!task.relatedTaskIds.length && (
+                    <IconLayoutSidebarRightExpand
+                      data-testid="task-info-icon"
+                      size={18}
+                      onClick={() =>
+                        router.push(`/?taskId=${task._id}`, undefined)
+                      }
+                    />
+                  )}
                   {!!task.deadline && (
                     <TooltipProvider>
                       <Tooltip delayDuration={0}>
@@ -154,7 +161,7 @@ const TaskCard: FC<TaskCardProps> = ({
                 {task.description}
               </CardContent>
             )}
-            {(!!taskTags.length || relatedTasksCta) && (
+            {!!taskTags.length && (
               <CardFooter className="p-4">
                 <div className="space-x-1">
                   {taskTags.map((tag) => (
@@ -162,18 +169,6 @@ const TaskCard: FC<TaskCardProps> = ({
                       {tag.title}
                     </Badge>
                   ))}
-                  {relatedTasksCta && (
-                    <Button
-                      variant="link"
-                      onMouseDown={(e) => {
-                        console.log("clickHappened");
-                        e.stopPropagation();
-                        relatedTasksCta.onClick();
-                      }}
-                    >
-                      {relatedTasksCta.label}
-                    </Button>
-                  )}
                 </div>
               </CardFooter>
             )}

@@ -1,6 +1,5 @@
 import { TaskWithRelatedTasks } from "@/app/utils/types/task";
 import { JournalEntry } from "@/models/entry";
-import { TaskV2 } from "@/models/taskV2";
 import { Event } from "react-big-calendar";
 
 export interface WeatherData {
@@ -58,7 +57,7 @@ export interface CalendarEventEntry extends Event {
     type: "event";
     description?: string;
     projectId?: string;
-    tasks: TaskV2[];
+    tasks: TaskWithRelatedTasks[];
   };
 }
 

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense } from "react";
 import JournalEntryForm from "../JournalEntryForm";
 import {
   ResizableHandle,
@@ -11,10 +11,14 @@ import CommandTool from "../CommandTool";
 import PinnedNotes from "../PinnedNotes";
 import HealthChart from "../HealthChart";
 import DailyProgress from "../DailyProgress";
+import TaskInfo from "../TaskInfo";
 
 export const Home = (): JSX.Element => {
   return (
     <ResizablePanelGroup direction="horizontal" className="rounded-lg border">
+      <Suspense>
+        <TaskInfo />
+      </Suspense>
       <ResizablePanel>
         <ResizablePanelGroup direction="vertical">
           <ResizablePanel style={{ overflow: "auto" }}>
