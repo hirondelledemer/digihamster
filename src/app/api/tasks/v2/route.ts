@@ -19,24 +19,24 @@ export async function GET(request: NextRequest) {
     const taskIds = tasks.map((task) => task._id.toString());
     const relationships = await Relationship.find<IRelationship>({
       $or: [
-        { sourceEntity: { $in: taskIds }, type: "task" },
-        { targetEntity: { $in: taskIds }, type: "task" },
+        { sourceEntity: { $in: taskIds } },
+        { targetEntity: { $in: taskIds } },
       ],
     });
 
     const tasksWithRelationships = tasks.map((t) => ({
       ...t.toObject(),
-      relatedTaskIds: relationships
-        .filter((r) => {
-          console.log(r.sourceEntity, r.targetEntity, t._id);
-          return (
-            r.sourceEntity === t._id.toString() ||
-            r.targetEntity === t._id.toString()
-          );
-        })
-        .map((r) =>
-          r.sourceEntity === t._id.toString() ? r.targetEntity : r.sourceEntity
-        ),
+      relatedTaskIds: getRelationshipEntities({
+        relationships,
+        targetTaskId: t._id,
+        type: "task",
+      }),
+
+      relatedNoteIds: getRelationshipEntities({
+        relationships,
+        targetTaskId: t._id,
+        type: "note",
+      }),
     }));
 
     return NextResponse.json(tasksWithRelationships);
@@ -194,3 +194,25 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 400 });
   }
 }
+
+const getRelationshipEntities = ({
+  relationships,
+  type,
+  targetTaskId,
+}: {
+  relationships: IRelationship[];
+  type: string;
+  targetTaskId: string;
+}) =>
+  relationships
+    .filter((r) => {
+      return (
+        (r.type === type && r.sourceEntity === targetTaskId.toString()) ||
+        r.targetEntity === targetTaskId.toString()
+      );
+    })
+    .map((r) =>
+      r.sourceEntity === targetTaskId.toString()
+        ? r.targetEntity
+        : r.sourceEntity
+    );
