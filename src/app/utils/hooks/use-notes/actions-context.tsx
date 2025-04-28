@@ -1,17 +1,14 @@
 import { createContext, useContext } from "react";
 import { FieldsRequired } from "./api";
 import { Note } from "@/models/note";
+import { ActionsContextValue } from "../use-crud/actions-context";
 
-interface NoteActionsContextValue {
-  createNote(note: FieldsRequired, onDone?: () => void): void;
-  updateNote(id: string, note: Partial<Note>, onDone?: () => void): void;
-  deleteNote(id: string, onDone?: () => void): void;
-}
+type NoteActionsContextValue = ActionsContextValue<FieldsRequired, Note>;
 
 const DEFAULT_NOTES_ACTIONS: NoteActionsContextValue = {
-  createNote: () => {},
-  updateNote: () => {},
-  deleteNote: () => {},
+  create: () => {},
+  update: () => {},
+  delete: () => {},
 } as const;
 
 export const NotesActionsContext = createContext<NoteActionsContextValue>(

@@ -19,7 +19,7 @@ const PinnedNote: FC<PinnedNoteProps> = ({ testId, note }): ReactNode => {
     editable: true,
   });
 
-  const { updateNote } = useNotesActions();
+  const { update: updateNote } = useNotesActions();
 
   const [loading, setLoading] = useState<boolean>(false);
 

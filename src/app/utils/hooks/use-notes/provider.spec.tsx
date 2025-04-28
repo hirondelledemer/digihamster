@@ -93,7 +93,7 @@ describe("NotesContextProvider", () => {
 
     const TestComponent = () => {
       const { data } = useNotesState();
-      const { createNote } = useNotesActions();
+      const { create: createNote } = useNotesActions();
       return (
         <div>
           <button onClick={() => createNote(mockNote)}>Create Note</button>
@@ -131,7 +131,7 @@ describe("NotesContextProvider", () => {
 
     const TestComponent = () => {
       const { data } = useNotesState();
-      const { deleteNote } = useNotesActions();
+      const { delete: deleteNote } = useNotesActions();
       return (
         <div>
           <div>

@@ -175,9 +175,9 @@ export const NotesContextProvider = ({ children }: { children: ReactNode }) => {
     <NotesStateContext.Provider value={state}>
       <NotesActionsContext.Provider
         value={{
-          createNote: createNote,
-          updateNote: updateNote,
-          deleteNote: deleteNote,
+          create: createNote,
+          update: updateNote,
+          delete: deleteNote,
         }}
       >
         {children}
