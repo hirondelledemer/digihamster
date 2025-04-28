@@ -11,10 +11,12 @@ import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
+  includeProjectId: boolean;
 }
 
 export function DataTableToolbar<TData>({
   table,
+  includeProjectId,
 }: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0;
   const { data: projects, isLoading } = useProjectsState();
@@ -45,7 +47,7 @@ export function DataTableToolbar<TData>({
           }
           className="h-8 w-[150px] lg:w-[250px]"
         />
-        {table.getColumn("projectId") && (
+        {includeProjectId && (
           <DataTableFacetedFilter
             column={table.getColumn("projectId")}
             title="Projects"

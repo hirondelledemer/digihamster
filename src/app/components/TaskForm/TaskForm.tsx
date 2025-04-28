@@ -53,21 +53,11 @@ const FormSchema = z.object({
 
 export type FormValues = z.infer<typeof FormSchema>;
 
-interface CommonProps {
+export interface TaskFormProps {
   testId?: string;
   onDone(): void;
-}
-
-export interface TaskFormRegularProps extends CommonProps {
-  editMode?: undefined | false;
-  initialValues?: Partial<FormValues>;
-}
-export interface TaskFormEditModeProps extends CommonProps {
   task: Task;
-  editMode: true;
 }
-
-export type TaskFormProps = TaskFormRegularProps | TaskFormEditModeProps;
 
 const TaskForm: FC<TaskFormProps> = ({
   testId,
@@ -76,71 +66,38 @@ const TaskForm: FC<TaskFormProps> = ({
 }): JSX.Element => {
   const { data: projects, defaultProject } = useProjectsState();
   const { data: tags } = useTags();
-  const { editTask, deleteTask, createNewTask } = useEditTask();
-
-  const getInitialValues = useCallback(() => {
-    if (restProps.editMode) {
-      return {
-        title: restProps.task.title,
-        description: restProps.task.description || "",
-        eta: restProps.task.estimate || 0,
-        project: restProps.task.projectId || defaultProject?._id,
-        deadline: restProps.task.deadline,
-        isActive: restProps.task.isActive,
-        tags: restProps.task.tags,
-      };
-    }
-
-    return restProps.initialValues;
-  }, [defaultProject, restProps]);
+  const { editTask, deleteTask } = useEditTask();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      title: "",
-      description: "",
-      eta: 0.5,
-      project: defaultProject?._id,
-      deadline: null,
-      isActive: false,
-      tags: [],
-      ...getInitialValues(),
+      title: restProps.task.title,
+      description: restProps.task.description || "",
+      eta: restProps.task.estimate || 0,
+      project: restProps.task.projectId || defaultProject?._id,
+      deadline: restProps.task.deadline,
+      isActive: restProps.task.isActive,
+      tags: restProps.task.tags,
     },
   });
 
   const handleSubmit = (values: FormValues) => {
-    if (restProps.editMode) {
-      editTask(restProps.task._id, {
-        title: values.title,
-        description: values.description,
-        estimate: values.eta,
-        projectId: values.project,
-        deadline: values.deadline,
-        tags: values.tags,
-      });
-    } else {
-      const taskData = {
-        title: values.title,
-        description: values.description,
-        projectId: values.project,
-        isActive: values.isActive || false,
-        estimate: values.eta,
-        deadline: values.deadline || null,
-        tags: values.tags,
-        subtasks: [],
-      };
-      createNewTask(taskData);
-    }
+    editTask(restProps.task._id, {
+      title: values.title,
+      description: values.description,
+      estimate: values.eta,
+      projectId: values.project,
+      deadline: values.deadline,
+      tags: values.tags,
+    });
     onDone();
   };
 
   const handleDelete = useCallback(
     async (event: React.MouseEvent<HTMLButtonElement>) => {
       event.preventDefault();
-      if (restProps.editMode) {
-        await deleteTask(restProps.task._id);
-        onDone();
-      }
+      await deleteTask(restProps.task._id);
+      onDone();
     },
     [deleteTask, restProps, onDone]
   );
@@ -148,12 +105,11 @@ const TaskForm: FC<TaskFormProps> = ({
   const handleComplete = useCallback(
     async (event: React.MouseEvent<HTMLButtonElement>) => {
       event.preventDefault();
-      if (restProps.editMode) {
-        await editTask(restProps.task._id, {
-          completed: true,
-        });
-        onDone();
-      }
+
+      await editTask(restProps.task._id, {
+        completed: true,
+      });
+      onDone();
     },
     [editTask, restProps, onDone]
   );
@@ -161,12 +117,11 @@ const TaskForm: FC<TaskFormProps> = ({
   const handleUndo = useCallback(
     async (event: React.MouseEvent<HTMLButtonElement>) => {
       event.preventDefault();
-      if (restProps.editMode) {
-        await editTask(restProps.task._id, {
-          completed: false,
-        });
-        onDone();
-      }
+
+      await editTask(restProps.task._id, {
+        completed: false,
+      });
+      onDone();
     },
     [editTask, restProps, onDone]
   );
@@ -343,20 +298,18 @@ const TaskForm: FC<TaskFormProps> = ({
           )}
         />
         <div className="space-x-2">
-          <Button type="submit">
-            {restProps.editMode ? "Save" : "Create"}
-          </Button>
-          {restProps.editMode && !restProps.task.deleted && (
+          <Button type="submit">Save</Button>
+          {!restProps.task.deleted && (
             <Button onClick={handleDelete} variant="outline">
               Delete
             </Button>
           )}
-          {restProps.editMode && !restProps.task.completed && (
+          {!restProps.task.completed && (
             <Button onClick={handleComplete} variant="outline">
               Complete
             </Button>
           )}
-          {restProps.editMode && restProps.task.completed && (
+          {restProps.task.completed && (
             <Button onClick={handleUndo} variant="outline">
               Undo
             </Button>

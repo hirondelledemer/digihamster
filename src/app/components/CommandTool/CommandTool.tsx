@@ -81,9 +81,6 @@ const CommandTool: FC<CommandToolProps> = (): JSX.Element => {
         <TaskFormModal
           testId={taskFormTestId}
           onDone={close}
-          initialValues={{
-            title: searchValue,
-          }}
           onClose={close}
           open={taskFormOpen.open}
         />

@@ -59,7 +59,12 @@ const Tasks: FC<TasksProps> = ({ testId }): JSX.Element => {
           disableToolbar
         />
       </div>
-      <DataTable data={restTasks} columns={columns} onRowClick={openTaskForm} />
+      <DataTable
+        data={restTasks}
+        columns={columns}
+        onRowClick={openTaskForm}
+        includeProjectId
+      />
     </div>
   );
 };

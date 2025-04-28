@@ -12,8 +12,13 @@ import { ProjectsStateContext } from "@/app/utils/hooks/use-projects/state-conte
 
 jest.mock("../../utils/date/date");
 
+const onDoneMock = jest.fn();
+
 describe("TaskForm", () => {
-  const defaultProps: TaskFormProps = { onDone: jest.fn() };
+  const defaultProps: TaskFormProps = {
+    onDone: onDoneMock,
+    task: generateTask(),
+  };
   const renderComponent = (
     props: TaskFormProps = defaultProps,
     projectsProps: any = {
@@ -59,34 +64,16 @@ describe("TaskForm", () => {
     ]);
   });
 
-  describe("regular mode", () => {
-    it("should not show delete button", () => {
-      const { deleteButtonExists } = renderComponent();
-      expect(deleteButtonExists()).toBe(false);
-    });
-
-    it("should not show complete button", () => {
-      const { completeButtonExists } = renderComponent();
-      expect(completeButtonExists()).toBe(false);
-    });
-  });
-
   describe("editMode", () => {
     const task = generateTask();
-    const onDoneMock = jest.fn();
-    const props: TaskFormProps = {
-      onDone: onDoneMock,
-      editMode: true,
-      task: generateTask(),
-    };
+
     beforeEach(() => {
       onDoneMock.mockClear();
       mockAxios.patch.mockResolvedValueOnce({ data: {} });
     });
     describe("delete action", () => {
       it("should delete task, if it is not deleted", async () => {
-        const { deleteButtonExists, clickDeleteButton } =
-          renderComponent(props);
+        const { deleteButtonExists, clickDeleteButton } = renderComponent();
 
         // show delete button
         expect(deleteButtonExists()).toBe(true);
@@ -109,7 +96,7 @@ describe("TaskForm", () => {
       it("should not show delete action for deleted task", () => {
         const deletedTask = generateTask(1, { deleted: true });
         const { deleteButtonExists } = renderComponent({
-          ...props,
+          ...defaultProps,
           task: deletedTask,
         });
 
@@ -121,7 +108,7 @@ describe("TaskForm", () => {
     describe("complete action", () => {
       it("should complete task, if task is not completed", async () => {
         const { completeButtonExists, undoButtonExists, clickCompleteButton } =
-          renderComponent(props);
+          renderComponent();
 
         // show complete button
         expect(completeButtonExists()).toBe(true);
@@ -145,7 +132,7 @@ describe("TaskForm", () => {
       it("should undo task, if task is completed", async () => {
         const completedTask = generateTask(1, { completed: true });
         const { undoButtonExists, completeButtonExists, clickUndoButton } =
-          renderComponent({ ...props, task: completedTask });
+          renderComponent({ ...defaultProps, task: completedTask });
 
         // show complete button
         expect(undoButtonExists()).toBe(true);

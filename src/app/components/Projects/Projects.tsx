@@ -93,10 +93,9 @@ const Projects: FC<ProjectsProps> = ({ testId }): JSX.Element => {
             ? openTaskForm.selectedTask
             : (null as any)
         }
-        initialValues={{ project: selectedProjectId }}
+        projectId={selectedProjectId}
         open={openTaskForm.open}
       />
-
       <ProjectModalForm
         onDone={closeOpenProjectForm}
         onClose={closeOpenProjectForm}

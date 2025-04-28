@@ -34,6 +34,7 @@ interface DataTableProps<TData, TValue> {
   disablePagination?: boolean;
   disableSorting?: boolean;
   disableToolbar?: boolean;
+  includeProjectId?: boolean;
 }
 
 export function DataTable<TData, TValue>({
@@ -43,6 +44,7 @@ export function DataTable<TData, TValue>({
   disablePagination = false,
   disableSorting = false,
   disableToolbar = false,
+  includeProjectId = false,
 }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = useState({});
   const [columnVisibility, setColumnVisibility] =
@@ -80,7 +82,9 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="space-y-4">
-      {!disableToolbar && <DataTableToolbar table={table} />}
+      {!disableToolbar && (
+        <DataTableToolbar table={table} includeProjectId={includeProjectId} />
+      )}
       <div className="rounded-md border">
         <Table>
           <TableHeader>
