@@ -61,7 +61,7 @@ const EventForm: FC<EventFormProps> = ({
   ...restProps
 }): JSX.Element => {
   const { data: projects, defaultProject } = useProjectsState();
-  const { createEvent, updateEvent } = useEventsActions();
+  const { create: createEvent, update: updateEvent } = useEventsActions();
 
   const getInitialValues = useCallback(() => {
     if (restProps.editMode) {
@@ -103,7 +103,7 @@ const EventForm: FC<EventFormProps> = ({
       return;
     }
 
-    const eventData: Pick<Event, FieldsRequired> = {
+    const eventData: FieldsRequired = {
       title: data.title,
       description: data.description,
       projectId: data.project,

@@ -60,7 +60,7 @@ const ProjectForm: FC<ProjectFormProps> = ({
   onDone,
   ...restProps
 }): JSX.Element => {
-  const { updateProject, createProject } = useProjectsActions();
+  const { update: updateProject, create: createProject } = useProjectsActions();
 
   const getInitialValues = useCallback(() => {
     if (restProps.editMode) {

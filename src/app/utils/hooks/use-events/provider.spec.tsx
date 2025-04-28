@@ -95,7 +95,7 @@ describe("EventsContextProvider", () => {
 
     const TestComponent = () => {
       const { data } = useEventsState();
-      const { createEvent } = useEventsActions();
+      const { create: createEvent } = useEventsActions();
       return (
         <div>
           <button onClick={() => createEvent(mockEvent)}>Create Event</button>
@@ -133,7 +133,7 @@ describe("EventsContextProvider", () => {
 
     const TestComponent = () => {
       const { data } = useEventsState();
-      const { deleteEvent } = useEventsActions();
+      const { delete: deleteEvent } = useEventsActions();
       return (
         <div>
           <div>

@@ -103,7 +103,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
 
   const { data: journalEntriesData } = useJournalEntries();
   const { data: eventsData } = useEventsState();
-  const { updateEvent } = useEventsActions();
+  const { update: updateEvent } = useEventsActions();
   const { data: cycleData } = useCycle();
   const { isLoading: projectsLoading } = useProjectsState();
 

@@ -1,29 +1,23 @@
 import { createContext, useContext } from "react";
 import { FieldsRequired } from "./api";
 import { Project } from "@/models/project";
+import { ActionsContextValue } from "../use-crud/actions-context";
 
-interface ProjectActionsContextValue {
-  createProject(
-    project: Pick<Project, FieldsRequired>,
-    onDone?: () => void
-  ): void;
-  updateProject(
-    projectId: string,
-    project: Partial<Project>,
-    onDone?: () => void
-  ): void;
-  deleteProject(projectId: string, onDone?: () => void): void;
+type ProjectActionsContextValue = ActionsContextValue<
+  FieldsRequired,
+  Project
+> & {
   updateOrder(
     movedProjectId: string,
     overProjectId: string,
     onDone?: () => void
   ): void;
-}
+};
 
 const DEFAULT_PROJECTS_ACTIONS: ProjectActionsContextValue = {
-  createProject: () => {},
-  updateProject: () => {},
-  deleteProject: () => {},
+  create: () => {},
+  update: () => {},
+  delete: () => {},
   updateOrder: () => {},
 } as const;
 

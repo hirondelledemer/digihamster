@@ -76,7 +76,7 @@ export const EventsContextProvider = ({
   }, [fetchEventsMemoized]);
 
   const createEvent = useCallback(
-    async (data: Pick<Event, FieldsRequired>, onDone?: () => void) => {
+    async (data: FieldsRequired, onDone?: () => void) => {
       const tempId = "temp-id";
 
       const tempEvent: Event = {
@@ -179,7 +179,11 @@ export const EventsContextProvider = ({
   return (
     <EventsStateContext.Provider value={state}>
       <EventsActionsContext.Provider
-        value={{ createEvent, updateEvent, deleteEvent }}
+        value={{
+          create: createEvent,
+          update: updateEvent,
+          delete: deleteEvent,
+        }}
       >
         {children}
       </EventsActionsContext.Provider>

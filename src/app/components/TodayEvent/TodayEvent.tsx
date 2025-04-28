@@ -36,7 +36,7 @@ const TodayEvent: FC<TodayEventProps> = ({
   weatherEvent,
   isFocused,
 }): JSX.Element => {
-  const { updateEvent } = useEventsActions();
+  const { update: updateEvent } = useEventsActions();
   const { editTask } = useEditTask();
   const { data: tasks } = useTasks();
   const { getProjectById } = useProjectsState();

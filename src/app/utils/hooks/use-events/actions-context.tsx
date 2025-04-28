@@ -1,21 +1,14 @@
 import { createContext, useContext } from "react";
 import { FieldsRequired } from "./api";
 import { Event } from "@/models/event";
+import { ActionsContextValue } from "../use-crud/actions-context";
 
-interface EventActionsContextValue {
-  createEvent(event: Pick<Event, FieldsRequired>, onDone?: () => void): void;
-  updateEvent(
-    eventId: string,
-    event: Partial<Event>,
-    onDone?: () => void
-  ): void;
-  deleteEvent(eventId: string, onDone?: () => void): void;
-}
+type EventActionsContextValue = ActionsContextValue<FieldsRequired, Event>;
 
 const DEFAULT_EVENTS_ACTIONS: EventActionsContextValue = {
-  createEvent: () => {},
-  updateEvent: () => {},
-  deleteEvent: () => {},
+  create: () => {},
+  update: () => {},
+  delete: () => {},
 } as const;
 
 export const EventsActionsContext = createContext<EventActionsContextValue>(

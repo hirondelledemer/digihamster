@@ -43,7 +43,7 @@ const CalendarEvent: FC<CalendarEventProps> = ({
 
   const [taskFormOpen, setTaskFormOpen] = useState<boolean>(false);
   const [eventFormOpen, setEventFormOpen] = useState<boolean>(false);
-  const { deleteEvent, updateEvent } = useEventsActions();
+  const { delete: deleteEvent, update: updateEvent } = useEventsActions();
   const { getProjectById } = useProjectsState();
 
   const handleDeleteClick = async () => {

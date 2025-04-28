@@ -79,7 +79,7 @@ export const ProjectsContextProvider = ({
   }, [fetchProjectsMemoized]);
 
   const createProject = useCallback(
-    async (data: Pick<Project, FieldsRequired>, onDone?: () => void) => {
+    async (data: FieldsRequired, onDone?: () => void) => {
       const tempId = "temp-id";
 
       const tempProject: Project = {
@@ -221,9 +221,9 @@ export const ProjectsContextProvider = ({
     <ProjectsStateContext.Provider value={{ ...state, getProjectById }}>
       <ProjectsActionsContext.Provider
         value={{
-          createProject,
-          updateProject,
-          deleteProject,
+          create: createProject,
+          update: updateProject,
+          delete: deleteProject,
           updateOrder,
         }}
       >

@@ -98,7 +98,7 @@ describe("ProjectsContextProvider", () => {
 
     const TestComponent = () => {
       const { data } = useProjectsState();
-      const { createProject } = useProjectsActions();
+      const { create: createProject } = useProjectsActions();
       return (
         <div>
           <button onClick={() => createProject(mockProject)}>
@@ -141,7 +141,7 @@ describe("ProjectsContextProvider", () => {
 
     const TestComponent = () => {
       const { data } = useProjectsState();
-      const { deleteProject } = useProjectsActions();
+      const { delete: deleteProject } = useProjectsActions();
       return (
         <div>
           <div>
