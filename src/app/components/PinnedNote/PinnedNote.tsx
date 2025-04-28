@@ -3,10 +3,10 @@
 import React, { FC, ReactNode, useState } from "react";
 import { useRte } from "@/app/utils/rte/rte-hook";
 import { Note } from "@/models/note";
-import useNotes from "@/app/utils/hooks/use-notes";
 import RichTextEditor from "../RichTextEditor";
 import { IconLoader } from "@tabler/icons-react";
 import { cn } from "../utils";
+import { useNotesActions } from "@/app/utils/hooks/use-notes/actions-context";
 
 export interface PinnedNoteProps {
   testId?: string;
@@ -19,7 +19,7 @@ const PinnedNote: FC<PinnedNoteProps> = ({ testId, note }): ReactNode => {
     editable: true,
   });
 
-  const { updateNote } = useNotes();
+  const { updateNote } = useNotesActions();
 
   const [loading, setLoading] = useState<boolean>(false);
 

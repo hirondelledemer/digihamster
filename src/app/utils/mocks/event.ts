@@ -25,9 +25,9 @@ export const generateListOfEvents: (count: number) => Event[] = (count) => {
 };
 
 export const generateCustomEventList: (
-  taskInfo: Partial<Event>[]
-) => Event[] = (taskInfo) => {
-  return taskInfo.map((taskProperties, i) => ({
+  eventInfo: Partial<Event>[]
+) => Event[] = (eventInfo) => {
+  return eventInfo.map((taskProperties, i) => ({
     ...generateEvent(i, taskProperties),
   }));
 };
