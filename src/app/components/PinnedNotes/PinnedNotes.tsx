@@ -10,7 +10,10 @@ export interface PinnedNotesProps {
 
 const PinnedNotes: FC<PinnedNotesProps> = ({ testId }): JSX.Element => {
   const { data: notes } = useNotesState();
+
   const activeNotes = notes.filter((note) => note.isActive);
+
+  console.log(notes);
 
   return (
     <div data-testid={testId} className="space-y-6">
