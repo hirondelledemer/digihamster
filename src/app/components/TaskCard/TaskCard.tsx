@@ -40,7 +40,6 @@ export interface TaskCardProps {
   className?: string;
   task: TaskWithRelatedTasks;
   dragId: string;
-  fullHeight?: boolean;
   indicateActive?: boolean;
 }
 
@@ -51,7 +50,6 @@ const TaskCard: FC<TaskCardProps> = ({
   task,
   className,
   dragId,
-  fullHeight = false,
   indicateActive,
 }): JSX.Element => {
   const { data: projects } = useProjectsState();
@@ -100,7 +98,7 @@ const TaskCard: FC<TaskCardProps> = ({
             data-testid={cardTestId}
             className={`p-0 rounded-md ${
               task.completed ? "opacity-40 line-through" : ""
-            } ${fullHeight ? "w-[296px]" : "w-[267px]"}`}
+            } w-[300px]`}
             ref={setNodeRef}
             style={style}
             {...listeners}
@@ -117,7 +115,9 @@ const TaskCard: FC<TaskCardProps> = ({
                   {indicateActive && task.isActive && (
                     <IconProgressCheck size={18} color="green" />
                   )}
-                  <StaleIndicator date={task.activatedAt || 0} />
+                  {task.isActive && (
+                    <StaleIndicator date={task.activatedAt || 0} />
+                  )}
                   {!!task.relatedTaskIds.length && (
                     <IconLayoutSidebarRightExpand
                       data-testid="task-info-icon"
@@ -205,6 +205,18 @@ const TaskCard: FC<TaskCardProps> = ({
               }
             >
               Deactivate
+            </ContextMenuItem>
+          )}
+          {!task.eventId && !task.isActive && (
+            <ContextMenuItem
+              inset
+              onClick={() =>
+                editTask(task._id, { isActive: true }, () =>
+                  setTaskFormOpen(false)
+                )
+              }
+            >
+              Activate
             </ContextMenuItem>
           )}
           <ContextMenuItem inset onClick={() => setTaskFormOpen(true)}>

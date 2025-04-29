@@ -9,7 +9,7 @@ type ProjectContextValue = ProjectsState & {
 const DEFAULT_PROJECTS_STATE: ProjectsState = {
   data: [],
   defaultProject: null,
-  isLoading: false,
+  isLoading: true,
   errorMessage: undefined,
 } as const;
 

@@ -63,7 +63,7 @@ export const ProjectsContextProvider = ({
   children: ReactNode;
 }) => {
   const [state, dispatch] = useReducer(reducer, {
-    isLoading: false,
+    isLoading: true,
     data: [] as Project[],
     defaultProject: null,
   });
@@ -209,12 +209,7 @@ export const ProjectsContextProvider = ({
   };
 
   const getProjectById = (id: string) => {
-    const project = state.data.find((project) => project._id === id);
-    if (!project) {
-      throw Error("no project by this id");
-    }
-
-    return project;
+    return state.data.find((project) => project._id === id) || null;
   };
 
   return (

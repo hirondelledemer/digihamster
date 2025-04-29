@@ -208,7 +208,10 @@ describe("TaskCard", () => {
     const dayInMs = 24 * 60 * 60 * 1000;
 
     const props: TaskCardProps = {
-      task: generateTask(0, { activatedAt: (weekInMs + dayInMs) * -1 }),
+      task: generateTask(0, {
+        activatedAt: (weekInMs + dayInMs) * -1,
+        isActive: true,
+      }),
       dragId: "dragId",
     };
 

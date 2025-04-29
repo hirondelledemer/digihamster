@@ -4,6 +4,7 @@ import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
 import useTasks from "@/app/utils/hooks/use-tasks";
 import { Project } from "@/models/project";
 import { addDays, differenceInCalendarDays, format, isValid } from "date-fns";
+import { useRouter } from "next/navigation";
 
 import React, { FC, useCallback, useMemo } from "react";
 
@@ -15,6 +16,8 @@ const ProjectProgressBar: FC<{ project: Project }> = ({
   project,
 }): JSX.Element => {
   const { data: tasks } = useTasks();
+
+  const router = useRouter();
 
   const allTasks = useMemo(
     () => tasks.filter((task) => task.projectId === project._id),
@@ -61,6 +64,7 @@ const ProjectProgressBar: FC<{ project: Project }> = ({
       key={project._id}
       className="flex flex-col gap-5"
       style={{ color: project.color }}
+      onClick={() => router.push(`/?projectId=${project._id}`, undefined)}
     >
       <div className="flex flex-col">
         <div className="text-sm">

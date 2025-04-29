@@ -5,14 +5,15 @@ import { generateCustomTasksList } from "@/app/utils/mocks/task";
 import { getRichTextEditorTestkit } from "../RichTextEditor/RichTextEditor.testkit";
 import { rteTestId } from "../CreateTaskForm/CreateTaskForm";
 import mockAxios from "jest-mock-axios";
+import { ProjectsContextProvider } from "@/app/utils/hooks/use-projects/provider";
+import { generateListOfProjects } from "@/app/utils/mocks/project";
+import { useSearchParams } from "next/navigation";
 
 const routerPushSpy = jest.fn();
 
 jest.mock("next/navigation", () => ({
   ...jest.requireActual("next/navigation"),
-  useSearchParams: () => ({
-    get: () => "task0",
-  }),
+  useSearchParams: jest.fn(),
   useRouter: () => ({
     replace: jest.fn(),
     push: routerPushSpy,
@@ -21,11 +22,22 @@ jest.mock("next/navigation", () => ({
 
 describe("TaskInfo", () => {
   const defaultProps: TaskInfoProps = {};
-  const defaultTasks = generateCustomTasksList([
-    { _id: "task0", relatedTaskIds: ["task1", "task2"] },
-    { _id: "task1", relatedTaskIds: ["task0", "task2"] },
-    { _id: "task2" },
+  const DEFAULT_PROJECTS = generateListOfProjects(3);
+  const SELECTED_PROJECT = DEFAULT_PROJECTS[0];
+  const DEFAULT_TASKS = generateCustomTasksList([
+    {
+      _id: "task0",
+      relatedTaskIds: ["task1", "task2"],
+      projectId: SELECTED_PROJECT._id,
+    },
+    {
+      _id: "task1",
+      relatedTaskIds: ["task0", "task2"],
+      projectId: SELECTED_PROJECT._id,
+    },
+    { _id: "task2", projectId: SELECTED_PROJECT._id },
   ]);
+  const SELECTED_TASK = DEFAULT_TASKS[0];
 
   afterEach(() => {
     mockAxios.reset();
@@ -33,76 +45,196 @@ describe("TaskInfo", () => {
 
   const renderComponent = (props = defaultProps) =>
     render(
-      wrapWithTasksProvider(<TaskInfo {...props} />, { data: defaultTasks })
+      wrapWithTasksProvider(
+        <ProjectsContextProvider>
+          <TaskInfo {...props} />
+        </ProjectsContextProvider>,
+        { data: DEFAULT_TASKS }
+      )
     );
 
-  it("should render TaskInfo", () => {
-    renderComponent();
+  describe("taskId is present in the query params", () => {
+    it("should render TaskInfo", async () => {
+      (useSearchParams as jest.Mock).mockReturnValue({
+        get: () => SELECTED_TASK._id,
+      });
 
-    expect(
-      screen.getByRole("heading", { name: defaultTasks[0].title })
-    ).toBeInTheDocument();
+      renderComponent();
 
-    expect(screen.getByText(defaultTasks[1].title)).toBeInTheDocument();
-    expect(screen.getByText(defaultTasks[2].title)).toBeInTheDocument();
-    expect(screen.getByTestId(rteTestId)).toBeInTheDocument();
+      await expect(
+        screen.findByRole("heading", { name: SELECTED_TASK.title })
+      ).resolves.toBeInTheDocument();
+
+      expect(screen.getByText(DEFAULT_TASKS[1].title)).toBeInTheDocument();
+      expect(screen.getByText(DEFAULT_TASKS[2].title)).toBeInTheDocument();
+      expect(screen.getByTestId(rteTestId)).toBeInTheDocument();
+    });
+
+    it("should open next task", async () => {
+      (useSearchParams as jest.Mock).mockReturnValue({
+        get: () => SELECTED_TASK._id,
+      });
+
+      renderComponent();
+
+      expect(
+        screen.getByRole("heading", { name: SELECTED_TASK.title })
+      ).toBeInTheDocument();
+
+      await userEvent.click(screen.getByTestId("task-info-icon"));
+
+      expect(routerPushSpy).toHaveBeenCalledWith("/?taskId=task1", undefined);
+    });
+
+    it("should create the task with the primary task", async () => {
+      (useSearchParams as jest.Mock).mockReturnValue({
+        get: () => SELECTED_TASK._id,
+      });
+
+      renderComponent();
+      const rte = screen.getByTestId(rteTestId);
+      const rteWrapper = getRichTextEditorTestkit(rte);
+
+      rteWrapper.enterValue("<p>test</p><p>note</p>");
+      rteWrapper.blur();
+
+      await userEvent.click(screen.getByRole("button", { name: /create/i }));
+
+      await waitFor(() => {
+        expect(mockAxios.post).toHaveBeenCalledWith("/api/tasks/v2", {
+          description: `note`,
+          projectId: "project0",
+          descriptionFull: {
+            content: [
+              {
+                content: [
+                  {
+                    text: "test",
+                    type: "text",
+                  },
+                ],
+                type: "paragraph",
+              },
+              {
+                content: [
+                  {
+                    text: "note",
+                    type: "text",
+                  },
+                ],
+                type: "paragraph",
+              },
+            ],
+            type: "doc",
+          },
+          isActive: false,
+          subtasks: [],
+          tags: [],
+          deadline: undefined,
+          primaryTaskId: "task0",
+          title: "test",
+        });
+      });
+    });
   });
 
-  it("should open next task", async () => {
-    renderComponent();
+  describe("projectId is present in the query params", () => {
+    it("should render TaskInfo", async () => {
+      (useSearchParams as jest.Mock).mockReturnValue({
+        get: () => SELECTED_PROJECT._id,
+      });
+      const mockData = {
+        projects: DEFAULT_PROJECTS,
+        defaultProject: null,
+      };
+      mockAxios.get.mockResolvedValueOnce({ data: mockData });
 
-    expect(
-      screen.getByRole("heading", { name: defaultTasks[0].title })
-    ).toBeInTheDocument();
+      renderComponent();
 
-    await userEvent.click(screen.getByTestId("task-info-icon"));
+      await expect(
+        screen.findByRole("heading", { name: SELECTED_PROJECT.title })
+      ).resolves.toBeInTheDocument();
 
-    expect(routerPushSpy).toHaveBeenCalledWith("/?taskId=task1", undefined);
-  });
+      expect(screen.getByText(DEFAULT_TASKS[1].title)).toBeInTheDocument();
+      expect(screen.getByText(DEFAULT_TASKS[2].title)).toBeInTheDocument();
+      expect(screen.getByTestId(rteTestId)).toBeInTheDocument();
+    });
 
-  it("should create the task with the primary task", async () => {
-    renderComponent();
-    const rte = screen.getByTestId(rteTestId);
-    const rteWrapper = getRichTextEditorTestkit(rte);
+    it("should open next task", async () => {
+      (useSearchParams as jest.Mock).mockReturnValue({
+        get: () => SELECTED_PROJECT._id,
+      });
+      const mockData = {
+        projects: DEFAULT_PROJECTS,
+        defaultProject: null,
+      };
+      mockAxios.get.mockResolvedValueOnce({ data: mockData });
 
-    rteWrapper.enterValue("<p>test</p><p>note</p>");
-    rteWrapper.blur();
+      renderComponent();
 
-    await userEvent.click(screen.getByRole("button", { name: /create/i }));
+      await expect(
+        screen.findByRole("heading", { name: SELECTED_PROJECT.title })
+      ).resolves.toBeInTheDocument();
 
-    await waitFor(() => {
-      expect(mockAxios.post).toHaveBeenCalledWith("/api/tasks/v2", {
-        description: `note`,
-        projectId: "project1",
-        descriptionFull: {
-          content: [
-            {
-              content: [
-                {
-                  text: "test",
-                  type: "text",
-                },
-              ],
-              type: "paragraph",
-            },
-            {
-              content: [
-                {
-                  text: "note",
-                  type: "text",
-                },
-              ],
-              type: "paragraph",
-            },
-          ],
-          type: "doc",
-        },
-        isActive: false,
-        subtasks: [],
-        tags: [],
-        deadline: undefined,
-        primaryTaskId: "task0",
-        title: "test",
+      await userEvent.click(screen.getAllByTestId("task-info-icon")[0]);
+
+      expect(routerPushSpy).toHaveBeenCalledWith("/?taskId=task0", undefined);
+    });
+
+    it("should create the task with for the project", async () => {
+      (useSearchParams as jest.Mock).mockReturnValue({
+        get: () => SELECTED_PROJECT._id,
+      });
+      const mockData = {
+        projects: DEFAULT_PROJECTS,
+        defaultProject: null,
+      };
+      mockAxios.get.mockResolvedValueOnce({ data: mockData });
+
+      renderComponent();
+
+      const rte = await screen.findByTestId(rteTestId);
+      const rteWrapper = getRichTextEditorTestkit(rte);
+
+      rteWrapper.enterValue("<p>test</p><p>note</p>");
+      rteWrapper.blur();
+
+      await userEvent.click(screen.getByRole("button", { name: /create/i }));
+
+      await waitFor(() => {
+        expect(mockAxios.post).toHaveBeenCalledWith("/api/tasks/v2", {
+          description: `note`,
+          projectId: SELECTED_PROJECT._id,
+          descriptionFull: {
+            content: [
+              {
+                content: [
+                  {
+                    text: "test",
+                    type: "text",
+                  },
+                ],
+                type: "paragraph",
+              },
+              {
+                content: [
+                  {
+                    text: "note",
+                    type: "text",
+                  },
+                ],
+                type: "paragraph",
+              },
+            ],
+            type: "doc",
+          },
+          isActive: false,
+          subtasks: [],
+          tags: [],
+          deadline: undefined,
+          primaryTaskId: undefined,
+          title: "test",
+        });
       });
     });
   });

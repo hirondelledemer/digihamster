@@ -8,8 +8,9 @@ import { generateProject } from "@/app/utils/mocks/project";
 import { ProjectsContextProvider } from "@/app/utils/hooks/use-projects/provider";
 
 jest.mock("../../utils/date/date");
+jest.mock("next/navigation");
 
-describe("ProgressProject", () => {
+describe("ProjectProgress", () => {
   const PROJECT = generateProject();
 
   const renderComponent = () =>
