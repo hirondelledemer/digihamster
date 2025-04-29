@@ -59,10 +59,13 @@ describe("DailyProgress", () => {
       "1px",
       "1px",
       "1px",
-      "9px", // 1 task, 1 habit, 1 journal entry
-      "6px", // 2 entries completed
+      "1px",
+      "1px",
+      "1px",
+      "5px", // 1 task, 1 habit, 1 journal entry
+      "2px", // 2 entries completed
       "6px", // 2 tasks completed
-      "6px", // 2 habits completed
+      "2px", // 2 habits completed
     ]);
   });
 });

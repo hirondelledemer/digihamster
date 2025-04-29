@@ -15,36 +15,36 @@ const DailyProgress: FC<DailyProgressProps> = ({ testId }): JSX.Element => {
   const { data: habits } = useHabits();
   const { data: journalEntries } = useJournalEntries();
 
-  const last8Days = useMemo(
-    () => eachDayOfInterval({ start: subDays(now(), 7), end: now() }),
+  const last11Days = useMemo(
+    () => eachDayOfInterval({ start: subDays(now(), 10), end: now() }),
     []
   );
 
   const completedTasksCount = useMemo(
     () =>
-      last8Days.map(
+      last11Days.map(
         (date) =>
           tasks.filter(
             (t) => t.completedAt && isSameDay(t.completedAt, date.getTime())
           ).length
       ),
-    [last8Days, tasks]
+    [last11Days, tasks]
   );
 
   const journalEntriesCreated = useMemo(
     () =>
-      last8Days.map(
+      last11Days.map(
         (date) =>
           journalEntries.filter(
             (j) => j.createdAt && isSameDay(j.createdAt, date.getTime())
           ).length
       ),
-    [journalEntries, last8Days]
+    [journalEntries, last11Days]
   );
 
   const completedHabitsCount = useMemo(
     () =>
-      last8Days.map(
+      last11Days.map(
         (date) =>
           habits.filter(
             (h) =>
@@ -53,7 +53,7 @@ const DailyProgress: FC<DailyProgressProps> = ({ testId }): JSX.Element => {
               ).length > 0
           ).length
       ),
-    [habits, last8Days]
+    [habits, last11Days]
   );
 
   return (
@@ -67,10 +67,9 @@ const DailyProgress: FC<DailyProgressProps> = ({ testId }): JSX.Element => {
             style={{
               minWidth: "15px",
               height:
-                (taskCount +
+                taskCount * 3 +
                   completedHabitsCount[index] +
-                  journalEntriesCreated[index]) *
-                  3 || "1px",
+                  journalEntriesCreated[index] || "1px",
               backgroundColor: "#f43f6e",
             }}
           />
