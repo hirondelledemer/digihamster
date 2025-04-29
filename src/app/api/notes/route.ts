@@ -11,13 +11,11 @@ export async function GET(request: NextRequest) {
   try {
     // Extract user ID from the authentication token
     const userId = await getDataFromToken(request);
-    const isActive = request.nextUrl.searchParams.get("isActive") || undefined;
 
     // Find the user in the database based on the user ID
     const notes = await Note.find({
       userId,
       deleted: false,
-      isActive,
     });
 
     return NextResponse.json(notes);

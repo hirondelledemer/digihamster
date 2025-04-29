@@ -46,7 +46,7 @@ export const Home = (): JSX.Element => {
             <div className="min-h-16 mb-4 overflow-auto p-[1px]">
               <DailyProgress />
             </div>
-            <div className="min-h-28 mb-4 overflow-auto p-[1px]">
+            <div className="h-16 max-h-28 mb-4 overflow-auto p-[1px]">
               <ProjectProgress />
             </div>
             <div className="max-h-[400px] mb-4 overflow-auto p-[1px]">

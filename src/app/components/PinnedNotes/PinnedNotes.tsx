@@ -13,8 +13,6 @@ const PinnedNotes: FC<PinnedNotesProps> = ({ testId }): JSX.Element => {
 
   const activeNotes = notes.filter((note) => note.isActive);
 
-  console.log(notes);
-
   return (
     <div data-testid={testId} className="space-y-6">
       {activeNotes.map((note) => (
