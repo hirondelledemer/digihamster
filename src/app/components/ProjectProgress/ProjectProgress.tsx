@@ -62,7 +62,7 @@ const ProjectProgressBar: FC<{ project: Project }> = ({
   return (
     <div
       key={project._id}
-      className="flex flex-col gap-5"
+      className="flex flex-col gap-5 hover:font-semibold cursor-pointer"
       style={{ color: project.color }}
       onClick={() => router.push(`/?projectId=${project._id}`, undefined)}
     >
