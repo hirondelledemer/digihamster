@@ -29,8 +29,10 @@ import { useCalendarDate } from "../../utils/hooks/use-calendar-date";
 import { Tooltip, TooltipContent, TooltipProvider } from "../ui/tooltip";
 import { TooltipTrigger } from "@radix-ui/react-tooltip";
 import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
-import { TaskWithRelatedTasks } from "@/app/utils/types/task";
+import { TaskWithRelations } from "@/app/utils/types/task";
 import { useRouter } from "next/navigation";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "../ui/sheet";
+import NoteForm from "../NoteForm";
 
 export const titleTestId = "TaskCard-title-testid";
 export const cardTestId = "TaskCard-card-testid";
@@ -38,7 +40,7 @@ export const cardTestId = "TaskCard-card-testid";
 export interface TaskCardProps {
   testId?: string;
   className?: string;
-  task: TaskWithRelatedTasks;
+  task: TaskWithRelations;
   dragId: string;
   indicateActive?: boolean;
 }
@@ -56,6 +58,7 @@ const TaskCard: FC<TaskCardProps> = ({
   const { data: tags } = useTags();
   const { setSelectedDate } = useCalendarDate();
   const [taskFormOpen, setTaskFormOpen] = useState<boolean>(false);
+  const [addNoteFormOpen, setAddNoteFormOpen] = useState<boolean>(false);
   const { editTask } = useEditTask();
 
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
@@ -84,6 +87,22 @@ const TaskCard: FC<TaskCardProps> = ({
 
   return (
     <div data-testid={testId} className={className}>
+      <Sheet open={addNoteFormOpen}>
+        <SheetContent
+          side="right"
+          onCloseClick={() => setAddNoteFormOpen(false)}
+          showOverlay={false}
+          onEscapeKeyDown={() => setAddNoteFormOpen(false)}
+        >
+          <SheetHeader>
+            <SheetTitle>Add note</SheetTitle>
+          </SheetHeader>
+          <NoteForm
+            onDone={() => setAddNoteFormOpen(false)}
+            parentTaskId={task._id}
+          />
+        </SheetContent>
+      </Sheet>
       <TaskFormModal
         testId={taskFormTestId}
         editMode
@@ -118,7 +137,8 @@ const TaskCard: FC<TaskCardProps> = ({
                   {task.isActive && (
                     <StaleIndicator date={task.activatedAt || 0} />
                   )}
-                  {!!task.relatedTaskIds.length && (
+                  {(!!task.relatedTaskIds.length ||
+                    !!task.relatedNoteIds.length) && (
                     <IconLayoutSidebarRightExpand
                       data-testid="task-info-icon"
                       size={18}
@@ -171,6 +191,9 @@ const TaskCard: FC<TaskCardProps> = ({
           </Card>
         </ContextMenuTrigger>
         <ContextMenuContent className="w-64">
+          <ContextMenuItem inset onClick={() => setAddNoteFormOpen(true)}>
+            Add note
+          </ContextMenuItem>
           {task.completed && (
             <ContextMenuItem
               inset

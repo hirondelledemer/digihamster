@@ -7,12 +7,16 @@ import {
   screen,
   userEvent,
   fireEvent,
+  waitFor,
 } from "@/config/utils/test-utils";
 
 import mockAxios from "jest-mock-axios";
 import { ProjectsContextProvider } from "@/app/utils/hooks/use-projects/provider";
 import { generateListOfProjects } from "@/app/utils/mocks/project";
 import { taskFormTestId } from "../TaskForm/TaskForm";
+import { rteTestId } from "../NoteForm/NoteForm";
+import { getRichTextEditorTestkit } from "../RichTextEditor/RichTextEditor.testkit";
+import { NotesContextProvider } from "@/app/utils/hooks/use-notes/provider";
 
 jest.mock("../../utils/date/date");
 jest.mock("next/navigation");
@@ -40,32 +44,34 @@ describe("TaskCard", () => {
     tasksContextValues = defaultTasksContextValues
   ) =>
     render(
-      <ProjectsContextProvider>
-        <TagsContext.Provider
-          value={{
-            data: [
-              {
-                _id: "tag1",
-                title: "Tag 1",
-                deleted: false,
-                color: "color1",
-              },
-              {
-                _id: "tag2",
-                title: "Tag 2",
-                deleted: false,
-                color: "color2",
-              },
-            ],
-            loading: false,
-            setData: jest.fn(),
-          }}
-        >
-          <TasksContext.Provider value={tasksContextValues}>
-            <TaskCard {...props} />
-          </TasksContext.Provider>
-        </TagsContext.Provider>
-      </ProjectsContextProvider>
+      <NotesContextProvider>
+        <ProjectsContextProvider>
+          <TagsContext.Provider
+            value={{
+              data: [
+                {
+                  _id: "tag1",
+                  title: "Tag 1",
+                  deleted: false,
+                  color: "color1",
+                },
+                {
+                  _id: "tag2",
+                  title: "Tag 2",
+                  deleted: false,
+                  color: "color2",
+                },
+              ],
+              loading: false,
+              setData: jest.fn(),
+            }}
+          >
+            <TasksContext.Provider value={tasksContextValues}>
+              <TaskCard {...props} />
+            </TasksContext.Provider>
+          </TagsContext.Provider>
+        </ProjectsContextProvider>
+      </NotesContextProvider>
     );
 
   const openContextMenu = () => {
@@ -139,6 +145,60 @@ describe("TaskCard", () => {
       taskId: "task1",
       title: "new title",
       tags: [],
+    });
+  });
+
+  it("should add note to the task", async () => {
+    mockAxios.get.mockResolvedValueOnce({ data: { projects: [] } });
+    mockAxios.get.mockResolvedValueOnce({ data: [] });
+
+    renderComponent(defaultProps);
+    openContextMenu();
+    fireEvent.click(screen.getByText("Add note"));
+    expect(
+      screen.getByRole("heading", { name: /Add note/i })
+    ).toBeInTheDocument();
+
+    const rte = screen.getByTestId(rteTestId);
+    const rteWrapper = getRichTextEditorTestkit(rte);
+    rteWrapper.enterValue("<p>new note/p><p>new desc</p>");
+    rteWrapper.blur();
+
+    await waitFor(async () => {
+      expect(
+        screen.getByRole("button", { name: /create/i })
+      ).not.toBeDisabled();
+    });
+    await userEvent.click(screen.getByRole("button", { name: /create/i }));
+
+    expect(mockAxios.post).toHaveBeenCalledWith("/api/notes", {
+      jsonNote: {
+        content: [
+          {
+            content: [
+              {
+                text: "new note/p>",
+                type: "text",
+              },
+            ],
+            type: "paragraph",
+          },
+          {
+            content: [
+              {
+                text: "new desc",
+                type: "text",
+              },
+            ],
+            type: "paragraph",
+          },
+        ],
+        type: "doc",
+      },
+      note: "new desc",
+      parentTaskId: "task1",
+      tags: [],
+      title: "new note/p>",
     });
   });
 

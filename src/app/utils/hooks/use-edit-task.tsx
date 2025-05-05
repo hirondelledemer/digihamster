@@ -3,7 +3,7 @@ import { updateObjById } from "../common/update-array";
 import axios from "axios";
 import { useToast } from "@/app/components/ui/use-toast";
 import { now } from "../date/date";
-import { TaskWithRelatedTasks } from "../types/task";
+import { TaskWithRelations } from "../types/task";
 
 type FieldsRequired =
   | "title"
@@ -19,14 +19,14 @@ export const useEditTask = () => {
   const { toast } = useToast();
 
   const createNewTask = async (
-    data: Pick<TaskWithRelatedTasks, FieldsRequired> & {
+    data: Pick<TaskWithRelations, FieldsRequired> & {
       subtasks: string[];
       primaryTaskId?: string;
     }
   ) => {
     const tempId = "temp-id";
 
-    const tempTask: TaskWithRelatedTasks = {
+    const tempTask: TaskWithRelations = {
       _id: tempId,
       completed: false,
       deleted: false,
@@ -37,14 +37,15 @@ export const useEditTask = () => {
       createdAt: now().toDateString(),
       updatedAt: now().toDateString(),
       relatedTaskIds: [],
+      relatedNoteIds: [],
       ...data,
     };
     setTasksData((e) => [...e, tempTask]);
 
     try {
-      await axios.post<TaskWithRelatedTasks>("/api/tasks/v2", data);
+      await axios.post<TaskWithRelations>("/api/tasks/v2", data);
 
-      const response = await axios.get<TaskWithRelatedTasks[]>("/api/tasks/v2");
+      const response = await axios.get<TaskWithRelations[]>("/api/tasks/v2");
 
       setTasksData(response.data);
       toast({
@@ -62,12 +63,12 @@ export const useEditTask = () => {
 
   const editTask = async (
     taskId: string,
-    props: Partial<TaskWithRelatedTasks>,
+    props: Partial<TaskWithRelations>,
     onDone?: () => void
   ) => {
     try {
       setTasksData((t) =>
-        updateObjById<TaskWithRelatedTasks>(t, taskId, {
+        updateObjById<TaskWithRelations>(t, taskId, {
           ...props,
         })
       );

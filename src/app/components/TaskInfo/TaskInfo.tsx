@@ -9,6 +9,7 @@ import CreateTaskForm from "../CreateTaskForm";
 import { ScrollArea } from "../ui/scroll-area";
 import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
 import MinimalNote from "../MinimalNote";
+import { useNotesState } from "@/app/utils/hooks/use-notes/state-context";
 
 export interface TaskInfoProps {
   testId?: string;
@@ -22,6 +23,7 @@ const TaskInfo: FC<TaskInfoProps> = (): JSX.Element | null => {
   const projectId = searchParams.get("projectId");
 
   const { data: tasks } = useTasks();
+  const { data: notes } = useNotesState();
   const { getProjectById, isLoading } = useProjectsState();
 
   const selectedTask = tasks.find((t) => t._id === taskId);
@@ -38,6 +40,10 @@ const TaskInfo: FC<TaskInfoProps> = (): JSX.Element | null => {
   const tasksToShow = selectedTask
     ? tasks.filter((t) => selectedTask.relatedTaskIds.includes(t._id))
     : tasks.filter((t) => t.projectId === projectId);
+
+  const notesToShow = selectedTask
+    ? notes.filter((n) => selectedTask.relatedNoteIds.includes(n._id))
+    : [];
 
   return (
     <Sheet open>
@@ -58,6 +64,11 @@ const TaskInfo: FC<TaskInfoProps> = (): JSX.Element | null => {
                 <MinimalNote note={selectedProject.jsonDescription} />
               </div>
             )}
+            {notesToShow.map((n) => (
+              <div className="w-[300px]" key={n._id}>
+                <MinimalNote note={n.jsonNote} />
+              </div>
+            ))}
             {tasksToShow.map((rTask) => (
               <TaskCard
                 task={rTask}

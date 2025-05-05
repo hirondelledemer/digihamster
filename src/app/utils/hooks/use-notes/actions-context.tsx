@@ -1,9 +1,9 @@
 import { createContext, useContext } from "react";
-import { FieldsRequired } from "./api";
+import { CreateNoteParams } from "./api";
 import { Note } from "@/models/note";
 import { ActionsContextValue } from "../use-crud/actions-context";
 
-type NoteActionsContextValue = ActionsContextValue<FieldsRequired, Note>;
+type NoteActionsContextValue = ActionsContextValue<CreateNoteParams, Note>;
 
 const DEFAULT_NOTES_ACTIONS: NoteActionsContextValue = {
   create: () => {},

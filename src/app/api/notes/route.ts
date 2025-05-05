@@ -63,18 +63,21 @@ export async function POST(request: NextRequest) {
       note: args.note,
       jsonNote: args.jsonNote,
       tags: args.tags,
-      isActive: args.isActive,
+      isActive: args.isActive || false,
       deleted: false,
+      userId,
     });
 
     const savedNote = await newNote.save();
 
-    await Relationship.create({
-      userId,
-      sourceEntity: args.parentTaskId,
-      targetEntity: savedNote._id,
-      type: "note",
-    });
+    if (args.parentTaskId) {
+      await Relationship.create({
+        userId,
+        sourceEntity: args.parentTaskId,
+        targetEntity: savedNote._id,
+        type: "note",
+      });
+    }
 
     return NextResponse.json(savedNote);
   } catch (error: any) {

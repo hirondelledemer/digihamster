@@ -10,11 +10,11 @@ import {
 } from "react";
 import axios from "axios";
 import { useToast } from "@/app/components/ui/use-toast";
-import { TaskWithRelatedTasks } from "../types/task";
+import { TaskWithRelations } from "../types/task";
 
 export interface TasksContextValues {
-  data: TaskWithRelatedTasks[];
-  setData: Dispatch<SetStateAction<TaskWithRelatedTasks[]>>;
+  data: TaskWithRelations[];
+  setData: Dispatch<SetStateAction<TaskWithRelations[]>>;
   error?: unknown;
   loading: boolean;
 }
@@ -28,7 +28,7 @@ export const TasksContext = createContext<TasksContextValues>({
 const { Provider } = TasksContext;
 
 export const TasksContextProvider = ({ children }: any) => {
-  const [data, setData] = useState<TaskWithRelatedTasks[]>([]);
+  const [data, setData] = useState<TaskWithRelations[]>([]);
   const [error, setError] = useState<unknown>(null);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
@@ -37,7 +37,7 @@ export const TasksContextProvider = ({ children }: any) => {
     (async function () {
       try {
         setLoading(true);
-        const tasksResponse = await axios.get<TaskWithRelatedTasks[]>(
+        const tasksResponse = await axios.get<TaskWithRelations[]>(
           "/api/tasks/v2"
         );
         setData(tasksResponse.data);

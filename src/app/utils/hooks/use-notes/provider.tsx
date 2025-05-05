@@ -5,7 +5,7 @@ import { useToast } from "@/app/components/ui/use-toast";
 import { reducer } from "./reducer";
 
 import { NotesStateAction, NotesStateActionType } from "./actions";
-import { api, FieldsRequired } from "./api";
+import { api, CreateNoteParams } from "./api";
 import { NotesStateContext } from "./state-context";
 import { NotesActionsContext } from "./actions-context";
 import { Note } from "@/models/note";
@@ -71,7 +71,7 @@ export const NotesContextProvider = ({ children }: { children: ReactNode }) => {
   }, [fetchDataMemoized]);
 
   const createNote = useCallback(
-    async (data: FieldsRequired, onDone?: () => void) => {
+    async (data: CreateNoteParams, onDone?: () => void) => {
       const tempId = "temp-id";
 
       const tempNote: Note = {

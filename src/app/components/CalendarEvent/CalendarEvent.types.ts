@@ -1,4 +1,4 @@
-import { TaskWithRelatedTasks } from "@/app/utils/types/task";
+import { TaskWithRelations } from "@/app/utils/types/task";
 import { JournalEntry } from "@/models/entry";
 import { Event } from "react-big-calendar";
 
@@ -44,7 +44,7 @@ export interface CalendarDeadlineEntry extends Event {
     type: "deadline";
     id: string;
     completed?: boolean;
-    task: TaskWithRelatedTasks;
+    task: TaskWithRelations;
   };
 }
 
@@ -57,7 +57,7 @@ export interface CalendarEventEntry extends Event {
     type: "event";
     description?: string;
     projectId?: string;
-    tasks: TaskWithRelatedTasks[];
+    tasks: TaskWithRelations[];
   };
 }
 
