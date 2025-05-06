@@ -53,10 +53,8 @@ const ProjectProgressBar: FC<{ project: Project }> = ({
   }, [allTasks]);
 
   const completedTaskCount = useMemo(
-    () =>
-      tasks.filter((task) => task.projectId === project._id && task.completed)
-        .length,
-    [project._id, tasks]
+    () => allTasks.filter((task) => task.completed).length,
+    [allTasks]
   );
 
   return (
@@ -95,7 +93,8 @@ const ProjectProgressBar: FC<{ project: Project }> = ({
                 backgroundColor: project.color,
 
                 width: `${
-                  (activeTaskCount / (activeTaskCount + completedTaskCount)) *
+                  (completedTaskCount /
+                    (activeTaskCount + completedTaskCount)) *
                   100
                 }%`,
               }}
