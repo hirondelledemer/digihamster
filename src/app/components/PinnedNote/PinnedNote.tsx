@@ -15,7 +15,7 @@ export interface PinnedNoteProps {
 
 const PinnedNote: FC<PinnedNoteProps> = ({ testId, note }): ReactNode => {
   const { editor, getRteValue } = useRte({
-    value: note.note,
+    value: note.jsonNote,
     editable: true,
   });
 
