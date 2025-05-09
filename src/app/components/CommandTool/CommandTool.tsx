@@ -11,7 +11,7 @@ import {
   CommandList,
 } from "../ui/command";
 import useHotKeys from "@/app/utils/hooks/use-hotkeys";
-import { HABITS, HOME, PROJECTS, TASKS } from "@/app/utils/consts/routes";
+import { HABITS, HOME, PROJECTS, TASKS, WIKI } from "@/app/utils/consts/routes";
 import { DialogTitle } from "@radix-ui/react-dialog";
 import TaskFormModal from "../TaskFormModal";
 import useEditTask from "@/app/utils/hooks/use-edit-task";
@@ -57,6 +57,10 @@ const CommandTool: FC<CommandToolProps> = (): JSX.Element => {
 
   const goToHabits = useCallback(() => {
     router.push(HABITS);
+  }, [router]);
+
+  const gotToWiki = useCallback(() => {
+    router.push(WIKI);
   }, [router]);
 
   const close = () => {
@@ -114,6 +118,7 @@ const CommandTool: FC<CommandToolProps> = (): JSX.Element => {
             <CommandItem onSelect={gotToTasks}>/tasks</CommandItem>
             <CommandItem onSelect={gotToProjects}>/projects</CommandItem>
             <CommandItem onSelect={goToHabits}>/habits</CommandItem>
+            <CommandItem onSelect={gotToWiki}>/wiki</CommandItem>
           </CommandGroup>
         </CommandList>
       </CommandDialog>

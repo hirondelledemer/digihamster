@@ -7,3 +7,4 @@ export const HOME = "/";
 export const HABITS = "/habits";
 export const TASKS = "/tasks";
 export const PROJECTS = "/projects";
+export const WIKI = "/wiki";
