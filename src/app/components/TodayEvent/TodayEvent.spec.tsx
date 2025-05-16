@@ -75,6 +75,7 @@ describe("TodayEvent", () => {
 
       expect(mockAxios.patch).toHaveBeenCalledWith("/api/tasks/v2", {
         deadline: null,
+        isActive: true,
         taskId: props.event.resource.id,
       });
     });

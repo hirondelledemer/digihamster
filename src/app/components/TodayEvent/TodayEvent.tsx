@@ -66,7 +66,7 @@ const TodayEvent: FC<TodayEventProps> = ({
   };
 
   const handleSendBackToListClick = async () => {
-    editTask(event.resource.id, { deadline: null });
+    editTask(event.resource.id, { deadline: null, isActive: true });
   };
 
   const project = useMemo(
