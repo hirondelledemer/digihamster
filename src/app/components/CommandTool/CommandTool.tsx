@@ -1,6 +1,6 @@
 "use client";
 
-import { FC, useCallback, useState } from "react";
+import { FC, useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   CommandDialog,
@@ -16,6 +16,7 @@ import { DialogTitle } from "@radix-ui/react-dialog";
 import TaskFormModal from "../TaskFormModal";
 import useEditTask from "@/app/utils/hooks/use-edit-task";
 import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
+import { WIKI_MESSAGES } from "./types";
 
 export interface CommandToolProps {
   testId?: string;
@@ -32,6 +33,18 @@ const CommandTool: FC<CommandToolProps> = (): JSX.Element => {
   }>({ open: false, taskIsActive: false });
 
   useHotKeys([["mod+K", () => setOpen((open) => !open)]]);
+
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent<{ type: string }>) => {
+      if (event.data.type === WIKI_MESSAGES.cmd_k_pressed) {
+        setOpen(true);
+      }
+    };
+
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  }, []);
+
   const { createNewTask } = useEditTask();
   const { defaultProject } = useProjectsState();
   const [searchValue, setSearchValue] = useState<string>("");
