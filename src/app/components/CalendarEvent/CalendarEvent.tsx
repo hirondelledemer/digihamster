@@ -42,7 +42,8 @@ const CalendarEvent: FC<CalendarEventProps> = ({
         style={{
           border: isCalendarDeadlineEntry(event)
             ? `2px solid ${
-                getProjectById(event.resource.task.projectId || "")!.color
+                getProjectById(event.resource.task.projectId || "")?.color ??
+                "#000"
               }`
             : "",
         }}
