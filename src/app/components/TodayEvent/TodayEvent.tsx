@@ -22,6 +22,8 @@ import { useEventsActions } from "@/app/utils/hooks/use-events/actions-context";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "../ui/sheet";
 import useTasks from "@/app/utils/hooks/use-tasks";
 import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
+import { TaskActions } from "../TaskActions";
+import { EventActions } from "../EventActions";
 
 export interface TodayEventProps {
   showDate?: boolean;
@@ -127,20 +129,29 @@ const TodayEvent: FC<TodayEventProps> = ({
           </div>
         )}
         <div>
-          <div ref={ref}>
-            {event.title}
-            {project && (
-              <span
-                className="ml-4"
-                style={{
-                  color: project.color,
-                  opacity: event.resource.completed ? 0.7 : 1,
-                }}
-              >
-                {project.title}
-              </span>
-            )}
-          </div>
+          {isCalendarDeadlineEntry(event) ? (
+            <TaskActions task={event.resource.task}>
+              <div ref={ref}>
+                {event.title}
+                {project && (
+                  <span
+                    className="ml-4"
+                    style={{
+                      color: project.color,
+                      opacity: event.resource.completed ? 0.7 : 1,
+                    }}
+                  >
+                    {project.title}
+                  </span>
+                )}
+              </div>
+            </TaskActions>
+          ) : (
+            <EventActions event={event}>
+              <div ref={ref}>{event.title}</div>
+            </EventActions>
+          )}
+
           <div>
             {isCalendarEventEntry(event) && (
               <span className="text-xs">{event.resource.description}</span>
