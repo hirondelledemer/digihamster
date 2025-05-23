@@ -17,6 +17,13 @@
     "build-storybook": "storybook build",
     "chromatic": "chromatic --exit-zero-on-changes"
   },
+  "imports" : {
+    "#lib/navigation": {
+      "storybook": "./src/app/lib/navigation.mock.ts",
+      "default": "./src/app/lib/navigation.ts"
+    },
+     "#*": ["./*", "./*.ts", "./*.tsx"]
+  },
   "dependencies": {
     "@dnd-kit/core": "^6.1.0",
     "@dnd-kit/modifiers": "^7.0.0",

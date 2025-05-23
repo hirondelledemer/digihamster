@@ -5,6 +5,9 @@ import { withThemeByClassName } from "@storybook/addon-themes";
 
 const preview: Preview = {
   parameters: {
+    nextjs: {
+      appDirectory: true,
+    },
     backgrounds: {
       default: "dark",
     },
