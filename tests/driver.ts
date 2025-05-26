@@ -151,6 +151,7 @@ export class HomePage {
 
     await this.page.getByTestId("task-info-icon").first().click();
     await expect(this.taskFormDialog).toBeVisible();
+    await expect(this.page.getByRole("heading", { name: title })).toBeVisible();
     await this.page.waitForSelector('input, [contenteditable="true"]');
     await this.page.waitForTimeout(1000); // Add extra delay to ensure stability
 
