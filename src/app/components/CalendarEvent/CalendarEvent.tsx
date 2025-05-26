@@ -68,7 +68,7 @@ const CalendarEvent: FC<CalendarEventProps> = ({
         </div>
       </div>
     );
-  }, [event, getProjectById, testId]);
+  }, [event, testId, getProjectById]);
 
   if (isCalendarJournalEntry(event) || isCalendarWeatherEntry(event)) {
     return null;

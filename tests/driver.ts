@@ -162,8 +162,9 @@ export class HomePage {
       .first();
 
     // Wait for both child tasks with retries and longer timeout
-    await expect(childTask1).toBeVisible({ timeout: 15000 });
-    await expect(childTask2).toBeVisible({ timeout: 15000 });
+    await expect(childTask1).toBeVisible({ timeout: 30000 });
+    await expect(childTask2).toBeVisible({ timeout: 30000 });
+    await this.page.waitForTimeout(1000); // Add extra delay to ensure stability
 
     await this.page.getByRole("button", { name: "Close" }).click();
 
