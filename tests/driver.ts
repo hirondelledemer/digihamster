@@ -149,6 +149,7 @@ export class HomePage {
 
     // Wait for child tasks to be visible
 
+    await expect(this.page.getByTestId("task-info-icon").first()).toBeVisible();
     await this.page.getByTestId("task-info-icon").first().click();
     await expect(this.taskFormDialog).toBeVisible();
     await expect(this.page.getByRole("heading", { name: title })).toBeVisible();
