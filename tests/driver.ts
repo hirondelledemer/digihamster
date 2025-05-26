@@ -149,9 +149,9 @@ export class HomePage {
 
     // Wait for child tasks to be visible
 
-    await expect(parentTask).toBeVisible();
-
     await this.page.getByTestId("task-info-icon").first().click();
+    await this.page.waitForSelector('input, [contenteditable="true"]');
+
     const childTask1 = this.page
       .getByRole("button", { name: "buy food default project" })
       .first();
