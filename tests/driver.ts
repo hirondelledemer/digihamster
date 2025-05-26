@@ -152,6 +152,7 @@ export class HomePage {
     await this.page.getByTestId("task-info-icon").first().click();
     await expect(this.taskFormDialog).toBeVisible();
     await this.page.waitForSelector('input, [contenteditable="true"]');
+    await this.page.waitForTimeout(1000); // Add extra delay to ensure stability
 
     const childTask1 = this.page
       .getByRole("button", { name: "buy food default project" })
@@ -164,7 +165,6 @@ export class HomePage {
     // Wait for both child tasks with retries and longer timeout
     await expect(childTask1).toBeVisible({ timeout: 30000 });
     await expect(childTask2).toBeVisible({ timeout: 30000 });
-    await this.page.waitForTimeout(1000); // Add extra delay to ensure stability
 
     await this.page.getByRole("button", { name: "Close" }).click();
 
