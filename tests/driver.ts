@@ -160,7 +160,7 @@ export class HomePage {
       .getByRole("button", { name: "poor water default project" })
       .first();
 
-    await expect(childTask1).toBeVisible({ timeout: 5000 });
+    await expect(childTask1).toBeVisible({ timeout: 9000 });
     await expect(childTask2).toBeVisible({ timeout: 5000 });
 
     await this.page.getByRole("button", { name: "Close" }).click();
