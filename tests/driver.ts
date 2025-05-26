@@ -86,23 +86,29 @@ export class HomePage {
     await this.page.keyboard.press("Enter");
 
     // add active tag
-    await this.page.keyboard.press("$");
-    await this.page.keyboard.type("act");
-    await expect(
-      this.page.getByRole("button", { name: "active" })
-    ).toBeVisible();
+    await this.page.keyboard.type("$a", { delay: 100 });
+
+    debugger;
+    await this.page.pause();
+
+    await expect(this.page.getByText("active")).toBeVisible();
+    await expect(this.page.getByText("today")).toBeVisible();
+
+    await this.page.keyboard.type("ct");
 
     await this.page.keyboard.press("Enter");
     await this.page.keyboard.press("Enter");
 
     // add subtask
-    await this.page.keyboard.type("@ta");
+    await this.page.keyboard.type("@ta", { delay: 100 });
+    await expect(this.page.getByText("task").nth(1)).toBeVisible();
     await this.page.keyboard.press("Enter");
     await this.page.keyboard.type("buy food");
     await this.page.keyboard.press("Enter");
 
     // add another substask
-    await this.page.keyboard.type("@task");
+    await this.page.keyboard.type("@ta", { delay: 100 });
+    await expect(this.page.getByText("task").nth(1)).toBeVisible();
     await this.page.keyboard.press("Enter");
     await this.page.keyboard.type("poor water");
     await this.page.keyboard.press("Enter");
