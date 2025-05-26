@@ -1,4 +1,5 @@
 import { Project } from "@/models/project";
+import { COLORS_V2 } from "../consts/colors";
 
 export const generateProject: (
   i?: number,
@@ -7,7 +8,7 @@ export const generateProject: (
   return {
     _id: `project${i}`,
     title: `Project ${i}`,
-    color: `project-color-${i}`,
+    color: COLORS_V2[i],
     order: 0,
     deleted: false,
     createdAt: 0,

@@ -20,7 +20,7 @@ const RteFormField: FC<RteFormFieldProps> = ({
   });
 
   useEffect(() => {
-    if (editor) {
+    if (editor && value !== undefined) {
       editor.commands.setContent(value);
     }
   }, [editor, value]);

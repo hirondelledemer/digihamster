@@ -14,7 +14,7 @@ import {
   startOfWeek,
   sub,
 } from "date-fns";
-import { now } from "@/app/utils/date/date";
+import { now } from "#utils/date";
 import { sortBy } from "remeda";
 import MinimalNote from "../MinimalNote";
 import {

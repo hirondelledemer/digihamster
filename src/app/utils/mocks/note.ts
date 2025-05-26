@@ -8,7 +8,20 @@ export const generateNote: (i?: number, properties?: Partial<Note>) => Note = (
     _id: `note${i}`,
     title: `Note ${i}`,
     note: `note ${i}`,
-    jsonNote: {},
+    jsonNote: {
+      content: [
+        {
+          content: [
+            {
+              text: `note ${i}`,
+              type: "text",
+            },
+          ],
+          type: "paragraph",
+        },
+      ],
+      type: "doc",
+    },
     isActive: false,
     deleted: false,
     userId: "",

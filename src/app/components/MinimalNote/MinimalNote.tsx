@@ -48,10 +48,6 @@ const MinimalNote: FC<MinimalNoteProps | MinimalNoteEditableProps> = ({
     }
   }, [editor, editable, forForm]);
 
-  useEffect(() => {
-    editor?.commands.setContent(note);
-  }, [editor, note]);
-
   if (!editor) {
     return null;
   }

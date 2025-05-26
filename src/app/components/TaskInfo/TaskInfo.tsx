@@ -1,7 +1,6 @@
 "use client";
 import React, { FC } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "../ui/sheet";
-import { useRouter, useSearchParams } from "next/navigation";
 import { cn } from "../utils";
 import useTasks from "@/app/utils/hooks/use-tasks";
 import TaskCard from "../TaskCard";
@@ -10,6 +9,7 @@ import { ScrollArea } from "../ui/scroll-area";
 import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
 import MinimalNote from "../MinimalNote";
 import { useNotesState } from "@/app/utils/hooks/use-notes/state-context";
+import { useRouter, useSearchParams } from "#lib/navigation";
 
 export interface TaskInfoProps {
   testId?: string;

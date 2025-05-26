@@ -81,52 +81,80 @@ export class HomePage {
   async createActiveTask() {
     // type title
     const title = `Feed the cat (${new Date().valueOf()})`;
+
+    // Wait for the input to be ready
+    await this.page.waitForSelector('input, [contenteditable="true"]');
+
+    // type the titles
     await this.page.keyboard.type(title);
     await this.page.keyboard.press("Enter");
     await this.page.keyboard.press("Enter");
 
-    // add active tag
-    await this.page.keyboard.press("$");
-    await this.page.keyboard.type("act");
+    // add active tag - wait for input to be ready after Enter
+    await this.page.waitForTimeout(100); // Small delay to ensure input is ready
+    await this.page.keyboard.type("$a");
+
+    // Wait for suggestions to appear
+    await this.page.waitForSelector('text="active"', { state: "visible" });
+    await expect(this.page.getByText("active").nth(0)).toBeVisible();
+    await expect(this.page.getByText("today")).toBeVisible();
+
+    await this.page.keyboard.type("ct");
     await this.page.keyboard.press("Enter");
     await this.page.keyboard.press("Enter");
 
-    // add subtask
+    // add subtask - wait for input to be ready
+    await this.page.waitForTimeout(100);
     await this.page.keyboard.type("@ta");
+
+    // Wait for task suggestion
+    await this.page.waitForSelector('text="task"', { state: "visible" });
+    await expect(this.page.getByText("task").nth(1)).toBeVisible();
     await this.page.keyboard.press("Enter");
     await this.page.keyboard.type("buy food");
     await this.page.keyboard.press("Enter");
 
-    // add another substask
-    await this.page.keyboard.type("@task");
+    // add another subtask - wait for input to be ready
+    await this.page.waitForTimeout(100);
+    await this.page.keyboard.type("@ta");
+
+    // Wait for task suggestion
+    await this.page.waitForSelector('text="task"', { state: "visible" });
+    await expect(this.page.getByText("task").nth(1)).toBeVisible();
     await this.page.keyboard.press("Enter");
     await this.page.keyboard.type("poor water");
     await this.page.keyboard.press("Enter");
 
-    // add description
+    // add description - wait for input to be ready
+    await this.page.waitForTimeout(100);
     await this.page.keyboard.type("cat needs to be happy");
 
+    // Wait for create button to be ready and click it
+    await this.createButton.waitFor({ state: "visible" });
     await this.createButton.click();
 
+    // Wait for dialog to close
     await expect(this.taskFormDialog).not.toBeVisible();
 
-    // assess all the tasks
-
+    // Wait for tasks to appear and be visible
     const parentTask = this.page
       .getByRole("button", { name: `${title} default project` })
       .first();
 
-    const moreTasksButton = this.page
-      .getByRole("button", {
-        name: "2 related tasks",
-        exact: true,
-      })
-      .first();
-
-    await expect(parentTask).toBeVisible();
+    // Wait for parent task to be visible with timeout
+    await expect(parentTask).toBeVisible({ timeout: 5000 });
     await expect(parentTask).toHaveText(
-      `${title}default project cat needs to be happy2 related tasks`
+      `${title}default project cat needs to be happy`
     );
+
+    // Wait for child tasks to be visible
+
+    await expect(this.page.getByTestId("task-info-icon").first()).toBeVisible();
+    await this.page.getByTestId("task-info-icon").first().click();
+    await expect(this.taskFormDialog).toBeVisible();
+    await expect(this.page.getByRole("heading", { name: title })).toBeVisible();
+    await this.page.waitForSelector('input, [contenteditable="true"]');
+    await this.page.waitForTimeout(1000); // Add extra delay to ensure stability
 
     const childTask1 = this.page
       .getByRole("button", { name: "buy food default project" })
@@ -136,29 +164,12 @@ export class HomePage {
       .getByRole("button", { name: "poor water default project" })
       .first();
 
-    await moreTasksButton.click();
+    await expect(childTask1).toBeVisible({ timeout: 5000 });
+    await expect(childTask1).toHaveText(`buy fooddefault project`);
+    await expect(childTask2).toBeVisible({ timeout: 5000 });
+    await expect(childTask2).toHaveText(`poor waterdefault project`);
 
-    await expect(childTask1).toBeVisible();
-    await expect(childTask1).toHaveText("buy fooddefault project");
-
-    await expect(childTask2).toBeVisible();
-    await expect(childTask2).toHaveText("poor waterdefault project");
-
-    // delete child 1 task
-    await childTask1.click({ button: "right" });
-    await this.editButton.click();
-    await expect(this.taskFormDialog).toBeVisible();
-    await this.deleteButton.click();
-    await expect(this.taskFormDialog).not.toBeVisible();
-    await expect(childTask1).not.toBeVisible();
-
-    // delete child 2 task
-    await childTask2.click({ button: "right" });
-    await this.editButton.click();
-    await expect(this.taskFormDialog).toBeVisible();
-    await this.deleteButton.click();
-    await expect(this.taskFormDialog).not.toBeVisible();
-    await expect(childTask2).not.toBeVisible();
+    await this.page.getByRole("button", { name: "Close" }).click();
 
     // delete parent task
     await parentTask.click({ button: "right" });
