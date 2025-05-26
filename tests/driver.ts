@@ -150,6 +150,7 @@ export class HomePage {
     // Wait for child tasks to be visible
 
     await this.page.getByTestId("task-info-icon").first().click();
+    await expect(this.taskFormDialog).toBeVisible();
     await this.page.waitForSelector('input, [contenteditable="true"]');
 
     const childTask1 = this.page
