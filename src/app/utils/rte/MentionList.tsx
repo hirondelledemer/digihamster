@@ -21,7 +21,7 @@ export const MentionList = forwardRef(
   ({ command, query }: MentionListProps, ref) => {
     const [selectedIndex, setSelectedIndex] = useState(0);
 
-    const { data: tags, loading } = useTags();
+    const { data: tags } = useTags();
 
     useEffect(() => {
       setSelectedIndex(0);
