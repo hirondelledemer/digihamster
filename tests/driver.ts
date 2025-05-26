@@ -88,10 +88,7 @@ export class HomePage {
     // add active tag
     await this.page.keyboard.type("$a", { delay: 1000 });
 
-    debugger;
-    await this.page.pause();
-
-    await expect(this.page.getByText("active")).toBeVisible();
+    await expect(this.page.getByText("active").nth(0)).toBeVisible();
     await expect(this.page.getByText("today")).toBeVisible();
 
     await this.page.keyboard.type("ct");
