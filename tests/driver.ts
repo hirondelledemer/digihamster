@@ -88,6 +88,10 @@ export class HomePage {
     // add active tag
     await this.page.keyboard.press("$");
     await this.page.keyboard.type("act");
+    await expect(
+      this.page.getByRole("button", { name: "active" })
+    ).toBeVisible();
+
     await this.page.keyboard.press("Enter");
     await this.page.keyboard.press("Enter");
 
@@ -123,6 +127,7 @@ export class HomePage {
       `${title}default project cat needs to be happy`
     );
 
+    // assert that task is visible
     const childTask1 = this.page
       .getByRole("button", { name: "buy food default project" })
       .first();
@@ -131,6 +136,7 @@ export class HomePage {
       .getByRole("button", { name: "poor water default project" })
       .first();
 
+    // assert that related tasks are visisble
     await moreTasksButton.click();
 
     await expect(childTask1).toBeVisible();
