@@ -86,7 +86,7 @@ export class HomePage {
     await this.page.keyboard.press("Enter");
 
     // add active tag
-    await this.page.keyboard.type("$a", { delay: 100 });
+    await this.page.keyboard.type("$a", { delay: 1000 });
 
     debugger;
     await this.page.pause();
@@ -100,14 +100,14 @@ export class HomePage {
     await this.page.keyboard.press("Enter");
 
     // add subtask
-    await this.page.keyboard.type("@ta", { delay: 100 });
+    await this.page.keyboard.type("@ta", { delay: 1000 });
     await expect(this.page.getByText("task").nth(1)).toBeVisible();
     await this.page.keyboard.press("Enter");
     await this.page.keyboard.type("buy food");
     await this.page.keyboard.press("Enter");
 
     // add another substask
-    await this.page.keyboard.type("@ta", { delay: 100 });
+    await this.page.keyboard.type("@ta", { delay: 1000 });
     await expect(this.page.getByText("task").nth(1)).toBeVisible();
     await this.page.keyboard.press("Enter");
     await this.page.keyboard.type("poor water");
