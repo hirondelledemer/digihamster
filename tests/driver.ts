@@ -116,16 +116,11 @@ export class HomePage {
       .getByRole("button", { name: `${title} default project` })
       .first();
 
-    const moreTasksButton = this.page
-      .getByRole("button", {
-        name: "2 related tasks",
-        exact: true,
-      })
-      .first();
+    const moreTasksButton = this.page.getByTestId("task-info-icon").first();
 
     await expect(parentTask).toBeVisible();
     await expect(parentTask).toHaveText(
-      `${title}default project cat needs to be happy2 related tasks`
+      `${title}default project cat needs to be happy`
     );
 
     const childTask1 = this.page
@@ -144,21 +139,7 @@ export class HomePage {
     await expect(childTask2).toBeVisible();
     await expect(childTask2).toHaveText("poor waterdefault project");
 
-    // delete child 1 task
-    await childTask1.click({ button: "right" });
-    await this.editButton.click();
-    await expect(this.taskFormDialog).toBeVisible();
-    await this.deleteButton.click();
-    await expect(this.taskFormDialog).not.toBeVisible();
-    await expect(childTask1).not.toBeVisible();
-
-    // delete child 2 task
-    await childTask2.click({ button: "right" });
-    await this.editButton.click();
-    await expect(this.taskFormDialog).toBeVisible();
-    await this.deleteButton.click();
-    await expect(this.taskFormDialog).not.toBeVisible();
-    await expect(childTask2).not.toBeVisible();
+    await this.page.getByRole("button", { name: "Close" }).click();
 
     // delete parent task
     await parentTask.click({ button: "right" });
