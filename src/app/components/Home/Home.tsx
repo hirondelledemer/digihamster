@@ -38,11 +38,11 @@ export const Home = (): JSX.Element => {
       </ResizablePanel>
       <ResizableHandle />
       <ResizablePanel>
-        <div className="flex h-screen">
-          <div className="flex p-6 pb-12">
+        <div className="flex h-screen gap-2">
+          <div className="flex p-6 pb-12 grow">
             <ActiveTaskList />
           </div>
-          <div className="flex p-6 pl-0 pb-12 flex-col">
+          <div className="flex p-6 pl-0 pb-12 flex-col grow">
             <div className="min-h-16 mb-4 overflow-auto p-[1px]">
               <DailyProgress />
             </div>

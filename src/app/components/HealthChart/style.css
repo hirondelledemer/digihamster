@@ -1,0 +1,6 @@
+.chart-tick {
+  &:hover {
+    fill: hsl(var(--primary));
+    cursor: pointer;
+  }
+}

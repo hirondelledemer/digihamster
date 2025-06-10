@@ -78,7 +78,7 @@ const TaskCard: FC<TaskCardProps> = ({
           data-testid={cardTestId}
           className={`p-0 rounded-md ${
             task.completed ? "opacity-40 line-through" : ""
-          } w-[300px]`}
+          } `}
           ref={setNodeRef}
           style={style}
           {...listeners}

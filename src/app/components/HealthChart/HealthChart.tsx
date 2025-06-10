@@ -1,12 +1,13 @@
 "use client";
-import React, { FC, ReactNode, useMemo } from "react";
+import React, { FC, useMemo, useState } from "react";
 
-import { PolarAngleAxis, PolarGrid, Radar, RadarChart } from "recharts";
+import { PolarAngleAxis, PolarGrid, Radar, Text, RadarChart } from "recharts";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "../ui/chart";
 import { Card, CardContent } from "../ui/card";
 import useHabits from "@/app/utils/hooks/use-habits";
 import { now } from "@/app/utils/date/date";
 import { subDays } from "date-fns";
+import "./style.css";
 
 export interface HealthChartProps {
   testId?: string;
@@ -15,12 +16,11 @@ export interface HealthChartProps {
 interface ChartItem {
   item: string;
   value: number;
-  lastMonthValue: number;
-  label: ReactNode;
 }
 
 const HealthChart: FC<HealthChartProps> = (): JSX.Element => {
   const { data: habits } = useHabits();
+  // const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   const chartData = useMemo(
     () =>
@@ -36,7 +36,14 @@ const HealthChart: FC<HealthChartProps> = (): JSX.Element => {
 
           const earliestDay = subDays(now(), 28).getTime();
 
-          const lastMonthEarliestDay = subDays(now(), 56).getTime();
+          const progress = habitsForCategory.reduce((curr, prev) => {
+            return (
+              prev.log.filter((log) => log.at >= earliestDay && log.completed)
+                .length + curr
+            );
+          }, 0);
+
+          const progressPercentage = Math.min((progress / total) * 100, 100);
 
           const allTheProgress = habitsForCategory.map((habit) => {
             const progress = habit.log.filter(
@@ -46,37 +53,11 @@ const HealthChart: FC<HealthChartProps> = (): JSX.Element => {
             return { label: habit.title, progress: percentage };
           });
 
-          const progress = habitsForCategory.reduce((curr, prev) => {
-            return (
-              prev.log.filter((log) => log.at >= earliestDay && log.completed)
-                .length + curr
-            );
-          }, 0);
-
-          const lastMonthProgress = habitsForCategory.reduce((curr, prev) => {
-            return (
-              prev.log.filter(
-                (log) =>
-                  log.at >= lastMonthEarliestDay &&
-                  log.at < earliestDay &&
-                  log.completed
-              ).length + curr
-            );
-          }, 0);
-
-          const progressPercentage = Math.min((progress / total) * 100, 100);
-
-          const lastMonthProgressPercentage = Math.min(
-            (lastMonthProgress / total) * 100,
-            100
-          );
-
           return [
             ...prev,
             {
               item: curr,
               value: Math.floor(progressPercentage),
-              lastMonthValue: Math.floor(lastMonthProgressPercentage),
               label: (
                 <div className="mr-2">
                   {allTheProgress.map((pr) => (
@@ -109,17 +90,20 @@ const HealthChart: FC<HealthChartProps> = (): JSX.Element => {
           height={300}
         >
           <RadarChart data={chartData}>
-            <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
-            <PolarAngleAxis dataKey="item" />
-            <PolarGrid />
+            <ChartTooltip content={<ChartTooltipContent />} />
+            <PolarAngleAxis
+              dataKey="item"
+              onClick={(item) => console.log(item)}
+              tick={(e) => (
+                <Text {...e} className="chart-tick">
+                  {e.payload.value}
+                </Text>
+              )}
+            />
+            <PolarGrid gridType="circle" />
             <Radar
               dataKey="value"
               fill="var(--color-value)"
-              fillOpacity={0.6}
-            />
-            <Radar
-              dataKey="lastMonthValue"
-              fill="var(--color-lastMonthValue)"
               fillOpacity={0.6}
             />
           </RadarChart>
