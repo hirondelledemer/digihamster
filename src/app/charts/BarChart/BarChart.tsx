@@ -15,30 +15,23 @@ import {
   ChartTooltipContent,
 } from "@/app/components/ui/chart";
 
-export const description = "A mixed bar chart";
-
-interface ChartBarProps {
+export interface BarChartProps {
   data: {
     dataLabel: string;
     dataValue: number;
     fill: string;
   }[];
-  config: ChartConfig;
+  config?: ChartConfig;
 }
 
-export function BarChart({ data, config }: ChartBarProps) {
+export function BarChart({ data, config = {} }: BarChartProps) {
   return (
     <ChartContainer
       config={config}
       className="mx-auto max-h-[214px] max-w-[300px]"
       height={300}
     >
-      <BarChartRecharts
-        accessibilityLayer
-        data={data}
-        layout="vertical"
-        margin={{}}
-      >
+      <BarChartRecharts accessibilityLayer data={data} layout="vertical">
         <YAxis
           dataKey="dataLabel"
           type="category"

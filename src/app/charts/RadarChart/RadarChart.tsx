@@ -15,8 +15,6 @@ import {
   ChartTooltipContent,
 } from "@/app/components/ui/chart";
 
-export const description = "A mixed bar chart";
-
 interface RadarChartProps {
   data: {
     dataLabel: string;
