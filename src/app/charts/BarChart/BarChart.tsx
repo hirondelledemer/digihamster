@@ -1,6 +1,12 @@
 "use client";
 
-import { Bar, BarChart, LabelList, XAxis, YAxis } from "recharts";
+import {
+  Bar,
+  BarChart as BarChartRecharts,
+  LabelList,
+  XAxis,
+  YAxis,
+} from "recharts";
 
 import {
   ChartConfig,
@@ -20,14 +26,19 @@ interface ChartBarProps {
   config: ChartConfig;
 }
 
-export function ChartBar({ data, config }: ChartBarProps) {
+export function BarChart({ data, config }: ChartBarProps) {
   return (
     <ChartContainer
       config={config}
       className="mx-auto max-h-[214px] max-w-[300px]"
       height={300}
     >
-      <BarChart accessibilityLayer data={data} layout="vertical" margin={{}}>
+      <BarChartRecharts
+        accessibilityLayer
+        data={data}
+        layout="vertical"
+        margin={{}}
+      >
         <YAxis
           dataKey="dataLabel"
           type="category"
@@ -57,7 +68,7 @@ export function ChartBar({ data, config }: ChartBarProps) {
             overflow="hidden"
           />
         </Bar>
-      </BarChart>
+      </BarChartRecharts>
     </ChartContainer>
   );
 }

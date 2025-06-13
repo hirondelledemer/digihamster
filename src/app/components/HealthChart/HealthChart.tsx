@@ -1,22 +1,17 @@
 "use client";
 import React, { FC, useMemo, useState } from "react";
 
-import { PolarAngleAxis, PolarGrid, Radar, Text, RadarChart } from "recharts";
-import {
-  ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "../ui/chart";
+import { ChartConfig } from "../ui/chart";
 import { Card, CardContent, CardHeader } from "../ui/card";
 import useHabits from "@/app/utils/hooks/use-habits";
 import { now } from "@/app/utils/date/date";
 import { subDays } from "date-fns";
 import "./style.css";
-import { ChartBar } from "./BarChart";
+import { BarChart } from "../../charts/BarChart";
 import { Button } from "../ui/button";
 import { IconArrowLeft } from "@tabler/icons-react";
 import { Habit } from "#src/models/habit.js";
+import { RadarChart } from "../../charts/RadarChart";
 
 const getHabitsData = (habits: Habit[]) => {
   const earliestDay = subDays(now(), 28).getTime();
@@ -57,8 +52,8 @@ export interface HealthChartProps {
 }
 
 interface ChartItem {
-  item: string;
-  value: number;
+  dataLabel: string;
+  dataValue: number;
 }
 
 const HealthChart: FC<HealthChartProps> = (): JSX.Element => {
@@ -99,8 +94,8 @@ const HealthChart: FC<HealthChartProps> = (): JSX.Element => {
           return [
             ...prev,
             {
-              item: curr,
-              value: Math.floor(progressPercentage),
+              dataLabel: curr,
+              dataValue: Math.floor(progressPercentage),
               label: (
                 <div className="mr-2">
                   {allTheProgress.map((pr) => (
@@ -120,46 +115,34 @@ const HealthChart: FC<HealthChartProps> = (): JSX.Element => {
     if (!selectedCategory) {
       return (
         <CardContent className="pb-0">
-          <ChartContainer
-            config={{
-              value: {
-                color: "hsl(var(--chart-5))",
-              },
-            }}
-            className="mx-auto aspect-square max-h-[300px]"
-            height={300}
-          >
-            <RadarChart data={chartData}>
-              <ChartTooltip content={<ChartTooltipContent />} />
-              <PolarAngleAxis
-                dataKey="item"
-                onClick={({ value }) => setSelectedCategory(value)}
-                tick={(e) => (
-                  <Text {...e} className="chart-tick">
-                    {e.payload.value}
-                  </Text>
-                )}
-              />
-              <PolarGrid gridType="circle" />
-              <Radar
-                dataKey="value"
-                fill="var(--color-value)"
-                fillOpacity={0.6}
-              />
-            </RadarChart>
-          </ChartContainer>
+          <RadarChart
+            data={chartData}
+            onLabelClickAction={setSelectedCategory}
+            config={
+              {
+                value: {
+                  color: "hsl(var(--chart-5))",
+                },
+              } satisfies ChartConfig
+            }
+          />
         </CardContent>
       );
     }
 
     return (
-      <CardContent className="pb-0">
-        <CardHeader>
-          <Button onClick={() => setSelectedCategory(null)}>
-            <IconArrowLeft />
+      <CardContent className="pb-0 animate-slide-in">
+        <CardHeader className="flex flex-row items-center px-0">
+          <Button
+            onClick={() => setSelectedCategory(null)}
+            variant="ghost"
+            size="icon"
+          >
+            <IconArrowLeft size={12} />
           </Button>
+          {selectedCategory}
         </CardHeader>
-        <ChartBar
+        <BarChart
           data={getHabitsData(
             habits.filter((h) => h.category === selectedCategory)
           )}
