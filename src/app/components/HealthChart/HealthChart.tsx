@@ -12,18 +12,9 @@ import { Button } from "../ui/button";
 import { IconArrowLeft } from "@tabler/icons-react";
 import { Habit } from "#src/models/habit.js";
 import { RadarChart } from "../../charts/RadarChart";
+import { getHabitProgress } from "#src/app/utils/habits/getHabitProgress";
 
 const getHabitsData = (habits: Habit[]) => {
-  const earliestDay = subDays(now(), 28).getTime();
-
-  const getHabitProgress = (habit: Habit) => {
-    const progress = habit.log.filter(
-      (log) => log.at >= earliestDay && log.completed
-    ).length;
-    const percentage = (progress / habit.timesPerMonth) * 100;
-    return percentage;
-  };
-
   return habits.map((habit) => {
     const dataValue = Math.max(Math.min(getHabitProgress(habit), 100), 1);
 
@@ -83,13 +74,10 @@ const HealthChart: FC<HealthChartProps> = (): JSX.Element => {
 
           const progressPercentage = Math.min((progress / total) * 100, 100);
 
-          const allTheProgress = habitsForCategory.map((habit) => {
-            const progress = habit.log.filter(
-              (log) => log.at >= earliestDay && log.completed
-            ).length;
-            const percentage = (progress / habit.timesPerMonth) * 100;
-            return { label: habit.title, progress: percentage };
-          });
+          const allTheProgress = habitsForCategory.map((habit) => ({
+            label: habit.title,
+            progress: getHabitProgress(habit),
+          }));
 
           return [
             ...prev,
