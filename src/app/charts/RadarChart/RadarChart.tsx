@@ -15,19 +15,19 @@ import {
   ChartTooltipContent,
 } from "@/app/components/ui/chart";
 
-interface RadarChartProps {
+export interface RadarChartProps {
   data: {
     dataLabel: string;
     dataValue: number;
     fill?: string;
   }[];
-  config: ChartConfig;
-  onLabelClickAction: (label: string) => void;
+  config?: ChartConfig;
+  onLabelClickAction?: (label: string) => void;
 }
 
 export function RadarChart({
   data,
-  config,
+  config = {},
   onLabelClickAction,
 }: RadarChartProps) {
   return (
@@ -40,7 +40,9 @@ export function RadarChart({
         <ChartTooltip content={<ChartTooltipContent />} />
         <PolarAngleAxis
           dataKey="dataLabel"
-          onClick={({ value }) => onLabelClickAction(value)}
+          onClick={({ value }) =>
+            onLabelClickAction && onLabelClickAction(value)
+          }
           tick={(e) => (
             <Text {...e} className="chart-tick">
               {e.payload.value}
