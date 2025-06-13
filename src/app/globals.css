@@ -32,25 +32,15 @@
     --chart-5: 27 87% 67%;
 
     --scale-color-0: 0, 83%, 47%;
-
     --scale-color-1: 24, 94%, 50%;
-
     --scale-colo-2: 38, 92%, 50%;
-
     --scale-color-3: 48, 96%, 53%;
-
     --scale-color-4: 76, 85%, 53%;
-
     --scale-color-5: 78, 78%, 47%;
-
     --scale-color-6: 142, 76%, 36%;
-
     --scale-color-7: 142, 71%, 45%;
-
     --scale-color-8: 152, 64%, 42%;
-
     --scale-color-9: 152, 72%, 35%;
-
   }
 
   .dark {
@@ -78,29 +68,7 @@
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
-     --scale-color-1: 0, 83%, 47%;     /* red-600 */
-  --scale-color-2: 18, 89%, 48%;    /* orange-600 */
-  --scale-color-3: 24, 94%, 50%;    /* orange-500 */
-  --scale-color-4: 38, 92%, 50%;    /* amber-500 */
-  --scale-color-5: 48, 96%, 50%;    /* yellow-500 */
-  --scale-color-6: 76, 85%, 53%;    /* lime-400 */
-  --scale-color-7: 78, 78%, 47%;    /* lime-500 */
-  --scale-color-8: 142, 76%, 36%;   /* green-400 */
-  --scale-color-9: 142, 71%, 45%;   /* green-500 */
-  --scale-color-10: 152, 72%, 35%;  /* emerald-600 */
-        /* --scale-color-0: hsl(0, 83%, 47%);
-    --scale-color-1: hsl(24, 94%, 50%);
-    --scale-colo-2: hsl(38, 92%, 50%);
-    --scale-color-3: hsl(48, 96%, 53%);
-    --scale-color-4: hsl(76, 85%, 53%);
-    --scale-color-5: hsl(78, 78%, 47%);
-    --scale-color-6: hsl(142, 76%, 36%);
-    --scale-color-7: hsl(142, 71%, 45%);
-    --scale-color-8: hsl(152, 64%, 42%);
-    --scale-color-9: hsl(152, 72%, 35%); */
   }
-
-  
 }
 
 
