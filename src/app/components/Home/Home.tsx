@@ -13,6 +13,8 @@ import HealthChart from "../HealthChart";
 import DailyProgress from "../DailyProgress";
 import TaskInfo from "../TaskInfo";
 import ProjectProgress from "../ProjectProgress";
+import { Garden } from "../Garden";
+import Garden2 from "../Garden/Garden2";
 
 export const Home = (): JSX.Element => {
   return (
@@ -52,7 +54,10 @@ export const Home = (): JSX.Element => {
             <div className="max-h-[400px] mb-4 overflow-auto p-[1px]">
               <PinnedNotes />
             </div>
-            <HealthChart />
+
+            <Garden />
+            {/* <Garden2 /> */}
+            {/* <HealthChart /> */}
           </div>
         </div>
       </ResizablePanel>

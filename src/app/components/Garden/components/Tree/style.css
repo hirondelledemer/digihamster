@@ -1,0 +1,14 @@
+.tree {
+  
+  cursor: pointer;
+  
+  .highglight {
+    opacity: 0;
+  }
+
+  &:hover {
+    .highglight {
+      opacity: 1;
+    }
+  }
+}
