@@ -20,7 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { TIMES_PER_MONTH } from "./HabitForm.consts";
+import { CATEGORY_OPTIONS, TIMES_PER_MONTH } from "./HabitForm.consts";
 import { Button } from "../ui/button";
 
 const FormSchema = z.object({
@@ -125,9 +125,28 @@ const HabitForm: FC<HabitFormProps> = ({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Category</FormLabel>
-              <FormControl>
-                <Input placeholder="Category" {...field} />
-              </FormControl>
+              <Select
+                onValueChange={field.onChange}
+                defaultValue={field.value}
+                value={field.value}
+              >
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Project" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {CATEGORY_OPTIONS.map((category) => (
+                    <SelectItem
+                      key={category.value}
+                      value={category.value}
+                      role="option"
+                    >
+                      {category.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <FormMessage />
             </FormItem>
           )}

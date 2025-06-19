@@ -7,7 +7,7 @@ export const generateHabit: (
   return {
     _id: `habit${i}`,
     title: `Habit ${i}`,
-    category: `Category ${i}`,
+    category: `home`,
     deleted: false,
     log: [],
     timesPerMonth: 4,

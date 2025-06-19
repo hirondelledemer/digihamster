@@ -1,12 +1,17 @@
 // Tend Garden - React Project
 // This file contains the main React component and a basic setup for a reactive, animated SVG garden.
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import "./style.css"; // Include animations and custom styles
 import { Tree } from "./components/Tree/Tree";
+import useHabits from "#src/app/utils/hooks/use-habits";
+import { getHabitProgressForCategory } from "#src/app/utils/habits/getHabitProgress";
 
 export function Garden() {
   const [score, setScore] = useState(100);
+  const { data: habits } = useHabits();
+
+  const treeScore = getHabitProgressForCategory(habits, "health");
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -15,19 +20,27 @@ export function Garden() {
     return () => clearInterval(interval);
   }, []);
 
-  const handleJournalEntry = () => {
+  const handleUp = () => {
     setScore((prev) => Math.min(prev + 10, 100));
+  };
+  const handleDown = () => {
+    setScore((prev) => Math.max(prev - 10, 0));
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-100 to-green-100 p-6 text-center">
-      <h1 className="text-4xl font-bold mb-4">🌱 Tend Your Garden</h1>
-      <p className="mb-4 text-lg">Environment Score: {score}</p>
+    <div>
       <button
-        onClick={handleJournalEntry}
+        onClick={handleDown}
         className="px-6 py-2 bg-green-600 text-white rounded-xl shadow hover:bg-green-700 transition"
       >
-        Write Positive Thought 🌼
+        down
+      </button>
+      {score}
+      <button
+        onClick={handleUp}
+        className="px-6 py-2 bg-green-600 text-white rounded-xl shadow hover:bg-green-700 transition"
+      >
+        Up
       </button>
 
       <div className="mt-8 mx-auto w-full max-w-4xl rounded-xl overflow-hidden shadow-lg border bg-white">
@@ -65,7 +78,7 @@ export function Garden() {
             <rect x="180" y="260" width="20" height="40" fill="#8B4513" />
             <circle cx="190" cy="250" r="20" fill="#2E8B57" />
           </g>
-          <Tree stage={Math.floor(score / 10)} />
+          <Tree stage={Math.floor(treeScore / 10)} />
 
           {/* Flowers */}
           <g className={score > 50 ? "flower-bloom" : "flower-wilt"}>

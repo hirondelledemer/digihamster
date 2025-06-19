@@ -57,7 +57,7 @@ export const Home = (): JSX.Element => {
 
             <Garden />
             {/* <Garden2 /> */}
-            {/* <HealthChart /> */}
+            <HealthChart />
           </div>
         </div>
       </ResizablePanel>

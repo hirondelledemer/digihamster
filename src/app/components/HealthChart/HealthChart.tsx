@@ -4,15 +4,16 @@ import React, { FC, useMemo, useState } from "react";
 import { ChartConfig } from "../ui/chart";
 import { Card, CardContent, CardHeader } from "../ui/card";
 import useHabits from "@/app/utils/hooks/use-habits";
-import { now } from "@/app/utils/date/date";
-import { subDays } from "date-fns";
 import "./style.css";
 import { BarChart } from "../../charts/BarChart";
 import { Button } from "../ui/button";
 import { IconArrowLeft } from "@tabler/icons-react";
 import { Habit } from "#src/models/habit.js";
 import { RadarChart } from "../../charts/RadarChart";
-import { getHabitProgress } from "#src/app/utils/habits/getHabitProgress";
+import {
+  getHabitProgress,
+  getHabitProgressForCategory,
+} from "#src/app/utils/habits/getHabitProgress";
 
 const getHabitsData = (habits: Habit[]) => {
   return habits.map((habit) => {
@@ -59,20 +60,7 @@ const HealthChart: FC<HealthChartProps> = (): JSX.Element => {
         .reduce((prev: ChartItem[], curr) => {
           const habitsForCategory = habits.filter((h) => h.category === curr);
 
-          const total = habitsForCategory.reduce((prev, curr) => {
-            return curr.timesPerMonth + prev;
-          }, 0);
-
-          const earliestDay = subDays(now(), 28).getTime();
-
-          const progress = habitsForCategory.reduce((curr, prev) => {
-            return (
-              prev.log.filter((log) => log.at >= earliestDay && log.completed)
-                .length + curr
-            );
-          }, 0);
-
-          const progressPercentage = Math.min((progress / total) * 100, 100);
+          const progressPercentage = getHabitProgressForCategory(habits, curr);
 
           const allTheProgress = habitsForCategory.map((habit) => ({
             label: habit.title,
