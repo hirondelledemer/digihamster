@@ -28,3 +28,14 @@ export const TIMES_PER_MONTH = [
     value: 1,
   },
 ] as const;
+
+export const CATEGORY_OPTIONS = [
+  { label: "Health", value: "health" },
+  { label: "Self-care", value: "selfCare" },
+  { label: "Pet Care", value: "petCare" },
+  { label: "Learning & Reading", value: "learning" },
+  { label: "Professional Learning", value: "profLearning" },
+  { label: "Home", value: "home" },
+  { label: "Relationships", value: "relationships" },
+  { label: "Emotional Health", value: "mental" },
+];
