@@ -3,6 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import TodayHabit from ".";
 import { TodayHabitProps } from "./TodayHabit";
 import { now } from "@/app/utils/date/date";
+import { CATEGORIES } from "../HabitForm/HabitForm.consts";
 
 const meta: Meta<typeof TodayHabit> = {
   title: "Example/TodayHabit",
@@ -19,7 +20,7 @@ const defaultArgs: TodayHabitProps = {
     title: "Habit 1",
     deleted: false,
     log: [],
-    category: "",
+    category: CATEGORIES[0],
     timesPerMonth: 2,
     updatedAt: "",
   },

@@ -1,8 +1,6 @@
-// Tend Garden - React Project
-// This file contains the main React component and a basic setup for a reactive, animated SVG garden.
 "use client";
 import React, { useState } from "react";
-import "./style.css"; // Include animations and custom styles
+import "./style.css";
 import { Tree } from "./components/Tree/Tree";
 import useHabits from "#src/app/utils/hooks/use-habits";
 import { getHabitProgressForCategory } from "#src/app/utils/habits/getHabitProgress";

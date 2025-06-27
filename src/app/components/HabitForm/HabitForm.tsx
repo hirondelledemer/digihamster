@@ -20,12 +20,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { CATEGORY_OPTIONS, TIMES_PER_MONTH } from "./HabitForm.consts";
+import {
+  CATEGORIES,
+  CATEGORY_OPTIONS,
+  TIMES_PER_MONTH,
+} from "./HabitForm.consts";
 import { Button } from "../ui/button";
 
 const FormSchema = z.object({
   title: z.string().min(1, { message: "This field has to be filled." }),
-  category: z.string().min(1, { message: "This field has to be filled." }),
+  category: z.enum(CATEGORIES),
   timesPerMonth: z.number().min(1, { message: "Required" }),
 });
 
@@ -67,7 +71,7 @@ const HabitForm: FC<HabitFormProps> = ({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       title: "",
-      category: "",
+      category: CATEGORIES[0],
       timesPerMonth: 0,
       ...getInitialValues(),
     },

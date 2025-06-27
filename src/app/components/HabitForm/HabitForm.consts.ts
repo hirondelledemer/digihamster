@@ -29,7 +29,7 @@ export const TIMES_PER_MONTH = [
   },
 ] as const;
 
-const _CATEGORIES = [
+export const CATEGORIES = [
   "health", // asset - tree
   "selfCare",
   "petCare",
@@ -39,7 +39,7 @@ const _CATEGORIES = [
   "relationships",
   "mental",
 ] as const;
-export type Category = (typeof _CATEGORIES)[number];
+export type Category = (typeof CATEGORIES)[number];
 
 export const CATEGORY_OPTIONS = [
   { label: "Health", value: "health" },
