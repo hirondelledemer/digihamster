@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 
 import HabitForm from ".";
 import { HabitFormProps } from "./HabitForm";
+import { CATEGORIES } from "./HabitForm.consts";
 
 const meta: Meta<typeof HabitForm> = {
   title: "Example/HabitForm",
@@ -15,7 +16,7 @@ type Story = StoryObj<typeof HabitForm>;
 const defaultArgs: HabitFormProps = {
   initialValues: {
     title: "",
-    category: "",
+    category: CATEGORIES[0],
     timesPerMonth: 0,
   },
   onDone: () => {},

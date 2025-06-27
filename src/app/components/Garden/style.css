@@ -1,0 +1,39 @@
+
+/* Custom Animations */
+@keyframes bloom {
+  0% { transform: scale(0.8); opacity: 0.2; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes wilt {
+  0% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(0.5); opacity: 0.3; }
+}
+
+@keyframes slowSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Utility Classes */
+.animate-spin-slow {
+  animation: slowSpin 20s linear infinite;
+}
+
+.flower-bloom {
+  animation: bloom 2s ease-in-out forwards;
+}
+
+.flower-wilt {
+  animation: wilt 2s ease-in-out forwards;
+}
+
+.trees-alive circle {
+  opacity: 1;
+  transition: opacity 1s;
+}
+
+.trees-bare circle {
+  opacity: 0.3;
+  transition: opacity 1s;
+}

@@ -7,6 +7,7 @@ import { subDays } from "date-fns";
 import { Button } from "../ui/button";
 import HabitFormModal from "../HabitFormModal";
 import { TableCell, TableRow } from "../ui/table";
+import { CATEGORY_LABELS } from "../HabitForm/HabitForm.consts";
 
 export interface HabitItemProps {
   testId?: string;
@@ -50,7 +51,9 @@ const HabitItem: FC<HabitItemProps> = ({ habit }): JSX.Element => {
         onClose={() => setHabitFormOpen(false)}
       />
       <TableRow>
-        <TableCell className="font-medium py-1">{habit.category}</TableCell>
+        <TableCell className="font-medium py-1">
+          {CATEGORY_LABELS[habit.category]}
+        </TableCell>
         <TableCell className="py-1">{habit.title}</TableCell>
         <TableCell className="py-1">
           {Math.floor(progressPercentage)}%

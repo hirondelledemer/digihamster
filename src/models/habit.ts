@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { TimeStamps } from "./shared-types";
+import { Category } from "#src/app/components/HabitForm/HabitForm.consts";
 
 export interface HabitLog {
   at: number;
@@ -11,7 +12,7 @@ export interface Habit extends TimeStamps {
   title: string;
   deleted: boolean;
   log: HabitLog[];
-  category: string;
+  category: Category;
   timesPerMonth: number;
 }
 

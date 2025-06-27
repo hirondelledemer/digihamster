@@ -67,8 +67,8 @@ const ActiveTaskList: FC<ActiveTaskListProps> = ({
   );
 
   return (
-    <div data-testid={testId}>
-      <div className="w-[350px]">
+    <div data-testid={testId} className="w-full">
+      <div>
         <TagsFilter
           tags={usedTags}
           selectedTagIds={tagsToExclude}
