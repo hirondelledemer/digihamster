@@ -14,7 +14,13 @@ import DailyProgress from "../DailyProgress";
 import TaskInfo from "../TaskInfo";
 import ProjectProgress from "../ProjectProgress";
 import { Garden } from "../Garden";
-import Garden2 from "../Garden/Garden2";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "../ui/carousel";
 
 export const Home = (): JSX.Element => {
   return (
@@ -40,8 +46,8 @@ export const Home = (): JSX.Element => {
       </ResizablePanel>
       <ResizableHandle />
       <ResizablePanel>
-        <div className="flex h-screen gap-2">
-          <div className="flex p-6 pb-12 max-w-[400px]">
+        <div className="flex h-screen gap-4">
+          <div className="flex p-6 pb-12 w-[550px]">
             <ActiveTaskList />
           </div>
           <div className="flex p-6 pl-0 pb-12 flex-col grow">
@@ -55,9 +61,20 @@ export const Home = (): JSX.Element => {
               <PinnedNotes />
             </div>
 
-            <Garden />
-            {/* <Garden2 /> */}
-            <HealthChart />
+            <div className="p-8">
+              <Carousel>
+                <CarouselContent>
+                  <CarouselItem>
+                    <Garden />
+                  </CarouselItem>
+                  <CarouselItem>
+                    <HealthChart />
+                  </CarouselItem>
+                </CarouselContent>
+                <CarouselPrevious />
+                <CarouselNext />
+              </Carousel>
+            </div>
           </div>
         </div>
       </ResizablePanel>

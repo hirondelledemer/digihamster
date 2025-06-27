@@ -3,6 +3,7 @@ import { subDays } from "date-fns";
 import { now } from "../../utils/date/date";
 import { userEvent, render, screen, waitFor } from "@/config/utils/test-utils";
 import { wrapWithHabitsProvider } from "@/app/utils/tests/wraps";
+import { CATEGORY_LABELS } from "../HabitForm/HabitForm.consts";
 
 jest.mock("../../utils/date/date");
 
@@ -16,7 +17,7 @@ describe("HabitItem", () => {
         { at: subDays(now(), 1).valueOf(), completed: true },
         { at: subDays(now(), 4).valueOf(), completed: true },
       ],
-      category: "category 1",
+      category: "home",
       timesPerMonth: 4,
       updatedAt: "",
     },
@@ -26,7 +27,9 @@ describe("HabitItem", () => {
     render(<HabitItem {...defaultProps} />);
 
     expect(screen.getByText(defaultProps.habit.title)).toBeInTheDocument();
-    expect(screen.getByText(defaultProps.habit.category)).toBeInTheDocument();
+    expect(
+      screen.getByText(CATEGORY_LABELS[defaultProps.habit.category])
+    ).toBeInTheDocument();
     expect(screen.getByText("4")).toBeInTheDocument();
     expect(screen.getByText("50%")).toBeInTheDocument();
 
@@ -55,17 +58,21 @@ describe("HabitItem", () => {
 
     await expect(screen.findByRole("dialog")).resolves.toBeInTheDocument();
 
-    const categoryInput = screen.getByRole("textbox", { name: /category/i });
+    const categoryInput = screen.getByRole("combobox", { name: /category/i });
     const titleInput = screen.getByRole("textbox", { name: /title/i });
     const timesInput = screen.getByRole("combobox", {
       name: /times per month/i,
     });
 
-    expect(categoryInput).toHaveValue(defaultProps.habit.category);
+    expect(categoryInput).toHaveTextContent(
+      CATEGORY_LABELS[defaultProps.habit.category]
+    );
     expect(titleInput).toHaveValue(defaultProps.habit.title);
     expect(timesInput).toHaveTextContent("Once a week");
 
-    await userEvent.type(categoryInput, "edited");
+    await userEvent.click(categoryInput);
+    await userEvent.click(screen.getByRole("option", { name: /pet care/i }));
+
     await userEvent.type(titleInput, "edited");
 
     await userEvent.click(timesInput);
@@ -79,7 +86,7 @@ describe("HabitItem", () => {
     await waitFor(() => {
       expect(updateHabitSpy).toHaveBeenCalledWith("habit1", {
         title: "Habit 1edited",
-        category: "category 1edited",
+        category: "petCare",
         timesPerMonth: 2,
       });
     });

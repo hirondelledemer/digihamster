@@ -1,24 +1,18 @@
 // Tend Garden - React Project
 // This file contains the main React component and a basic setup for a reactive, animated SVG garden.
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import "./style.css"; // Include animations and custom styles
 import { Tree } from "./components/Tree/Tree";
 import useHabits from "#src/app/utils/hooks/use-habits";
 import { getHabitProgressForCategory } from "#src/app/utils/habits/getHabitProgress";
+import { Button } from "../ui/button";
 
 export function Garden() {
   const [score, setScore] = useState(100);
   const { data: habits } = useHabits();
 
   const treeScore = getHabitProgressForCategory(habits, "health");
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setScore((prev) => Math.max(prev - 1, 0));
-    }, 1000); // Decay every minute
-    return () => clearInterval(interval);
-  }, []);
 
   const handleUp = () => {
     setScore((prev) => Math.min(prev + 10, 100));
@@ -29,19 +23,13 @@ export function Garden() {
 
   return (
     <div>
-      <button
-        onClick={handleDown}
-        className="px-6 py-2 bg-green-600 text-white rounded-xl shadow hover:bg-green-700 transition"
-      >
+      <Button onClick={handleDown} variant="ghost">
         down
-      </button>
+      </Button>
       {score}
-      <button
-        onClick={handleUp}
-        className="px-6 py-2 bg-green-600 text-white rounded-xl shadow hover:bg-green-700 transition"
-      >
+      <Button onClick={handleUp} variant="ghost">
         Up
-      </button>
+      </Button>
 
       <div className="mt-8 mx-auto w-full max-w-4xl rounded-xl overflow-hidden shadow-lg border bg-white">
         <svg

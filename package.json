@@ -11,13 +11,13 @@
     "test:watch": "TZ=UTC jest --watch",
     "test:e2e": "npx playwright test",
     "test:e2e-ui": "npx playwright test --ui",
-  "test:e2e-r": "npx playwright test && npx playwright show-report",
+    "test:e2e-r": "npx playwright test && npx playwright show-report",
     "gen-comp": "node ./tools/generate-comp.js",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "chromatic": "chromatic --exit-zero-on-changes"
   },
-  "imports" : {
+  "imports": {
     "#lib/navigation": {
       "storybook": "./src/app/lib/navigation.mock.ts",
       "default": "./src/app/lib/navigation.ts"
@@ -26,7 +26,11 @@
       "storybook": "./src/app/utils/date/date.mock.ts",
       "default": "./src/app/utils/date/date.ts"
     },
-     "#*": ["./*", "./*.ts", "./*.tsx"]
+    "#*": [
+      "./*",
+      "./*.ts",
+      "./*.tsx"
+    ]
   },
   "dependencies": {
     "@dnd-kit/core": "^6.1.0",
@@ -67,6 +71,7 @@
     "cmdk": "^0.2.1",
     "date-fns": "^3.6.0",
     "dayjs": "^1.11.10",
+    "embla-carousel-react": "^8.6.0",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.446.0",
     "mongodb": "^6.3.0",

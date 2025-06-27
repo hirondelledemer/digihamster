@@ -12,10 +12,11 @@ import {
 import { TreeTrunk } from "./TreeTrunk";
 import { BROWN_COLOR, GREEN_COLOR } from "./constants";
 
-export const Tree = ({
-  stage,
-  ...props
-}: SVGProps<SVGSVGElement> & { stage: number }) => (
+export type TreeProps = {
+  stage: number;
+} & SVGProps<SVGSVGElement>;
+
+export const Tree = ({ stage, ...props }: TreeProps) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 700 500"
