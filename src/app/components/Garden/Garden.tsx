@@ -12,6 +12,7 @@ export function Garden() {
   const { data: habits } = useHabits();
 
   const treeScore = getHabitProgressForCategory(habits, "health");
+  const houseScore = getHabitProgressForCategory(habits, "home");
 
   const handleUp = () => {
     setScore((prev) => Math.min(prev + 10, 100));
@@ -66,7 +67,7 @@ export function Garden() {
             <circle cx="190" cy="250" r="20" fill="#2E8B57" />
           </g>
           <Tree stage={Math.floor(treeScore / 10)} />
-          <House />
+          <House stage={Math.floor(houseScore / 10)} />
 
           {/* Flowers */}
           <g className={score > 50 ? "flower-bloom" : "flower-wilt"}>
