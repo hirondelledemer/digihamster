@@ -14,10 +14,11 @@ import { Fish } from "./Fish";
 import { Flies1, Flies2, Flies3 } from "./Flies";
 import { WoodOnTheWindowSmall } from "./WoodOnTheWindowSmall";
 
-export const House = ({
-  stage,
-  ...props
-}: SVGProps<SVGSVGElement> & { stage: number }) => (
+export type HouseProps = {
+  stage: number;
+} & SVGProps<SVGSVGElement>;
+
+export const House = ({ stage, ...props }: HouseProps) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="20 -400 500 1000" {...props}>
     <g id="freepik--Shadow--inject-64">
       <ellipse
