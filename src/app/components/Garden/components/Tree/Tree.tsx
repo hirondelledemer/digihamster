@@ -19,7 +19,7 @@ export type TreeProps = {
 export const Tree = ({ stage, ...props }: TreeProps) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 700 500"
+    viewBox="0 0 900 450"
     {...props}
     className="tree"
   >

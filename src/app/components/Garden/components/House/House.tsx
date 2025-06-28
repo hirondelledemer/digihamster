@@ -19,7 +19,11 @@ export type HouseProps = {
 } & SVGProps<SVGSVGElement>;
 
 export const House = ({ stage, ...props }: HouseProps) => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="20 -400 500 1000" {...props}>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="-350 -400 500 1000"
+    {...props}
+  >
     <g id="freepik--Shadow--inject-64">
       <ellipse
         id="freepik--path--inject-64"
