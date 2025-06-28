@@ -56,9 +56,9 @@ export function Garden() {
           />
 
           <Background />
-          <Tree stage={Math.floor(treeScore / 10)} />
           <House stage={Math.floor(houseScore / 10)} />
-          <Shed />
+          <Shed stage={Math.floor(score / 10)} />
+          <Tree stage={Math.floor(treeScore / 10)} />
 
           {/* Fog */}
           {score < 30 && (
