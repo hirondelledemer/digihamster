@@ -16,10 +16,13 @@ export const getHabitProgress = (habit: Habit) => {
 
 export const getHabitProgressForCategory = (
   habits: Habit[],
-  category: Category
+  category: Category | Category[]
 ) => {
+  const categories = Array.isArray(category) ? category : [category];
   const earliestDay = subDays(now(), 28).getTime();
-  const habitsForCategory = habits.filter((h) => h.category === category);
+  const habitsForCategory = habits.filter((h) =>
+    categories.includes(h.category)
+  );
 
   const total = habitsForCategory.reduce((prev, curr) => {
     return curr.timesPerMonth + prev;

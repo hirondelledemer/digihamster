@@ -14,6 +14,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/app/components/ui/chart";
+import { Category } from "#src/app/components/HabitForm/HabitForm.consts.js";
 
 export interface RadarChartProps {
   data: {
@@ -22,7 +23,7 @@ export interface RadarChartProps {
     fill?: string;
   }[];
   config?: ChartConfig;
-  onLabelClickAction?: (label: string) => void;
+  onLabelClickAction?: (label: Category) => void;
 }
 
 export function RadarChart({
