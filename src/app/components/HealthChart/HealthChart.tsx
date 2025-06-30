@@ -14,6 +14,8 @@ import {
   getHabitProgress,
   getHabitProgressForCategory,
 } from "#src/app/utils/habits/getHabitProgress";
+import { Garden } from "../Garden";
+import { Category } from "../HabitForm/HabitForm.consts";
 
 const getHabitsData = (habits: Habit[]) => {
   return habits.map((habit) => {
@@ -50,7 +52,9 @@ interface ChartItem {
 
 const HealthChart: FC<HealthChartProps> = (): JSX.Element => {
   const { data: habits } = useHabits();
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<
+    Category | "garden" | "chart"
+  >("chart");
 
   const chartData = useMemo(
     () =>
@@ -88,9 +92,19 @@ const HealthChart: FC<HealthChartProps> = (): JSX.Element => {
   );
 
   const component = () => {
-    if (!selectedCategory) {
+    if (selectedCategory === "chart") {
       return (
         <CardContent className="pb-0">
+          <CardHeader className="flex flex-row items-center px-0 pb-0">
+            <Button
+              onClick={() => setSelectedCategory("garden")}
+              variant="ghost"
+              size="icon"
+            >
+              <IconArrowLeft size={12} />
+            </Button>
+            Go to Garden
+          </CardHeader>
           <RadarChart
             data={chartData}
             onLabelClickAction={setSelectedCategory}
@@ -105,12 +119,29 @@ const HealthChart: FC<HealthChartProps> = (): JSX.Element => {
         </CardContent>
       );
     }
+    if (selectedCategory === "garden") {
+      return (
+        <CardContent>
+          <CardHeader className="flex flex-row items-center px-0 pb-0">
+            <Button
+              onClick={() => setSelectedCategory("chart")}
+              variant="ghost"
+              size="icon"
+            >
+              <IconArrowLeft size={12} />
+            </Button>
+            Go to Chart
+          </CardHeader>
+          <Garden onAssetClickAction={setSelectedCategory} />
+        </CardContent>
+      );
+    }
 
     return (
       <CardContent className="pb-0 animate-slide-in">
-        <CardHeader className="flex flex-row items-center px-0">
+        <CardHeader className="flex flex-row items-center px-0 pb-0">
           <Button
-            onClick={() => setSelectedCategory(null)}
+            onClick={() => setSelectedCategory("garden")}
             variant="ghost"
             size="icon"
           >
@@ -130,7 +161,7 @@ const HealthChart: FC<HealthChartProps> = (): JSX.Element => {
     );
   };
 
-  return <Card>{component()}</Card>;
+  return <Card className="min-w-[350px]">{component()}</Card>;
 };
 
 export default HealthChart;

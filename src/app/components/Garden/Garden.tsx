@@ -1,18 +1,25 @@
 "use client";
-import React, { useState } from "react";
+import React, { FC, useState } from "react";
 import "./style.css";
 import { Tree } from "./components/Tree/Tree";
 import useHabits from "#src/app/utils/hooks/use-habits";
 import { getHabitProgressForCategory } from "#src/app/utils/habits/getHabitProgress";
 import { Button } from "../ui/button";
 import { House } from "./components/House/House";
+import { Background } from "./components/Background/Background";
+import { Shed } from "./components/Shed/Shed";
+import { Category } from "../HabitForm/HabitForm.consts";
+import { IconMinus, IconPlus } from "@tabler/icons-react";
 
-export function Garden() {
+export const Garden: FC<{
+  onAssetClickAction: (category: Category) => void;
+}> = ({ onAssetClickAction: onAssetClick }) => {
   const [score, setScore] = useState(100);
   const { data: habits } = useHabits();
 
   const treeScore = getHabitProgressForCategory(habits, "health");
   const houseScore = getHabitProgressForCategory(habits, "home");
+  const shedScore = getHabitProgressForCategory(habits, "profLearning");
 
   const handleUp = () => {
     setScore((prev) => Math.min(prev + 10, 100));
@@ -22,14 +29,17 @@ export function Garden() {
   };
 
   return (
-    <div>
-      <Button onClick={handleDown} variant="ghost">
-        down
-      </Button>
-      {score}
-      <Button onClick={handleUp} variant="ghost">
-        Up
-      </Button>
+    <div className="relative">
+      <div className="absolute ml-1">
+        <Button onClick={handleDown} size="icon" className="h-4 w-4">
+          <IconMinus size={12} />
+        </Button>
+
+        {score}
+        <Button onClick={handleUp} size="icon" className="h-4 w-4">
+          <IconPlus size={12} />
+        </Button>
+      </div>
 
       <div className="mt-8 mx-auto w-full max-w-4xl rounded-xl overflow-hidden shadow-lg border bg-white">
         <svg
@@ -53,28 +63,19 @@ export function Garden() {
             className={score > 50 ? "animate-spin-slow" : "opacity-50"}
           />
 
-          {/* Mountains */}
-          <g>
-            <polygon points="100,300 200,100 300,300" fill="#a0a0a0" />
-            <polygon points="250,300 400,120 550,300" fill="#909090" />
-          </g>
-
-          {/* Trees */}
-          <g className={score > 30 ? "trees-alive" : "trees-bare"}>
-            <rect x="120" y="250" width="20" height="50" fill="#8B4513" />
-            <circle cx="130" cy="240" r="25" fill="#228B22" />
-            <rect x="180" y="260" width="20" height="40" fill="#8B4513" />
-            <circle cx="190" cy="250" r="20" fill="#2E8B57" />
-          </g>
-          <Tree stage={Math.floor(treeScore / 10)} />
-          <House stage={Math.floor(houseScore / 10)} />
-
-          {/* Flowers */}
-          <g className={score > 50 ? "flower-bloom" : "flower-wilt"}>
-            <circle cx="150" cy="350" r="5" fill="pink" />
-            <circle cx="170" cy="350" r="5" fill="purple" />
-            <circle cx="190" cy="350" r="6" fill="orange" />
-          </g>
+          <Background />
+          <House
+            stage={Math.floor(houseScore / 10)}
+            onClick={() => onAssetClick("home")}
+          />
+          <Shed
+            stage={Math.floor(shedScore / 10)}
+            onClick={() => onAssetClick("profLearning")}
+          />
+          <Tree
+            stage={Math.floor(treeScore / 10)}
+            onClick={() => onAssetClick("health")}
+          />
 
           {/* Fog */}
           {score < 30 && (
@@ -84,4 +85,4 @@ export function Garden() {
       </div>
     </div>
   );
-}
+};
