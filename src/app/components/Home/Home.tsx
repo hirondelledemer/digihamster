@@ -40,14 +40,17 @@ export const Home = (): JSX.Element => {
       <ResizablePanel>
         <div className="flex h-screen gap-4">
           <div className="flex flex-col p-6 pb-12 w-[400px]">
-            <ProjectProgress />
             <ActiveTaskList />
           </div>
-          <div className="flex p-6 pl-0 pb-12 flex-col grow">
-            <div className="min-h-16 mb-4 overflow-auto p-[1px]">
+
+          <div className="flex p-6 pl-0 pb-12 flex-col grow gap-4">
+            <div className="min-h-16 overflow-auto p-[1px]">
               <DailyProgress />
             </div>
-            <div className="max-h-[400px] mb-4 overflow-auto p-[1px]">
+
+            <ProjectProgress />
+
+            <div className="max-h-[400px] overflow-auto p-[1px]">
               <PinnedNotes />
             </div>
             <HealthChart />
