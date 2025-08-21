@@ -1,88 +1,106 @@
 "use client";
-import React, { FC, useState } from "react";
+import React, { FC } from "react";
 import "./style.css";
 import { Tree } from "./components/Tree/Tree";
-import useHabits from "#src/app/utils/hooks/use-habits";
-import { getHabitProgressForCategory } from "#src/app/utils/habits/getHabitProgress";
-import { Button } from "../ui/button";
-import { House } from "./components/House/House";
-import { Background } from "./components/Background/Background";
+
 import { Shed } from "./components/Shed/Shed";
-import { Category } from "../HabitForm/HabitForm.consts";
-import { IconMinus, IconPlus } from "@tabler/icons-react";
 
-export const Garden: FC<{
-  onAssetClickAction: (category: Category) => void;
-}> = ({ onAssetClickAction: onAssetClick }) => {
-  const [score, setScore] = useState(100);
-  const { data: habits } = useHabits();
+import { Grass1, Grass2 } from "./components/Ground/Grass";
+import { Clouds } from "./components/Background/Clouds";
+import { Mountains } from "./components/Mountains/Mountains";
+import { BackgroundTrees } from "./components/Trees/BackgroundTrees";
+import { River } from "./components/River/River";
+import { Trees } from "./components/Trees/Trees";
+import { House } from "./components/House/House";
+import { Rocks } from "./components/Ground/Rocks";
+import { ForegroundTress } from "./components/Trees/ForegroundTrees";
+import { PumpkinGarden } from "./components/PumkinGarden/PumpkinGarden";
+import { Animals } from "./components/Animals/Animals";
 
-  const treeScore = getHabitProgressForCategory(habits, "health");
-  const houseScore = getHabitProgressForCategory(habits, "home");
-  const shedScore = getHabitProgressForCategory(habits, "profLearning");
+export type GardenConfig = {
+  house: { score: number; onClick: () => void };
+  tree: { score: number; onClick: () => void };
+  shed: { score: number; onClick: () => void };
+  animals: { score: number; onClick: () => void };
+  river: { score: number; onClick: () => void };
+  mountains: { score: number; onClick: () => void };
+  pumpkinGarden: { score: number; onClick: () => void };
+  defaultScore: { score: number; onClick: () => void };
+};
+export interface GardenProps {
+  config: GardenConfig;
+}
 
-  const handleUp = () => {
-    setScore((prev) => Math.min(prev + 10, 100));
-  };
-  const handleDown = () => {
-    setScore((prev) => Math.max(prev - 10, 0));
-  };
-
+export const Garden: FC<GardenProps> = ({
+  config: {
+    house,
+    tree,
+    shed,
+    animals,
+    river,
+    mountains,
+    pumpkinGarden,
+    defaultScore,
+  },
+}) => {
   return (
-    <div className="relative">
-      <div className="absolute ml-1">
-        <Button onClick={handleDown} size="icon" className="h-4 w-4">
-          <IconMinus size={12} />
-        </Button>
+    <svg
+      viewBox="0 0 600 400"
+      className="w-full h-auto"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      {/* Sky */}
+      <rect
+        width="600"
+        height="400"
+        fill={
+          defaultScore.score > 70
+            ? "#87CEEB"
+            : defaultScore.score > 40
+            ? "#B0C4DE"
+            : "#A9A9A9"
+        }
+      />
 
-        {score}
-        <Button onClick={handleUp} size="icon" className="h-4 w-4">
-          <IconPlus size={12} />
-        </Button>
-      </div>
+      {/* Sun/Moon */}
+      <circle
+        cx="500"
+        cy="80"
+        r="40"
+        fill={defaultScore.score > 50 ? "#FFD700" : "#CCCCCC"}
+        className={defaultScore.score > 50 ? "animate-spin-slow" : "opacity-50"}
+      />
 
-      <div className="mt-8 mx-auto w-full max-w-4xl rounded-xl overflow-hidden shadow-lg border bg-white">
-        <svg
-          viewBox="0 0 600 400"
-          className="w-full h-auto"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          {/* Sky */}
-          <rect
-            width="600"
-            height="400"
-            fill={score > 70 ? "#87CEEB" : score > 40 ? "#B0C4DE" : "#A9A9A9"}
-          />
+      <svg viewBox="-20 50 750 400">
+        <Grass1 />
+        <Grass2 />
+        <Clouds />
+        <Mountains stage={mountains.score} onClick={mountains.onClick} />
+        <BackgroundTrees />
+        <River stage={river.score} onClick={river.onClick} />
+        <Trees />
+        <House stage={house.score} onClick={house.onClick} />
+        <Shed stage={shed.score} onClick={shed.onClick} />
+        <Rocks />
+        <ForegroundTress />
+        <PumpkinGarden
+          stage={pumpkinGarden.score}
+          onClick={pumpkinGarden.onClick}
+        />
+        <Tree stage={tree.score} onClick={tree.onClick} />
+        <Animals stage={animals.score} onClick={animals.onClick} />
+      </svg>
 
-          {/* Sun/Moon */}
-          <circle
-            cx="500"
-            cy="80"
-            r="40"
-            fill={score > 50 ? "#FFD700" : "#CCCCCC"}
-            className={score > 50 ? "animate-spin-slow" : "opacity-50"}
-          />
-
-          <Background />
-          <House
-            stage={Math.floor(houseScore / 10)}
-            onClick={() => onAssetClick("home")}
-          />
-          <Shed
-            stage={Math.floor(shedScore / 10)}
-            onClick={() => onAssetClick("profLearning")}
-          />
-          <Tree
-            stage={Math.floor(treeScore / 10)}
-            onClick={() => onAssetClick("health")}
-          />
-
-          {/* Fog */}
-          {score < 30 && (
-            <rect width="600" height="400" fill="white" opacity="0.1" />
-          )}
-        </svg>
-      </div>
-    </div>
+      {/* Fog */}
+      {defaultScore.score < 30 && (
+        <rect
+          width="600"
+          height="400"
+          fill="white"
+          opacity="0.1"
+          pointerEvents="none"
+        />
+      )}
+    </svg>
   );
 };

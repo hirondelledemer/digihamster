@@ -1,56 +1,44 @@
-import * as React from "react";
-import { SVGProps } from "react";
-import { MainHouse } from "./MainHouse";
-import { SpiderWebs } from "./SpiderWebs";
-import { WoodOnTheWindowBig } from "./WoodOnTheWindowBig";
-import { BrokenWindow1, BrokenWindow2 } from "./BrokenWindow";
-import { Tire } from "./Tire";
-import { Fense } from "./Fense";
-import { WasteCan } from "./WasteCan";
-import { Cans } from "./Cans";
-import { Bottle } from "./Bottle";
-import { TrashBags } from "./TrashBags";
-import { Fish } from "./Fish";
-import { Flies1, Flies2, Flies3 } from "./Flies";
-import { WoodOnTheWindowSmall } from "./WoodOnTheWindowSmall";
+import React, { ReactNode, SVGProps } from "react";
+import { House1 } from "./House1";
+import { House2 } from "./House2";
+import { House3 } from "./House3";
+import { House4 } from "./House4";
+import { House5 } from "./House5";
+import {
+  HauntedWrapper,
+  HoverMagicalWrapper,
+} from "../MagicalWrapper/MagicalWrapper";
 
 export type HouseProps = {
   stage: number;
 } & SVGProps<SVGSVGElement>;
 
-export const House = ({ stage, ...props }: HouseProps) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="-350 -400 500 1000"
-    {...props}
-  >
-    <g id="freepik--Shadow--inject-64">
-      <ellipse
-        id="freepik--path--inject-64"
-        cx={250}
-        cy={416.24}
-        rx={193.89}
-        ry={11.32}
-        style={{
-          fill: "rgb(125, 125, 125)",
-        }}
-      />
+const component: Record<number, ReactNode> = {
+  0: (
+    <HauntedWrapper>
+      <House1 />
+    </HauntedWrapper>
+  ),
+  1: (
+    <HauntedWrapper>
+      <House1 />
+    </HauntedWrapper>
+  ),
+  2: <House1 />,
+  3: <House2 />,
+  4: <House2 />,
+  5: <House3 />,
+  6: <House3 />,
+  7: <House4 />,
+  8: <House4 />,
+  9: <House5 />,
+  10: <House5 />,
+};
+export const House = ({ stage, ...props }: HouseProps) => {
+  return (
+    <g transform="matrix(1, 0, 0, 1, -73.273476, 28.538858)" {...props}>
+      <title>{"House"}</title>
+      <HoverMagicalWrapper>{component[stage]}</HoverMagicalWrapper>
     </g>
-    <MainHouse />
-    {stage < 10 && <SpiderWebs />}
-    {stage < 5 && <WoodOnTheWindowBig />}
-    {stage < 4 && <WoodOnTheWindowSmall />}
-    {stage < 5 && <BrokenWindow1 />}
-    {stage < 4 && <BrokenWindow2 />}
-    {stage < 8 && <Tire />}
-    <Fense />
-    {stage < 2 && <WasteCan />}
-    {stage < 7 && <Cans />}
-    {stage < 6 && <Bottle />}
-    {stage < 9 && <TrashBags />}
-    {stage < 4 && <Fish />}
-    {stage < 4 && <Flies1 />}
-    {stage < 9 && <Flies2 />}
-    {stage < 6 && <Flies3 />}
-  </svg>
-);
+  );
+};

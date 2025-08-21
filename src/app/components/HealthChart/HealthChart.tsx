@@ -14,8 +14,9 @@ import {
   getHabitProgress,
   getHabitProgressForCategory,
 } from "#src/app/utils/habits/getHabitProgress";
-import { Garden } from "../Garden";
+
 import { Category } from "../HabitForm/HabitForm.consts";
+import { GardenContainer } from "../Garden/GardenContainer";
 
 const getHabitsData = (habits: Habit[]) => {
   return habits.map((habit) => {
@@ -132,7 +133,7 @@ const HealthChart: FC<HealthChartProps> = (): JSX.Element => {
             </Button>
             Go to Chart
           </CardHeader>
-          <Garden onAssetClickAction={setSelectedCategory} />
+          <GardenContainer onAssetClickAction={setSelectedCategory} />
         </CardContent>
       );
     }
