@@ -15,6 +15,7 @@ export const generateProject: (
     updatedAt: 0,
     disabled: false,
     jsonDescription: null,
+    category: "home",
     ...properties,
   };
 };

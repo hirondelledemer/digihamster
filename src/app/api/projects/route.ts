@@ -44,6 +44,7 @@ export async function POST(request: NextRequest) {
       disabled: false,
       order: projects.length,
       jsonDescription: args.jsonDescription,
+      category: args.category,
     });
 
     const savedProject = await newProject.save();
@@ -69,6 +70,7 @@ export async function PATCH(request: NextRequest) {
       { _id: args.id },
       {
         title: args.title || project.title,
+        category: args.category || project.category,
         jsonDescription: args.jsonDescription || project.jsonDescription,
         color: args.color || project.color,
         deleted: args.deleted === undefined ? project.deleted : args.deleted,

@@ -25,6 +25,7 @@ import { Button } from "../ui/button";
 import { Switch } from "../ui/switch";
 import RteFormField from "../RteFormField";
 import { useProjectsActions } from "@/app/utils/hooks/use-projects/actions-context";
+import { CATEGORIES, CATEGORY_OPTIONS } from "../HabitForm/HabitForm.consts";
 
 interface CommonProps {
   testId?: string;
@@ -50,6 +51,7 @@ const FormSchema = z.object({
   title: z.string().min(1, { message: "Required." }),
   color: z.string().min(1, { message: "Required." }),
   disabled: z.boolean(),
+  category: z.enum(CATEGORIES),
   jsonDescription: z.any(),
 });
 
@@ -64,10 +66,10 @@ const ProjectForm: FC<ProjectFormProps> = ({
 
   const getInitialValues = useCallback(() => {
     if (restProps.editMode) {
-      console.log("description", restProps.project.jsonDescription);
       return {
         title: restProps.project.title,
         color: restProps.project.color,
+        category: restProps.project.category || "",
         disabled: restProps.project.disabled,
         jsonDescription: {
           title: "",
@@ -89,6 +91,7 @@ const ProjectForm: FC<ProjectFormProps> = ({
       title: "",
       color: "#e11d48",
       disabled: false,
+      category: CATEGORIES[0],
       jsonDescription: {
         title: "",
         content: "",
@@ -108,6 +111,7 @@ const ProjectForm: FC<ProjectFormProps> = ({
         title: values.title,
         color: values.color,
         disabled: values.disabled,
+        category: values.category,
         jsonDescription: values.jsonDescription.contentJSON,
       });
     } else {
@@ -115,6 +119,7 @@ const ProjectForm: FC<ProjectFormProps> = ({
         title: values.title,
         color: values.color,
         disabled: values.disabled,
+        category: values.category,
         jsonDescription: values.jsonDescription.contentJSON,
       });
     }
@@ -181,6 +186,39 @@ const ProjectForm: FC<ProjectFormProps> = ({
                         />
                         <div>{color}</div>
                       </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="category"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Life aspect</FormLabel>
+              <Select
+                onValueChange={field.onChange}
+                defaultValue={field.value}
+                value={field.value}
+              >
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Aspect" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {CATEGORY_OPTIONS.map((category) => (
+                    <SelectItem
+                      key={category.value}
+                      value={category.value}
+                      role="option"
+                    >
+                      {category.label}
                     </SelectItem>
                   ))}
                 </SelectContent>

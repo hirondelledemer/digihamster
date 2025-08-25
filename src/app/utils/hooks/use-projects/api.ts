@@ -3,7 +3,7 @@ import { Project } from "@/models/project";
 
 export type FieldsRequired = Pick<
   Project,
-  "title" | "color" | "disabled" | "jsonDescription"
+  "title" | "color" | "disabled" | "jsonDescription" | "category"
 >;
 export const api = {
   getProjects: () =>

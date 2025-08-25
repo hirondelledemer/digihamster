@@ -56,6 +56,7 @@ describe("ProjectForm", () => {
         expect(mockAxios.post).toHaveBeenCalledWith("/api/projects", {
           color: "#e11d48",
           disabled: false,
+          category: "health",
           jsonDescription: {
             content: [
               {
