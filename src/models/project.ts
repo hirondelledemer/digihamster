@@ -1,4 +1,3 @@
-import { Category } from "#src/app/components/HabitForm/HabitForm.consts.js";
 import * as mongoose from "mongoose";
 
 const Schema = mongoose.Schema;
@@ -10,7 +9,7 @@ export interface Project {
   color: string;
   order: number;
   disabled: boolean;
-  category: Category;
+  category: string;
   jsonDescription: object | null;
 }
 export type IProject = Project & mongoose.Document<string>;

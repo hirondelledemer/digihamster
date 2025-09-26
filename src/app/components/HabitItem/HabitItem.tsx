@@ -7,7 +7,7 @@ import { subDays } from "date-fns";
 import { Button } from "../ui/button";
 import HabitFormModal from "../HabitFormModal";
 import { TableCell, TableRow } from "../ui/table";
-import { CATEGORY_LABELS } from "../HabitForm/HabitForm.consts";
+import { useLifeAspectsState } from "#src/app/utils/hooks/use-life-aspects/state-context";
 
 export interface HabitItemProps {
   testId?: string;
@@ -16,7 +16,10 @@ export interface HabitItemProps {
 
 const HabitItem: FC<HabitItemProps> = ({ habit }): JSX.Element => {
   const { addLog } = useHabits();
+  const { data: lifeAspects } = useLifeAspectsState();
   const [habitFormOpen, setHabitFormOpen] = useState<boolean>(false);
+
+  console.log(lifeAspects);
 
   const today = getTodayWithZeroHours();
 
@@ -52,7 +55,7 @@ const HabitItem: FC<HabitItemProps> = ({ habit }): JSX.Element => {
       />
       <TableRow>
         <TableCell className="font-medium py-1">
-          {CATEGORY_LABELS[habit.category]}
+          {lifeAspects.find((la) => la._id === habit.category)?.title}
         </TableCell>
         <TableCell className="py-1">{habit.title}</TableCell>
         <TableCell className="py-1">

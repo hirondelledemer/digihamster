@@ -25,7 +25,7 @@ import { Button } from "../ui/button";
 import { Switch } from "../ui/switch";
 import RteFormField from "../RteFormField";
 import { useProjectsActions } from "@/app/utils/hooks/use-projects/actions-context";
-import { CATEGORIES, CATEGORY_OPTIONS } from "../HabitForm/HabitForm.consts";
+import { useLifeAspectsState } from "#src/app/utils/hooks/use-life-aspects/state-context";
 
 interface CommonProps {
   testId?: string;
@@ -51,7 +51,7 @@ const FormSchema = z.object({
   title: z.string().min(1, { message: "Required." }),
   color: z.string().min(1, { message: "Required." }),
   disabled: z.boolean(),
-  category: z.enum(CATEGORIES),
+  category: z.string(),
   jsonDescription: z.any(),
 });
 
@@ -63,6 +63,7 @@ const ProjectForm: FC<ProjectFormProps> = ({
   ...restProps
 }): JSX.Element => {
   const { update: updateProject, create: createProject } = useProjectsActions();
+  const { data: lifeAspects } = useLifeAspectsState();
 
   const getInitialValues = useCallback(() => {
     if (restProps.editMode) {
@@ -91,7 +92,7 @@ const ProjectForm: FC<ProjectFormProps> = ({
       title: "",
       color: "#e11d48",
       disabled: false,
-      category: CATEGORIES[0],
+      category: lifeAspects[0]?._id || "",
       jsonDescription: {
         title: "",
         content: "",
@@ -212,13 +213,9 @@ const ProjectForm: FC<ProjectFormProps> = ({
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {CATEGORY_OPTIONS.map((category) => (
-                    <SelectItem
-                      key={category.value}
-                      value={category.value}
-                      role="option"
-                    >
-                      {category.label}
+                  {lifeAspects.map((la) => (
+                    <SelectItem key={la._id} value={la._id} role="option">
+                      {la.title}
                     </SelectItem>
                   ))}
                 </SelectContent>

@@ -13,10 +13,10 @@ import { RadarChart } from "../../charts/RadarChart";
 import {
   getHabitProgress,
   getHabitProgressForCategory,
-} from "#src/app/utils/habits/getHabitProgress";
+} from "@/app/utils/habits/getHabitProgress";
 
-import { Category } from "../HabitForm/HabitForm.consts";
 import { GardenContainer } from "../Garden/GardenContainer";
+import { useLifeAspectsState } from "@/app/utils/hooks/use-life-aspects/state-context";
 
 const getHabitsData = (habits: Habit[]) => {
   return habits.map((habit) => {
@@ -53,8 +53,9 @@ interface ChartItem {
 
 const HealthChart: FC<HealthChartProps> = (): JSX.Element => {
   const { data: habits } = useHabits();
+  const { data: lifeAspects = [] } = useLifeAspectsState();
   const [selectedCategory, setSelectedCategory] = useState<
-    Category | "garden" | "chart"
+    string | "garden" | "chart"
   >("chart");
 
   const chartData = useMemo(
@@ -72,11 +73,16 @@ const HealthChart: FC<HealthChartProps> = (): JSX.Element => {
             progress: getHabitProgress(habit),
           }));
 
+          const lifeAspect = lifeAspects.find((la) => la._id === curr);
+
           return [
             ...prev,
             {
-              dataLabel: curr,
+              dataLabel: lifeAspect ? lifeAspect.title : curr,
               dataValue: Math.floor(progressPercentage),
+              dataValue1:
+                Math.floor(progressPercentage) +
+                (lifeAspect ? lifeAspect.boosts.length * 10 : 0),
               label: (
                 <div className="mr-2">
                   {allTheProgress.map((pr) => (
@@ -89,7 +95,7 @@ const HealthChart: FC<HealthChartProps> = (): JSX.Element => {
             },
           ];
         }, []),
-    [habits]
+    [habits, lifeAspects]
   );
 
   const component = () => {
@@ -112,6 +118,9 @@ const HealthChart: FC<HealthChartProps> = (): JSX.Element => {
             config={
               {
                 value: {
+                  color: "hsl(var(--chart-5))",
+                },
+                value2: {
                   color: "hsl(var(--chart-5))",
                 },
               } satisfies ChartConfig

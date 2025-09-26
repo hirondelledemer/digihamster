@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 
 import HabitItem from ".";
 import { HabitItemProps } from "./HabitItem";
-import { CATEGORIES } from "../HabitForm/HabitForm.consts";
+import { generateLifeAspect } from "#src/app/utils/mocks/lifeAspect";
 
 const meta: Meta<typeof HabitItem> = {
   title: "Example/HabitItem",
@@ -19,7 +19,7 @@ const defaultArgs: HabitItemProps = {
     title: "Habit 1",
     deleted: false,
     log: [],
-    category: CATEGORIES[0],
+    category: generateLifeAspect()._id,
     timesPerMonth: 2,
     updatedAt: "",
   },

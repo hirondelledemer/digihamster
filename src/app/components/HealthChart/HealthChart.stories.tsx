@@ -6,7 +6,9 @@ import { HabitsContext } from "@/app/utils/hooks/use-habits";
 import { now } from "@/app/utils/date/date";
 import { subDays } from "date-fns";
 import { generateCustomHabitList } from "@/app/utils/mocks/habit";
-import { CATEGORIES } from "../HabitForm/HabitForm.consts";
+import { generateListOfLifeAspects } from "#src/app/utils/mocks/lifeAspect";
+
+const lifeAspects = generateListOfLifeAspects(3);
 
 const meta: Meta<typeof HealthChart> = {
   title: "Example/HealthChart",
@@ -19,7 +21,7 @@ const meta: Meta<typeof HealthChart> = {
           data: generateCustomHabitList([
             {
               title: "Go to the gym",
-              category: CATEGORIES[0],
+              category: lifeAspects[0]._id,
               timesPerMonth: 12,
               log: [
                 {
@@ -50,7 +52,7 @@ const meta: Meta<typeof HealthChart> = {
             },
             {
               title: "Bike to work",
-              category: CATEGORIES[0],
+              category: lifeAspects[0]._id,
               timesPerMonth: 12,
               log: [
                 {
@@ -73,7 +75,7 @@ const meta: Meta<typeof HealthChart> = {
             },
             {
               title: "Write a story",
-              category: CATEGORIES[1],
+              category: lifeAspects[1]._id,
               timesPerMonth: 4,
               log: [
                 {
@@ -96,7 +98,7 @@ const meta: Meta<typeof HealthChart> = {
             },
             {
               title: "Read a book",
-              category: CATEGORIES[2],
+              category: lifeAspects[2]._id,
               timesPerMonth: 5,
               log: [
                 {

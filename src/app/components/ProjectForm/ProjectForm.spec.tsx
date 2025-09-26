@@ -10,6 +10,7 @@ import ProjectForm, { ProjectFormProps, rteTestId } from "./ProjectForm";
 import mockAxios from "jest-mock-axios";
 import { ProjectsContextProvider } from "@/app/utils/hooks/use-projects/provider";
 import { getRichTextEditorTestkit } from "../RichTextEditor/RichTextEditor.testkit";
+import { LifeAspectsContextProvider } from "@/app/utils/hooks/use-life-aspects/provider";
 
 describe("ProjectForm", () => {
   const defaultProps: ProjectFormProps = {
@@ -20,7 +21,9 @@ describe("ProjectForm", () => {
   const renderComponent = (props = defaultProps) =>
     render(
       <ProjectsContextProvider>
-        <ProjectForm {...props} />{" "}
+        <LifeAspectsContextProvider>
+          <ProjectForm {...props} />{" "}
+        </LifeAspectsContextProvider>
       </ProjectsContextProvider>
     );
 
@@ -56,7 +59,7 @@ describe("ProjectForm", () => {
         expect(mockAxios.post).toHaveBeenCalledWith("/api/projects", {
           color: "#e11d48",
           disabled: false,
-          category: "health",
+          category: "",
           jsonDescription: {
             content: [
               {

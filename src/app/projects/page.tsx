@@ -1,5 +1,6 @@
 import CommandTool from "../components/CommandTool";
 import Projects from "../components/Projects";
+import { LifeAspectsContextProvider } from "../utils/hooks/use-life-aspects/provider";
 import { ProjectsContextProvider } from "../utils/hooks/use-projects/provider";
 import { TagsContextProvider } from "../utils/hooks/use-tags";
 
@@ -10,8 +11,10 @@ export default function ProjectsPage() {
     <ProjectsContextProvider>
       <TagsContextProvider>
         <TasksContextProvider>
-          <CommandTool />
-          <Projects />
+          <LifeAspectsContextProvider>
+            <CommandTool />
+            <Projects />
+          </LifeAspectsContextProvider>
         </TasksContextProvider>
       </TagsContextProvider>
     </ProjectsContextProvider>

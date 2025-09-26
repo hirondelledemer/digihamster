@@ -4,6 +4,9 @@ import { NextRequest, NextResponse } from "next/server";
 import TaskV2, { ITaskV2 } from "@/models/taskV2";
 import User from "@/models/user";
 import Relationship, { IRelationship } from "@/models/relationship";
+import Project, { IProject } from "#src/models/project";
+import LifeAspect, { ILifeAspect } from "#src/models/life-aspect";
+import { addDays } from "date-fns";
 
 connect();
 
@@ -188,6 +191,21 @@ export async function PATCH(request: NextRequest) {
         activatedAt: args.isActive ? Date.now() : undefined,
       }
     );
+
+    if (args.completed) {
+      const project = await Project.findById<IProject>(updatedTask.projectId);
+      if (!project) {
+        return NextResponse.json(updatedTask);
+      }
+      await LifeAspect.findOneAndUpdate<ILifeAspect>(
+        { id: project.category },
+        {
+          $push: {
+            boosts: { value: 10, expires: addDays(new Date(), 10) },
+          },
+        }
+      );
+    }
 
     return NextResponse.json(updatedTask);
   } catch (error: any) {

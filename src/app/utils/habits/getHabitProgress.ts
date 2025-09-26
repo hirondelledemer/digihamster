@@ -1,5 +1,4 @@
-import { Category } from "#src/app/components/HabitForm/HabitForm.consts.js";
-import { Habit } from "#src/models/habit.js";
+import { Habit } from "#src/models/habit";
 import { now } from "#utils/date";
 import { subDays } from "date-fns";
 
@@ -16,7 +15,7 @@ export const getHabitProgress = (habit: Habit) => {
 
 export const getHabitProgressForCategory = (
   habits: Habit[],
-  category: Category | Category[]
+  category: string | string[]
 ) => {
   const categories = Array.isArray(category) ? category : [category];
   const earliestDay = subDays(now(), 28).getTime();

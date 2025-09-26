@@ -6,16 +6,16 @@ import useHabits from "#src/app/utils/hooks/use-habits";
 import { getHabitProgressForCategory } from "#src/app/utils/habits/getHabitProgress";
 import { Button } from "../ui/button";
 
-import { Category } from "../HabitForm/HabitForm.consts";
 import { IconMinus, IconPlus } from "@tabler/icons-react";
 import { Garden, GardenConfig } from "./Garden";
 
 export const GardenContainer: FC<{
-  onAssetClickAction: (category: Category) => void;
+  onAssetClickAction: (category: string) => void;
 }> = ({ onAssetClickAction: onAssetClick }) => {
   const [score, setScore] = useState(100);
   const { data: habits } = useHabits();
 
+  // todo: remove hardcoded ids. They should be set by asset finder
   const treeScore = Math.floor(
     getHabitProgressForCategory(habits, "health") / 10
   );

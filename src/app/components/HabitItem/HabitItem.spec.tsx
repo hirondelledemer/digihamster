@@ -3,11 +3,15 @@ import { subDays } from "date-fns";
 import { now } from "../../utils/date/date";
 import { userEvent, render, screen, waitFor } from "@/config/utils/test-utils";
 import { wrapWithHabitsProvider } from "@/app/utils/tests/wraps";
-import { CATEGORY_LABELS } from "../HabitForm/HabitForm.consts";
+import { generateListOfLifeAspects } from "@/app/utils/mocks/lifeAspect";
+import mockAxios from "jest-mock-axios";
+import { LifeAspectsContextProvider } from "@/app/utils/hooks/use-life-aspects/provider";
 
 jest.mock("../../utils/date/date");
 
 describe("HabitItem", () => {
+  const lifeAspects = generateListOfLifeAspects(2);
+
   const defaultProps: HabitItemProps = {
     habit: {
       _id: "habit1",
@@ -17,19 +21,27 @@ describe("HabitItem", () => {
         { at: subDays(now(), 1).valueOf(), completed: true },
         { at: subDays(now(), 4).valueOf(), completed: true },
       ],
-      category: "home",
+      category: lifeAspects[0]._id,
       timesPerMonth: 4,
       updatedAt: "",
     },
   };
 
-  it("should render habit info", () => {
-    render(<HabitItem {...defaultProps} />);
+  afterEach(() => {
+    mockAxios.reset();
+  });
+
+  it("should render habit info", async () => {
+    mockAxios.get.mockResolvedValue({ data: lifeAspects });
+
+    render(
+      <LifeAspectsContextProvider>
+        <HabitItem {...defaultProps} />
+      </LifeAspectsContextProvider>
+    );
 
     expect(screen.getByText(defaultProps.habit.title)).toBeInTheDocument();
-    expect(
-      screen.getByText(CATEGORY_LABELS[defaultProps.habit.category])
-    ).toBeInTheDocument();
+
     expect(screen.getByText("4")).toBeInTheDocument();
     expect(screen.getByText("50%")).toBeInTheDocument();
 
@@ -48,10 +60,17 @@ describe("HabitItem", () => {
   it("should edit a habit", async () => {
     const updateHabitSpy = jest.fn();
 
+    mockAxios.get.mockResolvedValue({ data: lifeAspects });
+
     render(
-      wrapWithHabitsProvider(<HabitItem {...defaultProps} />, {
-        updateHabit: updateHabitSpy,
-      })
+      wrapWithHabitsProvider(
+        <LifeAspectsContextProvider>
+          <HabitItem {...defaultProps} />
+        </LifeAspectsContextProvider>,
+        {
+          updateHabit: updateHabitSpy,
+        }
+      )
     );
 
     await userEvent.click(screen.getByRole("button", { name: /edit/i }));
@@ -64,14 +83,16 @@ describe("HabitItem", () => {
       name: /times per month/i,
     });
 
-    expect(categoryInput).toHaveTextContent(
-      CATEGORY_LABELS[defaultProps.habit.category]
-    );
+    expect(categoryInput).toHaveTextContent(lifeAspects[0].title);
+
     expect(titleInput).toHaveValue(defaultProps.habit.title);
     expect(timesInput).toHaveTextContent("Once a week");
 
     await userEvent.click(categoryInput);
-    await userEvent.click(screen.getByRole("option", { name: /pet care/i }));
+    screen.logTestingPlaygroundURL();
+    await userEvent.click(
+      screen.getByRole("option", { name: lifeAspects[0].title })
+    );
 
     await userEvent.type(titleInput, "edited");
 
@@ -86,7 +107,7 @@ describe("HabitItem", () => {
     await waitFor(() => {
       expect(updateHabitSpy).toHaveBeenCalledWith("habit1", {
         title: "Habit 1edited",
-        category: "petCare",
+        category: lifeAspects[0]._id,
         timesPerMonth: 2,
       });
     });

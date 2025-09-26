@@ -20,16 +20,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import {
-  CATEGORIES,
-  CATEGORY_OPTIONS,
-  TIMES_PER_MONTH,
-} from "./HabitForm.consts";
+import { TIMES_PER_MONTH } from "./HabitForm.consts";
 import { Button } from "../ui/button";
+import { useLifeAspectsState } from "@/app/utils/hooks/use-life-aspects/state-context";
 
 const FormSchema = z.object({
   title: z.string().min(1, { message: "This field has to be filled." }),
-  category: z.enum(CATEGORIES),
+  category: z.string(),
   timesPerMonth: z.number().min(1, { message: "Required" }),
 });
 
@@ -56,6 +53,8 @@ const HabitForm: FC<HabitFormProps> = ({
   ...restProps
 }): JSX.Element => {
   const { updateHabit, createHabit, deleteHabit } = useHabits();
+  const { data: lifeAspects } = useLifeAspectsState();
+
   const getInitialValues = useCallback(() => {
     if (restProps.editMode) {
       return {
@@ -71,7 +70,7 @@ const HabitForm: FC<HabitFormProps> = ({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       title: "",
-      category: CATEGORIES[0],
+      category: lifeAspects[0]._id,
       timesPerMonth: 0,
       ...getInitialValues(),
     },
@@ -140,13 +139,13 @@ const HabitForm: FC<HabitFormProps> = ({
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {CATEGORY_OPTIONS.map((category) => (
+                  {lifeAspects.map((lifeAspect) => (
                     <SelectItem
-                      key={category.value}
-                      value={category.value}
+                      key={lifeAspect._id}
+                      value={lifeAspect._id}
                       role="option"
                     >
-                      {category.label}
+                      {lifeAspect.title}
                     </SelectItem>
                   ))}
                 </SelectContent>

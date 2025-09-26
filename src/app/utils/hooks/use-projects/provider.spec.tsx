@@ -92,6 +92,7 @@ describe("ProjectsContextProvider", () => {
       disabled: false,
       jsonDescription: null,
       order: 0,
+      category: "",
     };
 
     mockAxios.post.mockResolvedValueOnce({ data: [] });

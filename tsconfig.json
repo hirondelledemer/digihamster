@@ -34,7 +34,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts"
-  ],
+, "src/app/utils/hooks/use-life-aspects"  ],
   "exclude": [
     "node_modules",
     "tools"

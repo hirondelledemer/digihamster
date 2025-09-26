@@ -1,5 +1,6 @@
 import { render, screen } from "@/config/utils/test-utils";
 import ProjectModalForm, { ProjectModalFormProps } from "./ProjectModalForm";
+import { LifeAspectsContextProvider } from "@/app/utils/hooks/use-life-aspects/provider";
 
 describe("ProjectModalForm", () => {
   const defaultProps: ProjectModalFormProps = {
@@ -10,7 +11,11 @@ describe("ProjectModalForm", () => {
   };
 
   const renderComponent = (props = defaultProps) =>
-    render(<ProjectModalForm {...props} />);
+    render(
+      <LifeAspectsContextProvider>
+        <ProjectModalForm {...props} />
+      </LifeAspectsContextProvider>
+    );
 
   it("should create project", async () => {
     renderComponent();

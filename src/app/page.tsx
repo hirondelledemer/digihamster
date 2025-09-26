@@ -11,6 +11,7 @@ import { EventsContextProvider } from "./utils/hooks/use-events/provider";
 import { CalendarDateContextProvider } from "./utils/hooks/use-calendar-date";
 import { ProjectsContextProvider } from "./utils/hooks/use-projects/provider";
 import { NotesContextProvider } from "./utils/hooks/use-notes/provider";
+import { LifeAspectsContextProvider } from "./utils/hooks/use-life-aspects/provider";
 
 export default function HomePage() {
   return (
@@ -24,7 +25,9 @@ export default function HomePage() {
                   <CycleContextProvider>
                     <DraggableTasksContextProvider>
                       <CalendarDateContextProvider>
-                        <HomeComp />
+                        <LifeAspectsContextProvider>
+                          <HomeComp />
+                        </LifeAspectsContextProvider>
                       </CalendarDateContextProvider>
                     </DraggableTasksContextProvider>
                   </CycleContextProvider>
