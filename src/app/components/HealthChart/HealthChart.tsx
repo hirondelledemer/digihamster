@@ -85,7 +85,7 @@ const HealthChart: FC<HealthChartProps> = (): JSX.Element => {
           return [
             ...prev,
             {
-              dataLabel: lifeAspect ? lifeAspect.title : curr,
+              dataLabel: lifeAspect ? lifeAspect._id : curr,
               dataValue: Math.floor(progressPercentage),
               dataValue1: Math.floor(boostedProgressPercentage),
               label: (
