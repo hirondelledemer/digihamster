@@ -2,12 +2,12 @@ import type { Meta, StoryObj } from "@storybook/react";
 
 import TaskInfo from ".";
 import { TaskInfoProps } from "./TaskInfo";
-import { useRouter, useSearchParams } from "#src/app/lib/navigation.mock";
+import { useRouter, useSearchParams } from "@/app/lib/navigation.mock";
 import { ReadonlyURLSearchParams } from "next/navigation";
-import { TasksContext } from "#src/app/utils/hooks/use-tasks";
-import { generateCustomTasksList } from "#src/app/utils/mocks/task";
-import { NotesStateContext } from "#src/app/utils/hooks/use-notes/state-context";
-import { generateCustomNotesList } from "#src/app/utils/mocks/note";
+import { TasksContext } from "@/app/utils/hooks/use-tasks";
+import { generateCustomTasksList } from "@/app/utils/mocks/task";
+import { NotesStateContext } from "@/app/utils/hooks/use-notes/state-context";
+import { generateCustomNotesList } from "@/app/utils/mocks/note";
 
 const meta: Meta<typeof TaskInfo> = {
   title: "Example/TaskInfo",

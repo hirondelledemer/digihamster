@@ -1,5 +1,5 @@
-import { Habit } from "#src/models/habit";
-import { LifeAspect } from "#src/models/life-aspect.js";
+import { Habit } from "@/models/habit";
+import { LifeAspect } from "@/models/life-aspect.js";
 import { now } from "#utils/date";
 import { isAfter, subDays } from "date-fns";
 

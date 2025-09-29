@@ -4,8 +4,8 @@ import { NextRequest, NextResponse } from "next/server";
 import TaskV2, { ITaskV2 } from "@/models/taskV2";
 import User from "@/models/user";
 import Relationship, { IRelationship } from "@/models/relationship";
-import Project, { IProject } from "#src/models/project";
-import LifeAspect, { ILifeAspect } from "#src/models/life-aspect";
+import Project, { IProject } from "@/models/project";
+import LifeAspect, { ILifeAspect } from "@/models/life-aspect";
 import { addDays } from "date-fns";
 
 connect();

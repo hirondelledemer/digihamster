@@ -25,12 +25,7 @@
     "#utils/date": {
       "storybook": "./src/app/utils/date/date.mock.ts",
       "default": "./src/app/utils/date/date.ts"
-    },
-    "#*": [
-      "./*",
-      "./*.ts",
-      "./*.tsx"
-    ]
+    }
   },
   "dependencies": {
     "@dnd-kit/core": "^6.1.0",

@@ -7,7 +7,7 @@ import { subDays } from "date-fns";
 import { Button } from "../ui/button";
 import HabitFormModal from "../HabitFormModal";
 import { TableCell, TableRow } from "../ui/table";
-import { useLifeAspectsState } from "#src/app/utils/hooks/use-life-aspects/state-context";
+import { useLifeAspectsState } from "@/app/utils/hooks/use-life-aspects/state-context";
 
 export interface HabitItemProps {
   testId?: string;

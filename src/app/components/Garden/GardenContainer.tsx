@@ -2,16 +2,16 @@
 import React, { FC, useState } from "react";
 import "./style.css";
 
-import useHabits from "#src/app/utils/hooks/use-habits";
 import {
   getHabitProgressForLifeAspect,
   hasActiveBoosts,
-} from "#src/app/utils/habits/getHabitProgress";
+} from "@/app/utils/habits/getHabitProgress";
 import { Button } from "../ui/button";
 
 import { IconMinus, IconPlus } from "@tabler/icons-react";
 import { Garden, GardenConfig } from "./Garden";
 import { useLifeAspectsState } from "@/app/utils/hooks/use-life-aspects/state-context";
+import useHabits from "@/app/utils/hooks/use-habits";
 
 export const GardenContainer: FC<{
   onAssetClickAction: (category?: string) => void;

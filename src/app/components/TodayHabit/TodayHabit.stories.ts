@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import TodayHabit from ".";
 import { TodayHabitProps } from "./TodayHabit";
 import { now } from "@/app/utils/date/date";
-import { generateLifeAspect } from "#src/app/utils/mocks/lifeAspect";
+import { generateLifeAspect } from "@/app/utils/mocks/lifeAspect";
 
 const meta: Meta<typeof TodayHabit> = {
   title: "Example/TodayHabit",

@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 
 import HabitForm from ".";
 import { HabitFormProps } from "./HabitForm";
-import { generateLifeAspect } from "#src/app/utils/mocks/lifeAspect";
+import { generateLifeAspect } from "@/app/utils/mocks/lifeAspect";
 
 const meta: Meta<typeof HabitForm> = {
   title: "Example/HabitForm",

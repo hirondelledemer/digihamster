@@ -8,7 +8,7 @@ import "./style.css";
 import { BarChart } from "../../charts/BarChart";
 import { Button } from "../ui/button";
 import { IconArrowLeft } from "@tabler/icons-react";
-import { Habit } from "#src/models/habit.js";
+import { Habit } from "@/models/habit";
 import { RadarChart } from "../../charts/RadarChart";
 import {
   getHabitProgress,
