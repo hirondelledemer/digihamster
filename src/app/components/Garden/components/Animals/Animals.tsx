@@ -7,33 +7,42 @@ import { Rabbit } from "./Rabbit";
 import { GreyCrane } from "./GrayCrane";
 import { Mouse } from "./Mouse";
 import { Foxes } from "./Foxes";
+
 import {
   HauntedWrapper,
-  HoverMagicalWrapper,
-} from "../MagicalWrapper/MagicalWrapper";
+  HoverWrapper,
+  MagicalWrapper,
+} from "../MagicalWrapper";
 
 export type AnimalProps = {
   stage: number;
+  withBoosts?: boolean;
 } & SVGProps<SVGSVGElement>;
 
-export const Animals = ({ stage, ...props }: AnimalProps) => (
+export const Animals = ({
+  stage,
+  withBoosts = false,
+  ...props
+}: AnimalProps) => (
   <g {...props}>
     <title>{"Animals"}</title>
-    <HoverMagicalWrapper>
-      {stage > 9 && <Deer />}
-      {stage < 2 ? (
-        <HauntedWrapper>
-          <TigerDeer variant="evil" />
-        </HauntedWrapper>
-      ) : (
-        <TigerDeer />
-      )}
-      {stage > 4 && <Seagulls />}
-      {stage > 5 && <Crane />}
-      {stage > 6 && <Rabbit />}
-      {stage > 7 && <GreyCrane />}
-      {stage > 3 && <Mouse />}
-      {stage > 8 && <Foxes />}
-    </HoverMagicalWrapper>
+    <HoverWrapper>
+      <MagicalWrapper disabled={!withBoosts}>
+        {stage > 9 && <Deer />}
+        {stage < 2 ? (
+          <HauntedWrapper>
+            <TigerDeer variant="evil" />
+          </HauntedWrapper>
+        ) : (
+          <TigerDeer />
+        )}
+        {stage > 4 && <Seagulls />}
+        {stage > 5 && <Crane />}
+        {stage > 6 && <Rabbit />}
+        {stage > 7 && <GreyCrane />}
+        {stage > 3 && <Mouse />}
+        {stage > 8 && <Foxes />}
+      </MagicalWrapper>
+    </HoverWrapper>
   </g>
 );

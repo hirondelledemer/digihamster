@@ -2,10 +2,10 @@ import type { Meta, StoryObj } from "@storybook/react";
 
 import HabitItem from ".";
 import { HabitItemProps } from "./HabitItem";
-import { generateLifeAspect } from "#src/app/utils/mocks/lifeAspect";
+import { generateLifeAspect } from "@/app/utils/mocks/lifeAspect";
 
 const meta: Meta<typeof HabitItem> = {
-  title: "Example/HabitItem",
+  title: "Habits/HabitItem",
   component: HabitItem,
   tags: ["autodocs"],
 };

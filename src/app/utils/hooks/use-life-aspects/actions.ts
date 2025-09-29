@@ -1,4 +1,4 @@
-import { LifeAspect } from "#src/models/life-aspect";
+import { LifeAspect } from "@/models/life-aspect";
 
 export interface LifeAspectsState {
   data: LifeAspect[];

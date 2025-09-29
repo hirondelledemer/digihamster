@@ -1,6 +1,7 @@
-import { Habit } from "#src/models/habit";
+import { Habit } from "@/models/habit";
+import { LifeAspect } from "@/models/life-aspect.js";
 import { now } from "#utils/date";
-import { subDays } from "date-fns";
+import { isAfter, subDays } from "date-fns";
 
 export const getHabitProgress = (habit: Habit) => {
   const earliestDay = subDays(now(), 28).getTime();
@@ -13,21 +14,22 @@ export const getHabitProgress = (habit: Habit) => {
   return Math.max(Math.min(habitProgress, 100), 1);
 };
 
-export const getHabitProgressForCategory = (
+export const getHabitProgressForLifeAspect = (
   habits: Habit[],
-  category: string | string[]
+  lifeAspect: LifeAspect | LifeAspect[],
+  addBoosts: boolean = false
 ) => {
-  const categories = Array.isArray(category) ? category : [category];
+  const lifeAspects = Array.isArray(lifeAspect) ? lifeAspect : [lifeAspect];
   const earliestDay = subDays(now(), 28).getTime();
-  const habitsForCategory = habits.filter((h) =>
-    categories.includes(h.category)
+  const habitsForLifeAspect = habits.filter((h) =>
+    lifeAspects.map((la) => la._id).includes(h.category)
   );
 
-  const total = habitsForCategory.reduce((prev, curr) => {
+  const total = habitsForLifeAspect.reduce((prev, curr) => {
     return curr.timesPerMonth + prev;
   }, 0);
 
-  const progress = habitsForCategory.reduce((curr, prev) => {
+  const progress = habitsForLifeAspect.reduce((curr, prev) => {
     return (
       prev.log.filter((log) => log.at >= earliestDay && log.completed).length +
       curr
@@ -36,5 +38,21 @@ export const getHabitProgressForCategory = (
 
   const progressPercentage = Math.min((progress / total) * 100, 100);
 
-  return progressPercentage;
+  if (!addBoosts) {
+    return progressPercentage;
+  }
+
+  const boostsValue = lifeAspects
+    .map((la) => la.boosts)
+    .flat()
+    .filter((boost) => isAfter(boost.expires, now()))
+    .map((boost) => boost.value)
+    .reduce((prev, acc) => prev + acc, 0);
+
+  return Math.min(progressPercentage + boostsValue, 100);
+};
+
+export const hasActiveBoosts = (aspect: LifeAspect) => {
+  return !!aspect.boosts.filter((boost) => isAfter(boost.expires, now()))
+    .length;
 };

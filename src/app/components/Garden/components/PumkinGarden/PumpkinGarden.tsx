@@ -5,45 +5,53 @@ import { Wagon } from "./Wagon";
 import { GardenFlowers } from "./GardenFlowers";
 import { Flowers1, Flowers2, Flowers3, Flowers4 } from "./Flowers";
 import { BackgroundPumpkins } from "./BacgroundPumpkins";
-import {
-  HauntedWrapper,
-  HoverMagicalWrapper,
-} from "../MagicalWrapper/MagicalWrapper";
 import { DryGround } from "./DryGround";
 import { DryPlants } from "./DryPlants";
+import {
+  HauntedWrapper,
+  HoverWrapper,
+  MagicalWrapper,
+} from "../MagicalWrapper";
 
 export interface PumpkinGardenProps extends SVGProps<SVGSVGElement> {
   stage: number;
+  withBoosts?: boolean;
 }
-export const PumpkinGarden: FC<PumpkinGardenProps> = ({ stage, ...props }) => (
+export const PumpkinGarden: FC<PumpkinGardenProps> = ({
+  stage,
+  withBoosts = false,
+  ...props
+}) => (
   <g
     style={{}}
     transform="matrix(0.310036, 0, 0, 0.352693, 285.810394, 243.426086)"
     {...props}
   >
     <title>{"Garden"}</title>
-    <HoverMagicalWrapper>
-      <Fence />
-      {stage < 3 && (
-        <DryGarden>
-          <DryGround />
+    <HoverWrapper>
+      <MagicalWrapper disabled={!withBoosts}>
+        <Fence />
+        {stage < 3 && (
+          <DryGarden>
+            <DryGround />
 
-          {stage < 2 ? (
-            <HauntedWrapper>
+            {stage < 2 ? (
+              <HauntedWrapper>
+                <DryPlants />
+              </HauntedWrapper>
+            ) : (
               <DryPlants />
-            </HauntedWrapper>
-          ) : (
-            <DryPlants />
-          )}
-        </DryGarden>
-      )}
-      {stage > 3 && <Wagon />}
-      {stage < 5 && <GardenFlowers />}
-      {stage > 8 && <Flowers1 />}
-      {stage > 7 && <Flowers4 />}
-      {stage > 6 && <Flowers2 />}
-      {stage > 5 && <Flowers3 />}
-      {stage === 5 && <BackgroundPumpkins />}
-    </HoverMagicalWrapper>
+            )}
+          </DryGarden>
+        )}
+        {stage > 3 && <Wagon />}
+        {stage < 5 && <GardenFlowers />}
+        {stage > 8 && <Flowers1 />}
+        {stage > 7 && <Flowers4 />}
+        {stage > 6 && <Flowers2 />}
+        {stage > 5 && <Flowers3 />}
+        {stage === 5 && <BackgroundPumpkins />}
+      </MagicalWrapper>
+    </HoverWrapper>
   </g>
 );

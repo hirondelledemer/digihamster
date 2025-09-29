@@ -1,5 +1,5 @@
 import React from "react";
-import { SpinWrapper } from "../MagicalWrapper/MagicalWrapper";
+import { SpinWrapper } from "../MagicalWrapper";
 
 export const WindTurbines = () => (
   <g

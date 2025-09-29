@@ -6,7 +6,7 @@ import { generateCustomTasksList, generateTask } from "@/app/utils/mocks/task";
 import { now } from "@/app/utils/date/date";
 
 const meta: Meta<typeof TodayEvent> = {
-  title: "Today/TodayEvent",
+  title: "Calendar/TodayEvent",
   component: TodayEvent,
   tags: ["autodocs"],
 };

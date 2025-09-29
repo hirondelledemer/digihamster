@@ -4,7 +4,7 @@ import CalendarEvent from ".";
 import { CalendarEventProps } from "./CalendarEvent";
 
 const meta: Meta<typeof CalendarEvent> = {
-  title: "Example/CalendarEvent",
+  title: "Calendar/CalendarEvent",
   component: CalendarEvent,
   tags: ["autodocs"],
 };

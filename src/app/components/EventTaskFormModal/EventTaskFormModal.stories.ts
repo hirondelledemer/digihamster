@@ -6,7 +6,7 @@ import { now } from "@/app/utils/date/date";
 import { addHours } from "date-fns";
 
 const meta: Meta<typeof EventTaskFormModal> = {
-  title: "Example/EventTaskFormModal",
+  title: "Calendar/EventTaskFormModal",
   component: EventTaskFormModal,
   tags: ["autodocs"],
 };

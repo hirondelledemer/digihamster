@@ -5,7 +5,7 @@ import { CalendarWeatherEventProps } from "./CalendarWeatherEvent";
 import { now } from "@/app/utils/date/date";
 
 const meta: Meta<typeof CalendarWeatherEvent> = {
-  title: "Example/CalendarWeatherEvent",
+  title: "Calendar/CalendarWeatherEvent",
   component: CalendarWeatherEvent,
   tags: ["autodocs"],
 };

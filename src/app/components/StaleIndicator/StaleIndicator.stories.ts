@@ -8,7 +8,7 @@ import { now } from "@/app/utils/date/date";
 const days8InS = 8 * 24 * 60 * 60;
 const days15inS = 15 * 24 * 60 * 60;
 const meta: Meta<typeof StaleIndicator> = {
-  title: "Example/StaleIndicator",
+  title: "Indicators/StaleIndicator",
   component: StaleIndicator,
   tags: ["autodocs"],
 };

@@ -6,12 +6,12 @@ import { HabitsContext } from "@/app/utils/hooks/use-habits";
 import { now } from "@/app/utils/date/date";
 import { subDays } from "date-fns";
 import { generateCustomHabitList } from "@/app/utils/mocks/habit";
-import { generateListOfLifeAspects } from "#src/app/utils/mocks/lifeAspect";
+import { generateListOfLifeAspects } from "@/app/utils/mocks/lifeAspect";
 
 const lifeAspects = generateListOfLifeAspects(3);
 
 const meta: Meta<typeof HealthChart> = {
-  title: "Example/HealthChart",
+  title: "Charts/HealthChart",
   component: HealthChart,
   tags: ["autodocs"],
   decorators: [

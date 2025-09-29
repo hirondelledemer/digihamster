@@ -6,11 +6,13 @@ import { House4 } from "./House4";
 import { House5 } from "./House5";
 import {
   HauntedWrapper,
-  HoverMagicalWrapper,
-} from "../MagicalWrapper/MagicalWrapper";
+  HoverWrapper,
+  MagicalWrapper,
+} from "../MagicalWrapper";
 
 export type HouseProps = {
   stage: number;
+  withBoosts?: boolean;
 } & SVGProps<SVGSVGElement>;
 
 const component: Record<number, ReactNode> = {
@@ -34,11 +36,12 @@ const component: Record<number, ReactNode> = {
   9: <House5 />,
   10: <House5 />,
 };
-export const House = ({ stage, ...props }: HouseProps) => {
-  return (
-    <g transform="matrix(1, 0, 0, 1, -73.273476, 28.538858)" {...props}>
-      <title>{"House"}</title>
-      <HoverMagicalWrapper>{component[stage]}</HoverMagicalWrapper>
-    </g>
-  );
-};
+
+export const House = ({ stage, withBoosts = false, ...props }: HouseProps) => (
+  <g transform="matrix(1, 0, 0, 1, -73.273476, 28.538858)" {...props}>
+    <title>{"House"}</title>
+    <HoverWrapper>
+      <MagicalWrapper disabled={!withBoosts}>{component[stage]}</MagicalWrapper>
+    </HoverWrapper>
+  </g>
+);

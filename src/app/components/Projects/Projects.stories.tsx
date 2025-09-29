@@ -2,12 +2,12 @@ import type { Meta, StoryObj } from "@storybook/react";
 
 import Projects from ".";
 import { ProjectsProps } from "./Projects";
-import { TasksContext } from "#src/app/utils/hooks/use-tasks";
-import { ProjectsStateContext } from "#src/app/utils/hooks/use-projects/state-context";
-import { generateCustomProjectsList } from "#src/app/utils/mocks/project";
-import { generateCustomTasksList } from "#src/app/utils/mocks/task";
+import { TasksContext } from "@/app/utils/hooks/use-tasks";
+import { ProjectsStateContext } from "@/app/utils/hooks/use-projects/state-context";
+import { generateCustomProjectsList } from "@/app/utils/mocks/project";
+import { generateCustomTasksList } from "@/app/utils/mocks/task";
 import { subDays } from "date-fns";
-import { now } from "#src/app/utils/date/date.mock";
+import { now } from "@/app/utils/date/date.mock";
 
 const PROJECTS = generateCustomProjectsList([
   { title: "active projects with not completed tasks" },
@@ -19,7 +19,7 @@ const PROJECTS = generateCustomProjectsList([
 const TODAY_DATE = new Date("2024-02-14");
 
 const meta: Meta<typeof Projects> = {
-  title: "Example/Projects",
+  title: "Projects/Projects",
   component: Projects,
   tags: ["autodocs"],
   decorators: [

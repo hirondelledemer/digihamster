@@ -9,7 +9,7 @@ import { generateCustomTasksList } from "@/app/utils/mocks/task";
 const project1 = generateProject(1, { color: "#f59e0b" });
 const project2 = generateProject(2, { color: "#f59e0b" });
 const meta: Meta<typeof ProjectCard> = {
-  title: "Example/ProjectCard",
+  title: "Projects/ProjectCard",
   component: ProjectCard,
   tags: ["autodocs"],
   decorators: [

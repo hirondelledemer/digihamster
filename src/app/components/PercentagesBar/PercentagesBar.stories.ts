@@ -4,7 +4,7 @@ import PercentagesBar from ".";
 import { PercentagesBarProps } from "./PercentagesBar";
 
 const meta: Meta<typeof PercentagesBar> = {
-  title: "Example/PercentagesBar",
+  title: "Charts/PercentagesBar",
   component: PercentagesBar,
   tags: ["autodocs"],
 };

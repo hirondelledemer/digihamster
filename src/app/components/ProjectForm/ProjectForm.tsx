@@ -25,7 +25,7 @@ import { Button } from "../ui/button";
 import { Switch } from "../ui/switch";
 import RteFormField from "../RteFormField";
 import { useProjectsActions } from "@/app/utils/hooks/use-projects/actions-context";
-import { useLifeAspectsState } from "#src/app/utils/hooks/use-life-aspects/state-context";
+import { useLifeAspectsState } from "@/app/utils/hooks/use-life-aspects/state-context";
 
 interface CommonProps {
   testId?: string;

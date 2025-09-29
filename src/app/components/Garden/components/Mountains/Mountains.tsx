@@ -7,40 +7,49 @@ import { WindTurbines } from "./WindTurbines";
 import { SmallMountains } from "./SmallMountains";
 import { Rainbow } from "./Rainbow";
 import { WaterfallAdvanced } from "./WaterfallAdvanced";
+
 import {
   HauntedWrapper,
-  HoverMagicalWrapper,
-} from "../MagicalWrapper/MagicalWrapper";
+  HoverWrapper,
+  MagicalWrapper,
+} from "../MagicalWrapper";
 
 export interface MountainsProps extends SVGProps<SVGSVGElement> {
+  withBoosts: boolean;
   stage: number;
 }
-export const Mountains: FC<MountainsProps> = ({ stage, ...props }) => (
+export const Mountains: FC<MountainsProps> = ({
+  stage,
+  withBoosts,
+  ...props
+}) => (
   <g {...props}>
-    <HoverMagicalWrapper>
-      <title>{"Mountains"}</title>
-      {stage > 8 && <Rainbow />}
-      {stage > 7 && <Dragon />}
+    <HoverWrapper>
+      <MagicalWrapper disabled={!withBoosts}>
+        <title>{"Mountains"}</title>
+        {stage > 8 && <Rainbow />}
+        {stage > 7 && <Dragon />}
 
-      {stage < 3 ? (
-        <HauntedWrapper>
+        {stage < 3 ? (
+          <HauntedWrapper>
+            <BigMountains />
+          </HauntedWrapper>
+        ) : (
           <BigMountains />
-        </HauntedWrapper>
-      ) : (
-        <BigMountains />
-      )}
-      {stage < 3 ? (
-        <HauntedWrapper>
-          <Waterfall variant={"dark"} />
-        </HauntedWrapper>
-      ) : (
-        <Waterfall variant={stage < 4 ? "dark" : "default"} />
-      )}
+        )}
+        {stage < 3 ? (
+          <HauntedWrapper>
+            <Waterfall variant={"dark"} />
+          </HauntedWrapper>
+        ) : (
+          <Waterfall variant={stage < 4 ? "dark" : "default"} />
+        )}
 
-      {stage > 4 && <WaterfallAdvanced />}
-      {stage > 5 && <Train />}
-      {stage > 6 && <WindTurbines />}
-      <SmallMountains />
-    </HoverMagicalWrapper>
+        {stage > 4 && <WaterfallAdvanced />}
+        {stage > 5 && <Train />}
+        {stage > 6 && <WindTurbines />}
+        <SmallMountains />
+      </MagicalWrapper>
+    </HoverWrapper>
   </g>
 );

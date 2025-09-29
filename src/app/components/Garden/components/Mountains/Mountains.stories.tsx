@@ -27,6 +27,7 @@ type Story = StoryObj<typeof Mountains>;
 
 const defaultArgs: MountainsProps = {
   stage: 1,
+  withBoosts: false,
 };
 
 export const Default: Story = {
