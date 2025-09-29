@@ -11,7 +11,7 @@ import { generateListOfLifeAspects } from "@/app/utils/mocks/lifeAspect";
 const lifeAspects = generateListOfLifeAspects(3);
 
 const meta: Meta<typeof HealthChart> = {
-  title: "Example/HealthChart",
+  title: "Charts/HealthChart",
   component: HealthChart,
   tags: ["autodocs"],
   decorators: [

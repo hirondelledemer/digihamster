@@ -8,7 +8,7 @@ import { TagsContext } from "@/app/utils/hooks/use-tags";
 import { ProjectsContextProvider } from "@/app/utils/hooks/use-projects/provider";
 
 const meta: Meta<typeof CreateTaskForm> = {
-  title: "Example/CreateTaskForm",
+  title: "Tasks/CreateTaskForm",
   component: CreateTaskForm,
   tags: ["autodocs"],
   decorators: [

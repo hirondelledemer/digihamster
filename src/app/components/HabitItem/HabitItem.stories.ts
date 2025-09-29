@@ -5,7 +5,7 @@ import { HabitItemProps } from "./HabitItem";
 import { generateLifeAspect } from "@/app/utils/mocks/lifeAspect";
 
 const meta: Meta<typeof HabitItem> = {
-  title: "Example/HabitItem",
+  title: "Habits/HabitItem",
   component: HabitItem,
   tags: ["autodocs"],
 };

@@ -5,7 +5,7 @@ import { CalendarSlotProps } from "./CalendarSlot";
 import { now } from "@/app/utils/date/date";
 
 const meta: Meta<typeof CalendarSlot> = {
-  title: "Example/CalendarSlot",
+  title: "Calendar/CalendarSlot",
   component: CalendarSlot,
   tags: ["autodocs"],
 };

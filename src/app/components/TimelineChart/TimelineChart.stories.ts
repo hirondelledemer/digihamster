@@ -5,7 +5,7 @@ import { TimelineChartProps } from "./TimelineChart";
 import { format } from "date-fns";
 
 const meta: Meta<typeof TimelineChart> = {
-  title: "Example/TimelineChart",
+  title: "Charts/TimelineChart",
   component: TimelineChart,
   tags: ["autodocs"],
 };

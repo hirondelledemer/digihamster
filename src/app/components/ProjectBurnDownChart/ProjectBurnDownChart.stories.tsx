@@ -11,7 +11,7 @@ import { now } from "@/app/utils/date/date";
 const project1 = generateProject(1, { color: "#f59e0b" });
 
 const meta: Meta<typeof ProjectBurnDownChart> = {
-  title: "Example/ProjectBurnDownChart",
+  title: "Charts/ProjectBurnDownChart",
   component: ProjectBurnDownChart,
   tags: ["autodocs"],
   decorators: [

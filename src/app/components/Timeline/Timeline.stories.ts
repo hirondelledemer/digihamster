@@ -8,7 +8,7 @@ import { now } from "@/app/utils/date/date.mock";
 const TODAY_DATE = new Date("2024-02-14");
 
 const meta: Meta<typeof Timeline> = {
-  title: "Example/Timeline",
+  title: "Timeline/Timeline",
   component: Timeline,
   tags: ["autodocs"],
 };

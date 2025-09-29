@@ -4,7 +4,7 @@ import ProjectModalForm from ".";
 import { ProjectModalFormProps } from "./ProjectModalForm";
 
 const meta: Meta<typeof ProjectModalForm> = {
-  title: "Example/ProjectModalForm",
+  title: "Projects/ProjectModalForm",
   component: ProjectModalForm,
   tags: ["autodocs"],
 };

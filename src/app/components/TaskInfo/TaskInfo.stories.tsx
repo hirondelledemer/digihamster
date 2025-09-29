@@ -10,7 +10,7 @@ import { NotesStateContext } from "@/app/utils/hooks/use-notes/state-context";
 import { generateCustomNotesList } from "@/app/utils/mocks/note";
 
 const meta: Meta<typeof TaskInfo> = {
-  title: "Example/TaskInfo",
+  title: "Tasks/TaskInfo",
   component: TaskInfo,
   tags: ["autodocs"],
   decorators: [

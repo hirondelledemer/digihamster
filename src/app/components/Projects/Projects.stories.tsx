@@ -19,7 +19,7 @@ const PROJECTS = generateCustomProjectsList([
 const TODAY_DATE = new Date("2024-02-14");
 
 const meta: Meta<typeof Projects> = {
-  title: "Example/Projects",
+  title: "Projects/Projects",
   component: Projects,
   tags: ["autodocs"],
   decorators: [

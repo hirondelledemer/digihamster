@@ -15,7 +15,8 @@
     "gen-comp": "node ./tools/generate-comp.js",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "chromatic": "chromatic --exit-zero-on-changes"
+    "chromatic": "chromatic --exit-zero-on-changes --project-token=chpt_0bc8c27679c2037"
+    
   },
   "imports": {
     "#lib/navigation": {
