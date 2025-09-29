@@ -6,9 +6,9 @@ import { House4 } from "./House4";
 import { House5 } from "./House5";
 import {
   HauntedWrapper,
-  HoverMagicalWrapper,
+  HoverWrapper,
   MagicalWrapper,
-} from "../MagicalWrapper/MagicalWrapper";
+} from "../MagicalWrapper";
 
 export type HouseProps = {
   stage: number;
@@ -40,8 +40,8 @@ const component: Record<number, ReactNode> = {
 export const House = ({ stage, withBoosts = false, ...props }: HouseProps) => (
   <g transform="matrix(1, 0, 0, 1, -73.273476, 28.538858)" {...props}>
     <title>{"House"}</title>
-    <HoverMagicalWrapper>
+    <HoverWrapper>
       <MagicalWrapper disabled={!withBoosts}>{component[stage]}</MagicalWrapper>
-    </HoverMagicalWrapper>
+    </HoverWrapper>
   </g>
 );

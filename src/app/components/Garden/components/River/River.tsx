@@ -14,9 +14,9 @@ import { BridgeLamps } from "./BridgeLamps";
 import { BridgeRuins } from "./BridgeRuins";
 import {
   HauntedWrapper,
-  HoverMagicalWrapper,
+  HoverWrapper,
   MagicalWrapper,
-} from "../MagicalWrapper/MagicalWrapper";
+} from "../MagicalWrapper";
 
 export type RiverProps = {
   stage: number;
@@ -30,7 +30,7 @@ export const River: FC<RiverProps> = ({ stage, withBoosts, ...props }) => (
     style={{}}
     {...props}
   >
-    <HoverMagicalWrapper>
+    <HoverWrapper>
       <MagicalWrapper disabled={!withBoosts}>
         {stage < 3 ? (
           <HauntedWrapper>
@@ -53,6 +53,6 @@ export const River: FC<RiverProps> = ({ stage, withBoosts, ...props }) => (
         {stage < 5 && <WastePipes />}
         {stage < 4 && <Trash />}
       </MagicalWrapper>
-    </HoverMagicalWrapper>
+    </HoverWrapper>
   </g>
 );

@@ -26,6 +26,7 @@ export default meta;
 type Story = StoryObj<typeof River>;
 
 const defaultArgs: RiverProps = {
+  withBoosts: false,
   stage: 1,
 };
 

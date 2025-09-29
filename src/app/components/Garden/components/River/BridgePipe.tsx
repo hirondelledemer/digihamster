@@ -1,5 +1,5 @@
 import React from "react";
-import { HauntedWrapper } from "../MagicalWrapper/MagicalWrapper";
+import { HauntedWrapper } from "../MagicalWrapper";
 
 export const BridgePipe = () => (
   <g

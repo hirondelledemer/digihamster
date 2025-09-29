@@ -13,9 +13,9 @@ import { TreeTrunk } from "./TreeTrunk";
 import { BROWN_COLOR, GREEN_COLOR } from "./constants";
 import {
   HauntedWrapper,
-  HoverMagicalWrapper,
+  HoverWrapper,
   MagicalWrapper,
-} from "../MagicalWrapper/MagicalWrapper";
+} from "../MagicalWrapper";
 
 export type TreeProps = {
   stage: number;
@@ -25,12 +25,12 @@ export type TreeProps = {
 export const Tree = ({ stage, withBoosts, ...props }: TreeProps) => {
   const mainTree = React.useMemo(
     () => (
-      <HoverMagicalWrapper>
+      <HoverWrapper>
         <MagicalWrapper disabled={!withBoosts}>
           <FallingLeaves1 color={stage > 8 ? GREEN_COLOR : BROWN_COLOR} />
           <TreeTrunk stage={stage} />
         </MagicalWrapper>
-      </HoverMagicalWrapper>
+      </HoverWrapper>
     ),
     [stage, withBoosts]
   );

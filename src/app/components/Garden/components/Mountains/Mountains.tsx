@@ -7,11 +7,12 @@ import { WindTurbines } from "./WindTurbines";
 import { SmallMountains } from "./SmallMountains";
 import { Rainbow } from "./Rainbow";
 import { WaterfallAdvanced } from "./WaterfallAdvanced";
+
 import {
   HauntedWrapper,
-  HoverMagicalWrapper,
+  HoverWrapper,
   MagicalWrapper,
-} from "../MagicalWrapper/MagicalWrapper";
+} from "../MagicalWrapper";
 
 export interface MountainsProps extends SVGProps<SVGSVGElement> {
   withBoosts: boolean;
@@ -23,7 +24,7 @@ export const Mountains: FC<MountainsProps> = ({
   ...props
 }) => (
   <g {...props}>
-    <HoverMagicalWrapper>
+    <HoverWrapper>
       <MagicalWrapper disabled={!withBoosts}>
         <title>{"Mountains"}</title>
         {stage > 8 && <Rainbow />}
@@ -49,6 +50,6 @@ export const Mountains: FC<MountainsProps> = ({
         {stage > 6 && <WindTurbines />}
         <SmallMountains />
       </MagicalWrapper>
-    </HoverMagicalWrapper>
+    </HoverWrapper>
   </g>
 );

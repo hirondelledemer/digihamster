@@ -13,14 +13,14 @@ type Story = StoryObj<typeof Garden>;
 
 const worstArgs: GardenProps = {
   config: {
-    house: { score: 1, onClick: () => {} },
-    tree: { score: 1, onClick: () => {} },
-    shed: { score: 1, onClick: () => {} },
-    animals: { score: 1, onClick: () => {} },
-    river: { score: 1, onClick: () => {} },
-    mountains: { score: 1, onClick: () => {} },
-    pumpkinGarden: { score: 1, onClick: () => {} },
-    defaultScore: { score: 1, onClick: () => {} },
+    house: { score: 1, onClick: () => {}, withBoosts: false },
+    tree: { score: 1, onClick: () => {}, withBoosts: false },
+    shed: { score: 1, onClick: () => {}, withBoosts: false },
+    animals: { score: 1, onClick: () => {}, withBoosts: false },
+    river: { score: 1, onClick: () => {}, withBoosts: false },
+    mountains: { score: 1, onClick: () => {}, withBoosts: false },
+    pumpkinGarden: { score: 1, onClick: () => {}, withBoosts: false },
+    defaultScore: { score: 1, onClick: () => {}, withBoosts: false },
   },
 };
 
@@ -30,14 +30,14 @@ export const Worst: Story = {
 
 const bestArgs: GardenProps = {
   config: {
-    house: { score: 10, onClick: () => {} },
-    tree: { score: 10, onClick: () => {} },
-    shed: { score: 10, onClick: () => {} },
-    animals: { score: 10, onClick: () => {} },
-    river: { score: 10, onClick: () => {} },
-    mountains: { score: 10, onClick: () => {} },
-    pumpkinGarden: { score: 10, onClick: () => {} },
-    defaultScore: { score: 10, onClick: () => {} },
+    house: { score: 10, onClick: () => {}, withBoosts: false },
+    tree: { score: 10, onClick: () => {}, withBoosts: false },
+    shed: { score: 10, onClick: () => {}, withBoosts: false },
+    animals: { score: 10, onClick: () => {}, withBoosts: false },
+    river: { score: 10, onClick: () => {}, withBoosts: false },
+    mountains: { score: 10, onClick: () => {}, withBoosts: false },
+    pumpkinGarden: { score: 10, onClick: () => {}, withBoosts: false },
+    defaultScore: { score: 10, onClick: () => {}, withBoosts: false },
   },
 };
 

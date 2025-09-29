@@ -7,11 +7,12 @@ import { Rabbit } from "./Rabbit";
 import { GreyCrane } from "./GrayCrane";
 import { Mouse } from "./Mouse";
 import { Foxes } from "./Foxes";
+
 import {
   HauntedWrapper,
-  HoverMagicalWrapper,
+  HoverWrapper,
   MagicalWrapper,
-} from "../MagicalWrapper/MagicalWrapper";
+} from "../MagicalWrapper";
 
 export type AnimalProps = {
   stage: number;
@@ -25,7 +26,7 @@ export const Animals = ({
 }: AnimalProps) => (
   <g {...props}>
     <title>{"Animals"}</title>
-    <HoverMagicalWrapper>
+    <HoverWrapper>
       <MagicalWrapper disabled={!withBoosts}>
         {stage > 9 && <Deer />}
         {stage < 2 ? (
@@ -42,6 +43,6 @@ export const Animals = ({
         {stage > 3 && <Mouse />}
         {stage > 8 && <Foxes />}
       </MagicalWrapper>
-    </HoverMagicalWrapper>
+    </HoverWrapper>
   </g>
 );

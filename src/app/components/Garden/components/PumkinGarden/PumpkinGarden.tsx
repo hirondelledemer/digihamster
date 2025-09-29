@@ -5,13 +5,13 @@ import { Wagon } from "./Wagon";
 import { GardenFlowers } from "./GardenFlowers";
 import { Flowers1, Flowers2, Flowers3, Flowers4 } from "./Flowers";
 import { BackgroundPumpkins } from "./BacgroundPumpkins";
-import {
-  HauntedWrapper,
-  HoverMagicalWrapper,
-  MagicalWrapper,
-} from "../MagicalWrapper/MagicalWrapper";
 import { DryGround } from "./DryGround";
 import { DryPlants } from "./DryPlants";
+import {
+  HauntedWrapper,
+  HoverWrapper,
+  MagicalWrapper,
+} from "../MagicalWrapper";
 
 export interface PumpkinGardenProps extends SVGProps<SVGSVGElement> {
   stage: number;
@@ -28,7 +28,7 @@ export const PumpkinGarden: FC<PumpkinGardenProps> = ({
     {...props}
   >
     <title>{"Garden"}</title>
-    <HoverMagicalWrapper>
+    <HoverWrapper>
       <MagicalWrapper disabled={!withBoosts}>
         <Fence />
         {stage < 3 && (
@@ -52,6 +52,6 @@ export const PumpkinGarden: FC<PumpkinGardenProps> = ({
         {stage > 5 && <Flowers3 />}
         {stage === 5 && <BackgroundPumpkins />}
       </MagicalWrapper>
-    </HoverMagicalWrapper>
+    </HoverWrapper>
   </g>
 );
