@@ -17,15 +17,21 @@ import { ForegroundTress } from "./components/Trees/ForegroundTrees";
 import { PumpkinGarden } from "./components/PumkinGarden/PumpkinGarden";
 import { Animals } from "./components/Animals/Animals";
 
+type ConfigEntity = { score: number; onClick: () => void; withBoosts: boolean };
+
+const SKY_COLOR_1 = "#87CEEB";
+const SKY_COLOR_2 = "#B0C4DE";
+const SKY_COLOR_3 = "#A9A9A9";
+
 export type GardenConfig = {
-  house: { score: number; onClick: () => void };
-  tree: { score: number; onClick: () => void };
-  shed: { score: number; onClick: () => void };
-  animals: { score: number; onClick: () => void };
-  river: { score: number; onClick: () => void };
-  mountains: { score: number; onClick: () => void };
-  pumpkinGarden: { score: number; onClick: () => void };
-  defaultScore: { score: number; onClick: () => void };
+  house: ConfigEntity;
+  tree: ConfigEntity;
+  shed: ConfigEntity;
+  animals: ConfigEntity;
+  river: ConfigEntity;
+  mountains: ConfigEntity;
+  pumpkinGarden: ConfigEntity;
+  defaultScore: ConfigEntity;
 };
 export interface GardenProps {
   config: GardenConfig;
@@ -55,10 +61,10 @@ export const Garden: FC<GardenProps> = ({
         height="400"
         fill={
           defaultScore.score > 70
-            ? "#87CEEB"
+            ? SKY_COLOR_1
             : defaultScore.score > 40
-            ? "#B0C4DE"
-            : "#A9A9A9"
+            ? SKY_COLOR_2
+            : SKY_COLOR_3
         }
       />
 
@@ -75,20 +81,45 @@ export const Garden: FC<GardenProps> = ({
         <Grass1 />
         <Grass2 />
         <Clouds />
-        <Mountains stage={mountains.score} onClick={mountains.onClick} />
+        <Mountains
+          stage={mountains.score}
+          onClick={mountains.onClick}
+          withBoosts={mountains.withBoosts}
+        />
         <BackgroundTrees />
-        <River stage={river.score} onClick={river.onClick} />
+        <River
+          stage={river.score}
+          onClick={river.onClick}
+          withBoosts={river.withBoosts}
+        />
         <Trees />
-        <House stage={house.score} onClick={house.onClick} />
-        <Shed stage={shed.score} onClick={shed.onClick} />
+        <House
+          stage={house.score}
+          onClick={house.onClick}
+          withBoosts={house.withBoosts}
+        />
+        <Shed
+          stage={shed.score}
+          onClick={shed.onClick}
+          withBoosts={shed.withBoosts}
+        />
         <Rocks />
         <ForegroundTress />
         <PumpkinGarden
           stage={pumpkinGarden.score}
           onClick={pumpkinGarden.onClick}
+          withBoosts={pumpkinGarden.withBoosts}
         />
-        <Tree stage={tree.score} onClick={tree.onClick} />
-        <Animals stage={animals.score} onClick={animals.onClick} />
+        <Tree
+          stage={tree.score}
+          onClick={tree.onClick}
+          withBoosts={tree.withBoosts}
+        />
+        <Animals
+          stage={animals.score}
+          onClick={animals.onClick}
+          withBoosts={animals.withBoosts}
+        />
       </svg>
 
       {/* Fog */}

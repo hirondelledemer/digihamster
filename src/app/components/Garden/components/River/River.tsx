@@ -15,13 +15,15 @@ import { BridgeRuins } from "./BridgeRuins";
 import {
   HauntedWrapper,
   HoverMagicalWrapper,
+  MagicalWrapper,
 } from "../MagicalWrapper/MagicalWrapper";
 
 export type RiverProps = {
   stage: number;
+  withBoosts: boolean;
 } & SVGProps<SVGSVGElement>;
 
-export const River: FC<RiverProps> = ({ stage, ...props }) => (
+export const River: FC<RiverProps> = ({ stage, withBoosts, ...props }) => (
   <g
     id="freepik--River--inject-256"
     transform="matrix(0.971519, 0, 0, 1, -1.409726, -51.132309)"
@@ -29,26 +31,28 @@ export const River: FC<RiverProps> = ({ stage, ...props }) => (
     {...props}
   >
     <HoverMagicalWrapper>
-      {stage < 3 ? (
-        <HauntedWrapper>
-          <RiverMainElement variant="dark" />
-        </HauntedWrapper>
-      ) : (
-        <RiverMainElement />
-      )}
-      {stage > 4 && <Flowers />}
-      {stage < 3 && <BridgePipe />}
-      <g style={{}} transform="matrix(1.029316, 0, 0, 1, 1.45105, 51.132309)">
-        <title>{"Bridge"}</title>
-        {stage > 8 && <BridgeFlowers3 />}
-        {stage > 5 && <Bridge />}
-        {stage > 7 && <BridgeLamps />}
-        {stage > 6 && <BridgeFlowers2 />}
-        {stage > 6 && <BridgeFlowers1 />}
-        {stage < 6 && <BridgeRuins />}
-      </g>
-      {stage < 5 && <WastePipes />}
-      {stage < 4 && <Trash />}
+      <MagicalWrapper disabled={!withBoosts}>
+        {stage < 3 ? (
+          <HauntedWrapper>
+            <RiverMainElement variant="dark" />
+          </HauntedWrapper>
+        ) : (
+          <RiverMainElement />
+        )}
+        {stage > 4 && <Flowers />}
+        {stage < 3 && <BridgePipe />}
+        <g style={{}} transform="matrix(1.029316, 0, 0, 1, 1.45105, 51.132309)">
+          <title>{"Bridge"}</title>
+          {stage > 8 && <BridgeFlowers3 />}
+          {stage > 5 && <Bridge />}
+          {stage > 7 && <BridgeLamps />}
+          {stage > 6 && <BridgeFlowers2 />}
+          {stage > 6 && <BridgeFlowers1 />}
+          {stage < 6 && <BridgeRuins />}
+        </g>
+        {stage < 5 && <WastePipes />}
+        {stage < 4 && <Trash />}
+      </MagicalWrapper>
     </HoverMagicalWrapper>
   </g>
 );

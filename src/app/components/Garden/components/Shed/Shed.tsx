@@ -30,12 +30,14 @@ import { GreyTrees } from "./GreyTrees";
 import {
   HauntedWrapper,
   HoverMagicalWrapper,
+  MagicalWrapper,
 } from "../MagicalWrapper/MagicalWrapper";
 export interface ShedProps extends SVGProps<SVGSVGElement> {
   stage: number;
+  withBoosts?: boolean;
 }
 
-export const Shed = ({ stage, ...props }: ShedProps) => {
+export const Shed = ({ stage, withBoosts = false, ...props }: ShedProps) => {
   const component = useMemo(
     () => (
       <>
@@ -97,7 +99,9 @@ export const Shed = ({ stage, ...props }: ShedProps) => {
       viewBox="-100 -450 1300 1200"
       {...props}
     >
-      <HoverMagicalWrapper>{component}</HoverMagicalWrapper>
+      <HoverMagicalWrapper>
+        <MagicalWrapper disabled={!withBoosts}>{component}</MagicalWrapper>
+      </HoverMagicalWrapper>
     </svg>
   );
 };

@@ -8,14 +8,20 @@ import { BackgroundPumpkins } from "./BacgroundPumpkins";
 import {
   HauntedWrapper,
   HoverMagicalWrapper,
+  MagicalWrapper,
 } from "../MagicalWrapper/MagicalWrapper";
 import { DryGround } from "./DryGround";
 import { DryPlants } from "./DryPlants";
 
 export interface PumpkinGardenProps extends SVGProps<SVGSVGElement> {
   stage: number;
+  withBoosts?: boolean;
 }
-export const PumpkinGarden: FC<PumpkinGardenProps> = ({ stage, ...props }) => (
+export const PumpkinGarden: FC<PumpkinGardenProps> = ({
+  stage,
+  withBoosts = false,
+  ...props
+}) => (
   <g
     style={{}}
     transform="matrix(0.310036, 0, 0, 0.352693, 285.810394, 243.426086)"
@@ -23,27 +29,29 @@ export const PumpkinGarden: FC<PumpkinGardenProps> = ({ stage, ...props }) => (
   >
     <title>{"Garden"}</title>
     <HoverMagicalWrapper>
-      <Fence />
-      {stage < 3 && (
-        <DryGarden>
-          <DryGround />
+      <MagicalWrapper disabled={!withBoosts}>
+        <Fence />
+        {stage < 3 && (
+          <DryGarden>
+            <DryGround />
 
-          {stage < 2 ? (
-            <HauntedWrapper>
+            {stage < 2 ? (
+              <HauntedWrapper>
+                <DryPlants />
+              </HauntedWrapper>
+            ) : (
               <DryPlants />
-            </HauntedWrapper>
-          ) : (
-            <DryPlants />
-          )}
-        </DryGarden>
-      )}
-      {stage > 3 && <Wagon />}
-      {stage < 5 && <GardenFlowers />}
-      {stage > 8 && <Flowers1 />}
-      {stage > 7 && <Flowers4 />}
-      {stage > 6 && <Flowers2 />}
-      {stage > 5 && <Flowers3 />}
-      {stage === 5 && <BackgroundPumpkins />}
+            )}
+          </DryGarden>
+        )}
+        {stage > 3 && <Wagon />}
+        {stage < 5 && <GardenFlowers />}
+        {stage > 8 && <Flowers1 />}
+        {stage > 7 && <Flowers4 />}
+        {stage > 6 && <Flowers2 />}
+        {stage > 5 && <Flowers3 />}
+        {stage === 5 && <BackgroundPumpkins />}
+      </MagicalWrapper>
     </HoverMagicalWrapper>
   </g>
 );

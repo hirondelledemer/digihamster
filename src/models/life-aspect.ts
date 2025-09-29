@@ -3,6 +3,7 @@ import { TimeStamps } from "./shared-types";
 
 export type LifeAspectAsset =
   | "tree"
+  | "house"
   | "shed"
   | "animals"
   | "river"

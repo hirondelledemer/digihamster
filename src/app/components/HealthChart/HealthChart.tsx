@@ -12,7 +12,7 @@ import { Habit } from "#src/models/habit.js";
 import { RadarChart } from "../../charts/RadarChart";
 import {
   getHabitProgress,
-  getHabitProgressForCategory,
+  getHabitProgressForLifeAspect,
 } from "@/app/utils/habits/getHabitProgress";
 
 import { GardenContainer } from "../Garden/GardenContainer";
@@ -55,7 +55,7 @@ const HealthChart: FC<HealthChartProps> = (): JSX.Element => {
   const { data: habits } = useHabits();
   const { data: lifeAspects = [] } = useLifeAspectsState();
   const [selectedCategory, setSelectedCategory] = useState<
-    string | "garden" | "chart"
+    undefined | string | "garden" | "chart"
   >("chart");
 
   const chartData = useMemo(
@@ -65,24 +65,29 @@ const HealthChart: FC<HealthChartProps> = (): JSX.Element => {
         .filter((item, pos, self) => self.indexOf(item) == pos)
         .reduce((prev: ChartItem[], curr) => {
           const habitsForCategory = habits.filter((h) => h.category === curr);
+          const lifeAspect = lifeAspects.find((la) => la._id === curr);
 
-          const progressPercentage = getHabitProgressForCategory(habits, curr);
+          const progressPercentage = getHabitProgressForLifeAspect(
+            habits,
+            lifeAspect || []
+          );
+          const boostedProgressPercentage = getHabitProgressForLifeAspect(
+            habits,
+            lifeAspect || [],
+            true
+          );
 
           const allTheProgress = habitsForCategory.map((habit) => ({
             label: habit.title,
             progress: getHabitProgress(habit),
           }));
 
-          const lifeAspect = lifeAspects.find((la) => la._id === curr);
-
           return [
             ...prev,
             {
               dataLabel: lifeAspect ? lifeAspect.title : curr,
               dataValue: Math.floor(progressPercentage),
-              dataValue1:
-                Math.floor(progressPercentage) +
-                (lifeAspect ? lifeAspect.boosts.length * 10 : 0),
+              dataValue1: Math.floor(boostedProgressPercentage),
               label: (
                 <div className="mr-2">
                   {allTheProgress.map((pr) => (
