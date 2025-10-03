@@ -37,7 +37,20 @@ export function RadarChart({
       height={300}
     >
       <RadarChartRecharts data={data}>
-        <ChartTooltip content={<ChartTooltipContent />} />
+        <ChartTooltip
+          content={
+            <ChartTooltipContent
+              hideLabel
+              className="w-[180px]"
+              formatter={(_value, _name, item, index) => {
+                if (index === 0) {
+                  return item.payload.label;
+                }
+                return;
+              }}
+            />
+          }
+        />
         <PolarAngleAxis
           dataKey="dataLabel"
           onClick={({ value }) =>

@@ -95,6 +95,14 @@ const HealthChart: FC<HealthChartProps> = (): JSX.Element => {
                       {pr.label} - {Math.floor(pr.progress)}%
                     </div>
                   ))}
+                  {boostedProgressPercentage > progressPercentage && (
+                    <>
+                      <div>-----</div>
+                      <div>
+                        boosts: {boostedProgressPercentage - progressPercentage}
+                      </div>
+                    </>
+                  )}
                 </div>
               ),
             },
