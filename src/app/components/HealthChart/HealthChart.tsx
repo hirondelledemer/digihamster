@@ -24,6 +24,7 @@ const getHabitsData = (habits: Habit[]) => {
 
     return {
       dataLabel: habit.title,
+      _id: habit._id,
       dataValue,
       fill: `hsl(var(--scale-color-${Math.floor(dataValue / 10)}))`,
     };
