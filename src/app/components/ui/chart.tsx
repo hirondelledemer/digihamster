@@ -74,6 +74,9 @@ const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
   const colorConfig = Object.entries(config).filter(
     ([_a, config]) => config.theme || config.color
   );
+  // const colorConfig = Object.entries(config).filter(
+  //   ([_a, config]) => config && typeof config === "object" && config.color
+  // );
 
   if (!colorConfig.length) {
     return null;
@@ -102,6 +105,8 @@ ${colorConfig
     />
   );
 };
+
+// itemConfig && typeof itemConfig === "object" && itemConfig.color;
 
 const ChartTooltip = RechartsPrimitive.Tooltip;
 

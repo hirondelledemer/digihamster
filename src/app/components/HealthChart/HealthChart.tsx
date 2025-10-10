@@ -1,5 +1,5 @@
 "use client";
-import React, { FC, useMemo, useState } from "react";
+import React, { FC, useCallback, useMemo, useState } from "react";
 
 import { ChartConfig } from "../ui/chart";
 import { Card, CardContent, CardHeader } from "../ui/card";
@@ -17,31 +17,7 @@ import {
 
 import { GardenContainer } from "../Garden/GardenContainer";
 import { useLifeAspectsState } from "@/app/utils/hooks/use-life-aspects/state-context";
-
-const getHabitsData = (habits: Habit[]) => {
-  return habits.map((habit) => {
-    const dataValue = Math.max(Math.min(getHabitProgress(habit), 100), 1);
-
-    return {
-      dataLabel: habit.title,
-      _id: habit._id,
-      dataValue,
-      fill: `hsl(var(--scale-color-${Math.floor(dataValue / 10)}))`,
-    };
-  });
-};
-
-const getChartConfig = (habits: { title: string }[]) => {
-  return habits.reduce((config, habit, index) => {
-    return {
-      ...config,
-      [habit.title]: {
-        label: habit.title,
-        color: `var(--chart-${index + 1})`,
-      },
-    };
-  }, {}) satisfies ChartConfig;
-};
+import { getTodayWithZeroHours } from "@/app/utils/date/date";
 
 export interface HealthChartProps {
   testId?: string;
@@ -53,11 +29,40 @@ interface ChartItem {
 }
 
 const HealthChart: FC<HealthChartProps> = (): JSX.Element => {
-  const { data: habits } = useHabits();
+  const { data: habits, addLog } = useHabits();
   const { data: lifeAspects = [] } = useLifeAspectsState();
   const [selectedCategory, setSelectedCategory] = useState<
     undefined | string | "garden" | "chart"
   >("chart");
+
+  const getHabitsData = useCallback(
+    (habits: Habit[]) => {
+      return habits.map((habit) => {
+        const dataValue = Math.max(Math.min(getHabitProgress(habit), 100), 1);
+        const todayTimestamp = getTodayWithZeroHours().getTime();
+
+        return {
+          dataLabel: habit.title,
+          _id: habit._id,
+          tempDataValue: 0,
+          dataValue,
+          getFillColor: (value: number) =>
+            `hsl(var(--scale-color-${Math.floor(value / 10)}))`,
+          fill: `hsl(var(--scale-color-${Math.floor(dataValue / 10)}))`,
+          cta: {
+            label: "add",
+            onClick: () => {
+              addLog(habit._id, {
+                completed: true,
+                at: todayTimestamp,
+              });
+            },
+          },
+        };
+      });
+    },
+    [addLog]
+  );
 
   const chartData = useMemo(
     () =>
@@ -177,9 +182,7 @@ const HealthChart: FC<HealthChartProps> = (): JSX.Element => {
           data={getHabitsData(
             habits.filter((h) => h.category === selectedCategory)
           )}
-          config={getChartConfig(
-            habits.filter((h) => h.category === selectedCategory)
-          )}
+          config={{} as ChartConfig}
         />
       </CardContent>
     );
