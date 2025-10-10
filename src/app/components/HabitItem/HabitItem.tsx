@@ -19,8 +19,6 @@ const HabitItem: FC<HabitItemProps> = ({ habit }): JSX.Element => {
   const { data: lifeAspects } = useLifeAspectsState();
   const [habitFormOpen, setHabitFormOpen] = useState<boolean>(false);
 
-  console.log(lifeAspects);
-
   const today = getTodayWithZeroHours();
 
   const logs = [6, 5, 4, 3, 2, 1, 0]
