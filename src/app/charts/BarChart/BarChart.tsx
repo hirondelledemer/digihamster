@@ -12,7 +12,12 @@ import {
 import { useCallback, useState } from "react";
 
 import { Button } from "@/app/components/ui/button";
+import { CheckCheckIcon } from "lucide-react";
 
+type ActionItem = {
+  onClick: () => void;
+  disabled?: boolean;
+};
 export interface BarChartProps {
   data: {
     _id: string;
@@ -20,10 +25,7 @@ export interface BarChartProps {
     dataValue: number;
     fill: string;
     getFillColor?(val: number): string;
-    cta: {
-      label: string;
-      onClick: () => void;
-    };
+    actions: ActionItem[];
   }[];
   config: ChartConfig;
 }
@@ -89,22 +91,28 @@ export function BarChart({ data: chartData, config }: BarChartProps) {
         </ChartContainer>
       </div>
       <div className=" border-primary absolute right-0 top-0 flex flex-col gap-[2px]">
-        {data.map((dataItem) => (
+        {data.map((actionsItem) => (
           <div
-            key={dataItem._id}
+            key={actionsItem._id}
             style={{ height: 130 / data.length }}
             className="flex justify-end items-baseline"
           >
-            <div className="text-[10px]">{dataItem.dataLabel}</div>
-            <Button
-              size="sm"
-              variant="ghost"
-              onMouseEnter={() => onHover(dataItem._id, 20)}
-              onMouseLeave={() => onHover(dataItem._id, -20)}
-              onClick={dataItem.cta.onClick}
-            >
-              {dataItem.cta.label}
-            </Button>
+            <div className="text-[10px]">{actionsItem.dataLabel}</div>
+            {actionsItem &&
+              actionsItem.actions.map((item: ActionItem, index: number) => (
+                <Button
+                  key={index}
+                  disabled={item.disabled}
+                  size="sm"
+                  variant="ghost"
+                  onMouseEnter={() => onHover(actionsItem._id, 20)}
+                  onMouseLeave={() => onHover(actionsItem._id, -20)}
+                  onClick={item.onClick}
+                  className="p-1"
+                >
+                  <CheckCheckIcon size={12} />
+                </Button>
+              ))}
           </div>
         ))}
       </div>

@@ -18,6 +18,7 @@ import {
 import { GardenContainer } from "../Garden/GardenContainer";
 import { useLifeAspectsState } from "@/app/utils/hooks/use-life-aspects/state-context";
 import { getTodayWithZeroHours } from "@/app/utils/date/date";
+import { subDays } from "date-fns";
 
 export interface HealthChartProps {
   testId?: string;
@@ -41,6 +42,22 @@ const HealthChart: FC<HealthChartProps> = (): JSX.Element => {
         const dataValue = Math.max(Math.min(getHabitProgress(habit), 100), 1);
         const todayTimestamp = getTodayWithZeroHours().getTime();
 
+        const actions = [2, 1, 0]
+          .map((day) => subDays(todayTimestamp, day).getTime())
+          .map((timestamp) => ({
+            log: habit.log.find((log) => log.at === timestamp),
+            timestamp,
+          }))
+          .map((log) => ({
+            disabled: log.log?.completed,
+            onClick: () => {
+              addLog(habit._id, {
+                completed: true,
+                at: todayTimestamp,
+              });
+            },
+          }));
+
         return {
           dataLabel: habit.title,
           _id: habit._id,
@@ -49,15 +66,7 @@ const HealthChart: FC<HealthChartProps> = (): JSX.Element => {
           getFillColor: (value: number) =>
             `hsl(var(--scale-color-${Math.floor(value / 10)}))`,
           fill: `hsl(var(--scale-color-${Math.floor(dataValue / 10)}))`,
-          cta: {
-            label: "add",
-            onClick: () => {
-              addLog(habit._id, {
-                completed: true,
-                at: todayTimestamp,
-              });
-            },
-          },
+          actions,
         };
       });
     },
