@@ -53,7 +53,7 @@ const HealthChart: FC<HealthChartProps> = (): JSX.Element => {
             onClick: () => {
               addLog(habit._id, {
                 completed: true,
-                at: todayTimestamp,
+                at: log.timestamp,
               });
             },
           }));
