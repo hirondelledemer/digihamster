@@ -16,7 +16,6 @@ import { CheckCheckIcon } from "lucide-react";
 
 type ActionItem = {
   onClick: () => void;
-  label: string;
   disabled?: boolean;
 };
 export interface BarChartProps {
@@ -104,7 +103,6 @@ export function BarChart({ data: chartData, config }: BarChartProps) {
                 <Button
                   key={index}
                   disabled={item.disabled}
-                  aria-label={item.label}
                   size="sm"
                   variant="ghost"
                   onMouseEnter={() => onHover(actionsItem._id, 20)}
