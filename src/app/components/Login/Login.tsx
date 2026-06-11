@@ -47,7 +47,16 @@ function Login() {
     try {
       setError(undefined);
       setLoading(true);
-      await axios.post("/api/users/login", data);
+      const {
+        data: { token },
+      } = await axios.post<any, { data: { token: string } }>(
+        "https://digihamster-api.duckdns.org/auth/login",
+        data,
+      );
+
+      console.log(token);
+      localStorage.setItem("token", token);
+
       router.push("/");
     } catch (error: any) {
       setError((error as any).response.data.error);

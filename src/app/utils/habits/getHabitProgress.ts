@@ -6,10 +6,10 @@ import { isAfter, subDays } from "date-fns";
 export const getHabitProgress = (habit: Habit) => {
   const earliestDay = subDays(now(), 28).getTime();
 
-  const progress = habit.log.filter(
-    (log) => log.at >= earliestDay && log.completed
+  const progress = habit.logs.filter(
+    (log) => log.at >= earliestDay && log.completed,
   ).length;
-  const habitProgress = (progress / habit.timesPerMonth) * 100;
+  const habitProgress = (progress / habit.times_per_month) * 100;
 
   return Math.max(Math.min(habitProgress, 100), 1);
 };
@@ -17,21 +17,21 @@ export const getHabitProgress = (habit: Habit) => {
 export const getHabitProgressForLifeAspect = (
   habits: Habit[],
   lifeAspect: LifeAspect | LifeAspect[],
-  addBoosts: boolean = false
+  addBoosts: boolean = false,
 ) => {
   const lifeAspects = Array.isArray(lifeAspect) ? lifeAspect : [lifeAspect];
   const earliestDay = subDays(now(), 28).getTime();
   const habitsForLifeAspect = habits.filter((h) =>
-    lifeAspects.map((la) => la._id).includes(h.category)
+    lifeAspects.map((la) => la._id).includes(h.life_aspect_id),
   );
 
   const total = habitsForLifeAspect.reduce((prev, curr) => {
-    return curr.timesPerMonth + prev;
+    return curr.times_per_month + prev;
   }, 0);
 
   const progress = habitsForLifeAspect.reduce((curr, prev) => {
     return (
-      prev.log.filter((log) => log.at >= earliestDay && log.completed).length +
+      prev.logs.filter((log) => log.at >= earliestDay && log.completed).length +
       curr
     );
   }, 0);

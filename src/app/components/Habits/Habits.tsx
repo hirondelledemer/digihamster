@@ -57,9 +57,13 @@ const Habits: FC<HabitsProps> = ({ testId }): JSX.Element => {
         </TableHeader>
         <TableBody>
           {data
-            .sort((h1, h2) => h1.category.localeCompare(h2.category))
+            .sort((h1, h2) =>
+              h1.life_aspect_id
+                .toString()
+                .localeCompare(h2.life_aspect_id.toString()),
+            )
             .map((habit) => (
-              <HabitItem key={habit._id} habit={habit} />
+              <HabitItem key={habit.id} habit={habit} />
             ))}
         </TableBody>
         <TableFooter>

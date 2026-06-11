@@ -3,7 +3,7 @@ import useHabits from "@/app/utils/hooks/use-habits";
 import { Habit } from "@/models/habit";
 import { getTodayWithZeroHours, now } from "@/app/utils/date/date";
 import { Checkbox } from "../ui/checkbox";
-import { subDays } from "date-fns";
+import { differenceInCalendarDays, differenceInDays, subDays } from "date-fns";
 import { Button } from "../ui/button";
 import HabitFormModal from "../HabitFormModal";
 import { TableCell, TableRow } from "../ui/table";
@@ -21,26 +21,35 @@ const HabitItem: FC<HabitItemProps> = ({ habit }): JSX.Element => {
 
   const today = getTodayWithZeroHours();
 
+  console.log("kabiy", habit);
   const logs = [6, 5, 4, 3, 2, 1, 0]
     .map((day) => subDays(today, day).getTime())
     .map((timestamp) => ({
-      log: habit.log.find((log) => log.at === timestamp),
+      log: habit.logs.find(
+        (log) => differenceInDays(log.log_date, timestamp) === 0,
+      ),
       timestamp,
     }));
 
-  const handleCompleteClick = (at: number) => (checked: boolean) => {
-    addLog(habit._id, {
-      completed: checked,
-      at,
-    });
-  };
+  const handleCompleteClick =
+    (at: number, existingLog?: (typeof logs)[number]["log"]) =>
+    (checked: boolean) => {
+      addLog(habit.id, {
+        completed: checked,
+        at,
+        existingLog,
+      });
+    };
 
-  const earliestDay = subDays(now(), 28).getTime();
+  // const earliestDay = subDays(now(), 28).getTime();
 
-  const progress = habit.log.filter(
-    (log) => log.at >= earliestDay && log.completed
-  ).length;
-  const progressPercentage = (progress / habit.timesPerMonth) * 100;
+  // const progress = habit.logs.filter(
+  //   (log) => log.at >= earliestDay && log.completed,
+  // ).length;
+  // const progressPercentage = (progress / habit.times_per_month) * 100;
+  // {
+  //   console.log(logs);
+  // }
 
   return (
     <>
@@ -53,22 +62,27 @@ const HabitItem: FC<HabitItemProps> = ({ habit }): JSX.Element => {
       />
       <TableRow>
         <TableCell className="font-medium py-1">
-          {lifeAspects.find((la) => la._id === habit.category)?.title}
+          {
+            lifeAspects.find((la) => la.id.toString() === habit.life_aspect_id)
+              ?.title
+          }
         </TableCell>
         <TableCell className="py-1">{habit.title}</TableCell>
         <TableCell className="py-1">
-          {Math.floor(progressPercentage)}%
+          {/* {Math.floor(progressPercentage)}% */} progress TODO
         </TableCell>
-        <TableCell className="py-1">{habit.timesPerMonth}</TableCell>
+        <TableCell className="py-1">{habit.times_per_month}</TableCell>
         {logs.map((log, index) => (
           <TableCell className="py-1" key={index}>
-            <Checkbox
-              checked={log.log?.completed}
-              onCheckedChange={handleCompleteClick(log.timestamp)}
-            />
+            <>
+              {console.log("log completed", index, log)}
+              <Checkbox
+                checked={log.log?.completed}
+                onCheckedChange={handleCompleteClick(log.timestamp, log.log)}
+              />
+            </>
           </TableCell>
         ))}
-
         <TableCell className="text-right py-1">
           <Button onClick={() => setHabitFormOpen(true)}>Edit</Button>
         </TableCell>

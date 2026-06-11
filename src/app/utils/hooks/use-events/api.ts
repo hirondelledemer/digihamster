@@ -1,16 +1,19 @@
-import axios from "axios";
 import { Event } from "@/models/event";
+import apiClient from "../../api-client";
 
 export type FieldsRequired = Pick<
   Event,
-  "title" | "description" | "projectId" | "allDay" | "startAt" | "endAt"
+  "title" | "description" | "project_id" | "all_day" | "start_at" | "end_at"
 >;
 
+const EVENTS_PATH = "/events";
+
 export const api = {
-  getEvents: () => axios.get<Event[]>("/api/events"),
-  createEvent: (data: FieldsRequired) => axios.post<Event>("/api/events", data),
+  getEvents: () => apiClient.get<Event[]>(EVENTS_PATH),
+  createEvent: (data: FieldsRequired) =>
+    apiClient.post<Event>(EVENTS_PATH, data),
   updateEvent: (eventId: string, props: Partial<Event>) =>
-    axios.patch("/api/events", { eventId, ...props }),
+    apiClient.patch(`${EVENTS_PATH}/${eventId}`, props),
   deleteEvent: (eventId: string) =>
-    axios.patch("/api/events", { eventId, deleted: true }),
+    apiClient.delete(`${EVENTS_PATH}/${eventId}`),
 } as const;

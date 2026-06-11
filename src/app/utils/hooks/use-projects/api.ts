@@ -1,5 +1,6 @@
 import axios from "axios";
 import { Project } from "@/models/project";
+import apiClient from "../../api-client";
 
 export type FieldsRequired = Pick<
   Project,
@@ -7,10 +8,10 @@ export type FieldsRequired = Pick<
 >;
 export const api = {
   getProjects: () =>
-    axios.get<{
+    apiClient.get<{
       projects: Project[];
       defaultProject: Project;
-    }>("/api/projects"),
+    }>("/projects"),
   createProject: (data: FieldsRequired) =>
     axios.post<Project>("/api/projects", data),
   updateProject: (id: string, props: Partial<Project>) =>

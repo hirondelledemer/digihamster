@@ -26,7 +26,7 @@ import { useLifeAspectsState } from "@/app/utils/hooks/use-life-aspects/state-co
 
 const FormSchema = z.object({
   title: z.string().min(1, { message: "This field has to be filled." }),
-  category: z.string(),
+  category: z.number().min(1, { message: "Required" }),
   timesPerMonth: z.number().min(1, { message: "Required" }),
 });
 
@@ -59,8 +59,8 @@ const HabitForm: FC<HabitFormProps> = ({
     if (restProps.editMode) {
       return {
         title: restProps.habit.title || "",
-        category: restProps.habit.category || "",
-        timesPerMonth: restProps.habit.timesPerMonth || 0,
+        category: restProps.habit.life_aspect_id || undefined,
+        timesPerMonth: restProps.habit.times_per_month || 0,
       };
     }
     return restProps.initialValues;
@@ -70,7 +70,7 @@ const HabitForm: FC<HabitFormProps> = ({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       title: "",
-      category: lifeAspects[0]._id,
+      category: lifeAspects[0].id,
       timesPerMonth: 0,
       ...getInitialValues(),
     },
@@ -80,25 +80,25 @@ const HabitForm: FC<HabitFormProps> = ({
     async (event: React.MouseEvent<HTMLButtonElement>) => {
       event.preventDefault();
       if (restProps.editMode) {
-        await deleteHabit(restProps.habit._id);
+        await deleteHabit(restProps.habit.id);
         onDone();
       }
     },
-    [deleteHabit, restProps, onDone]
+    [deleteHabit, restProps, onDone],
   );
 
   const handleSubmit = (values: FormValues) => {
     if (restProps.editMode) {
-      updateHabit(restProps.habit._id, {
+      updateHabit(restProps.habit.id, {
         title: values.title,
-        category: values.category,
-        timesPerMonth: values.timesPerMonth,
+        life_aspect_id: values.category,
+        times_per_month: values.timesPerMonth,
       });
     } else {
       const habitData = {
         title: values.title,
-        category: values.category,
-        timesPerMonth: values.timesPerMonth,
+        life_aspect_id: values.category,
+        times_per_month: values.timesPerMonth,
       };
       createHabit(habitData);
     }
@@ -129,9 +129,9 @@ const HabitForm: FC<HabitFormProps> = ({
             <FormItem>
               <FormLabel>Category</FormLabel>
               <Select
-                onValueChange={field.onChange}
-                defaultValue={field.value}
-                value={field.value}
+                onValueChange={(val) => field.onChange(Number(val))}
+                defaultValue={field.value.toString()}
+                value={field.value.toString()}
               >
                 <FormControl>
                   <SelectTrigger>
@@ -141,8 +141,8 @@ const HabitForm: FC<HabitFormProps> = ({
                 <SelectContent>
                   {lifeAspects.map((lifeAspect) => (
                     <SelectItem
-                      key={lifeAspect._id}
-                      value={lifeAspect._id}
+                      key={lifeAspect.id}
+                      value={lifeAspect.id.toString()}
                       role="option"
                     >
                       {lifeAspect.title}
@@ -192,11 +192,10 @@ const HabitForm: FC<HabitFormProps> = ({
           <Button type="submit">
             {restProps.editMode ? "Save" : "Create"}
           </Button>
-          {restProps.editMode && !restProps.habit.deleted && (
-            <Button onClick={handleDelete} variant="outline">
-              Delete
-            </Button>
-          )}
+
+          <Button onClick={handleDelete} variant="outline">
+            Delete
+          </Button>
         </div>
       </form>
     </Form>

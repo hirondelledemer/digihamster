@@ -3,26 +3,18 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "../ui/card";
-import { Badge } from "../ui/badge";
 import { format } from "date-fns";
-import useTags from "@/app/utils/hooks/use-tags";
 import StaleIndicator from "../StaleIndicator";
 import { useDraggable } from "@dnd-kit/core";
-import {
-  IconCalendar,
-  IconLayoutSidebarRightExpand,
-  IconProgressCheck,
-} from "@tabler/icons-react";
+import { IconCalendar, IconProgressCheck } from "@tabler/icons-react";
 import { useCalendarDate } from "../../utils/hooks/use-calendar-date";
 import { Tooltip, TooltipContent, TooltipProvider } from "../ui/tooltip";
 import { TooltipTrigger } from "@radix-ui/react-tooltip";
 import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
 import { TaskWithRelations } from "@/app/utils/types/task";
-import { useRouter } from "next/navigation";
 import { TaskActions } from "../TaskActions";
 
 export const titleTestId = "TaskCard-title-testid";
@@ -45,14 +37,13 @@ const TaskCard: FC<TaskCardProps> = ({
   indicateActive,
 }): JSX.Element => {
   const { data: projects } = useProjectsState();
-  const { data: tags } = useTags();
   const { setSelectedDate } = useCalendarDate();
 
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id: dragId,
-    disabled: task.completed || !!task.eventId,
+    disabled: task.status === "done" || !!task.event_id,
     data: {
-      id: task._id,
+      id: task.id,
     },
   });
 
@@ -65,11 +56,7 @@ const TaskCard: FC<TaskCardProps> = ({
       }
     : undefined;
 
-  const project = projects.find((p) => p._id === task.projectId);
-
-  const taskTags = tags.filter((tag) => task.tags.includes(tag._id));
-
-  const router = useRouter();
+  const project = projects.find((p) => p._id === task.project_id);
 
   return (
     <div data-testid={testId}>
@@ -77,7 +64,7 @@ const TaskCard: FC<TaskCardProps> = ({
         <Card
           data-testid={cardTestId}
           className={`p-0 rounded-md ${
-            task.completed ? "opacity-40 line-through" : ""
+            task.status === "done" ? "opacity-40 line-through" : ""
           } `}
           ref={setNodeRef}
           style={style}
@@ -92,20 +79,12 @@ const TaskCard: FC<TaskCardProps> = ({
               <div>{task.title}</div>
 
               <div className="flex items-center gap-1">
-                {indicateActive && task.isActive && (
+                {indicateActive && task.status === "doing" && (
                   <IconProgressCheck size={18} color="green" />
                 )}
-                {task.isActive && (
-                  <StaleIndicator date={task.activatedAt || 0} />
-                )}
-                {(!!task.relatedTaskIds.length ||
-                  !!task.relatedNoteIds.length) && (
-                  <IconLayoutSidebarRightExpand
-                    data-testid="task-info-icon"
-                    size={18}
-                    onClick={() =>
-                      router.push(`/?taskId=${task._id}`, undefined)
-                    }
+                {task.status === "doing" && (
+                  <StaleIndicator
+                    date={new Date(task.activated_at || 0).valueOf()}
                   />
                 )}
                 {!!task.deadline && (
@@ -127,18 +106,18 @@ const TaskCard: FC<TaskCardProps> = ({
                 )}
               </div>
             </CardTitle>
-            {!task.completed && (
+            {!(task.status === "done") && (
               <CardDescription>
                 <div style={{ color: project?.color }}>{project?.title}</div>
               </CardDescription>
             )}
           </CardHeader>
-          {task.description && !task.completed && (
+          {task.description && !(task.status === "done") && (
             <CardContent className="pb-4 px-4 text-xs whitespace-pre-wrap muted">
               {task.description}
             </CardContent>
           )}
-          {!!taskTags.length && (
+          {/* {!!taskTags.length && (
             <CardFooter className="p-4">
               <div className="space-x-1">
                 {taskTags.map((tag) => (
@@ -148,7 +127,7 @@ const TaskCard: FC<TaskCardProps> = ({
                 ))}
               </div>
             </CardFooter>
-          )}
+          )} */}
         </Card>
       </TaskActions>
     </div>

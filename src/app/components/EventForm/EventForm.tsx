@@ -31,9 +31,9 @@ export const minimalNoteTestId = "EventForm-minimal-note-testId";
 const FormSchema = z.object({
   title: z.string().min(1, { message: "This field has to be filled." }),
   description: z.string(),
-  project: z.string().min(1, { message: "This field has to be filled." }),
-  startAt: z.number(),
-  endAt: z.number(),
+  project: z.string(),
+  startAt: z.string(),
+  endAt: z.string(),
   allDay: z.boolean(),
 });
 
@@ -60,7 +60,7 @@ const EventForm: FC<EventFormProps> = ({
   onDone,
   ...restProps
 }): JSX.Element => {
-  const { data: projects, defaultProject } = useProjectsState();
+  const { data: projects } = useProjectsState();
   const { create: createEvent, update: updateEvent } = useEventsActions();
 
   const getInitialValues = useCallback(() => {
@@ -68,22 +68,22 @@ const EventForm: FC<EventFormProps> = ({
       return {
         title: restProps.event.title,
         description: restProps.event.description || "",
-        project: restProps.event.projectId || defaultProject?._id,
-        allDay: restProps.event.allDay,
-        startAt: restProps.event.startAt,
-        endAt: restProps.event.endAt,
+        project: restProps.event.project_id || "",
+        allDay: restProps.event.all_day,
+        startAt: restProps.event.start_at,
+        endAt: restProps.event.end_at,
       };
     }
 
     return restProps.initialValues;
-  }, [defaultProject, restProps]);
+  }, [restProps]);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       title: "",
       description: "",
-      project: defaultProject?._id,
+      project: "",
       allDay: false,
       ...getInitialValues(),
     },
@@ -92,13 +92,13 @@ const EventForm: FC<EventFormProps> = ({
   const handleSubmit = async (data: FormValues) => {
     if (restProps.editMode) {
       updateEvent(
-        restProps.event._id,
+        restProps.event.id,
         {
           title: data.title,
           description: data.description,
-          projectId: data.project,
+          project_id: data.project,
         },
-        onDone
+        onDone,
       );
       return;
     }
@@ -106,10 +106,10 @@ const EventForm: FC<EventFormProps> = ({
     const eventData: FieldsRequired = {
       title: data.title,
       description: data.description,
-      projectId: data.project,
-      allDay: data.allDay,
-      startAt: data.startAt,
-      endAt: data.endAt,
+      project_id: data.project,
+      all_day: data.allDay,
+      start_at: data.startAt,
+      end_at: data.endAt,
     };
 
     createEvent(eventData, onDone);

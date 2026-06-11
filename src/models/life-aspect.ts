@@ -17,9 +17,9 @@ export interface LifeAspectLog {
 }
 
 export interface LifeAspect extends TimeStamps {
-  _id: string;
+  id: number;
   title: string;
-  deleted: boolean;
+  description?: string;
   asset: LifeAspectAsset;
   boosts: { value: number; expires: string }[];
 }
@@ -29,12 +29,13 @@ export type ILifeAspect = LifeAspect & mongoose.Document<string>;
 const LifeAspectSchema = new mongoose.Schema(
   {
     title: { type: String, required: true },
+    description: { type: String },
     userId: { type: String, required: true },
     deleted: { type: Boolean, required: true },
     asset: { type: String, required: true },
     boosts: { type: Array, required: true },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const LifeAspect =

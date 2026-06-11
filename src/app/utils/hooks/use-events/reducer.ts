@@ -39,14 +39,14 @@ export function reducer(state: EventsState, action: EventsStateAction) {
         data: updateObjById<Event>(
           state.data,
           action.payload.id,
-          action.payload.event
+          action.payload.event,
         ),
       };
     }
     case EventsStateActionType.DeleteEvent: {
       return {
         isLoading: false,
-        data: state.data.filter((event) => event._id !== action.payload.id),
+        data: state.data.filter((event) => event.id !== action.payload.id),
       };
     }
     default: {

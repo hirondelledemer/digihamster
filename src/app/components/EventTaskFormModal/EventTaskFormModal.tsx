@@ -13,8 +13,8 @@ export interface EventTaskFormModalProps {
   onClose(): void;
   onDone(): void;
   initialValues: {
-    startAt: number;
-    endAt: number;
+    startAt: string;
+    endAt: string;
   };
 }
 

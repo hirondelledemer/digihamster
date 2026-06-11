@@ -5,7 +5,6 @@ import React, {
   useMemo,
   useCallback,
   useState,
-  useEffect,
 } from "react";
 
 import {
@@ -30,8 +29,7 @@ import "./Calendar.scss";
 import Today from "../Today";
 
 import CalendarToolbar from "../CalendarToolbar";
-import { addMinutes, interval, isSameDay, isWithinInterval } from "date-fns";
-import axios from "axios";
+import { addHours, interval, isSameDay, isWithinInterval } from "date-fns";
 
 import CalendarEvent, { CalendarEventType } from "../CalendarEvent";
 import useJournalEntries from "@/app/utils/hooks/use-entry";
@@ -45,12 +43,10 @@ import {
   isCalendarDeadlineEntry,
   isCalendarEventEntry,
   isCalendarWeatherEntry,
-  WeatherData,
 } from "../CalendarEvent/CalendarEvent.types";
 import CalendarWeatherEvent from "../CalendarWeatherEvent";
 import CalendarSlot from "../CalendarSlot";
 import useEditTask from "@/app/utils/hooks/use-edit-task";
-import { HOUR } from "@/app/utils/consts/dates";
 
 import useCycle from "@/app/utils/hooks/use-cycle";
 import EventTaskFormModal from "../EventTaskFormModal";
@@ -58,6 +54,7 @@ import { useEventsState } from "@/app/utils/hooks/use-events/state-context";
 import { useEventsActions } from "@/app/utils/hooks/use-events/actions-context";
 import { useCalendarDate } from "../../utils/hooks/use-calendar-date";
 import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
+import { parseBackendDate, toBackendDateTime } from "#utils/date";
 
 export const now = () => new Date();
 
@@ -83,23 +80,24 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
 
   const { selectedDate, setSelectedDate } = useCalendarDate();
 
-  const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
+  // const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
 
-  const [isLoading, setLoading] = useState<boolean>(false);
+  // const [isLoading, setLoading] = useState<boolean>(false);
 
-  useEffect(() => {
-    (async function () {
-      try {
-        setLoading(true);
-        const weatherResponse = await axios.get<WeatherData>("/api/weather");
-        setWeatherData(weatherResponse.data);
-      } catch (error: unknown) {
-        console.log(error);
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, []);
+  // todo: redo the wheather api
+  // useEffect(() => {
+  //   (async function () {
+  //     try {
+  //       setLoading(true);
+  //       const weatherResponse = await axios.get<WeatherData>("/api/weather");
+  //       setWeatherData(weatherResponse.data);
+  //     } catch (error: unknown) {
+  //       console.log(error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   })();
+  // }, []);
 
   const { data: journalEntriesData } = useJournalEntries();
   const { data: eventsData } = useEventsState();
@@ -113,17 +111,17 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
 
   const eventsResolved = eventsData.map<CalendarEventEntry>((event) => {
     return {
-      start: new Date(event.startAt!),
-      end: new Date(event.endAt!),
+      start: new Date(event.start_at!),
+      end: new Date(event.end_at!),
       title: event.title,
-      allDay: event.allDay,
+      allDay: event.all_day,
       resource: {
-        id: event._id,
-        completed: event.completed,
+        id: event.id,
+        completed: event.status === "completed",
         type: "event",
         description: event.description,
-        projectId: event.projectId,
-        tasks: tasksData.filter((t) => t.eventId === event._id),
+        projectId: event.project_id,
+        tasks: tasksData.filter((t) => t.event_id === event.id),
       },
     };
   });
@@ -131,15 +129,13 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
   const tasksResolved = tasksData
     .filter((task) => !!task.deadline)
     .map<CalendarDeadlineEntry>((task) => ({
-      start: task.deadline ? new Date(task.deadline) : new Date(),
-      end: task.deadline
-        ? new Date(task.deadline + (task.estimate || 0.5) * HOUR)
-        : undefined,
+      start: task.deadline ? parseBackendDate(task.deadline) : new Date(),
+      end: task.deadline ? addHours(new Date(task.deadline), 1) : undefined,
       title: task.title,
       allDay: false,
       resource: {
-        id: task._id,
-        completed: task.completed,
+        id: task.id,
+        completed: task.status === "done",
         type: "deadline",
         task,
       },
@@ -155,31 +151,32 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
         note: entry,
         id: entry._id,
       },
-    })
+    }),
   );
 
-  const weatherResolved = (weatherData?.list || [])
-    .filter(
-      (entry) =>
-        !entry.dt_txt.includes("03:00:00") &&
-        !entry.dt_txt.includes("00:00:00") &&
-        !entry.dt_txt.includes("06:00:00")
-    )
-    .map<CalendarWeatherEntry>((entry) => ({
-      start: new Date(entry.dt_txt),
-      end: addMinutes(new Date(entry.dt_txt), 1),
-      title:
-        entry.main.feels_like.toString() +
-        " " +
-        entry.weather.map((w) => w.main).join(", "),
-      allDay: false,
-      resource: {
-        type: "weather",
-        id: entry.dt.toString(),
-        temp: entry.main.feels_like,
-        weather: entry.weather,
-      },
-    }));
+  const weatherResolved = [] as const satisfies CalendarWeatherEntry[];
+  // const weatherResolved = (weatherData?.list || [])
+  //   .filter(
+  //     (entry) =>
+  //       !entry.dt_txt.includes("03:00:00") &&
+  //       !entry.dt_txt.includes("00:00:00") &&
+  //       !entry.dt_txt.includes("06:00:00"),
+  //   )
+  //   .map<CalendarWeatherEntry>((entry) => ({
+  //     start: new Date(entry.dt_txt),
+  //     end: addMinutes(new Date(entry.dt_txt), 1),
+  //     title:
+  //       entry.main.feels_like.toString() +
+  //       " " +
+  //       entry.weather.map((w) => w.main).join(", "),
+  //     allDay: false,
+  //     resource: {
+  //       type: "weather",
+  //       id: entry.dt.toString(),
+  //       temp: entry.main.feels_like,
+  //       weather: entry.weather,
+  //     },
+  //   }));
 
   const events = [...eventsResolved, ...entriesResolved, ...tasksResolved];
 
@@ -187,7 +184,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
     () => ({
       className: style.slot,
     }),
-    []
+    [],
   );
 
   const customDayPropGetter = useCallback(
@@ -204,7 +201,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
         }).length;
 
       cycleData?.dates.filter((i) =>
-        isWithinInterval(date, interval(i.startDate, i.endDate))
+        isWithinInterval(date, interval(i.startDate, i.endDate)),
       );
 
       if (isSameDay(date, now())) {
@@ -226,14 +223,14 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
         },
       };
     },
-    [cycleData]
+    [cycleData],
   );
 
   const customGroupGetter = useCallback(
     () => ({
       className: style.group,
     }),
-    []
+    [],
   );
 
   const { views } = useMemo(
@@ -246,7 +243,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
         day: true,
       },
     }),
-    []
+    [],
   );
 
   const customEvent = ({ event }: { event: CalendarEventType }) => {
@@ -270,13 +267,13 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
   }: EventInteractionArgs<CalendarEventType>) => {
     if (isCalendarEventEntry(event)) {
       updateEvent(event.resource.id, {
-        allDay: isAllDay || false,
-        startAt: new Date(start).getTime(),
-        endAt: new Date(end).getTime(),
+        all_day: isAllDay || false,
+        start_at: toBackendDateTime(new Date(start)),
+        end_at: toBackendDateTime(new Date(end)),
       });
     } else if (isCalendarDeadlineEntry(event)) {
       editTask(event.resource.id, {
-        deadline: new Date(start).getTime(),
+        deadline: toBackendDateTime(new Date(start)),
       });
     }
   };
@@ -291,9 +288,9 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
     end: stringOrDate;
   }) => {
     updateEvent(event.resource.id, {
-      allDay: false,
-      startAt: new Date(start).getTime(),
-      endAt: new Date(end).getTime(),
+      all_day: false,
+      start_at: toBackendDateTime(new Date(start)),
+      end_at: toBackendDateTime(new Date(end)),
     });
   };
 
@@ -301,7 +298,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
     setEventInCreationData(event);
   };
 
-  if (projectsLoading || isLoading) {
+  if (projectsLoading) {
     return <div>Loading...</div>;
   }
 
@@ -313,11 +310,9 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
         onDone={() => setEventInCreationData(null)}
         initialValues={{
           startAt: eventInCreationData
-            ? new Date(eventInCreationData!.start).getTime()
-            : 0,
-          endAt: eventInCreationData
-            ? new Date(eventInCreationData!.end).getTime()
-            : 0,
+            ? eventInCreationData!.start.toString()
+            : "",
+          endAt: eventInCreationData ? eventInCreationData!.end.toString() : "",
         }}
       />
       <DnDropCalendar
@@ -349,7 +344,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
         min={dates.add(
           dates.startOf(new Date(2015, 17, 1), "day"),
           +8,
-          "hours"
+          "hours",
         )}
         views={views}
         slotPropGetter={customSlotPropGetter}

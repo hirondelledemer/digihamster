@@ -10,6 +10,7 @@ import {
 } from "react";
 import axios from "axios";
 import { JournalEntry } from "@/models/entry";
+import apiClient from "../api-client";
 
 export interface EntriesContextValue {
   data: JournalEntry[];
@@ -33,9 +34,9 @@ export const EntriesContextProvider = ({ children }: any) => {
     (async function () {
       try {
         setLoading(true);
-        const journalEntriesResponse = await axios.get<{
+        const journalEntriesResponse = await apiClient.get<{
           data: JournalEntry[];
-        }>("/api/entries");
+        }>("/journal-entries");
         setData(journalEntriesResponse.data.data);
       } catch (err) {
         setError(err);

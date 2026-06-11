@@ -13,7 +13,7 @@ import { EventsActionsContext } from "./actions-context";
 
 const handleApiError = (
   error: any,
-  toast: ReturnType<typeof useToast>["toast"]
+  toast: ReturnType<typeof useToast>["toast"],
 ) => {
   const errorMessage =
     error.response?.data?.message || "An unexpected error occurred";
@@ -26,7 +26,7 @@ const handleApiError = (
 
 const handleSuccessToast = (
   toast: ReturnType<typeof useToast>["toast"],
-  message: string
+  message: string,
 ) => {
   toast({
     title: "Success",
@@ -36,7 +36,7 @@ const handleSuccessToast = (
 
 const fetchEvents = async (
   dispatch: React.Dispatch<EventsStateAction>,
-  toast: ReturnType<typeof useToast>["toast"]
+  toast: ReturnType<typeof useToast>["toast"],
 ) => {
   try {
     dispatch({ type: EventsStateActionType.StartLoading });
@@ -44,7 +44,7 @@ const fetchEvents = async (
 
     dispatch({
       type: EventsStateActionType.FinishLoading,
-      payload: { data: eventsResponse.data },
+      payload: { data: eventsResponse.data || [] },
     });
   } catch (err) {
     dispatch({
@@ -80,11 +80,8 @@ export const EventsContextProvider = ({
       const tempId = "temp-id";
 
       const tempEvent: Event = {
-        _id: tempId,
-        completed: false,
-        deleted: false,
-        createdAt: "",
-        updatedAt: "",
+        id: tempId,
+        status: "pending",
         tags: [],
         ...data,
       };
@@ -122,7 +119,7 @@ export const EventsContextProvider = ({
         handleApiError(errorMessage, toast);
       }
     },
-    [toast]
+    [toast],
   );
 
   const updateEvent = useCallback(
@@ -148,7 +145,7 @@ export const EventsContextProvider = ({
         handleApiError(errorMessage, toast);
       }
     },
-    [toast]
+    [toast],
   );
 
   const deleteEvent = useCallback(
@@ -173,7 +170,7 @@ export const EventsContextProvider = ({
         handleApiError(errorMessage, toast);
       }
     },
-    [toast]
+    [toast],
   );
 
   return (

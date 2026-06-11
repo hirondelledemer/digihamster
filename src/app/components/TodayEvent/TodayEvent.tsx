@@ -19,8 +19,6 @@ import { Button } from "../ui/button";
 import { ChevronRightIcon } from "lucide-react";
 import CalendarWeatherEvent from "../CalendarWeatherEvent";
 import { useEventsActions } from "@/app/utils/hooks/use-events/actions-context";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "../ui/sheet";
-import useTasks from "@/app/utils/hooks/use-tasks";
 import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
 import { TaskActions } from "../TaskActions";
 import { EventActions } from "../EventActions";
@@ -40,13 +38,8 @@ const TodayEvent: FC<TodayEventProps> = ({
 }): JSX.Element => {
   const { update: updateEvent } = useEventsActions();
   const { editTask } = useEditTask();
-  const { data: tasks } = useTasks();
   const { getProjectById } = useProjectsState();
   const ref = useRef<HTMLDivElement>(null);
-
-  const relatedTasks = isCalendarDeadlineEntry(event)
-    ? tasks.filter((t) => event.resource.task.relatedTaskIds.includes(t._id))
-    : [];
 
   useEffect(() => {
     if (isFocused && ref.current) {
@@ -61,46 +54,26 @@ const TodayEvent: FC<TodayEventProps> = ({
 
   const handleCompleteClick = async (val: boolean) => {
     if (isCalendarDeadlineEntry(event)) {
-      editTask(event.resource.id, { completed: val });
+      editTask(event.resource.id, { status: val ? "done" : "doing" });
     } else {
-      updateEvent(event.resource.id, { completed: val });
+      updateEvent(event.resource.id, { status: val ? "completed" : "pending" });
     }
   };
 
   const handleSendBackToListClick = async () => {
-    editTask(event.resource.id, { deadline: null, isActive: true });
+    editTask(event.resource.id, { deadline: null, status: "doing" });
   };
 
   const project = useMemo(
     () =>
       isCalendarDeadlineEntry(event)
-        ? getProjectById(event.resource.task.projectId || "")
+        ? getProjectById(event.resource.task.project_id || "")
         : null,
-    [getProjectById, event]
+    [getProjectById, event],
   );
 
   return (
     <div ref={setNodeRef} className={cn(isOver ? "border border-primary" : "")}>
-      {isCalendarDeadlineEntry(event) &&
-        !!event.resource.task.relatedTaskIds.length && (
-          <Sheet open={isFocused}>
-            <SheetContent
-              side="right"
-              aria-describedby="Task Modal"
-              onCloseClick={() => {}}
-              showOverlay={false}
-            >
-              <SheetHeader>
-                <SheetTitle>Related tasks</SheetTitle>
-              </SheetHeader>
-              <div className={cn(["flex flex-col gap-2"])}>
-                {relatedTasks.map((rTask) => (
-                  <TaskCard task={rTask} key={rTask._id} dragId={rTask._id} />
-                ))}
-              </div>
-            </SheetContent>
-          </Sheet>
-        )}
       <div
         className={cn([
           "grid grid-cols-3 gap-4 italic p-2",
@@ -120,8 +93,8 @@ const TodayEvent: FC<TodayEventProps> = ({
             {event.start && event.end && (
               <div className="flex items-center gap-1">
                 <div>
-                  {lightFormat(event.start, "H:mm")}-
-                  {lightFormat(event.end, "H:mm")}
+                  {lightFormat(new Date(event.start), "H:mm")}-
+                  {lightFormat(new Date(event.end), "H:mm")}
                 </div>
                 {weatherEvent && <CalendarWeatherEvent event={weatherEvent} />}
               </div>
@@ -161,7 +134,7 @@ const TodayEvent: FC<TodayEventProps> = ({
             )}
             {isCalendarEventEntry(event) &&
               event.resource.tasks.map((t) => (
-                <TaskCard key={t._id} task={t} dragId={t._id} />
+                <TaskCard key={t.id} task={t} dragId={t.id} />
               ))}
           </div>
         </div>

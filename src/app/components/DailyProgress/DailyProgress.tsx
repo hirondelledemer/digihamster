@@ -17,7 +17,7 @@ const DailyProgress: FC<DailyProgressProps> = ({ testId }): JSX.Element => {
 
   const last11Days = useMemo(
     () => eachDayOfInterval({ start: subDays(now(), 10), end: now() }),
-    []
+    [],
   );
 
   const completedTasksCount = useMemo(
@@ -25,10 +25,10 @@ const DailyProgress: FC<DailyProgressProps> = ({ testId }): JSX.Element => {
       last11Days.map(
         (date) =>
           tasks.filter(
-            (t) => t.completedAt && isSameDay(t.completedAt, date.getTime())
-          ).length
+            (t) => t.completedAt && isSameDay(t.completedAt, date.getTime()),
+          ).length,
       ),
-    [last11Days, tasks]
+    [last11Days, tasks],
   );
 
   const journalEntriesCreated = useMemo(
@@ -36,10 +36,10 @@ const DailyProgress: FC<DailyProgressProps> = ({ testId }): JSX.Element => {
       last11Days.map(
         (date) =>
           journalEntries.filter(
-            (j) => j.createdAt && isSameDay(j.createdAt, date.getTime())
-          ).length
+            (j) => j.createdAt && isSameDay(j.createdAt, date.getTime()),
+          ).length,
       ),
-    [journalEntries, last11Days]
+    [journalEntries, last11Days],
   );
 
   const completedHabitsCount = useMemo(
@@ -48,12 +48,12 @@ const DailyProgress: FC<DailyProgressProps> = ({ testId }): JSX.Element => {
         (date) =>
           habits.filter(
             (h) =>
-              h.log.filter(
-                (log) => log.completed && isSameDay(log.at, date.getTime())
-              ).length > 0
-          ).length
+              h.logs.filter(
+                (log) => log.completed && isSameDay(log.at, date.getTime()),
+              ).length > 0,
+          ).length,
       ),
-    [habits, last11Days]
+    [habits, last11Days],
   );
 
   return (

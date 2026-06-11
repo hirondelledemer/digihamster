@@ -2,17 +2,16 @@ import mongoose from "mongoose";
 import { TimeStamps } from "./shared-types";
 
 export interface HabitLog {
-  at: number;
+  log_date: string;
   completed: boolean;
 }
 
 export interface Habit extends TimeStamps {
-  _id: string;
+  id: string;
   title: string;
-  deleted: boolean;
-  log: HabitLog[];
-  category: string;
-  timesPerMonth: number;
+  logs: HabitLog[];
+  times_per_month: number;
+  life_aspect_id: string;
 }
 
 export type IHabit = Habit & mongoose.Document<string>;
@@ -26,7 +25,7 @@ const HabitSchema = new mongoose.Schema(
     category: { type: String, required: true },
     timesPerMonth: { type: Number, required: true },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const Habit =

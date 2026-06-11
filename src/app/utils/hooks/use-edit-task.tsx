@@ -1,51 +1,40 @@
 import useTasks from "./use-tasks";
 import { updateObjById } from "../common/update-array";
-import axios from "axios";
 import { useToast } from "@/app/components/ui/use-toast";
 import { now } from "../date/date";
 import { TaskWithRelations } from "../types/task";
+import apiClient from "../api-client";
 
-type FieldsRequired =
+export type FieldsRequired =
   | "title"
   | "description"
-  | "projectId"
-  | "isActive"
-  | "estimate"
-  | "deadline"
-  | "tags";
+  | "project_id"
+  | "status"
+  | "deadline";
 
 export const useEditTask = () => {
   const { setData: setTasksData } = useTasks();
   const { toast } = useToast();
 
   const createNewTask = async (
-    data: Pick<TaskWithRelations, FieldsRequired> & {
-      subtasks: string[];
-      primaryTaskId?: string;
-    }
+    data: Pick<TaskWithRelations, FieldsRequired>,
   ) => {
     const tempId = "temp-id";
 
     const tempTask: TaskWithRelations = {
-      _id: tempId,
-      completed: false,
-      deleted: false,
-      sortOrder: null,
-      completedAt: undefined,
-      activatedAt: undefined,
-      parentTaskId: null,
-      createdAt: now().toDateString(),
-      updatedAt: now().toDateString(),
-      relatedTaskIds: [],
-      relatedNoteIds: [],
+      id: tempId,
+      event_id: null,
+      activated_at: null,
+      completed_at: null,
+      created_at: now().toString(),
       ...data,
     };
     setTasksData((e) => [...e, tempTask]);
 
     try {
-      await axios.post<TaskWithRelations>("/api/tasks/v2", data);
+      await apiClient.post<TaskWithRelations>("/tasks", data);
 
-      const response = await axios.get<TaskWithRelations[]>("/api/tasks/v2");
+      const response = await apiClient.get<TaskWithRelations[]>("/tasks");
 
       setTasksData(response.data);
       toast({
@@ -64,21 +53,18 @@ export const useEditTask = () => {
   const editTask = async (
     taskId: string,
     props: Partial<TaskWithRelations>,
-    onDone?: () => void
+    onDone?: () => void,
   ) => {
     try {
       setTasksData((t) =>
         updateObjById<TaskWithRelations>(t, taskId, {
           ...props,
-        })
+        }),
       );
       if (onDone) {
         onDone();
       }
-      await axios.patch("/api/tasks/v2", {
-        taskId,
-        ...props,
-      });
+      await apiClient.patch(`/tasks/${taskId}`, props);
       toast({
         title: "Success",
         description: "Task has been updated",
@@ -95,18 +81,15 @@ export const useEditTask = () => {
   const deleteTask = async (
     // todo: maybe rename
     taskId: string,
-    onDone?: () => void
+    onDone?: () => void,
   ) => {
     try {
-      setTasksData((tasks) => tasks.filter((task) => task._id !== taskId));
+      setTasksData((tasks) => tasks.filter((task) => task.id !== taskId));
       if (onDone) {
         onDone();
       }
 
-      await axios.patch("/api/tasks/v2", {
-        taskId,
-        deleted: true,
-      });
+      await apiClient.delete(`/tasks/${taskId}`);
       toast({
         title: "Success",
         description: "Task has been deleted",

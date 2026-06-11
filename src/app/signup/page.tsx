@@ -14,7 +14,10 @@ export default function SignupPage() {
 
   const onSignup = async () => {
     try {
-      await axios.post("/api/users/signup", user);
+      await axios.post(
+        "https://digihamster-api.duckdns.org/auth/register",
+        user,
+      );
       router.push("/login");
     } catch (error: any) {
       console.log("Signup failed", error.message);

@@ -52,9 +52,9 @@ function Today({ localizer, events, date, backgroundEvents }: TodayProps) {
       events.filter((event: CalendarEventType) =>
         event.allDay && event.start
           ? dates.inRange(event.start, min, max, "day")
-          : false
+          : false,
       ),
-    [events, max, min]
+    [events, max, min],
   );
 
   const regularEvents = useMemo(
@@ -62,9 +62,9 @@ function Today({ localizer, events, date, backgroundEvents }: TodayProps) {
       events.filter((event: CalendarEventType) =>
         !event.allDay && event.start
           ? dates.inRange(event.start, min, max, "day")
-          : false
+          : false,
       ),
-    [events, max, min]
+    [events, max, min],
   );
 
   useHotKeys([
@@ -123,7 +123,7 @@ function Today({ localizer, events, date, backgroundEvents }: TodayProps) {
 
         const closestWeatherEventIndex = closestIndexTo(
           event.start,
-          weatherEventDates
+          weatherEventDates,
         );
 
         return (
@@ -146,11 +146,11 @@ function Today({ localizer, events, date, backgroundEvents }: TodayProps) {
       habits.filter((habit) => {
         const todayTimestamp = min.getTime();
 
-        const todayHabit = habit.log.find((log) => log.at === todayTimestamp);
+        const todayHabit = habit.logs.find((log) => log.at === todayTimestamp);
 
         return !todayHabit;
       }),
-    [habits, min]
+    [habits, min],
   );
 
   const readyHabits = useMemo(
@@ -158,7 +158,7 @@ function Today({ localizer, events, date, backgroundEvents }: TodayProps) {
       filteredHabits
         .filter(getHabitIsDue(date))
         .sort(byLastCompletedDate(date)),
-    [filteredHabits, date]
+    [filteredHabits, date],
   );
 
   const restHabits = useMemo(
@@ -166,7 +166,7 @@ function Today({ localizer, events, date, backgroundEvents }: TodayProps) {
       filteredHabits
         .filter((h) => !getHabitIsDue(date)(h))
         .sort(byLastCompletedDate(date)),
-    [filteredHabits, date]
+    [filteredHabits, date],
   );
   return (
     <>
@@ -189,7 +189,7 @@ function Today({ localizer, events, date, backgroundEvents }: TodayProps) {
             </CollapsibleTrigger>
             <CollapsibleContent>
               {readyHabits.map((habit) => (
-                <TodayHabit key={habit._id} habit={habit} date={min} />
+                <TodayHabit key={habit.id} habit={habit} date={min} />
               ))}
             </CollapsibleContent>
           </Collapsible>
@@ -205,7 +205,7 @@ function Today({ localizer, events, date, backgroundEvents }: TodayProps) {
             </CollapsibleTrigger>
             <CollapsibleContent>
               {restHabits.map((habit) => (
-                <TodayHabit key={habit._id} habit={habit} date={min} />
+                <TodayHabit key={habit.id} habit={habit} date={min} />
               ))}
             </CollapsibleContent>
           </Collapsible>
@@ -250,21 +250,21 @@ Today.title = (date: Date) => {
 export default Today;
 
 function byLastCompletedDate(
-  date: Date
+  date: Date,
 ): ((a: Habit, b: Habit) => number) | undefined {
   return (h1, h2) => {
-    const lastLog1 = h1.log.findLast(
-      (log) => log.at < date.getTime() && log.completed
+    const lastLog1 = h1.logs.findLast(
+      (log) => log.at < date.getTime() && log.completed,
     );
-    const lastLog2 = h2.log.findLast(
-      (log) => log.at < date.getTime() && log.completed
+    const lastLog2 = h2.logs.findLast(
+      (log) => log.at < date.getTime() && log.completed,
     );
 
     const diff1 = lastLog1 ? differenceInDays(date, lastLog1.at) : 29;
     const diff2 = lastLog2 ? differenceInDays(date, lastLog2.at) : 29;
 
-    const averageAcceptableDiff1 = 28 / h1.timesPerMonth;
-    const averageAcceptableDiff2 = 28 / h2.timesPerMonth;
+    const averageAcceptableDiff1 = 28 / h1.times_per_month;
+    const averageAcceptableDiff2 = 28 / h2.times_per_month;
 
     return diff2 - averageAcceptableDiff2 - (diff1 - averageAcceptableDiff1);
   };
@@ -272,13 +272,13 @@ function byLastCompletedDate(
 
 function getHabitIsDue(date: Date): (value: Habit) => boolean {
   return (habit) => {
-    const lastLog = habit.log.findLast(
-      (log) => log.at < date.getTime() && log.completed
+    const lastLog = habit.logs.findLast(
+      (log) => log.at < date.getTime() && log.completed,
     );
 
     const diff = lastLog ? differenceInDays(date, lastLog.at) : 29;
 
-    const averageAcceptableDiff = 28 / habit.timesPerMonth;
+    const averageAcceptableDiff = 28 / habit.times_per_month;
 
     const readyIn = Math.floor(averageAcceptableDiff - diff);
 

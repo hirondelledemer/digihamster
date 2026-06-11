@@ -31,6 +31,8 @@ interface ChartItem {
 
 const HealthChart: FC<HealthChartProps> = (): JSX.Element => {
   const { data: habits, addLog } = useHabits();
+
+  console.log("habits", habits);
   const { data: lifeAspects = [] } = useLifeAspectsState();
   const [selectedCategory, setSelectedCategory] = useState<
     undefined | string | "garden" | "chart"
@@ -45,13 +47,13 @@ const HealthChart: FC<HealthChartProps> = (): JSX.Element => {
         const actions = [2, 1, 0]
           .map((day) => subDays(todayTimestamp, day).getTime())
           .map((timestamp) => ({
-            log: habit.log.find((log) => log.at === timestamp),
+            log: habit.logs.find((log) => log.at === timestamp),
             timestamp,
           }))
           .map((log) => ({
             disabled: log.log?.completed,
             onClick: () => {
-              addLog(habit._id, {
+              addLog(habit.id, {
                 completed: true,
                 at: log.timestamp,
               });
@@ -60,7 +62,7 @@ const HealthChart: FC<HealthChartProps> = (): JSX.Element => {
 
         return {
           dataLabel: habit.title,
-          _id: habit._id,
+          _id: habit.id,
           tempDataValue: 0,
           dataValue,
           getFillColor: (value: number) =>
@@ -70,26 +72,28 @@ const HealthChart: FC<HealthChartProps> = (): JSX.Element => {
         };
       });
     },
-    [addLog]
+    [addLog],
   );
 
   const chartData = useMemo(
     () =>
       habits
-        .map((habit) => habit.category)
+        .map((habit) => habit.life_aspect_id)
         .filter((item, pos, self) => self.indexOf(item) == pos)
         .reduce((prev: ChartItem[], curr) => {
-          const habitsForCategory = habits.filter((h) => h.category === curr);
+          const habitsForCategory = habits.filter(
+            (h) => h.life_aspect_id === curr,
+          );
           const lifeAspect = lifeAspects.find((la) => la._id === curr);
 
           const progressPercentage = getHabitProgressForLifeAspect(
             habits,
-            lifeAspect || []
+            lifeAspect || [],
           );
           const boostedProgressPercentage = getHabitProgressForLifeAspect(
             habits,
             lifeAspect || [],
-            true
+            true,
           );
 
           const allTheProgress = habitsForCategory.map((habit) => ({
@@ -123,7 +127,7 @@ const HealthChart: FC<HealthChartProps> = (): JSX.Element => {
             },
           ];
         }, []),
-    [habits, lifeAspects]
+    [habits, lifeAspects],
   );
 
   const component = () => {
@@ -189,7 +193,7 @@ const HealthChart: FC<HealthChartProps> = (): JSX.Element => {
         </CardHeader>
         <BarChart
           data={getHabitsData(
-            habits.filter((h) => h.category === selectedCategory)
+            habits.filter((h) => h.life_aspect_id === selectedCategory),
           )}
           config={{} as ChartConfig}
         />

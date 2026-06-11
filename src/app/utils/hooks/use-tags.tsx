@@ -8,9 +8,9 @@ import {
   useEffect,
   useState,
 } from "react";
-import axios from "axios";
 import { useToast } from "@/app/components/ui/use-toast";
 import { Tag } from "@/models/tag";
+import apiClient from "../api-client";
 
 interface TagsContextValues {
   data: Tag[];
@@ -37,8 +37,8 @@ export const TagsContextProvider = ({ children }: any) => {
     (async function () {
       try {
         setLoading(true);
-        const tagsResponse = await axios.get<Tag[]>("/api/tags");
-        setData(tagsResponse.data);
+        const tagsResponse = await apiClient.get<Tag[]>("/tags");
+        setData(tagsResponse.data || []);
       } catch (err) {
         setError(err);
         toast({

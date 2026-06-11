@@ -1,16 +1,15 @@
 import mongoose from "mongoose";
-import { Taggable, TimeStamps } from "./shared-types";
+import { Taggable } from "./shared-types";
 
-export interface Event extends Taggable, TimeStamps {
-  _id: string;
+export interface Event extends Taggable {
+  id: string;
   title: string;
   description: string;
-  completed: boolean;
-  deleted: boolean;
-  projectId: string;
-  allDay: boolean;
-  startAt: number;
-  endAt: number;
+  project_id: string;
+  all_day: boolean;
+  start_at: string;
+  end_at: string;
+  status: "pending" | "failed" | "completed" | "moved" | "canceled";
 }
 
 export type IEvent = Event & mongoose.Document<string>;
@@ -29,7 +28,7 @@ const EventSchema = new mongoose.Schema(
     completedAt: { type: Number },
     tags: { type: [String] },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const Event =

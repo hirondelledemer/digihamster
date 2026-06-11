@@ -15,6 +15,12 @@ export interface CycleContextValue {
   loading: boolean;
 }
 
+export const DEFAULT_CYCLE = {
+  _id: "no-id",
+  dates: [],
+  futureDates: [],
+} as const satisfies Cycle;
+
 export const CycleContext = createContext<CycleContextValue>({
   data: null,
   updateCycle: () => {},
@@ -32,8 +38,8 @@ export const CycleContextProvider = ({ children }: any) => {
   useEffect(() => {
     (async function () {
       try {
-        const cycleResponse = await axios.get<Cycle>("/api/cycle");
-        setData(cycleResponse.data);
+        // const cycleResponse = await axios.get<Cycle>("/api/cycle");
+        setData(DEFAULT_CYCLE);
       } catch (err) {
         setError(err);
         toast({
@@ -60,7 +66,7 @@ export const CycleContextProvider = ({ children }: any) => {
                 endDate: startDate + DAY * 5,
               },
             ],
-          } as Cycle)
+          }) as Cycle,
       );
 
       await axios.patch("/api/cycle", {
