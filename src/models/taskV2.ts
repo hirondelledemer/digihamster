@@ -2,8 +2,8 @@ import mongoose from "mongoose";
 
 export interface TaskV2 {
   id: string;
-  project_id: string | null;
-  event_id: string | null;
+  project_id: number | null;
+  event_id: number | null;
   title: string;
   description: string | null;
   status: "todo" | "doing" | "done" | "cancelled";

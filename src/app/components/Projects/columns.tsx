@@ -12,7 +12,7 @@ import { DataTableRowActions } from "../Tasks/components/DataTableRowActions/Dat
 
 export const getColumns: (
   projects: Project[],
-  tags: Tag[]
+  tags: Tag[],
 ) => ColumnDef<Task>[] = (projects, tags) => [
   {
     accessorKey: "title",

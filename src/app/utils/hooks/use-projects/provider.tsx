@@ -12,7 +12,7 @@ import { Project } from "@/models/project";
 
 const handleApiError = (
   error: any,
-  toast: ReturnType<typeof useToast>["toast"]
+  toast: ReturnType<typeof useToast>["toast"],
 ) => {
   const errorMessage =
     error.response?.data?.message || "An unexpected error occurred";
@@ -25,7 +25,7 @@ const handleApiError = (
 
 const handleSuccessToast = (
   toast: ReturnType<typeof useToast>["toast"],
-  message: string
+  message: string,
 ) => {
   toast({
     title: "Success",
@@ -35,7 +35,7 @@ const handleSuccessToast = (
 
 const fetchProjects = async (
   dispatch: React.Dispatch<ProjectsStateAction>,
-  toast: ReturnType<typeof useToast>["toast"]
+  toast: ReturnType<typeof useToast>["toast"],
 ) => {
   try {
     dispatch({ type: ProjectsStateActionType.StartLoading });
@@ -44,8 +44,7 @@ const fetchProjects = async (
     dispatch({
       type: ProjectsStateActionType.FinishLoading,
       payload: {
-        data: projectResponse.data.projects,
-        defaultProject: projectResponse.data.defaultProject,
+        data: projectResponse.data,
       },
     });
   } catch (err) {
@@ -80,12 +79,16 @@ export const ProjectsContextProvider = ({
 
   const createProject = useCallback(
     async (data: FieldsRequired, onDone?: () => void) => {
-      const tempId = "temp-id";
+      const tempId = -1;
 
       const tempProject: Project = {
-        _id: tempId,
-        deleted: false,
-        order: 0,
+        id: tempId,
+        sort_order: 0,
+        description: "",
+        status: "todo",
+        disabled: false,
+        created_at: "",
+        updated_at: "",
         ...data,
       };
       dispatch({
@@ -103,7 +106,7 @@ export const ProjectsContextProvider = ({
         dispatch({
           type: ProjectsStateActionType.UpdateProject,
           payload: {
-            id: tempId,
+            id: tempId.toString(),
             project: response.data,
           },
         });
@@ -114,7 +117,7 @@ export const ProjectsContextProvider = ({
         dispatch({
           type: ProjectsStateActionType.DeleteProject,
           payload: {
-            id: tempId,
+            id: tempId.toString(),
           },
         });
         const errorMessage =
@@ -122,7 +125,7 @@ export const ProjectsContextProvider = ({
         handleApiError(errorMessage, toast);
       }
     },
-    [toast]
+    [toast],
   );
 
   const updateProject = useCallback(
@@ -148,7 +151,7 @@ export const ProjectsContextProvider = ({
         handleApiError(errorMessage, toast);
       }
     },
-    [toast]
+    [toast],
   );
 
   const deleteProject = useCallback(
@@ -173,13 +176,13 @@ export const ProjectsContextProvider = ({
         handleApiError(errorMessage, toast);
       }
     },
-    [toast]
+    [toast],
   );
 
   const updateOrder = async (
     movedProjectId: string,
     overProjectId: string,
-    onDone?: () => void
+    onDone?: () => void,
   ) => {
     try {
       dispatch({
@@ -194,12 +197,7 @@ export const ProjectsContextProvider = ({
         onDone();
       }
 
-      await api.updateOrder({
-        sortOrder: state.data.map((p, index) => ({
-          projectId: p._id,
-          order: index,
-        })),
-      });
+      // TODO: wire up updateOrder API once endpoint is available
       handleSuccessToast(toast, "Project order been updated");
     } catch (e: any) {
       const errorMessage =
@@ -209,7 +207,7 @@ export const ProjectsContextProvider = ({
   };
 
   const getProjectById = (id: string) => {
-    return state.data.find((project) => project._id === id) || null;
+    return state.data.find((project) => project.id.toString() === id) || null;
   };
 
   return (

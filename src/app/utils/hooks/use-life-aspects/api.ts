@@ -8,7 +8,8 @@ export type LifeAspectFields = {
 };
 
 export const api = {
-  getLifeAspects: () => apiClient.get<LifeAspect[]>("/life-aspects"),
+  getLifeAspects: () =>
+    apiClient.get<LifeAspect[]>("/life-aspects/with-boosts"),
   createLifeAspect: (data: LifeAspectFields) =>
     apiClient.post<LifeAspect>("/life-aspects", data),
   updateLifeAspect: (id: string, data: Partial<LifeAspectFields>) =>

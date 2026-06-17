@@ -146,7 +146,9 @@ function Today({ localizer, events, date, backgroundEvents }: TodayProps) {
       habits.filter((habit) => {
         const todayTimestamp = min.getTime();
 
-        const todayHabit = habit.logs.find((log) => log.at === todayTimestamp);
+        const todayHabit = habit.logs.find(
+          (log) => new Date(log.log_date).valueOf() === todayTimestamp,
+        );
 
         return !todayHabit;
       }),
@@ -254,14 +256,16 @@ function byLastCompletedDate(
 ): ((a: Habit, b: Habit) => number) | undefined {
   return (h1, h2) => {
     const lastLog1 = h1.logs.findLast(
-      (log) => log.at < date.getTime() && log.completed,
+      (log) =>
+        new Date(log.log_date).valueOf() < date.getTime() && log.completed,
     );
     const lastLog2 = h2.logs.findLast(
-      (log) => log.at < date.getTime() && log.completed,
+      (log) =>
+        new Date(log.log_date).valueOf() < date.getTime() && log.completed,
     );
 
-    const diff1 = lastLog1 ? differenceInDays(date, lastLog1.at) : 29;
-    const diff2 = lastLog2 ? differenceInDays(date, lastLog2.at) : 29;
+    const diff1 = lastLog1 ? differenceInDays(date, lastLog1.log_date) : 29;
+    const diff2 = lastLog2 ? differenceInDays(date, lastLog2.log_date) : 29;
 
     const averageAcceptableDiff1 = 28 / h1.times_per_month;
     const averageAcceptableDiff2 = 28 / h2.times_per_month;
@@ -273,10 +277,11 @@ function byLastCompletedDate(
 function getHabitIsDue(date: Date): (value: Habit) => boolean {
   return (habit) => {
     const lastLog = habit.logs.findLast(
-      (log) => log.at < date.getTime() && log.completed,
+      (log) =>
+        new Date(log.log_date).valueOf() < date.getTime() && log.completed,
     );
 
-    const diff = lastLog ? differenceInDays(date, lastLog.at) : 29;
+    const diff = lastLog ? differenceInDays(date, lastLog.log_date) : 29;
 
     const averageAcceptableDiff = 28 / habit.times_per_month;
 

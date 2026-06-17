@@ -7,7 +7,7 @@ export const getHabitProgress = (habit: Habit) => {
   const earliestDay = subDays(now(), 28).getTime();
 
   const progress = habit.logs.filter(
-    (log) => log.at >= earliestDay && log.completed,
+    (log) => new Date(log.log_date).valueOf() >= earliestDay && log.completed,
   ).length;
   const habitProgress = (progress / habit.times_per_month) * 100;
 
@@ -22,7 +22,9 @@ export const getHabitProgressForLifeAspect = (
   const lifeAspects = Array.isArray(lifeAspect) ? lifeAspect : [lifeAspect];
   const earliestDay = subDays(now(), 28).getTime();
   const habitsForLifeAspect = habits.filter((h) =>
-    lifeAspects.map((la) => la._id).includes(h.life_aspect_id),
+    lifeAspects
+      .map((la) => la.id.toString())
+      .includes(h.life_aspect_id.toString()),
   );
 
   const total = habitsForLifeAspect.reduce((prev, curr) => {
@@ -31,11 +33,14 @@ export const getHabitProgressForLifeAspect = (
 
   const progress = habitsForLifeAspect.reduce((curr, prev) => {
     return (
-      prev.logs.filter((log) => log.at >= earliestDay && log.completed).length +
-      curr
+      prev.logs.filter(
+        (log) =>
+          new Date(log.log_date).valueOf() >= earliestDay && log.completed,
+      ).length + curr
     );
   }, 0);
 
+  console.log("progress", progress, total);
   const progressPercentage = Math.min((progress / total) * 100, 100);
 
   if (!addBoosts) {

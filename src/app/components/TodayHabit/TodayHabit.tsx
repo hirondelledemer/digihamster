@@ -27,13 +27,13 @@ const TodayHabit: FC<TodayHabitProps> = ({
   };
 
   const lastLog = habit.logs.findLast(
-    (log) => log.at < date.getTime() && log.completed,
+    (log) => new Date(log.log_date).valueOf() < date.getTime() && log.completed,
   );
 
-  const diff = lastLog ? differenceInDays(date, lastLog.at) : 29;
+  const diff = lastLog ? differenceInDays(date, lastLog.log_date) : 29;
 
   const formattedDiff = lastLog
-    ? formatDistanceStrict(lastLog.at, date, {
+    ? formatDistanceStrict(lastLog.log_date, date, {
         unit: "day",
         addSuffix: true,
       })

@@ -24,7 +24,7 @@ export interface ProjectsFinishLoadingAction {
   type: ProjectsStateActionType.FinishLoading;
   payload: {
     data: Project[];
-    defaultProject: Project;
+    defaultProject?: Project;
   };
 }
 

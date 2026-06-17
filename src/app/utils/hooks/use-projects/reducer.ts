@@ -1,12 +1,9 @@
 import { arrayMove } from "@dnd-kit/sortable";
-import { updateObjById } from "../../common/update-array";
 import {
   ProjectsState,
   ProjectsStateAction,
   ProjectsStateActionType,
 } from "./actions";
-
-import { Project } from "@/models/project";
 
 export function reducer(state: ProjectsState, action: ProjectsStateAction) {
   switch (action.type) {
@@ -23,7 +20,7 @@ export function reducer(state: ProjectsState, action: ProjectsStateAction) {
         ...state,
         isLoading: false,
         data: action.payload.data,
-        defaultProject: action.payload.defaultProject,
+        defaultProject: action.payload.defaultProject ?? null,
       };
     }
     case ProjectsStateActionType.Error: {
@@ -46,10 +43,10 @@ export function reducer(state: ProjectsState, action: ProjectsStateAction) {
       return {
         ...state,
         isLoading: false,
-        data: updateObjById<Project>(
-          state.data,
-          action.payload.id,
-          action.payload.project
+        data: state.data.map((p) =>
+          p.id.toString() === action.payload.id
+            ? { ...p, ...action.payload.project }
+            : p,
         ),
       };
     }
@@ -57,15 +54,17 @@ export function reducer(state: ProjectsState, action: ProjectsStateAction) {
       return {
         ...state,
         isLoading: false,
-        data: state.data.filter((project) => project._id !== action.payload.id),
+        data: state.data.filter(
+          (project) => project.id.toString() !== action.payload.id,
+        ),
       };
     }
     case ProjectsStateActionType.UpdateOrder: {
       const oldIndex = state.data.findIndex(
-        (p) => p._id === action.payload.movedProjectId
+        (p) => p.id.toString() === action.payload.movedProjectId,
       );
       const newIndex = state.data.findIndex(
-        (p) => p._id === action.payload.overProjectId
+        (p) => p.id.toString() === action.payload.overProjectId,
       );
 
       return {

@@ -1,9 +1,9 @@
 import React, { FC, useState } from "react";
 import useHabits from "@/app/utils/hooks/use-habits";
 import { Habit } from "@/models/habit";
-import { getTodayWithZeroHours, now } from "@/app/utils/date/date";
+import { getTodayWithZeroHours } from "@/app/utils/date/date";
 import { Checkbox } from "../ui/checkbox";
-import { differenceInCalendarDays, differenceInDays, subDays } from "date-fns";
+import { differenceInDays, subDays } from "date-fns";
 import { Button } from "../ui/button";
 import HabitFormModal from "../HabitFormModal";
 import { TableCell, TableRow } from "../ui/table";
