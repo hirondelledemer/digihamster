@@ -3,7 +3,10 @@ import { TaskV2 } from "@/models/taskV2";
 
 export type CreateTaskParams = {
   title: string;
-  project_id: number;
+  project_id?: number;
+  description?: string;
+  status?: "todo" | "doing";
+  deadline?: string;
 };
 
 export const api = {

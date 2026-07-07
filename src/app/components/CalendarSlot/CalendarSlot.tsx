@@ -18,7 +18,7 @@ const CalendarSlot: FC<CalendarSlotProps> = ({
     id: value.getTime(),
     data: {
       containerType: "calendar",
-      date: value.getTime(),
+      date: value,
     },
   });
   return (

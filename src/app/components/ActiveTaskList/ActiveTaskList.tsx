@@ -3,11 +3,10 @@
 
 import React, { FC, useMemo } from "react";
 
-import useTasks from "@/app/utils/hooks/use-tasks";
-
 import { ScrollArea } from "../ui/scroll-area";
 import { IconCircle, IconCircleCheck } from "@tabler/icons-react";
 import TaskCard from "../TaskCard";
+import { useTasksNewState } from "@/app/utils/hooks/use-tasks-new/state-context";
 
 export const taskTestId = "ActiveTaskList-task-testid";
 
@@ -18,7 +17,7 @@ export interface ActiveTaskListProps {
 const ActiveTaskList: FC<ActiveTaskListProps> = ({
   testId,
 }): JSX.Element | null => {
-  const { data: tasks } = useTasks();
+  const { data: tasks } = useTasksNewState();
 
   const tasksToShow = useMemo(
     () =>

@@ -6,10 +6,10 @@ import {
   ContextMenuTrigger,
 } from "../ui/context-menu";
 import { TaskWithRelations } from "@/app/utils/types/task";
-import useEditTask from "@/app/utils/hooks/use-edit-task";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "../ui/sheet";
 import NoteForm from "../NoteForm";
 import TaskFormModal from "../TaskFormModal";
+import { useTasksNewActions } from "@/app/utils/hooks/use-tasks-new/actions-context";
 
 interface TaskActionProps {
   children: ReactNode;
@@ -19,7 +19,7 @@ interface TaskActionProps {
 export const TaskActions: React.FC<TaskActionProps> = ({ children, task }) => {
   const [addNoteFormOpen, setAddNoteFormOpen] = useState<boolean>(false);
   const [taskFormOpen, setTaskFormOpen] = useState<boolean>(false);
-  const { editTask } = useEditTask();
+  const { updateTask: editTask } = useTasksNewActions();
 
   const closeTaskForm = () => setTaskFormOpen(false);
 

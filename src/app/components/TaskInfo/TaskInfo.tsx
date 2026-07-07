@@ -2,14 +2,13 @@
 import React, { FC } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "../ui/sheet";
 import { cn } from "../utils";
-import useTasks from "@/app/utils/hooks/use-tasks";
 import TaskCard from "../TaskCard";
 import CreateTaskForm from "../CreateTaskForm";
 import { ScrollArea } from "../ui/scroll-area";
 import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
 import MinimalNote from "../MinimalNote";
-import { useNotesState } from "@/app/utils/hooks/use-notes/state-context";
 import { useRouter, useSearchParams } from "#lib/navigation";
+import { useTasksNewState } from "@/app/utils/hooks/use-tasks-new/state-context";
 
 export interface TaskInfoProps {
   testId?: string;
@@ -19,31 +18,24 @@ const TaskInfo: FC<TaskInfoProps> = (): JSX.Element | null => {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const taskId = searchParams.get("taskId");
   const projectId = searchParams.get("projectId");
 
-  const { data: tasks } = useTasks();
-  const { data: notes } = useNotesState();
-  const { getProjectById, isLoading } = useProjectsState();
+  const { data: tasks } = useTasksNewState();
 
-  const selectedTask = tasks.find((t) => t._id === taskId);
+  const { getProjectById, isLoading } = useProjectsState();
 
   const selectedProject =
     projectId && !isLoading ? getProjectById(projectId) : null;
 
-  if (!selectedTask && !selectedProject) {
+  if (!selectedProject) {
     return null;
   }
 
-  const title = selectedTask ? selectedTask.title : selectedProject?.title;
+  const title = selectedProject?.title;
 
-  const tasksToShow = selectedTask
-    ? tasks.filter((t) => selectedTask.relatedTaskIds.includes(t._id))
-    : tasks.filter((t) => t.projectId === projectId);
-
-  const notesToShow = selectedTask
-    ? notes.filter((n) => selectedTask.relatedNoteIds.includes(n._id))
-    : [];
+  const tasksToShow = tasks.filter(
+    (t) => t.project_id && t.project_id.toString() === projectId,
+  );
 
   return (
     <Sheet open>
@@ -61,19 +53,15 @@ const TaskInfo: FC<TaskInfoProps> = (): JSX.Element | null => {
           <div className={cn(["flex flex-col gap-2"])}>
             {selectedProject && (
               <div className="w-[300px]">
-                <MinimalNote note={selectedProject.jsonDescription} />
+                <MinimalNote note={selectedProject.description} />
               </div>
             )}
-            {notesToShow.map((n) => (
-              <div className="w-[300px]" key={n._id}>
-                <MinimalNote note={n.jsonNote} />
-              </div>
-            ))}
+
             {tasksToShow.map((rTask) => (
               <TaskCard
                 task={rTask}
-                key={rTask._id}
-                dragId={rTask._id}
+                key={rTask.id}
+                dragId={rTask.id}
                 indicateActive
               />
             ))}
@@ -82,14 +70,8 @@ const TaskInfo: FC<TaskInfoProps> = (): JSX.Element | null => {
 
         <CreateTaskForm
           onDone={() => {}}
-          primaryTaskId={selectedTask?._id}
-          projectId={
-            selectedTask
-              ? selectedTask.projectId || undefined
-              : selectedProject
-              ? selectedProject._id
-              : undefined
-          }
+          // primaryTaskId={selectedTask?.id}
+          projectId={selectedProject ? selectedProject._id : undefined}
         />
       </SheetContent>
     </Sheet>

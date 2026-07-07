@@ -6,18 +6,18 @@ import {
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
-import useEditTask from "./use-edit-task";
 import { snapCenterToCursor } from "@dnd-kit/modifiers";
+import { useTasksNewActions } from "./use-tasks-new/actions-context";
 
 export const DraggableTasksContextProvider = ({ children }: any) => {
-  const { editTask } = useEditTask();
+  const { updateTask: editTask } = useTasksNewActions();
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
         distance: 8,
       },
-    })
+    }),
   );
 
   return (
@@ -31,8 +31,11 @@ export const DraggableTasksContextProvider = ({ children }: any) => {
               deadline: props.over.data.current.date,
             });
           } else {
-            editTask(props.active.data.current?.id.toString(), {
-              eventId: props.over?.id.toString(),
+            console.log("aaaaa", props.active.data.current?.id, {
+              event_id: Number(props.over?.id),
+            });
+            editTask(props.active.data.current?.id, {
+              event_id: Number(props.over?.id),
             });
           }
         }

@@ -25,10 +25,10 @@ import { cn } from "../utils";
 import { format } from "date-fns";
 import { Calendar } from "../ui/calendar";
 import { TaskV2 as Task } from "@/models/taskV2";
-import { useEditTask } from "@/app/utils/hooks/use-edit-task";
-import useTags from "@/app/utils/hooks/use-tags";
+// import useTags from "@/app/utils/hooks/use-tags";
 import { Textarea } from "../ui/textarea";
 import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
+import { useTasksNewActions } from "@/app/utils/hooks/use-tasks-new/actions-context";
 
 export const minimalNoteTestId = "TaskForm-minimal-note-testId" as const;
 export const taskFormTestId = "TaskForm-form-testid" as const;
@@ -54,15 +54,15 @@ const TaskForm: FC<TaskFormProps> = ({
   ...restProps
 }): JSX.Element => {
   const { data: projects } = useProjectsState();
-  const { data: tags } = useTags();
-  const { editTask, deleteTask } = useEditTask();
+  // const { data: tags } = useTags();
+  const { updateTask: editTask, deleteTask } = useTasksNewActions();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       title: restProps.task.title,
       description: restProps.task.description || "",
-      project: restProps.task.project_id || "",
+      project: restProps.task.project_id?.toString() || "",
       deadline: restProps.task.deadline,
     },
   });
@@ -71,7 +71,7 @@ const TaskForm: FC<TaskFormProps> = ({
     editTask(restProps.task.id, {
       title: values.title,
       description: values.description,
-      project_id: values.project,
+      project_id: Number(values.project),
       deadline: values.deadline,
     });
     onDone();
@@ -153,8 +153,8 @@ const TaskForm: FC<TaskFormProps> = ({
                     .filter((project) => !project.disabled)
                     .map((project) => (
                       <SelectItem
-                        key={project._id as unknown as string}
-                        value={project._id as unknown as string}
+                        key={project.id as unknown as string}
+                        value={project.id as unknown as string}
                         role="option"
                       >
                         {project.title}

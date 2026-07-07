@@ -6,6 +6,7 @@ import { Switch } from "../ui/switch";
 import { Label } from "../ui/label";
 import { FormMode } from "./types";
 import CreateTaskForm from "../CreateTaskForm";
+import { toBackendDateTime } from "#utils/date";
 
 export interface EventTaskFormModalProps {
   testId?: string;
@@ -37,6 +38,7 @@ const EventTaskFormModal: FC<EventTaskFormModalProps> = ({
     onDone();
   };
 
+  console.log("aaa", initialValues.startAt, initialValues.endAt);
   return (
     <div data-testid={testId}>
       <Sheet open={open}>

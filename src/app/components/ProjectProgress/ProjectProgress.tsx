@@ -1,7 +1,7 @@
 "use client";
 import { now } from "@/app/utils/date/date";
 import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
-import useTasks from "@/app/utils/hooks/use-tasks";
+import { useTasksNewState } from "@/app/utils/hooks/use-tasks-new/state-context";
 import { Project } from "@/models/project";
 import { addDays, differenceInCalendarDays, format, isValid } from "date-fns";
 import { useRouter } from "next/navigation";
@@ -15,7 +15,7 @@ export interface ProjectProgressProps {
 const ProjectProgressBar: FC<{ project: Project }> = ({
   project,
 }): JSX.Element => {
-  const { data: tasks } = useTasks();
+  const { data: tasks } = useTasksNewState();
 
   const router = useRouter();
 

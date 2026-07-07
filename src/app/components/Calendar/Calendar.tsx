@@ -34,7 +34,6 @@ import { addHours, interval, isSameDay, isWithinInterval } from "date-fns";
 import CalendarEvent, { CalendarEventType } from "../CalendarEvent";
 import useJournalEntries from "@/app/utils/hooks/use-entry";
 
-import useTasks from "@/app/utils/hooks/use-tasks";
 import {
   CalendarDeadlineEntry,
   CalendarEventEntry,
@@ -46,7 +45,6 @@ import {
 } from "../CalendarEvent/CalendarEvent.types";
 import CalendarWeatherEvent from "../CalendarWeatherEvent";
 import CalendarSlot from "../CalendarSlot";
-import useEditTask from "@/app/utils/hooks/use-edit-task";
 
 import useCycle from "@/app/utils/hooks/use-cycle";
 import EventTaskFormModal from "../EventTaskFormModal";
@@ -55,6 +53,8 @@ import { useEventsActions } from "@/app/utils/hooks/use-events/actions-context";
 import { useCalendarDate } from "../../utils/hooks/use-calendar-date";
 import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
 import { parseBackendDate, toBackendDateTime } from "#utils/date";
+import { useTasksNewState } from "@/app/utils/hooks/use-tasks-new/state-context";
+import { useTasksNewActions } from "@/app/utils/hooks/use-tasks-new/actions-context";
 
 export const now = () => new Date();
 
@@ -106,8 +106,8 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
   const { isLoading: projectsLoading } = useProjectsState();
 
   //todo: check editing of deadline tasks
-  const { data: tasksData } = useTasks(); //todo this is fetching all the tasks. fetch only tasks with deadline
-  const { editTask } = useEditTask(); //todo this is fetching all the tasks. fetch only tasks with deadline
+  const { data: tasksData } = useTasksNewState(); //todo this is fetching all the tasks. fetch only tasks with deadline
+  const { updateTask: editTask } = useTasksNewActions(); //todo this is fetching all the tasks. fetch only tasks with deadline
 
   const eventsResolved = eventsData.map<CalendarEventEntry>((event) => {
     return {
@@ -121,7 +121,9 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
         type: "event",
         description: event.description,
         projectId: event.project_id,
-        tasks: tasksData.filter((t) => t.event_id === event.id),
+        tasks: tasksData.filter(
+          (t) => t.event_id?.toString() === event.id.toString(),
+        ),
       },
     };
   });

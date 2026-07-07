@@ -25,6 +25,7 @@ import { Textarea } from "../ui/textarea";
 import { useEventsActions } from "@/app/utils/hooks/use-events/actions-context";
 import { FieldsRequired } from "@/app/utils/hooks/use-events/api";
 import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
+import { toBackendDateTime } from "#utils/date";
 
 export const minimalNoteTestId = "EventForm-minimal-note-testId";
 
@@ -106,10 +107,11 @@ const EventForm: FC<EventFormProps> = ({
     const eventData: FieldsRequired = {
       title: data.title,
       description: data.description,
-      project_id: data.project,
+      // @ts-expect-error TODO: fix later
+      project_id: data.project || undefined,
       all_day: data.allDay,
-      start_at: data.startAt,
-      end_at: data.endAt,
+      start_at: toBackendDateTime(new Date(data.startAt)),
+      end_at: toBackendDateTime(new Date(data.endAt)),
     };
 
     createEvent(eventData, onDone);
@@ -152,8 +154,8 @@ const EventForm: FC<EventFormProps> = ({
                   <SelectContent>
                     {projects.map((project) => (
                       <SelectItem
-                        key={project._id as unknown as string}
-                        value={project._id as unknown as string}
+                        key={project.id as unknown as string}
+                        value={project.id as unknown as string}
                         role="option"
                       >
                         {project.title}

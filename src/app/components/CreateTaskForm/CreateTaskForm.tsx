@@ -1,5 +1,4 @@
 import React, { FC } from "react";
-import useEditTask, { FieldsRequired } from "@/app/utils/hooks/use-edit-task";
 import { useForm } from "react-hook-form";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -10,6 +9,8 @@ import { Button } from "../ui/button";
 import { now, toBackendDateTime } from "@/app/utils/date/date";
 import { addDays } from "date-fns";
 import { TaskWithRelations } from "@/app/utils/types/task";
+import { useTasksNewActions } from "@/app/utils/hooks/use-tasks-new/actions-context";
+import { CreateTaskParams } from "@/app/utils/hooks/use-tasks-new/api";
 
 export interface CreateTaskFormProps {
   testId?: string;
@@ -41,7 +42,7 @@ const CreateTaskForm: FC<CreateTaskFormProps> = ({
   deadline,
   projectId,
 }): JSX.Element => {
-  const { createNewTask } = useEditTask();
+  const { createTask: createNewTask } = useTasksNewActions();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(FormSchema),
@@ -59,9 +60,6 @@ const CreateTaskForm: FC<CreateTaskFormProps> = ({
   });
 
   const getDeadline = (params: string[]) => {
-    console.log(deadline);
-    console.log(new Date(deadline!));
-    console.log(toBackendDateTime(new Date(deadline!)));
     if (params.includes("tmr")) {
       return toBackendDateTime(addDays(now(), 1));
     }
@@ -75,10 +73,10 @@ const CreateTaskForm: FC<CreateTaskFormProps> = ({
   };
 
   const handleSubmit = (values: FormValues) => {
-    const taskData: Pick<TaskWithRelations, FieldsRequired> = {
+    const taskData: CreateTaskParams = {
       title: values.description.title,
       description: values.description.textContent,
-      project_id: projectId || values.description.projectId || null,
+      project_id: Number(projectId) || Number(values.description.projectId),
       status: values.description.params.includes("active") ? "doing" : "todo",
       deadline: getDeadline(values.description.params),
     };

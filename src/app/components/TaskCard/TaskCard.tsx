@@ -56,7 +56,7 @@ const TaskCard: FC<TaskCardProps> = ({
       }
     : undefined;
 
-  const project = projects.find((p) => p._id === task.project_id);
+  const project = projects.find((p) => p.id === task.project_id);
 
   return (
     <div data-testid={testId}>

@@ -14,7 +14,6 @@ import {
 } from "../CalendarEvent/CalendarEvent.types";
 import TaskCard from "../TaskCard";
 import { useDroppable } from "@dnd-kit/core";
-import useEditTask from "@/app/utils/hooks/use-edit-task";
 import { Button } from "../ui/button";
 import { ChevronRightIcon } from "lucide-react";
 import CalendarWeatherEvent from "../CalendarWeatherEvent";
@@ -22,6 +21,7 @@ import { useEventsActions } from "@/app/utils/hooks/use-events/actions-context";
 import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
 import { TaskActions } from "../TaskActions";
 import { EventActions } from "../EventActions";
+import { useTasksNewActions } from "@/app/utils/hooks/use-tasks-new/actions-context";
 
 export interface TodayEventProps {
   showDate?: boolean;
@@ -37,7 +37,7 @@ const TodayEvent: FC<TodayEventProps> = ({
   isFocused,
 }): JSX.Element => {
   const { update: updateEvent } = useEventsActions();
-  const { editTask } = useEditTask();
+  const { updateTask: editTask } = useTasksNewActions();
   const { getProjectById } = useProjectsState();
   const ref = useRef<HTMLDivElement>(null);
 
@@ -67,7 +67,7 @@ const TodayEvent: FC<TodayEventProps> = ({
   const project = useMemo(
     () =>
       isCalendarDeadlineEntry(event)
-        ? getProjectById(event.resource.task.project_id || "")
+        ? getProjectById(event.resource.task.project_id?.toString() || "")
         : null,
     [getProjectById, event],
   );
