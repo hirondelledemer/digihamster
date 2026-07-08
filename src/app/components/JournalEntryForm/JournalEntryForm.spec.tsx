@@ -3,6 +3,7 @@ import { act, waitFor } from "@testing-library/react";
 import JournalEntryForm, { JournalEntryFormProps } from "./JournalEntryForm";
 import { getJournalEntryFormTestkit } from "./JournalEntryForm.testkit";
 import { render } from "@/config/utils/test-utils";
+import { EntriesContextProvider } from "@/app/utils/hooks/use-entry/provider";
 import MockAxios from "jest-mock-axios";
 
 import * as toastHook from "../ui/use-toast";
@@ -14,7 +15,11 @@ describe("JournalEntryForm", () => {
   const defaultProps: JournalEntryFormProps = {};
   const renderComponent = (props: JournalEntryFormProps = defaultProps) =>
     getJournalEntryFormTestkit(
-      render(<JournalEntryForm {...props} />).container
+      render(
+        <EntriesContextProvider>
+          <JournalEntryForm {...props} />
+        </EntriesContextProvider>
+      ).container
     );
 
   beforeEach(() => {
@@ -91,7 +96,7 @@ describe("JournalEntryForm", () => {
     });
     expect(toastSpy).toHaveBeenCalledWith({
       title: "Success",
-      description: "Note has been submitted",
+      description: "Entry has been created",
     });
   });
 
@@ -139,7 +144,7 @@ describe("JournalEntryForm", () => {
         });
       });
       expect(toastSpy).toHaveBeenCalledWith({
-        description: '{"data":{}}',
+        description: "An unexpected error occurred",
         title: "Error",
         variant: "destructive",
       });

@@ -2,10 +2,11 @@ import mongoose from "mongoose";
 import { Taggable, TimeStamps } from "./shared-types";
 
 export interface JournalEntry extends Taggable, TimeStamps {
-  _id: string;
+  id: number;
   title: string;
   note: string;
-  jsonNote: object;
+  json_note: object;
+  created_at: string;
 }
 
 export type IJournalEntry = JournalEntry & mongoose.Document<string>;
@@ -18,7 +19,7 @@ const JournalEntrySchema = new mongoose.Schema<string>(
     userId: { type: String, required: true },
     tags: { type: [String] },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const JournalEntry =

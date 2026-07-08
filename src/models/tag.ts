@@ -3,7 +3,7 @@ import * as mongoose from "mongoose";
 const Schema = mongoose.Schema;
 
 export interface Tag {
-  _id: string;
+  id: number;
   title: string;
   color: string;
   deleted: boolean;
@@ -18,7 +18,7 @@ const TagSchema = new Schema(
     deleted: { type: Boolean, required: true },
     userId: { type: String, required: true },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const Tag = mongoose.models.Tag || mongoose.model<ITag>("Tag", TagSchema);

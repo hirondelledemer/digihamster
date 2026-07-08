@@ -1,7 +1,7 @@
 import { Home as HomeComp } from "./components/Home/Home";
-import { EntriesContextProvider } from "./utils/hooks/use-entry";
+import { EntriesContextProvider } from "./utils/hooks/use-entry/provider";
 
-import { TagsContextProvider } from "./utils/hooks/use-tags";
+import { TagsContextProvider } from "./utils/hooks/use-tags/provider";
 
 import { DraggableTasksContextProvider } from "./utils/hooks/use-draggable-tasks";
 import { CycleContextProvider } from "./utils/hooks/use-cycle";

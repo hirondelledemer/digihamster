@@ -1,7 +1,7 @@
 "use client";
 import React, { FC, useCallback, useMemo, useState } from "react";
 import useTasks from "@/app/utils/hooks/use-tasks";
-import useJournalEntries from "@/app/utils/hooks/use-entry";
+import { useEntriesState } from "@/app/utils/hooks/use-entry/state-context";
 import {
   eachDayOfInterval,
   endOfWeek,
@@ -44,7 +44,7 @@ const Timeline: FC<TimelineProps> = ({ testId }): JSX.Element => {
   const { data: tasks } = useTasks();
   const { data: events } = useEventsState();
 
-  const { data: journalEntries } = useJournalEntries();
+  const { data: journalEntries } = useEntriesState();
   const { data: projects } = useProjectsState();
   const [period, setPeriod] = useState<IPeriod>("this_week");
 

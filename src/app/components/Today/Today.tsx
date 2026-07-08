@@ -107,7 +107,7 @@ function Today({ localizer, events, date, backgroundEvents }: TodayProps) {
                 <CollapsibleContent>
                   <MinimalNote
                     note={
-                      event.resource.note.jsonNote || event.resource.note.note
+                      event.resource.note.json_note || event.resource.note.note
                     }
                   />
                 </CollapsibleContent>

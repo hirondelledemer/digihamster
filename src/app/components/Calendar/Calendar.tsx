@@ -32,7 +32,7 @@ import CalendarToolbar from "../CalendarToolbar";
 import { addHours, interval, isSameDay, isWithinInterval } from "date-fns";
 
 import CalendarEvent, { CalendarEventType } from "../CalendarEvent";
-import useJournalEntries from "@/app/utils/hooks/use-entry";
+import { useEntriesState } from "@/app/utils/hooks/use-entry/state-context";
 
 import {
   CalendarDeadlineEntry,
@@ -99,7 +99,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
   //   })();
   // }, []);
 
-  const { data: journalEntriesData } = useJournalEntries();
+  const { data: journalEntriesData } = useEntriesState();
   const { data: eventsData } = useEventsState();
   const { update: updateEvent } = useEventsActions();
   const { data: cycleData } = useCycle();
@@ -145,17 +145,19 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
 
   const entriesResolved = journalEntriesData.map<CalendarJournalEntry>(
     (entry) => ({
-      start: new Date(entry.createdAt || 0),
+      start: new Date(entry.created_at || 0),
       title: entry.title,
       allDay: false,
       resource: {
         type: "journal",
         note: entry,
-        id: entry._id,
+        id: entry.id?.toString(),
       },
     }),
   );
 
+  console.log("aaaa");
+  console.log(entriesResolved);
   const weatherResolved = [] as const satisfies CalendarWeatherEntry[];
   // const weatherResolved = (weatherData?.list || [])
   //   .filter(

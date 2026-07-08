@@ -3,7 +3,7 @@ import React, { FC, useState } from "react";
 
 import { DataTable } from "../Tasks/components/DataTable/DataTable";
 import useTasks from "@/app/utils/hooks/use-tasks";
-import useTags from "@/app/utils/hooks/use-tags";
+import { useTagsState } from "@/app/utils/hooks/use-tags/state-context";
 import { TaskV2 } from "@/models/taskV2";
 import TaskFormModal from "../TaskFormModal";
 import ProjectCard from "../ProjectCard";
@@ -38,7 +38,7 @@ const Projects: FC<ProjectsProps> = ({ testId }): JSX.Element => {
   const { data: projects, defaultProject, isLoading } = useProjectsState();
   const { updateOrder } = useProjectsActions();
   const { data: tasks } = useTasks();
-  const { data: tags } = useTags();
+  const { data: tags } = useTagsState();
 
   const [selectedProjectId, setSelectedProjectId] = useState(
     defaultProject?._id

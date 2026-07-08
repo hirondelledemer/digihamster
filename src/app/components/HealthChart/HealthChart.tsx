@@ -50,7 +50,8 @@ const HealthChart: FC<HealthChartProps> = (): JSX.Element => {
           .map((timestamp) => ({
             log: habit.logs.find(
               (log) =>
-                log.log_date.slice(0, 10) === toBackendDate(new Date(timestamp)),
+                log.log_date.slice(0, 10) ===
+                toBackendDate(new Date(timestamp)),
             ),
             timestamp,
           }))

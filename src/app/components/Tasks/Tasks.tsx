@@ -5,7 +5,7 @@ import { DataTable } from "./components/DataTable/DataTable";
 import { getColumns } from "./components/columns";
 import { TaskV2 } from "@/models/taskV2";
 
-import useTags from "@/app/utils/hooks/use-tags";
+import { useTagsState } from "@/app/utils/hooks/use-tags/state-context";
 import TaskFormModal from "../TaskFormModal";
 import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
 
@@ -16,7 +16,7 @@ export interface TasksProps {
 const Tasks: FC<TasksProps> = ({ testId }): JSX.Element => {
   const { data: tasks } = useTasks();
   const { data: projects, isLoading } = useProjectsState();
-  const { data: tags } = useTags();
+  const { data: tags } = useTagsState();
   const [selectedTask, setSelectedTask] = useState<TaskV2 | null>(null);
 
   const notCompletedTasks = tasks.filter((task) => !task.completed);

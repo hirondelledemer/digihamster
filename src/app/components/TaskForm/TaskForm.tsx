@@ -25,7 +25,7 @@ import { cn } from "../utils";
 import { format } from "date-fns";
 import { Calendar } from "../ui/calendar";
 import { TaskV2 as Task } from "@/models/taskV2";
-// import useTags from "@/app/utils/hooks/use-tags";
+// import { useTagsState } from "@/app/utils/hooks/use-tags/state-context";
 import { Textarea } from "../ui/textarea";
 import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
 import { useTasksNewActions } from "@/app/utils/hooks/use-tasks-new/actions-context";
@@ -54,7 +54,7 @@ const TaskForm: FC<TaskFormProps> = ({
   ...restProps
 }): JSX.Element => {
   const { data: projects } = useProjectsState();
-  // const { data: tags } = useTags();
+  // const { data: tags } = useTagsState();
   const { updateTask: editTask, deleteTask } = useTasksNewActions();
 
   const form = useForm<FormValues>({
