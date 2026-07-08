@@ -75,10 +75,8 @@ export const NotesContextProvider = ({ children }: { children: ReactNode }) => {
       const tempId = "temp-id";
 
       const tempNote: Note = {
-        _id: tempId,
+        id: tempId,
         deleted: false,
-        createdAt: "",
-        updatedAt: "",
         isActive: false,
         userId: "", // todo: why this is not required in other places?
         ...data,

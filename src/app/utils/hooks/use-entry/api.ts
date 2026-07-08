@@ -13,7 +13,6 @@ export const api = {
   createEntry: (data: CreateEntryParams) =>
     apiClient.post<JournalEntry>("/journal-entries", data),
   updateEntry: (id: string, props: Partial<JournalEntry>) =>
-    apiClient.patch("/journal-entries", { id, ...props }),
-  deleteEntry: (id: string) =>
-    apiClient.patch("/journal-entries", { id, deleted: true }),
+    apiClient.patch(`/journal-entries/${id}`, props),
+  deleteEntry: (id: string) => apiClient.delete(`/journal-entries/${id}`),
 } as const;
