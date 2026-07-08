@@ -5,6 +5,7 @@ import React, {
   useMemo,
   useCallback,
   useState,
+  useEffect,
 } from "react";
 
 import {
@@ -29,7 +30,13 @@ import "./Calendar.scss";
 import Today from "../Today";
 
 import CalendarToolbar from "../CalendarToolbar";
-import { addHours, interval, isSameDay, isWithinInterval } from "date-fns";
+import {
+  addHours,
+  addMinutes,
+  interval,
+  isSameDay,
+  isWithinInterval,
+} from "date-fns";
 
 import CalendarEvent, { CalendarEventType } from "../CalendarEvent";
 import { useEntriesState } from "@/app/utils/hooks/use-entry/state-context";
@@ -42,6 +49,7 @@ import {
   isCalendarDeadlineEntry,
   isCalendarEventEntry,
   isCalendarWeatherEntry,
+  WeatherData,
 } from "../CalendarEvent/CalendarEvent.types";
 import CalendarWeatherEvent from "../CalendarWeatherEvent";
 import CalendarSlot from "../CalendarSlot";
@@ -55,6 +63,8 @@ import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
 import { parseBackendDate, toBackendDateTime } from "#utils/date";
 import { useTasksNewState } from "@/app/utils/hooks/use-tasks-new/state-context";
 import { useTasksNewActions } from "@/app/utils/hooks/use-tasks-new/actions-context";
+import axios from "axios";
+import apiClient from "@/app/utils/api-client";
 
 export const now = () => new Date();
 
@@ -80,24 +90,24 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
 
   const { selectedDate, setSelectedDate } = useCalendarDate();
 
-  // const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
+  const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
 
-  // const [isLoading, setLoading] = useState<boolean>(false);
+  const [isLoading, setLoading] = useState<boolean>(false);
 
   // todo: redo the wheather api
-  // useEffect(() => {
-  //   (async function () {
-  //     try {
-  //       setLoading(true);
-  //       const weatherResponse = await axios.get<WeatherData>("/api/weather");
-  //       setWeatherData(weatherResponse.data);
-  //     } catch (error: unknown) {
-  //       console.log(error);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   })();
-  // }, []);
+  useEffect(() => {
+    (async function () {
+      try {
+        setLoading(true);
+        const weatherResponse = await axios.get<WeatherData>("/api/weather");
+        setWeatherData(weatherResponse.data);
+      } catch (error: unknown) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
 
   const { data: journalEntriesData } = useEntriesState();
   const { data: eventsData } = useEventsState();
@@ -158,29 +168,29 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
 
   console.log("aaaa");
   console.log(entriesResolved);
-  const weatherResolved = [] as const satisfies CalendarWeatherEntry[];
-  // const weatherResolved = (weatherData?.list || [])
-  //   .filter(
-  //     (entry) =>
-  //       !entry.dt_txt.includes("03:00:00") &&
-  //       !entry.dt_txt.includes("00:00:00") &&
-  //       !entry.dt_txt.includes("06:00:00"),
-  //   )
-  //   .map<CalendarWeatherEntry>((entry) => ({
-  //     start: new Date(entry.dt_txt),
-  //     end: addMinutes(new Date(entry.dt_txt), 1),
-  //     title:
-  //       entry.main.feels_like.toString() +
-  //       " " +
-  //       entry.weather.map((w) => w.main).join(", "),
-  //     allDay: false,
-  //     resource: {
-  //       type: "weather",
-  //       id: entry.dt.toString(),
-  //       temp: entry.main.feels_like,
-  //       weather: entry.weather,
-  //     },
-  //   }));
+  // const weatherResolved = [] as const satisfies CalendarWeatherEntry[];
+  const weatherResolved = (weatherData?.list || [])
+    .filter(
+      (entry) =>
+        !entry.dt_txt.includes("03:00:00") &&
+        !entry.dt_txt.includes("00:00:00") &&
+        !entry.dt_txt.includes("06:00:00"),
+    )
+    .map<CalendarWeatherEntry>((entry) => ({
+      start: new Date(entry.dt_txt),
+      end: addMinutes(new Date(entry.dt_txt), 1),
+      title:
+        entry.main.feels_like.toString() +
+        " " +
+        entry.weather.map((w) => w.main).join(", "),
+      allDay: false,
+      resource: {
+        type: "weather",
+        id: entry.dt.toString(),
+        temp: entry.main.feels_like,
+        weather: entry.weather,
+      },
+    }));
 
   const events = [...eventsResolved, ...entriesResolved, ...tasksResolved];
 
