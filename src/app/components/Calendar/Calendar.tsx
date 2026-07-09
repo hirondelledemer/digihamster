@@ -64,7 +64,6 @@ import { parseBackendDate, toBackendDateTime } from "#utils/date";
 import { useTasksNewState } from "@/app/utils/hooks/use-tasks-new/state-context";
 import { useTasksNewActions } from "@/app/utils/hooks/use-tasks-new/actions-context";
 import axios from "axios";
-import apiClient from "@/app/utils/api-client";
 
 export const now = () => new Date();
 
@@ -205,17 +204,21 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
     (date: Date) => {
       const dayIsCycleDay =
         cycleData &&
-        !!cycleData.dates.filter((i) => {
-          return isWithinInterval(date, interval(i.startDate, i.endDate));
-        }).length;
+        !!cycleData
+          .filter((i) => !i.is_predicted)
+          .filter((i) => {
+            return isWithinInterval(date, interval(i.start_date, i.end_date));
+          }).length;
       const dayIsFutureCycleDay =
         cycleData &&
-        !!cycleData.futureDates.filter((i) => {
-          return isWithinInterval(date, interval(i.startDate, i.endDate));
-        }).length;
+        !!cycleData
+          .filter((i) => i.is_predicted)
+          .filter((i) => {
+            return isWithinInterval(date, interval(i.start_date, i.end_date));
+          }).length;
 
-      cycleData?.dates.filter((i) =>
-        isWithinInterval(date, interval(i.startDate, i.endDate)),
+      cycleData?.filter((i) =>
+        isWithinInterval(date, interval(i.start_date, i.end_date)),
       );
 
       if (isSameDay(date, now())) {
