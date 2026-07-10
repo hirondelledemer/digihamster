@@ -56,11 +56,11 @@ export const CycleContextProvider = ({ children }: any) => {
 
   const updateCycle = async (startDate: number) => {
     try {
-      const response = await apiClient.post("/period-cycles", {
+      await apiClient.post("/period-cycles", {
         start_date: toBackendDate(new Date(startDate)),
       });
 
-      setData(response.data);
+      // setData((data) => [...data, response.data]);
 
       toast({
         title: "Success",
