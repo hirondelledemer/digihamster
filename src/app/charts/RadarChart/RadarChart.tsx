@@ -53,9 +53,9 @@ export function RadarChart({
         />
         <PolarAngleAxis
           dataKey="dataLabel"
-          onClick={({ value }) =>
-            onLabelClickAction && onLabelClickAction(value)
-          }
+          onClick={({ value }) => {
+            return onLabelClickAction && onLabelClickAction(value);
+          }}
           tick={(e) => (
             <Text {...e} className="chart-tick">
               {e.payload.value}

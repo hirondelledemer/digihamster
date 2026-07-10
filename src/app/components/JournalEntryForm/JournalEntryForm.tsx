@@ -1,12 +1,9 @@
 "use client";
-import React, { FC, useState } from "react";
+import React, { FC } from "react";
 import RichTextEditor from "../RichTextEditor";
 import { useRte } from "@/app/utils/rte/rte-hook";
-import axios from "axios";
-import { IJournalEntry } from "@/models/entry";
-import useJournalEntries from "@/app/utils/hooks/use-entry";
+import { useEntriesActions } from "@/app/utils/hooks/use-entry/actions-context";
 import { Button } from "../ui/button";
-import { useToast } from "@/app/components/ui/use-toast";
 
 export interface JournalEntryFormProps {
   testId?: string;
@@ -17,47 +14,28 @@ export const rteTestId = "JournalEntryForm-rte-testId";
 const JournalEntryForm: FC<JournalEntryFormProps> = ({
   testId,
 }): JSX.Element | null => {
-  const { toast } = useToast();
-  const [loading, setLoading] = useState<boolean>(false);
   const { editor, getRteValue } = useRte({
     value: "",
     editable: true,
   });
 
-  const { setData } = useJournalEntries();
+  const { create } = useEntriesActions();
 
   if (!editor) {
     return null;
   }
 
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
     const { title, textContent, tags, contentJSON } = getRteValue();
-    setLoading(true);
-    try {
-      const response = await axios.post<IJournalEntry, { data: IJournalEntry }>(
-        "/api/entries",
-        {
-          title: title,
-          note: textContent || "(no content)",
-          jsonNote: contentJSON,
-          tags: tags,
-        }
-      );
-      toast({
-        title: "Success",
-        description: "Note has been submitted",
-      });
-      editor?.commands.setContent("");
-      setData((d) => [...d, response.data]);
-    } catch (e) {
-      toast({
-        title: "Error",
-        description: JSON.stringify(e),
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
+    create(
+      {
+        title: title,
+        note: textContent || "(no content)",
+        json_note: contentJSON,
+        tags: tags,
+      },
+      () => editor?.commands.setContent(""),
+    );
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
@@ -77,7 +55,7 @@ const JournalEntryForm: FC<JournalEntryFormProps> = ({
         onKeyDown={handleKeyDown}
       />
       <Button
-        disabled={submitButtonDisabled || loading}
+        disabled={submitButtonDisabled}
         onClick={handleSubmit}
         className="mt-4"
       >

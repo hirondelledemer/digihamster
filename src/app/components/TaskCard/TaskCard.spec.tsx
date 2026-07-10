@@ -1,4 +1,4 @@
-import { TagsContext } from "@/app/utils/hooks/use-tags";
+import { TagsStateContext } from "@/app/utils/hooks/use-tags/state-context";
 import TaskCard, { cardTestId, TaskCardProps } from "./TaskCard";
 import { TasksContext, TasksContextValues } from "@/app/utils/hooks/use-tasks";
 import { generateTask } from "@/app/utils/mocks/task";
@@ -46,7 +46,7 @@ describe("TaskCard", () => {
     render(
       <NotesContextProvider>
         <ProjectsContextProvider>
-          <TagsContext.Provider
+          <TagsStateContext.Provider
             value={{
               data: [
                 {
@@ -62,14 +62,13 @@ describe("TaskCard", () => {
                   color: "color2",
                 },
               ],
-              loading: false,
-              setData: jest.fn(),
+              isLoading: false,
             }}
           >
             <TasksContext.Provider value={tasksContextValues}>
               <TaskCard {...props} />
             </TasksContext.Provider>
-          </TagsContext.Provider>
+          </TagsStateContext.Provider>
         </ProjectsContextProvider>
       </NotesContextProvider>
     );

@@ -3,7 +3,8 @@ import React, { FC, useCallback, useMemo, useState } from "react";
 
 import { ChartConfig } from "../ui/chart";
 import { Card, CardContent, CardHeader } from "../ui/card";
-import useHabits from "@/app/utils/hooks/use-habits";
+import { useHabitsNewActions } from "@/app/utils/hooks/use-habits-new/actions-context";
+import { useHabitsNewState } from "@/app/utils/hooks/use-habits-new/state-context";
 import "./style.css";
 import { BarChart } from "../../charts/BarChart";
 import { Button } from "../ui/button";
@@ -17,7 +18,7 @@ import {
 
 import { GardenContainer } from "../Garden/GardenContainer";
 import { useLifeAspectsState } from "@/app/utils/hooks/use-life-aspects/state-context";
-import { getTodayWithZeroHours } from "@/app/utils/date/date";
+import { getTodayWithZeroHours, toBackendDate } from "@/app/utils/date/date";
 import { subDays } from "date-fns";
 
 export interface HealthChartProps {
@@ -30,7 +31,9 @@ interface ChartItem {
 }
 
 const HealthChart: FC<HealthChartProps> = (): JSX.Element => {
-  const { data: habits, addLog } = useHabits();
+  const { addLog } = useHabitsNewActions();
+  const { data: habits = [] } = useHabitsNewState();
+
   const { data: lifeAspects = [] } = useLifeAspectsState();
   const [selectedCategory, setSelectedCategory] = useState<
     undefined | string | "garden" | "chart"
@@ -45,13 +48,17 @@ const HealthChart: FC<HealthChartProps> = (): JSX.Element => {
         const actions = [2, 1, 0]
           .map((day) => subDays(todayTimestamp, day).getTime())
           .map((timestamp) => ({
-            log: habit.log.find((log) => log.at === timestamp),
+            log: habit.logs.find(
+              (log) =>
+                log.log_date.slice(0, 10) ===
+                toBackendDate(new Date(timestamp)),
+            ),
             timestamp,
           }))
           .map((log) => ({
             disabled: log.log?.completed,
             onClick: () => {
-              addLog(habit._id, {
+              addLog(habit.id, {
                 completed: true,
                 at: log.timestamp,
               });
@@ -60,7 +67,7 @@ const HealthChart: FC<HealthChartProps> = (): JSX.Element => {
 
         return {
           dataLabel: habit.title,
-          _id: habit._id,
+          _id: habit.id.toString(),
           tempDataValue: 0,
           dataValue,
           getFillColor: (value: number) =>
@@ -70,26 +77,30 @@ const HealthChart: FC<HealthChartProps> = (): JSX.Element => {
         };
       });
     },
-    [addLog]
+    [addLog],
   );
 
   const chartData = useMemo(
     () =>
       habits
-        .map((habit) => habit.category)
+        .map((habit) => habit.life_aspect_id)
         .filter((item, pos, self) => self.indexOf(item) == pos)
         .reduce((prev: ChartItem[], curr) => {
-          const habitsForCategory = habits.filter((h) => h.category === curr);
-          const lifeAspect = lifeAspects.find((la) => la._id === curr);
+          const habitsForCategory = habits.filter(
+            (h) => h.life_aspect_id === curr,
+          );
+          const lifeAspect = lifeAspects.find(
+            (la) => la.id.toString() === curr.toString(),
+          );
 
           const progressPercentage = getHabitProgressForLifeAspect(
             habits,
-            lifeAspect || []
+            lifeAspect || [],
           );
           const boostedProgressPercentage = getHabitProgressForLifeAspect(
             habits,
             lifeAspect || [],
-            true
+            true,
           );
 
           const allTheProgress = habitsForCategory.map((habit) => ({
@@ -100,7 +111,7 @@ const HealthChart: FC<HealthChartProps> = (): JSX.Element => {
           return [
             ...prev,
             {
-              dataLabel: lifeAspect ? lifeAspect._id : curr,
+              dataLabel: lifeAspect ? lifeAspect.id.toString() : curr,
               dataValue: Math.floor(progressPercentage),
               dataValue1: Math.floor(boostedProgressPercentage),
               label: (
@@ -123,7 +134,7 @@ const HealthChart: FC<HealthChartProps> = (): JSX.Element => {
             },
           ];
         }, []),
-    [habits, lifeAspects]
+    [habits, lifeAspects],
   );
 
   const component = () => {
@@ -189,7 +200,10 @@ const HealthChart: FC<HealthChartProps> = (): JSX.Element => {
         </CardHeader>
         <BarChart
           data={getHabitsData(
-            habits.filter((h) => h.category === selectedCategory)
+            habits.filter(
+              (h) =>
+                h.life_aspect_id.toString() === selectedCategory?.toString(),
+            ),
           )}
           config={{} as ChartConfig}
         />

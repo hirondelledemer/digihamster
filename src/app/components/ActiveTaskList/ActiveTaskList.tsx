@@ -1,16 +1,12 @@
 "use client";
 //todo: make this component server. need to rethink how it gets its data
 
-import React, { FC, useMemo, useState } from "react";
-
-import useTasks from "@/app/utils/hooks/use-tasks";
+import React, { FC, useMemo } from "react";
 
 import { ScrollArea } from "../ui/scroll-area";
-import { unique } from "remeda";
-import useTags from "@/app/utils/hooks/use-tags";
-import TagsFilter from "./TagsFilter";
 import { IconCircle, IconCircleCheck } from "@tabler/icons-react";
 import TaskCard from "../TaskCard";
+import { useTasksNewState } from "@/app/utils/hooks/use-tasks-new/state-context";
 
 export const taskTestId = "ActiveTaskList-task-testid";
 
@@ -21,60 +17,32 @@ export interface ActiveTaskListProps {
 const ActiveTaskList: FC<ActiveTaskListProps> = ({
   testId,
 }): JSX.Element | null => {
-  const { data: tasks } = useTasks();
-  const { data: tags } = useTags();
+  const { data: tasks } = useTasksNewState();
 
   const tasksToShow = useMemo(
     () =>
       tasks
-        .filter((task) => task.isActive && !task.deadline && !task.eventId)
-        .sort((a, b) => (a.estimate || 0) - (b.estimate || 0))
+        .filter(
+          (task) => task.status === "doing" && !task.deadline && !task.event_id,
+        )
         .sort((a, b) =>
-          a.completed === b.completed ? 0 : a.completed ? 1 : -1
+          a.status === b.status ? 0 : a.status === "done" ? 1 : -1,
         ),
-    [tasks]
-  );
-
-  const usedTagIds = useMemo(
-    () => unique(tasksToShow.map((task) => task.tags).flat()),
-    [tasksToShow]
-  );
-
-  const [tagsToExclude, setTagsToExclude] = useState<string[]>([]);
-
-  const filteredTasks = useMemo(
-    () =>
-      tasksToShow.filter((task) => {
-        return !task.tags.find((tagId) => tagsToExclude.includes(tagId))
-          ?.length;
-      }),
-    [tagsToExclude, tasksToShow]
-  );
-
-  const usedTags = useMemo(
-    () => tags.filter((tag) => usedTagIds.includes(tag._id)),
-    [tags, usedTagIds]
+    [tasks],
   );
 
   const pendingTasksCount = useMemo(
-    () => filteredTasks.filter((t) => !t.completed).length,
-    [filteredTasks]
+    () => tasksToShow.filter((t) => !(t.status === "done")).length,
+    [tasksToShow],
   );
 
   const completedTasksCount = useMemo(
-    () => filteredTasks.filter((t) => t.completed).length,
-    [filteredTasks]
+    () => tasksToShow.filter((t) => t.status === "done").length,
+    [tasksToShow],
   );
 
   return (
     <div data-testid={testId} className="w-full h-full">
-      <div>
-        <TagsFilter
-          tags={usedTags}
-          selectedTagIds={tagsToExclude}
-          onSelectedTagsIdsChange={setTagsToExclude}
-        />
-      </div>
       <div className="text-sm flex items-center mb-3 space-x-2">
         <IconCircle size={16} color="green" className="mr-1" />
         {pendingTasksCount}
@@ -88,10 +56,10 @@ const ActiveTaskList: FC<ActiveTaskListProps> = ({
       </div>
       <ScrollArea className="h-full pb-[60px]">
         <div className="flex flex-col gap-4">
-          {filteredTasks.map((task) => (
+          {tasksToShow.map((task) => (
             <TaskCard
-              dragId={task._id}
-              key={task._id}
+              dragId={task.id}
+              key={task.id}
               task={task}
               testId={taskTestId}
             />

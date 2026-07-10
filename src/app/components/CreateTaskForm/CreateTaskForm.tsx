@@ -1,5 +1,4 @@
 import React, { FC } from "react";
-import useEditTask from "@/app/utils/hooks/use-edit-task";
 import { useForm } from "react-hook-form";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -7,15 +6,16 @@ import { z } from "zod";
 import { Form, FormControl, FormField, FormItem, RteMessage } from "../ui/form";
 import RteFormField from "../RteFormField";
 import { Button } from "../ui/button";
-import { now } from "@/app/utils/date/date";
-import { addDays, addHours } from "date-fns";
-import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
+import { now, toBackendDateTime } from "@/app/utils/date/date";
+import { addDays } from "date-fns";
+// import { TaskWithRelations } from "@/app/utils/types/task";
+import { useTasksNewActions } from "@/app/utils/hooks/use-tasks-new/actions-context";
+import { CreateTaskParams } from "@/app/utils/hooks/use-tasks-new/api";
 
 export interface CreateTaskFormProps {
   testId?: string;
   onDone(): void;
-  deadline?: number;
-  primaryTaskId?: string;
+  deadline?: string;
   projectId?: string;
 }
 
@@ -40,11 +40,9 @@ const CreateTaskForm: FC<CreateTaskFormProps> = ({
   testId,
   onDone,
   deadline,
-  primaryTaskId,
   projectId,
 }): JSX.Element => {
-  const { defaultProject } = useProjectsState();
-  const { createNewTask } = useEditTask();
+  const { createTask: createNewTask } = useTasksNewActions();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(FormSchema),
@@ -56,30 +54,31 @@ const CreateTaskForm: FC<CreateTaskFormProps> = ({
         tasks: [],
         textContent: "",
         contentJSON: {},
-        projectId: defaultProject?._id,
+        projectId: "",
       },
     },
   });
 
+  const getDeadline = (params: string[]) => {
+    if (params.includes("tmr")) {
+      return toBackendDateTime(addDays(now(), 1));
+    }
+    if (params.includes("today")) {
+      return toBackendDateTime(addDays(now(), 1));
+    }
+    if (deadline) {
+      return toBackendDateTime(new Date(deadline));
+    }
+    return null;
+  };
+
   const handleSubmit = (values: FormValues) => {
-    const taskData = {
+    const taskData: CreateTaskParams = {
       title: values.description.title,
       description: values.description.textContent,
-      descriptionFull: values.description.contentJSON,
-      projectId:
-        projectId ||
-        values.description.projectId ||
-        defaultProject?._id ||
-        null,
-      isActive: values.description.params.includes("active"),
-      tags: values.description.tags,
-      subtasks: values.description.tasks,
-      deadline: values.description.params.includes("tmr")
-        ? addDays(now(), 1).valueOf()
-        : values.description.params.includes("today")
-        ? addHours(now(), 2).valueOf()
-        : deadline,
-      primaryTaskId,
+      project_id: Number(projectId) || Number(values.description.projectId),
+      status: values.description.params.includes("active") ? "doing" : "todo",
+      deadline: getDeadline(values.description.params),
     };
 
     createNewTask(taskData);

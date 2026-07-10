@@ -6,10 +6,10 @@ import {
   ContextMenuTrigger,
 } from "../ui/context-menu";
 import { TaskWithRelations } from "@/app/utils/types/task";
-import useEditTask from "@/app/utils/hooks/use-edit-task";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "../ui/sheet";
 import NoteForm from "../NoteForm";
 import TaskFormModal from "../TaskFormModal";
+import { useTasksNewActions } from "@/app/utils/hooks/use-tasks-new/actions-context";
 
 interface TaskActionProps {
   children: ReactNode;
@@ -19,7 +19,7 @@ interface TaskActionProps {
 export const TaskActions: React.FC<TaskActionProps> = ({ children, task }) => {
   const [addNoteFormOpen, setAddNoteFormOpen] = useState<boolean>(false);
   const [taskFormOpen, setTaskFormOpen] = useState<boolean>(false);
-  const { editTask } = useEditTask();
+  const { updateTask: editTask } = useTasksNewActions();
 
   const closeTaskForm = () => setTaskFormOpen(false);
 
@@ -37,7 +37,7 @@ export const TaskActions: React.FC<TaskActionProps> = ({ children, task }) => {
           </SheetHeader>
           <NoteForm
             onDone={() => setAddNoteFormOpen(false)}
-            parentTaskId={task._id}
+            parentTaskId={task.id}
           />
         </SheetContent>
       </Sheet>
@@ -54,48 +54,48 @@ export const TaskActions: React.FC<TaskActionProps> = ({ children, task }) => {
           <ContextMenuItem inset onClick={() => setAddNoteFormOpen(true)}>
             Add note
           </ContextMenuItem>
-          {task.completed && (
+          {task.status === "done" && (
             <ContextMenuItem
               inset
               onClick={() =>
-                editTask(task._id, { completed: false }, () =>
-                  setTaskFormOpen(false)
+                editTask(task.id, { status: "doing" }, () =>
+                  setTaskFormOpen(false),
                 )
               }
             >
               Undo
             </ContextMenuItem>
           )}
-          {!task.completed && (
+          {!(task.status === "done") && (
             <ContextMenuItem
               inset
               onClick={() =>
-                editTask(task._id, { completed: true }, () =>
-                  setTaskFormOpen(false)
+                editTask(task.id, { status: "done" }, () =>
+                  setTaskFormOpen(false),
                 )
               }
             >
               Complete
             </ContextMenuItem>
           )}
-          {!task.eventId && task.isActive && (
+          {!task.event_id && task.status === "doing" && (
             <ContextMenuItem
               inset
               onClick={() =>
-                editTask(task._id, { isActive: false }, () =>
-                  setTaskFormOpen(false)
+                editTask(task.id, { status: "todo" }, () =>
+                  setTaskFormOpen(false),
                 )
               }
             >
               Deactivate
             </ContextMenuItem>
           )}
-          {!task.eventId && !task.isActive && (
+          {!task.event_id && !(task.status === "doing") && (
             <ContextMenuItem
               inset
               onClick={() =>
-                editTask(task._id, { isActive: true }, () =>
-                  setTaskFormOpen(false)
+                editTask(task.id, { status: "doing" }, () =>
+                  setTaskFormOpen(false),
                 )
               }
             >
@@ -105,10 +105,10 @@ export const TaskActions: React.FC<TaskActionProps> = ({ children, task }) => {
           <ContextMenuItem inset onClick={() => setTaskFormOpen(true)}>
             Edit
           </ContextMenuItem>
-          {!!task.eventId && (
+          {!!task.event_id && (
             <ContextMenuItem
               inset
-              onClick={() => editTask(task._id, { eventId: null })}
+              onClick={() => editTask(task.id, { event_id: null })}
             >
               Remove from event
             </ContextMenuItem>

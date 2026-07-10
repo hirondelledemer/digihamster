@@ -42,14 +42,14 @@ const CalendarEvent: FC<CalendarEventProps> = ({
         style={{
           border: isCalendarDeadlineEntry(event)
             ? `2px solid ${
-                getProjectById(event.resource.task.projectId || "")?.color ??
+                getProjectById(event.resource.task.project_id || "")?.color ??
                 "#000"
               }`
             : "",
         }}
         className={cn(
           "h-full p-1 cursor-pointer bg-[#29221f] rounded-lg hover:border hover:border-primary mt-[-1px]",
-          event.resource.completed && "text-muted-foreground line-through"
+          event.resource.completed && "text-muted-foreground line-through",
         )}
       >
         <div className={`italic`}>
@@ -58,7 +58,7 @@ const CalendarEvent: FC<CalendarEventProps> = ({
             {isCalendarEventEntry(event) &&
               event.resource.tasks.map((t) => (
                 <div
-                  key={t._id}
+                  key={t.id}
                   className="text-sm mt-1 border bg-card rounded-md p-1"
                 >
                   {t.title}

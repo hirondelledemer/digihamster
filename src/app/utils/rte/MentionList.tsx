@@ -6,14 +6,16 @@ import React, {
 } from "react";
 import { COLORS_V2, colorMapper } from "../consts/colors";
 import { getRandomInt } from "../common/random-int";
-import axios from "axios";
+// import axios from "axios";
 import { ITag, Tag } from "@/models/tag";
 import { Card, CardContent } from "@/app/components/ui/card";
 import { Button } from "@/app/components/ui/button";
 import { Badge } from "@/app/components/ui/badge";
-import useTags from "../hooks/use-tags";
+import { useTagsState } from "../hooks/use-tags/state-context";
 import { MentionsConfigProps } from "./types";
 import { SuggestionKeyDownProps } from "@tiptap/suggestion";
+// import { useTagsActions } from "../hooks/use-tags/actions-context";
+import apiClient from "../api-client";
 
 export type MentionListProps = MentionsConfigProps;
 
@@ -21,7 +23,7 @@ export const MentionList = forwardRef(
   ({ command, query }: MentionListProps, ref) => {
     const [selectedIndex, setSelectedIndex] = useState(0);
 
-    const { data: tags } = useTags();
+    const { data: tags } = useTagsState();
 
     useEffect(() => {
       setSelectedIndex(0);
@@ -30,7 +32,7 @@ export const MentionList = forwardRef(
     const handleAddTag = async (title: string) => {
       // todo: handle error
       // TODO: use hook
-      const response = await axios.post<unknown, { data: ITag }>("/api/tags", {
+      const response = await apiClient.post<unknown, { data: ITag }>("/tags", {
         title,
         color:
           tags.length < COLORS_V2.length
@@ -39,7 +41,7 @@ export const MentionList = forwardRef(
       });
 
       command({
-        id: `${response.data._id}:${response.data.color}`,
+        id: `${response.data.id}:${response.data.color}`,
         label: response.data.title,
       });
     };
@@ -115,7 +117,7 @@ export const MentionList = forwardRef(
         </CardContent>
       </Card>
     );
-  }
+  },
 );
 
 MentionList.displayName = "MentionList";

@@ -12,7 +12,7 @@ import { Note } from "@/models/note";
 
 const handleApiError = (
   error: any,
-  toast: ReturnType<typeof useToast>["toast"]
+  toast: ReturnType<typeof useToast>["toast"],
 ) => {
   const errorMessage =
     error.response?.data?.message || "An unexpected error occurred";
@@ -25,7 +25,7 @@ const handleApiError = (
 
 const handleSuccessToast = (
   toast: ReturnType<typeof useToast>["toast"],
-  message: string
+  message: string,
 ) => {
   toast({
     title: "Success",
@@ -35,7 +35,7 @@ const handleSuccessToast = (
 
 const fetchNotes = async (
   dispatch: React.Dispatch<NotesStateAction>,
-  toast: ReturnType<typeof useToast>["toast"]
+  toast: ReturnType<typeof useToast>["toast"],
 ) => {
   try {
     dispatch({ type: NotesStateActionType.StartLoading });
@@ -43,7 +43,7 @@ const fetchNotes = async (
 
     dispatch({
       type: NotesStateActionType.FinishLoading,
-      payload: { data: response.data },
+      payload: { data: response.data || [] },
     });
   } catch (err) {
     dispatch({
@@ -75,10 +75,8 @@ export const NotesContextProvider = ({ children }: { children: ReactNode }) => {
       const tempId = "temp-id";
 
       const tempNote: Note = {
-        _id: tempId,
+        id: tempId,
         deleted: false,
-        createdAt: "",
-        updatedAt: "",
         isActive: false,
         userId: "", // todo: why this is not required in other places?
         ...data,
@@ -117,7 +115,7 @@ export const NotesContextProvider = ({ children }: { children: ReactNode }) => {
         handleApiError(errorMessage, toast);
       }
     },
-    [toast]
+    [toast],
   );
 
   const updateNote = useCallback(
@@ -143,7 +141,7 @@ export const NotesContextProvider = ({ children }: { children: ReactNode }) => {
         handleApiError(errorMessage, toast);
       }
     },
-    [toast]
+    [toast],
   );
 
   const deleteNote = useCallback(
@@ -168,7 +166,7 @@ export const NotesContextProvider = ({ children }: { children: ReactNode }) => {
         handleApiError(errorMessage, toast);
       }
     },
-    [toast]
+    [toast],
   );
 
   return (

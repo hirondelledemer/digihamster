@@ -1,14 +1,17 @@
-import axios from "axios";
 import { Note } from "@/models/note";
+import apiClient from "../../api-client";
 
-export type FieldsRequired = Pick<Note, "title" | "note" | "tags" | "jsonNote">;
+export type FieldsRequired = Pick<
+  Note,
+  "title" | "note" | "tags" | "json_note"
+>;
 
 export type CreateNoteParams = FieldsRequired & { parentTaskId?: string };
 
 export const api = {
-  getNotes: () => axios.get<Note[]>("/api/notes"),
-  createNote: (data: CreateNoteParams) => axios.post<Note>("/api/notes", data),
+  getNotes: () => apiClient.get<Note[]>("/notes"),
+  createNote: (data: CreateNoteParams) => apiClient.post<Note>("/notes", data),
   updateNote: (id: string, props: Partial<Note>) =>
-    axios.patch("/api/notes", { id, ...props }),
-  deleteNote: (id: string) => axios.patch("/api/notes", { id, deleted: true }),
+    apiClient.patch(`/notes/${id}`, props),
+  deleteNote: (id: string) => apiClient.delete(`/notes/${id}`),
 } as const;

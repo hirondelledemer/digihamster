@@ -1,15 +1,11 @@
 import mongoose from "mongoose";
 
 export interface Cycle {
-  _id: string;
-  dates: {
-    startDate: number;
-    endDate: number;
-  }[];
-  futureDates: {
-    startDate: number;
-    endDate: number;
-  }[];
+  tracker_id: string;
+  start_date: string;
+  end_date: string;
+  is_predicted: boolean;
+  created_at: string;
 }
 
 export type ICycle = Cycle & mongoose.Document<string>;

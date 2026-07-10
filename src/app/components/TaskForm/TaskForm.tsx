@@ -19,24 +19,16 @@ import {
   SelectItem,
 } from "../ui/select";
 import { Button } from "../ui/button";
-import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
-import {
-  IconCalendar,
-  IconComet,
-  IconStar,
-  IconStars,
-  IconCircle,
-} from "@tabler/icons-react";
+import { IconCalendar } from "@tabler/icons-react";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { cn } from "../utils";
 import { format } from "date-fns";
 import { Calendar } from "../ui/calendar";
 import { TaskV2 as Task } from "@/models/taskV2";
-import { useEditTask } from "@/app/utils/hooks/use-edit-task";
-import Filter from "../Filter";
-import useTags from "@/app/utils/hooks/use-tags";
+// import { useTagsState } from "@/app/utils/hooks/use-tags/state-context";
 import { Textarea } from "../ui/textarea";
 import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
+import { useTasksNewActions } from "@/app/utils/hooks/use-tasks-new/actions-context";
 
 export const minimalNoteTestId = "TaskForm-minimal-note-testId" as const;
 export const taskFormTestId = "TaskForm-form-testid" as const;
@@ -44,11 +36,8 @@ export const taskFormTestId = "TaskForm-form-testid" as const;
 const FormSchema = z.object({
   title: z.string().min(1, { message: "This field has to be filled." }),
   description: z.string(),
-  isActive: z.union([z.boolean(), z.undefined()]),
-  eta: z.number(),
-  deadline: z.union([z.number(), z.null(), z.undefined()]),
-  project: z.string().min(1, { message: "This field has to be filled." }),
-  tags: z.array(z.string()),
+  deadline: z.union([z.string(), z.null(), z.undefined()]),
+  project: z.string(),
 });
 
 export type FormValues = z.infer<typeof FormSchema>;
@@ -64,31 +53,26 @@ const TaskForm: FC<TaskFormProps> = ({
   onDone,
   ...restProps
 }): JSX.Element => {
-  const { data: projects, defaultProject } = useProjectsState();
-  const { data: tags } = useTags();
-  const { editTask, deleteTask } = useEditTask();
+  const { data: projects } = useProjectsState();
+  // const { data: tags } = useTagsState();
+  const { updateTask: editTask, deleteTask } = useTasksNewActions();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       title: restProps.task.title,
       description: restProps.task.description || "",
-      eta: restProps.task.estimate || 0,
-      project: restProps.task.projectId || defaultProject?._id,
+      project: restProps.task.project_id?.toString() || "",
       deadline: restProps.task.deadline,
-      isActive: restProps.task.isActive,
-      tags: restProps.task.tags,
     },
   });
 
   const handleSubmit = (values: FormValues) => {
-    editTask(restProps.task._id, {
+    editTask(restProps.task.id, {
       title: values.title,
       description: values.description,
-      estimate: values.eta,
-      projectId: values.project,
+      project_id: Number(values.project),
       deadline: values.deadline,
-      tags: values.tags,
     });
     onDone();
   };
@@ -96,34 +80,34 @@ const TaskForm: FC<TaskFormProps> = ({
   const handleDelete = useCallback(
     async (event: React.MouseEvent<HTMLButtonElement>) => {
       event.preventDefault();
-      await deleteTask(restProps.task._id);
+      await deleteTask(restProps.task.id);
       onDone();
     },
-    [deleteTask, restProps, onDone]
+    [deleteTask, restProps, onDone],
   );
 
   const handleComplete = useCallback(
     async (event: React.MouseEvent<HTMLButtonElement>) => {
       event.preventDefault();
 
-      await editTask(restProps.task._id, {
-        completed: true,
+      await editTask(restProps.task.id, {
+        status: "done",
       });
       onDone();
     },
-    [editTask, restProps, onDone]
+    [editTask, restProps, onDone],
   );
 
   const handleUndo = useCallback(
     async (event: React.MouseEvent<HTMLButtonElement>) => {
       event.preventDefault();
 
-      await editTask(restProps.task._id, {
-        completed: false,
+      await editTask(restProps.task.id, {
+        status: "doing",
       });
       onDone();
     },
-    [editTask, restProps, onDone]
+    [editTask, restProps, onDone],
   );
 
   return (
@@ -147,48 +131,6 @@ const TaskForm: FC<TaskFormProps> = ({
           )}
         />
 
-        <FormField
-          control={form.control}
-          name="eta"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>ETA</FormLabel>
-              <FormControl>
-                <ToggleGroup
-                  type="single"
-                  className="justify-start"
-                  value={field.value.toString()}
-                  onValueChange={(value) => {
-                    field.onChange(Number(value));
-                  }}
-                >
-                  <ToggleGroupItem value="0.5" aria-label="eta-0-5">
-                    <IconComet className="h-4 w-4" color="#65a30d" />
-                  </ToggleGroupItem>
-                  <ToggleGroupItem value="1" aria-label="eta-1">
-                    <IconStar className="h-4 w-4" color="#0284c7" />
-                  </ToggleGroupItem>
-                  <ToggleGroupItem value="2" aria-label="eta-2">
-                    <IconStar className="h-4 w-4" color="#0284c7" />
-                    <IconStar className="h-4 w-4" color="#0284c7" />
-                  </ToggleGroupItem>
-                  <ToggleGroupItem value="3" aria-label="eta-3">
-                    <IconStar className="h-4 w-4" color="#0284c7" />
-                    <IconStar className="h-4 w-4" color="#0284c7" />
-                    <IconStar className="h-4 w-4" color="#0284c7" />
-                  </ToggleGroupItem>
-                  <ToggleGroupItem value="4" aria-label="eta-4">
-                    <IconStars className="h-4 w-4" color="#e11d48" />
-                  </ToggleGroupItem>
-                  <ToggleGroupItem value="0" aria-label="eta-0">
-                    <IconCircle className="h-4 w-4" color="#eab308" />
-                  </ToggleGroupItem>
-                </ToggleGroup>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
         {/* todo: make it with filter */}
         <FormField
           control={form.control}
@@ -211,8 +153,8 @@ const TaskForm: FC<TaskFormProps> = ({
                     .filter((project) => !project.disabled)
                     .map((project) => (
                       <SelectItem
-                        key={project._id as unknown as string}
-                        value={project._id as unknown as string}
+                        key={project.id as unknown as string}
+                        value={project.id as unknown as string}
                         role="option"
                       >
                         {project.title}
@@ -252,7 +194,7 @@ const TaskForm: FC<TaskFormProps> = ({
                       variant={"outline"}
                       className={cn(
                         "pl-3 text-left font-normal",
-                        !field.value && "text-muted-foreground"
+                        !field.value && "text-muted-foreground",
                       )}
                     >
                       {field.value ? (
@@ -278,38 +220,17 @@ const TaskForm: FC<TaskFormProps> = ({
             </FormItem>
           )}
         />
-        <FormField
-          control={form.control}
-          name="tags"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Tags</FormLabel>
-              <Filter
-                onChange={field.onChange}
-                value={field.value}
-                maxLengthToShow={10}
-                options={tags.map((tag) => ({
-                  value: tag._id,
-                  label: tag.title,
-                }))}
-              />
-              <FormMessage />
-            </FormItem>
-          )}
-        />
         <div className="space-x-2">
           <Button type="submit">Save</Button>
-          {!restProps.task.deleted && (
-            <Button onClick={handleDelete} variant="outline">
-              Delete
-            </Button>
-          )}
-          {!restProps.task.completed && (
+          <Button onClick={handleDelete} variant="outline">
+            Delete
+          </Button>
+          {!(restProps.task.status === "done") && (
             <Button onClick={handleComplete} variant="outline">
               Complete
             </Button>
           )}
-          {restProps.task.completed && (
+          {restProps.task.status === "done" && (
             <Button onClick={handleUndo} variant="outline">
               Undo
             </Button>

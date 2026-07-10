@@ -35,7 +35,7 @@ export const EventActions: React.FC<EventActionsProps> = ({
   };
 
   const handleCompleteClick = () => {
-    updateEvent(event.resource.id, { completed: true });
+    updateEvent(event.resource.id, { status: "completed" });
   };
 
   return (
@@ -53,17 +53,15 @@ export const EventActions: React.FC<EventActionsProps> = ({
                 testId={taskFormTestId}
                 editMode
                 event={{
-                  _id: event.resource.id,
+                  id: event.resource.id,
                   title: event.title,
                   description: event.resource.description || "",
-                  completed: event.resource.completed || false,
-                  deleted: false,
-                  projectId: event.resource.projectId || "",
-                  allDay: event.allDay || false,
-                  startAt: event.start.valueOf(),
-                  endAt: (event.end || 0).valueOf(),
+                  status: event.resource.completed ? "completed" : "pending",
+                  project_id: event.resource.projectId || "",
+                  all_day: event.allDay || false,
+                  start_at: event.start.toString(),
+                  end_at: (event.end || 0).toString(),
                   tags: [],
-                  updatedAt: "",
                 }}
                 onDone={() => setEventFormOpen(false)}
               />

@@ -10,7 +10,7 @@ import { LifeAspectsStateContext } from "./state-context";
 
 const handleApiError = (
   error: any,
-  toast: ReturnType<typeof useToast>["toast"]
+  toast: ReturnType<typeof useToast>["toast"],
 ) => {
   const errorMessage =
     error.response?.data?.message || "An unexpected error occurred";
@@ -23,7 +23,7 @@ const handleApiError = (
 
 const fetchLifeAspects = async (
   dispatch: React.Dispatch<LifeAspectStateAction>,
-  toast: ReturnType<typeof useToast>["toast"]
+  toast: ReturnType<typeof useToast>["toast"],
 ) => {
   try {
     dispatch({ type: LifeAspectStateActionType.StartLoading });
@@ -31,7 +31,7 @@ const fetchLifeAspects = async (
 
     dispatch({
       type: LifeAspectStateActionType.FinishLoading,
-      payload: { data: response.data },
+      payload: { data: response.data || [] },
     });
   } catch (err) {
     dispatch({

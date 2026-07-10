@@ -14,7 +14,7 @@ import { useLifeAspectsState } from "@/app/utils/hooks/use-life-aspects/state-co
 import useHabits from "@/app/utils/hooks/use-habits";
 
 export const GardenContainer: FC<{
-  onAssetClickAction: (category?: string) => void;
+  onAssetClickAction: (category?: number) => void;
 }> = ({ onAssetClickAction: onAssetClick }) => {
   const [score, setScore] = useState(100);
   const { data: habits } = useHabits();
@@ -26,36 +26,36 @@ export const GardenContainer: FC<{
   const animalsLifeAspect = lifeAspects.find((la) => la.asset === "animals");
   const riverLifeAspect = lifeAspects.find((la) => la.asset === "river");
   const mountainsLifeAspect = lifeAspects.find(
-    (la) => la.asset === "mountains"
+    (la) => la.asset === "mountains",
   );
   const pumpkinsLifeAspect = lifeAspects.find(
-    (la) => la.asset === "pumpkinGarden"
+    (la) => la.asset === "pumpkinGarden",
   );
 
   const treeScore = Math.floor(
-    getHabitProgressForLifeAspect(habits, treeLifeAspect || [], true) / 10
+    getHabitProgressForLifeAspect(habits, treeLifeAspect || [], true) / 10,
   );
   const houseScore = Math.floor(
-    getHabitProgressForLifeAspect(habits, houseLifeAspect || [], true) / 10
+    getHabitProgressForLifeAspect(habits, houseLifeAspect || [], true) / 10,
   );
   const shedScore = Math.floor(
-    getHabitProgressForLifeAspect(habits, shedLifeAspect || [], true) / 10
+    getHabitProgressForLifeAspect(habits, shedLifeAspect || [], true) / 10,
   );
 
   console.log("shedScore", shedScore);
   const animalsScore = Math.floor(
-    getHabitProgressForLifeAspect(habits, animalsLifeAspect || [], true) / 10
+    getHabitProgressForLifeAspect(habits, animalsLifeAspect || [], true) / 10,
   );
   const riverScore = Math.floor(
-    getHabitProgressForLifeAspect(habits, riverLifeAspect || [], true) / 10
+    getHabitProgressForLifeAspect(habits, riverLifeAspect || [], true) / 10,
   );
 
   const mountainsScore = Math.floor(
-    getHabitProgressForLifeAspect(habits, mountainsLifeAspect || [], true) / 10
+    getHabitProgressForLifeAspect(habits, mountainsLifeAspect || [], true) / 10,
   );
 
   const pumpkinGardenScore = Math.floor(
-    getHabitProgressForLifeAspect(habits, pumpkinsLifeAspect || [], true) / 10
+    getHabitProgressForLifeAspect(habits, pumpkinsLifeAspect || [], true) / 10,
   );
 
   console.log(houseLifeAspect && hasActiveBoosts(houseLifeAspect));
@@ -63,37 +63,37 @@ export const GardenContainer: FC<{
   const config: GardenConfig = {
     house: {
       score: houseScore,
-      onClick: () => onAssetClick("home"),
+      onClick: () => onAssetClick(houseLifeAspect?.id),
       withBoosts: !!houseLifeAspect && hasActiveBoosts(houseLifeAspect),
     },
     tree: {
       score: treeScore,
-      onClick: () => onAssetClick(treeLifeAspect?._id),
+      onClick: () => onAssetClick(treeLifeAspect?.id),
       withBoosts: !!treeLifeAspect && hasActiveBoosts(treeLifeAspect),
     },
     shed: {
       score: shedScore,
-      onClick: () => onAssetClick(shedLifeAspect?._id),
+      onClick: () => onAssetClick(shedLifeAspect?.id),
       withBoosts: !!shedLifeAspect && hasActiveBoosts(shedLifeAspect),
     },
     animals: {
       score: animalsScore,
-      onClick: () => onAssetClick(animalsLifeAspect?._id),
+      onClick: () => onAssetClick(animalsLifeAspect?.id),
       withBoosts: !!animalsLifeAspect && hasActiveBoosts(animalsLifeAspect),
     },
     river: {
       score: riverScore,
-      onClick: () => onAssetClick(riverLifeAspect?._id),
+      onClick: () => onAssetClick(riverLifeAspect?.id),
       withBoosts: !!riverLifeAspect && hasActiveBoosts(riverLifeAspect),
     },
     mountains: {
       score: mountainsScore,
-      onClick: () => onAssetClick(mountainsLifeAspect?._id),
+      onClick: () => onAssetClick(mountainsLifeAspect?.id),
       withBoosts: !!mountainsLifeAspect && hasActiveBoosts(mountainsLifeAspect),
     },
     pumpkinGarden: {
       score: pumpkinGardenScore,
-      onClick: () => onAssetClick(pumpkinsLifeAspect?._id),
+      onClick: () => onAssetClick(pumpkinsLifeAspect?.id),
       withBoosts: !!pumpkinsLifeAspect && hasActiveBoosts(pumpkinsLifeAspect),
     },
     defaultScore: { score, onClick: () => {}, withBoosts: false },

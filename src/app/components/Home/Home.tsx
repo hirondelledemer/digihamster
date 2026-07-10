@@ -10,7 +10,7 @@ import ActiveTaskList from "../ActiveTaskList";
 import CommandTool from "../CommandTool";
 import PinnedNotes from "../PinnedNotes";
 import HealthChart from "../HealthChart";
-import DailyProgress from "../DailyProgress";
+// import DailyProgress from "../DailyProgress";
 import TaskInfo from "../TaskInfo";
 import ProjectProgress from "../ProjectProgress";
 
@@ -44,9 +44,9 @@ export const Home = (): JSX.Element => {
           </div>
 
           <div className="flex p-6 pl-0 pb-12 flex-col grow gap-4">
-            <div className="min-h-16 overflow-auto p-[1px]">
+            {/* <div className="min-h-16 overflow-auto p-[1px]">
               <DailyProgress />
-            </div>
+            </div> */}
 
             <ProjectProgress />
 

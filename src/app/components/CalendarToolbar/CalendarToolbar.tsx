@@ -61,7 +61,7 @@ const CalendarToolbar: FC<CalendarToolbarProps> = ({
     disabled: view !== "agenda",
     data: {
       containerType: "calendar",
-      date: date.getTime(),
+      date: date,
     },
   });
 

@@ -2,10 +2,10 @@ import mongoose from "mongoose";
 import { Taggable, TimeStamps } from "./shared-types";
 
 export interface Note extends Taggable, TimeStamps {
-  _id: string;
+  id: number;
   title: string;
   note: string;
-  jsonNote: object;
+  json_note: object;
   isActive: boolean;
   deleted: boolean;
   userId: string;
@@ -23,7 +23,7 @@ const NoteSchema = new mongoose.Schema(
     userId: { type: String, required: true },
     tags: { type: [String] },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const Note = mongoose.models.Note || mongoose.model<INote>("Note", NoteSchema);

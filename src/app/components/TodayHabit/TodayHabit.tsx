@@ -20,26 +20,26 @@ const TodayHabit: FC<TodayHabitProps> = ({
   const { addLog } = useHabits();
 
   const handleCompleteClick = (completed: boolean) => {
-    addLog(habit._id, {
+    addLog(habit.id, {
       completed,
       at: todayTimestamp,
     });
   };
 
-  const lastLog = habit.log.findLast(
-    (log) => log.at < date.getTime() && log.completed
+  const lastLog = habit.logs.findLast(
+    (log) => new Date(log.log_date).valueOf() < date.getTime() && log.completed,
   );
 
-  const diff = lastLog ? differenceInDays(date, lastLog.at) : 29;
+  const diff = lastLog ? differenceInDays(date, lastLog.log_date) : 29;
 
   const formattedDiff = lastLog
-    ? formatDistanceStrict(lastLog.at, date, {
+    ? formatDistanceStrict(lastLog.log_date, date, {
         unit: "day",
         addSuffix: true,
       })
     : "never";
 
-  const averageAcceptableDiff = 28 / habit.timesPerMonth;
+  const averageAcceptableDiff = 28 / habit.times_per_month;
   const readyIn = Math.floor(averageAcceptableDiff - diff);
 
   return (
@@ -51,7 +51,7 @@ const TodayHabit: FC<TodayHabitProps> = ({
           <div
             className={cn(
               "text-xs",
-              diff > averageAcceptableDiff ? "text-primary " : ""
+              diff > averageAcceptableDiff ? "text-primary " : "",
             )}
           >
             {formattedDiff}

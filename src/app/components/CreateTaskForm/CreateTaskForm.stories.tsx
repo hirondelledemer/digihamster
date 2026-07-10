@@ -4,7 +4,7 @@ import CreateTaskForm from ".";
 import { CreateTaskFormProps } from "./CreateTaskForm";
 
 import { generateListOfTags } from "@/app/utils/mocks/tag";
-import { TagsContext } from "@/app/utils/hooks/use-tags";
+import { TagsStateContext } from "@/app/utils/hooks/use-tags/state-context";
 import { ProjectsContextProvider } from "@/app/utils/hooks/use-projects/provider";
 
 const meta: Meta<typeof CreateTaskForm> = {
@@ -13,17 +13,16 @@ const meta: Meta<typeof CreateTaskForm> = {
   tags: ["autodocs"],
   decorators: [
     (Story) => (
-      <TagsContext.Provider
+      <TagsStateContext.Provider
         value={{
           data: generateListOfTags(3),
-          loading: false,
-          setData: () => {},
+          isLoading: false,
         }}
       >
         <ProjectsContextProvider>
           <Story />
         </ProjectsContextProvider>
-      </TagsContext.Provider>
+      </TagsStateContext.Provider>
     ),
   ],
 };

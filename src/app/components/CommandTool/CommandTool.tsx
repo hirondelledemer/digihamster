@@ -14,9 +14,8 @@ import useHotKeys from "@/app/utils/hooks/use-hotkeys";
 import { HABITS, HOME, PROJECTS, TASKS, WIKI } from "@/app/utils/consts/routes";
 import { DialogTitle } from "@radix-ui/react-dialog";
 import TaskFormModal from "../TaskFormModal";
-import useEditTask from "@/app/utils/hooks/use-edit-task";
-import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
 import { WIKI_MESSAGES } from "./types";
+import { useTasksNewActions } from "@/app/utils/hooks/use-tasks-new/actions-context";
 
 export interface CommandToolProps {
   testId?: string;
@@ -45,8 +44,7 @@ const CommandTool: FC<CommandToolProps> = (): JSX.Element => {
     return () => window.removeEventListener("message", handleMessage);
   }, []);
 
-  const { createNewTask } = useEditTask();
-  const { defaultProject } = useProjectsState();
+  const { createTask: createNewTask } = useTasksNewActions();
   const [searchValue, setSearchValue] = useState<string>("");
   const router = useRouter();
 
@@ -84,13 +82,12 @@ const CommandTool: FC<CommandToolProps> = (): JSX.Element => {
   const createQuickTask = useCallback(() => {
     createNewTask({
       title: searchValue,
-      isActive: true,
-      tags: [],
-      projectId: defaultProject?._id || "",
-      subtasks: [],
+      status: "doing",
+      deadline: null,
+      description: "",
     });
     setOpen(false);
-  }, [createNewTask, searchValue, defaultProject?._id]);
+  }, [createNewTask, searchValue]);
 
   return (
     <>

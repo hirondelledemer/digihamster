@@ -1,19 +1,26 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
-import axios from "axios";
 
 import { useToast } from "@/app/components/ui/use-toast";
 
 import { Cycle } from "@/models/cycle";
-import { DAY } from "../consts/dates";
+// import { DAY } from "../consts/dates";
+import apiClient from "../api-client";
+import { toBackendDate } from "#utils/date";
 
 export interface CycleContextValue {
-  data: Cycle | null;
+  data: Cycle[] | null;
   updateCycle(startDate: number): void;
   error?: unknown;
   loading: boolean;
 }
+
+// export const DEFAULT_CYCLE = {
+//   id: "no-id",
+//   dates: [],
+//   futureDates: [],
+// } as const satisfies Cycle;
 
 export const CycleContext = createContext<CycleContextValue>({
   data: null,
@@ -24,7 +31,7 @@ export const CycleContext = createContext<CycleContextValue>({
 const { Provider } = CycleContext;
 
 export const CycleContextProvider = ({ children }: any) => {
-  const [data, setData] = useState<Cycle | null>(null);
+  const [data, setData] = useState<Cycle[] | null>(null);
   const [error, setError] = useState<unknown>(null);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
@@ -32,7 +39,7 @@ export const CycleContextProvider = ({ children }: any) => {
   useEffect(() => {
     (async function () {
       try {
-        const cycleResponse = await axios.get<Cycle>("/api/cycle");
+        const cycleResponse = await apiClient.get<Cycle[]>("/period-cycles");
         setData(cycleResponse.data);
       } catch (err) {
         setError(err);
@@ -49,23 +56,11 @@ export const CycleContextProvider = ({ children }: any) => {
 
   const updateCycle = async (startDate: number) => {
     try {
-      setData(
-        (p) =>
-          ({
-            ...p,
-            dates: [
-              ...(p?.dates || []),
-              {
-                startDate,
-                endDate: startDate + DAY * 5,
-              },
-            ],
-          } as Cycle)
-      );
-
-      await axios.patch("/api/cycle", {
-        startDate: startDate,
+      await apiClient.post("/period-cycles", {
+        start_date: toBackendDate(new Date(startDate)),
       });
+
+      // setData((data) => [...data, response.data]);
 
       toast({
         title: "Success",

@@ -1,10 +1,11 @@
 import { TasksContext, TasksContextValues } from "../hooks/use-tasks";
 import { Tag } from "@/models/tag";
-import { TagsContext } from "../hooks/use-tags";
+import { TagsStateContext } from "../hooks/use-tags/state-context";
 
 import { generateListOfTasks } from "../mocks/task";
 import { generateListOfJournalEntries } from "../mocks/journal-entry";
-import { EntriesContext, EntriesContextValue } from "../hooks/use-entry";
+import { EntriesStateContext } from "../hooks/use-entry/state-context";
+import { EntriesState } from "../hooks/use-entry/actions";
 import { HabitsContext, HabitsContextValue } from "../hooks/use-habits";
 import { generateListOfHabits } from "../mocks/habit";
 
@@ -36,15 +37,14 @@ import { generateListOfHabits } from "../mocks/habit";
 /* Tags */
 
 export const wrapWithTagsProvider = (component: JSX.Element, value: Tag[]) => (
-  <TagsContext.Provider
+  <TagsStateContext.Provider
     value={{
       data: value,
-      loading: false,
-      setData: jest.fn(),
+      isLoading: false,
     }}
   >
     {component}
-  </TagsContext.Provider>
+  </TagsStateContext.Provider>
 );
 
 /* Tasks */
@@ -95,23 +95,23 @@ export const wrapWithTasksProvider = (
 /* Journal Entries  */
 
 const defaultEntries = generateListOfJournalEntries(5);
-const defaultEntriesValue: EntriesContextValue = {
+const defaultEntriesValue: EntriesState = {
   data: defaultEntries,
-  setData: jest.fn(),
+  isLoading: false,
 };
 
 export const wrapWithEntriesProvider = (
   component: JSX.Element,
-  value?: Partial<EntriesContextValue>
+  value?: Partial<EntriesState>
 ) => (
-  <EntriesContext.Provider
+  <EntriesStateContext.Provider
     value={{
       ...defaultEntriesValue,
       ...value,
     }}
   >
     {component}
-  </EntriesContext.Provider>
+  </EntriesStateContext.Provider>
 );
 
 /* Habits */

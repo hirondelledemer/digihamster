@@ -1,23 +1,20 @@
 import axios from "axios";
 import { Project } from "@/models/project";
+import apiClient from "../../api-client";
 
 export type FieldsRequired = Pick<
   Project,
-  "title" | "color" | "disabled" | "jsonDescription" | "category"
+  "title" | "color" | "life_aspect_id"
 >;
 export const api = {
-  getProjects: () =>
-    axios.get<{
-      projects: Project[];
-      defaultProject: Project;
-    }>("/api/projects"),
+  getProjects: () => apiClient.get<Project[]>("/projects"),
   createProject: (data: FieldsRequired) =>
-    axios.post<Project>("/api/projects", data),
+    apiClient.post<Project>("/projects", data),
   updateProject: (id: string, props: Partial<Project>) =>
-    axios.patch("/api/projects", { id, ...props }),
+    apiClient.patch(`/projects/${id}`, props),
   deleteProject: (id: string) =>
-    axios.patch("/api/projects", { id, deleted: true }),
-  updateOrder: (params: {
-    sortOrder: { projectId: string; order: number }[];
-  }) => axios.patch("/api/projects/sort", params),
+    axios.patch("/projects", { id, deleted: true }),
+  // updateOrder: (params: {
+  //   sortOrder: { projectId: string; order: number }[];
+  // }) => axios.patch("/api/projects/sort", params),
 } as const;

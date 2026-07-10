@@ -3,15 +3,18 @@ import * as mongoose from "mongoose";
 const Schema = mongoose.Schema;
 
 export interface Project {
-  _id: string;
+  id: number;
   title: string;
-  deleted: boolean;
+  description: string;
   color: string;
-  order: number;
+  sort_order: number;
   disabled: boolean;
-  category: string;
-  jsonDescription: object | null;
+  life_aspect_id: number;
+  created_at: string;
+  updated_at: string;
+  status: "todo" | "doing" | "done" | "cancelled";
 }
+
 export type IProject = Project & mongoose.Document<string>;
 
 const ProjectSchema = new Schema(
@@ -25,7 +28,7 @@ const ProjectSchema = new Schema(
     order: { type: Number, required: true },
     category: { type: String, required: true },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const Project =

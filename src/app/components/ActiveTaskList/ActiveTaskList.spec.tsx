@@ -3,7 +3,7 @@ import { getActiveTaskListTestkit } from "./ActiveTaskList.testkit";
 import { generateCustomTasksList } from "@/app/utils/mocks/task";
 import { TasksContext } from "@/app/utils/hooks/use-tasks";
 import { fireEvent, render, screen } from "@/config/utils/test-utils";
-import { TagsContext } from "@/app/utils/hooks/use-tags";
+import { TagsStateContext } from "@/app/utils/hooks/use-tags/state-context";
 import { ProjectsContextProvider } from "@/app/utils/hooks/use-projects/provider";
 import mockAxios from "jest-mock-axios";
 import { generateListOfProjects } from "@/app/utils/mocks/project";
@@ -29,7 +29,7 @@ describe("ActiveTaskList", () => {
     getActiveTaskListTestkit(
       render(
         <ProjectsContextProvider>
-          <TagsContext.Provider
+          <TagsStateContext.Provider
             value={{
               data: [
                 {
@@ -45,8 +45,7 @@ describe("ActiveTaskList", () => {
                   color: "color2",
                 },
               ],
-              loading: false,
-              setData: jest.fn(),
+              isLoading: false,
             }}
           >
             <TasksContext.Provider
@@ -58,7 +57,7 @@ describe("ActiveTaskList", () => {
             >
               <ActiveTaskList {...props} />
             </TasksContext.Provider>
-          </TagsContext.Provider>
+          </TagsStateContext.Provider>
         </ProjectsContextProvider>
       ).container
     );

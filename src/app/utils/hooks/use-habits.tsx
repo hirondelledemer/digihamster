@@ -8,12 +8,14 @@ import {
   useEffect,
   useState,
 } from "react";
-import axios from "axios";
+// import axios from "axios";
 import { useToast } from "@/app/components/ui/use-toast";
 import { updateObjById } from "../common/update-array";
-import { Habit } from "@/models/habit";
+import { Habit, HabitLog } from "@/models/habit";
+import apiClient from "../api-client";
+import { toBackendDate } from "#utils/date";
 
-type FieldsRequired = "title" | "category" | "timesPerMonth";
+type FieldsRequired = "title" | "life_aspect_id" | "times_per_month";
 
 export interface HabitsContextValue {
   data: Habit[];
@@ -24,8 +26,8 @@ export interface HabitsContextValue {
   deleteHabit(id: string, onDone?: () => void): void;
   addLog(
     id: string,
-    props: { completed: boolean; at: number },
-    onDone?: () => void
+    props: { completed: boolean; at: number; existingLog?: HabitLog },
+    onDone?: () => void,
   ): void;
   createHabit(data: Pick<Habit, FieldsRequired>): void;
 }
@@ -52,7 +54,8 @@ export const HabitsContextProvider = ({ children }: any) => {
     (async function () {
       try {
         setLoading(true);
-        const habitsResponse = await axios.get<Habit[]>("/api/habits");
+        const habitsResponse =
+          await apiClient.get<Habit[]>("/habits/with-logs");
         setData(habitsResponse.data);
       } catch (err) {
         setError(err);
@@ -71,16 +74,19 @@ export const HabitsContextProvider = ({ children }: any) => {
     const tempId = "temp-id";
 
     const tempHabit: Habit = {
-      _id: tempId,
-      deleted: false,
-      log: [],
+      id: tempId,
+      logs: [],
       updatedAt: "",
       ...data,
     };
     setData((e) => [...e, tempHabit]);
 
     try {
-      const response = await axios.post<Habit>("/api/habits", data);
+      const response = await apiClient.post<Habit>("/habits", {
+        ...data,
+        encouragement: "en",
+        description: "des",
+      });
       setData((e) => updateObjById<Habit>(e, tempId, response.data));
       toast({
         title: "Success",
@@ -98,17 +104,14 @@ export const HabitsContextProvider = ({ children }: any) => {
   const deleteHabit = async (
     // todo: maybe rename
     habitId: string,
-    onDone?: () => void
+    onDone?: () => void,
   ) => {
     try {
-      setData((habits) => habits.filter((h) => h._id !== habitId));
+      setData((habits) => habits.filter((h) => h.id !== habitId));
       if (onDone) {
         onDone();
       }
-      await axios.patch("/api/habits", {
-        id: habitId,
-        deleted: true,
-      });
+      await apiClient.delete(`/habits/${habitId}`);
       toast({
         title: "Success",
         description: "Habit has been deleted",
@@ -125,21 +128,18 @@ export const HabitsContextProvider = ({ children }: any) => {
   const updateHabit = async (
     habitId: string,
     props: Partial<Habit>,
-    onDone?: () => void
+    onDone?: () => void,
   ) => {
     try {
       setData((p) =>
         updateObjById<Habit>(p, habitId, {
           ...props,
-        })
+        }),
       );
       if (onDone) {
         onDone();
       }
-      await axios.patch("/api/habits", {
-        id: habitId,
-        ...props,
-      });
+      await apiClient.patch(`/habits/${habitId}`, props);
       toast({
         title: "Success",
         description: "Habit has been updated",
@@ -155,26 +155,35 @@ export const HabitsContextProvider = ({ children }: any) => {
 
   const addLog = async (
     habitId: string,
-    props: { at: number; completed: boolean },
-    onDone?: () => void
+    props: { at: number; completed: boolean; existingLog?: HabitLog },
+    onDone?: () => void,
   ) => {
     try {
       setData((p) =>
         updateObjById<Habit>(p, habitId, {
-          log: [props],
-        })
+          logs: [props],
+        }),
       );
       if (onDone) {
         onDone();
       }
-      await axios.patch("/api/habits/logs", {
-        id: habitId,
-        completed: props.completed,
-        at: props.at,
-      });
+
+      const logDate = toBackendDate(new Date(props.at));
+
+      if (props.existingLog) {
+        await apiClient.patch(`/habits/${habitId}/logs/${logDate}`, {
+          completed: props.completed,
+        });
+      } else {
+        await apiClient.post(`/habits/${habitId}/logs`, {
+          habit_id: habitId,
+          completed: props.completed,
+          log_date: `${logDate}T00:00:00Z`,
+        });
+      }
       toast({
         title: "Success",
-        description: "Log has been added",
+        description: "Log has been updated",
       });
     } catch (e) {
       toast({
