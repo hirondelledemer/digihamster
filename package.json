@@ -16,7 +16,6 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "chromatic": "chromatic --exit-zero-on-changes --project-token=chpt_0bc8c27679c2037"
-    
   },
   "imports": {
     "#lib/navigation": {
@@ -72,7 +71,7 @@
     "lucide-react": "^0.446.0",
     "mongodb": "^6.3.0",
     "mongoose": "^8.1.0",
-    "next": "^15.1.6",
+    "next": "15.1.11",
     "next-auth": "^4.24.5",
     "next-themes": "^0.2.1",
     "nodemailer": "^6.9.8",
