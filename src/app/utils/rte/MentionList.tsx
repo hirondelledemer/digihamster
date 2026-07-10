@@ -6,7 +6,7 @@ import React, {
 } from "react";
 import { COLORS_V2, colorMapper } from "../consts/colors";
 import { getRandomInt } from "../common/random-int";
-import axios from "axios";
+// import axios from "axios";
 import { ITag, Tag } from "@/models/tag";
 import { Card, CardContent } from "@/app/components/ui/card";
 import { Button } from "@/app/components/ui/button";
@@ -14,7 +14,7 @@ import { Badge } from "@/app/components/ui/badge";
 import { useTagsState } from "../hooks/use-tags/state-context";
 import { MentionsConfigProps } from "./types";
 import { SuggestionKeyDownProps } from "@tiptap/suggestion";
-import { useTagsActions } from "../hooks/use-tags/actions-context";
+// import { useTagsActions } from "../hooks/use-tags/actions-context";
 import apiClient from "../api-client";
 
 export type MentionListProps = MentionsConfigProps;

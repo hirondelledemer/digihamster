@@ -91,7 +91,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
 
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
 
-  const [isLoading, setLoading] = useState<boolean>(false);
+  const [_isLoading, setLoading] = useState<boolean>(false);
 
   // todo: redo the wheather api
   useEffect(() => {
