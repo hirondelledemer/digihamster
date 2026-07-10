@@ -4,18 +4,18 @@ import { LifeAspectsContextProvider } from "../utils/hooks/use-life-aspects/prov
 import { ProjectsContextProvider } from "../utils/hooks/use-projects/provider";
 import { TagsContextProvider } from "../utils/hooks/use-tags/provider";
 
-import { TasksContextProvider } from "../utils/hooks/use-tasks";
+// import { TasksContextProvider } from "../utils/hooks/use-tasks";
 
 export default function ProjectsPage() {
   return (
     <ProjectsContextProvider>
       <TagsContextProvider>
-        <TasksContextProvider>
-          <LifeAspectsContextProvider>
-            <CommandTool />
-            <Projects />
-          </LifeAspectsContextProvider>
-        </TasksContextProvider>
+        {/* <TasksContextProvider> */}
+        <LifeAspectsContextProvider>
+          <CommandTool />
+          <Projects />
+        </LifeAspectsContextProvider>
+        {/* </TasksContextProvider> */}
       </TagsContextProvider>
     </ProjectsContextProvider>
   );

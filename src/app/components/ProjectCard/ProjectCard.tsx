@@ -1,7 +1,7 @@
 import React, { FC, useMemo, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Project } from "@/models/project";
-import useTasks from "@/app/utils/hooks/use-tasks";
+// import useTasks from "@/app/utils/hooks/use-tasks";
 import { addEstimates } from "@/app/utils/tasks/estimates";
 import {
   ContextMenu,
@@ -25,7 +25,8 @@ const ProjectCard: FC<ProjectCardProps> = ({
   project,
   selected,
 }): JSX.Element => {
-  const { data: tasks } = useTasks();
+  // const { data: tasks } = useTasks();
+  const tasks = [] as any[];
   const [projectModalOpen, setProjectModalOpen] = useState<boolean>(false);
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: project._id });
@@ -37,26 +38,26 @@ const ProjectCard: FC<ProjectCardProps> = ({
 
   const taskCount = useMemo(
     () => tasks.filter((t) => t.projectId === project._id).length,
-    [tasks, project]
+    [tasks, project],
   );
 
   const completedTasksCount = useMemo(
     () =>
       tasks.filter((t) => t.projectId === project._id && t.completed).length,
-    [tasks, project._id]
+    [tasks, project._id],
   );
 
   const estimatedTaskCount = useMemo(
     () =>
       tasks.filter((t) => t.projectId === project._id && !!t.estimate).length,
-    [project._id, tasks]
+    [project._id, tasks],
   );
 
   const completed = useMemo(
     () =>
       tasks.filter((t) => t.projectId === project._id && !t.completed)
         .length === 0,
-    [tasks, project]
+    [tasks, project],
   );
 
   const completedTasksEta = useMemo(
@@ -64,13 +65,13 @@ const ProjectCard: FC<ProjectCardProps> = ({
       tasks
         .filter((t) => t.projectId === project._id && t.completed)
         .reduce(addEstimates, 0),
-    [tasks, project._id]
+    [tasks, project._id],
   );
 
   const totalTaskEta = useMemo(
     () =>
       tasks.filter((t) => t.projectId === project._id).reduce(addEstimates, 0),
-    [tasks, project._id]
+    [tasks, project._id],
   );
 
   const closeProjectForm = () => setProjectModalOpen(false);

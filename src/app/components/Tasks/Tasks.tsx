@@ -1,6 +1,6 @@
 "use client"; // todo: rethink
 import React, { FC, useState } from "react";
-import useTasks from "@/app/utils/hooks/use-tasks";
+// import useTasks from "@/app/utils/hooks/use-tasks";
 import { DataTable } from "./components/DataTable/DataTable";
 import { getColumns } from "./components/columns";
 import { TaskV2 } from "@/models/taskV2";
@@ -14,7 +14,8 @@ export interface TasksProps {
 }
 
 const Tasks: FC<TasksProps> = ({ testId }): JSX.Element => {
-  const { data: tasks } = useTasks();
+  // const { data: tasks } = useTasks();
+  const tasks = [] as any[];
   const { data: projects, isLoading } = useProjectsState();
   const { data: tags } = useTagsState();
   const [selectedTask, setSelectedTask] = useState<TaskV2 | null>(null);

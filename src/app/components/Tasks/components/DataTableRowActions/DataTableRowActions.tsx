@@ -11,7 +11,7 @@ import {
 } from "../../../ui/dropdown-menu";
 import { Button } from "../../../ui/button";
 import { MouseEvent, useState } from "react";
-import useEditTask from "@/app/utils/hooks/use-edit-task";
+// import useEditTask from "@/app/utils/hooks/use-edit-task";
 import { z } from "zod";
 import TaskFormModal from "@/app/components/TaskFormModal";
 
@@ -44,20 +44,20 @@ export function DataTableRowActions<TData>({
 }: DataTableRowActionsProps<TData>) {
   const task = taskSchema.parse(row.original);
   const [taskFormOpen, setTaskFormOpen] = useState<boolean>(false);
-  const { editTask, deleteTask } = useEditTask();
+  // const { editTask, deleteTask } = useEditTask();
 
   const handleActivateClick = (event: MouseEvent) => {
     event.stopPropagation();
-    editTask(task._id, {
-      isActive: true,
-    });
+    // editTask(task._id, {
+    //   isActive: true,
+    // });
   };
 
   const handleDeactivateClick = (event: MouseEvent) => {
     event.stopPropagation();
-    editTask(task._id, {
-      isActive: false,
-    });
+    // editTask(task._id, {
+    //   isActive: false,
+    // });
   };
 
   const handleEditClick = (event: MouseEvent) => {
@@ -67,7 +67,7 @@ export function DataTableRowActions<TData>({
 
   const handleDeleteClick = (event: MouseEvent) => {
     event.stopPropagation();
-    deleteTask(task._id);
+    // deleteTask(task._id);
   };
 
   const closeTaskForm = () => setTaskFormOpen(false);
