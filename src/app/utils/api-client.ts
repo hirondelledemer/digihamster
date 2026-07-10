@@ -1,8 +1,8 @@
 import axios from "axios";
 
 const apiClient = axios.create({
-  // baseURL: "https://digihamster-api.duckdns.org",
-  baseURL: "http://localhost:8080",
+  baseURL: "https://digihamster-api.duckdns.org",
+  // baseURL: "http://localhost:8080",
 });
 
 apiClient.interceptors.request.use((config) => {
