@@ -3,6 +3,7 @@ import { now } from "@/app/utils/date/date";
 import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
 import { useTasksNewState } from "@/app/utils/hooks/use-tasks-new/state-context";
 import { Project } from "@/models/project";
+import { ProjectStatus } from "@/app/utils/types/project";
 import { addDays, differenceInCalendarDays, format, isValid } from "date-fns";
 import { useRouter } from "next/navigation";
 
@@ -113,7 +114,9 @@ const ProjectProgressBar: FC<{ project: Project }> = ({
 const ProjectProgress: FC<ProjectProgressProps> = (): JSX.Element => {
   const { data: projects } = useProjectsState();
 
-  const activeProjects = projects.filter((project) => !project.disabled);
+  const activeProjects = projects.filter(
+    (project) => project.status === ProjectStatus.Doing,
+  );
 
   return (
     <div className="flex flex-col gap-3">

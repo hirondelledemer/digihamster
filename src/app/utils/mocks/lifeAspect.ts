@@ -1,13 +1,13 @@
-import { LifeAspect } from "@/models/life-aspect";
+import { ILifeAspect } from "../types/life-aspect";
 
 export const generateLifeAspect: (
   i?: number,
-  properties?: Partial<LifeAspect>
-) => LifeAspect = (i = 1, properties) => {
+  properties?: Partial<ILifeAspect>,
+) => ILifeAspect = (i = 1, properties) => {
   return {
-    _id: `lifeAspect${i}`,
+    id: i,
     title: `Life Aspect ${i}`,
-    deleted: false,
+    description: `Life Aspect Description ${i}`,
     boosts: [],
     updatedAt: "",
     asset: "tree",
@@ -15,15 +15,15 @@ export const generateLifeAspect: (
   };
 };
 
-export const generateListOfLifeAspects: (count: number) => LifeAspect[] = (
-  count
+export const generateListOfLifeAspects: (count: number) => ILifeAspect[] = (
+  count,
 ) => {
   return [...Array(count)].map((_v, i) => generateLifeAspect(i));
 };
 
 export const generateCustomLifeAspectList: (
-  habitInfo: Partial<LifeAspect>[]
-) => LifeAspect[] = (taskInfo) => {
+  habitInfo: Partial<ILifeAspect>[],
+) => ILifeAspect[] = (taskInfo) => {
   return taskInfo.map((taskProperties, i) => ({
     ...generateLifeAspect(i, taskProperties),
   }));

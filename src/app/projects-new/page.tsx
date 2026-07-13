@@ -8,7 +8,6 @@ import { useLifeAspectsState } from "@/app/utils/hooks/use-life-aspects/state-co
 import { TasksNewContextProvider } from "@/app/utils/hooks/use-tasks-new/provider";
 import { useTasksNewState } from "@/app/utils/hooks/use-tasks-new/state-context";
 import { useTasksNewActions } from "@/app/utils/hooks/use-tasks-new/actions-context";
-import { Project } from "@/models/project";
 import { TaskV2 } from "@/models/taskV2";
 import {
   Table,
@@ -20,7 +19,6 @@ import {
 } from "@/app/components/ui/table";
 import { Button } from "@/app/components/ui/button";
 import { Input } from "@/app/components/ui/input";
-import { Switch } from "@/app/components/ui/switch";
 import {
   Select,
   SelectContent,
@@ -31,6 +29,8 @@ import {
 import { colors } from "@/app/components/ProjectForm/ProjectForm.consts";
 import { Badge } from "@/app/components/ui/badge";
 import { cn } from "@/app/components/utils";
+import { IProject } from "../utils/types/project";
+import { ProjectRow } from "../modules/projects/components/ProjectRow";
 
 // ─── Task components ──────────────────────────────────────────────────────────
 
@@ -128,7 +128,7 @@ const TaskRow: FC<TaskRowProps> = ({ task }) => {
 };
 
 interface TasksPanelProps {
-  project: Project;
+  project: IProject;
 }
 
 const TasksPanel: FC<TasksPanelProps> = ({ project }) => {
@@ -193,103 +193,6 @@ const TasksPanel: FC<TasksPanelProps> = ({ project }) => {
 };
 
 // ─── Project components ───────────────────────────────────────────────────────
-
-interface ProjectRowProps {
-  project: Project;
-  selected: boolean;
-  onSelect: (id: number) => void;
-}
-
-const ProjectRow: FC<ProjectRowProps> = ({ project, selected, onSelect }) => {
-  const { update, delete: deleteProject } = useProjectsActions();
-  const [editing, setEditing] = useState(false);
-  const [editTitle, setEditTitle] = useState(project.title);
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  const handleEditStart = () => {
-    setEditTitle(project.title);
-    setEditing(true);
-    setTimeout(() => inputRef.current?.focus(), 0);
-  };
-
-  const handleEditSave = () => {
-    const trimmed = editTitle.trim();
-    if (trimmed && trimmed !== project.title) {
-      update(project.id.toString(), { title: trimmed });
-    }
-    setEditing(false);
-  };
-
-  const handleEditKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") handleEditSave();
-    if (e.key === "Escape") setEditing(false);
-  };
-
-  return (
-    <TableRow
-      className={cn("cursor-pointer", selected && "bg-muted")}
-      onClick={() => onSelect(project.id)}
-    >
-      <TableCell className="py-1">
-        <div
-          className="w-5 h-5 rounded-full border border-border"
-          style={{ backgroundColor: project.color }}
-        />
-      </TableCell>
-      <TableCell className="py-1">
-        {editing ? (
-          <Input
-            ref={inputRef}
-            value={editTitle}
-            onChange={(e) => setEditTitle(e.target.value)}
-            onBlur={handleEditSave}
-            onKeyDown={handleEditKeyDown}
-            className="h-7 py-0 px-2"
-            onClick={(e) => e.stopPropagation()}
-          />
-        ) : (
-          project.title
-        )}
-      </TableCell>
-      <TableCell className="py-1 text-muted-foreground">
-        {project.life_aspect_id}
-      </TableCell>
-      <TableCell className="py-1">
-        <Switch
-          checked={!project.disabled}
-          onCheckedChange={(checked) =>
-            update(project.id.toString(), { disabled: !checked })
-          }
-          onClick={(e) => e.stopPropagation()}
-        />
-      </TableCell>
-      <TableCell className="py-1 text-right">
-        <div className="flex gap-1 justify-end">
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={(e) => {
-              e.stopPropagation();
-              handleEditStart();
-            }}
-          >
-            Edit
-          </Button>
-          <Button
-            size="sm"
-            variant="destructive"
-            onClick={(e) => {
-              e.stopPropagation();
-              deleteProject(project.id.toString());
-            }}
-          >
-            Delete
-          </Button>
-        </div>
-      </TableCell>
-    </TableRow>
-  );
-};
 
 const NewProjectForm: FC = () => {
   const { create } = useProjectsActions();
