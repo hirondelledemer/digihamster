@@ -1,0 +1,1 @@
+export const DEFAULT_TEST_DATE = "1970-01-11T10:10:10Z";

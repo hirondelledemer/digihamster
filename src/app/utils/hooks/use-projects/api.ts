@@ -8,7 +8,7 @@ export type FieldsRequired = Pick<
   "title" | "color" | "life_aspect_id"
 >;
 
-const PROJECTS_PATH = "/projects";
+export const PROJECTS_PATH = "/projects";
 
 export const getProjectsPath = (id: number) => `${PROJECTS_PATH}/${id}`;
 
