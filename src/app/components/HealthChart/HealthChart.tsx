@@ -112,9 +112,10 @@ const HealthChart: FC<HealthChartProps> = (): JSX.Element => {
             ...prev,
             {
               dataId: lifeAspect ? lifeAspect.id.toString() : curr,
-              dataValue: Math.floor(progressPercentage),
-              dataValue1: Math.floor(boostedProgressPercentage),
+              basePercentage: Math.floor(progressPercentage),
+              boostedPercentage: Math.floor(boostedProgressPercentage),
               dataLabel: lifeAspect ? lifeAspect.title : "<<no name found>>",
+
               tooltipLabel: (
                 <div className="mr-2">
                   {allTheProgress.map((pr) => (
@@ -154,6 +155,7 @@ const HealthChart: FC<HealthChartProps> = (): JSX.Element => {
           </CardHeader>
           <RadarChart
             data={chartData}
+            dataValueKeys={["basePercentage", "boostedPercentage"]}
             onLabelClickAction={setSelectedCategory}
             config={
               {

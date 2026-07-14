@@ -24,6 +24,7 @@ export interface RadarChartProps {
     dataLabel: string;
     tooltipLabel: ReactNode;
   }[];
+  dataValueKeys: string[];
   config?: ChartConfig;
   onLabelClickAction?: (label: string) => void;
 }
@@ -32,7 +33,21 @@ export function RadarChart({
   data,
   config = {},
   onLabelClickAction,
+  dataValueKeys,
 }: RadarChartProps) {
+  if (!data.length) {
+    return null;
+  }
+
+  const firstItem = data[0];
+
+  const itemsToShow = dataValueKeys.reduce((acc, key: string) => {
+    if (key in firstItem) {
+      acc[key] = firstItem[key];
+    }
+    return acc;
+  }, {});
+
   return (
     <ChartContainer
       config={config}
@@ -66,16 +81,14 @@ export function RadarChart({
           )}
         />
         <PolarGrid gridType="circle" />
-        <Radar
-          dataKey="dataValue"
-          fill="var(--color-value)"
-          fillOpacity={0.6}
-        />
-        <Radar
-          dataKey="dataValue1"
-          fill="var(--color-value2)"
-          fillOpacity={0.6}
-        />
+        {Object.keys(itemsToShow).map((key) => (
+          <Radar
+            key={key}
+            dataKey={key}
+            fill="var(--color-value)"
+            fillOpacity={0.6}
+          />
+        ))}
       </RadarChartRecharts>
     </ChartContainer>
   );
