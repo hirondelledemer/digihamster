@@ -70,8 +70,7 @@ const TaskInfo: FC<TaskInfoProps> = (): JSX.Element | null => {
 
         <CreateTaskForm
           onDone={() => {}}
-          // primaryTaskId={selectedTask?.id}
-          projectId={selectedProject ? selectedProject._id : undefined}
+          projectId={selectedProject ? selectedProject.id : undefined}
         />
       </SheetContent>
     </Sheet>

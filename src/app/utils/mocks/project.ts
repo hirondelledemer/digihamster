@@ -1,7 +1,6 @@
 import { COLORS_V2 } from "../consts/colors";
 import { IProject, ProjectStatus } from "../types/project";
-
-const DEFAULT_TEST_DATE = "1970-01-11T10:10:10Z";
+import { DEFAULT_TEST_DATE } from "./date";
 
 export const generateProject: (
   i?: number,
