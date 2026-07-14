@@ -111,10 +111,11 @@ const HealthChart: FC<HealthChartProps> = (): JSX.Element => {
           return [
             ...prev,
             {
-              dataLabel: lifeAspect ? lifeAspect.id.toString() : curr,
+              dataId: lifeAspect ? lifeAspect.id.toString() : curr,
               dataValue: Math.floor(progressPercentage),
               dataValue1: Math.floor(boostedProgressPercentage),
-              label: (
+              dataLabel: lifeAspect ? lifeAspect.title : "<<no name found>>",
+              tooltipLabel: (
                 <div className="mr-2">
                   {allTheProgress.map((pr) => (
                     <div key={pr.label}>

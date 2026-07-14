@@ -14,12 +14,15 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/app/components/ui/chart";
+import { ReactNode } from "react";
 
 export interface RadarChartProps {
   data: {
-    dataLabel: string;
+    dataId: string;
     dataValue: number;
-    fill?: string;
+    dataValue1: number;
+    dataLabel: string;
+    tooltipLabel: ReactNode;
   }[];
   config?: ChartConfig;
   onLabelClickAction?: (label: string) => void;
@@ -44,7 +47,7 @@ export function RadarChart({
               className="w-[180px]"
               formatter={(_value, _name, item, index) => {
                 if (index === 0) {
-                  return item.payload.label;
+                  return item.payload.tooltipLabel;
                 }
                 return;
               }}
@@ -52,13 +55,13 @@ export function RadarChart({
           }
         />
         <PolarAngleAxis
-          dataKey="dataLabel"
+          dataKey="dataId"
           onClick={({ value }) => {
             return onLabelClickAction && onLabelClickAction(value);
           }}
           tick={(e) => (
             <Text {...e} className="chart-tick">
-              {e.payload.value}
+              {data[e.index].dataLabel}
             </Text>
           )}
         />
