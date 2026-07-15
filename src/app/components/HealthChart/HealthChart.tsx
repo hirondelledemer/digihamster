@@ -20,14 +20,12 @@ import { GardenContainer } from "../Garden/GardenContainer";
 import { useLifeAspectsState } from "@/app/utils/hooks/use-life-aspects/state-context";
 import { getTodayWithZeroHours, toBackendDate } from "@/app/utils/date/date";
 import { subDays } from "date-fns";
+import { RadarChartDataItem } from "@/app/charts/RadarChart/RadarChart";
+
+type HealthChartValueKey = "basePercentage" | "boostedPercentage";
 
 export interface HealthChartProps {
   testId?: string;
-}
-
-interface ChartItem {
-  dataLabel: string;
-  dataValue: number;
 }
 
 const HealthChart: FC<HealthChartProps> = (): JSX.Element => {
@@ -36,7 +34,7 @@ const HealthChart: FC<HealthChartProps> = (): JSX.Element => {
 
   const { data: lifeAspects = [] } = useLifeAspectsState();
   const [selectedCategory, setSelectedCategory] = useState<
-    undefined | string | "garden" | "chart"
+    undefined | string | number
   >("chart");
 
   const getHabitsData = useCallback(
@@ -85,7 +83,7 @@ const HealthChart: FC<HealthChartProps> = (): JSX.Element => {
       habits
         .map((habit) => habit.life_aspect_id)
         .filter((item, pos, self) => self.indexOf(item) == pos)
-        .reduce((prev: ChartItem[], curr) => {
+        .reduce((prev: RadarChartDataItem<HealthChartValueKey>[], curr: string) => {
           const habitsForCategory = habits.filter(
             (h) => h.life_aspect_id === curr,
           );
@@ -111,10 +109,11 @@ const HealthChart: FC<HealthChartProps> = (): JSX.Element => {
           return [
             ...prev,
             {
-              dataLabel: lifeAspect ? lifeAspect.id.toString() : curr,
-              dataValue: Math.floor(progressPercentage),
-              dataValue1: Math.floor(boostedProgressPercentage),
-              label: (
+              dataId: lifeAspect ? lifeAspect.id.toString() : curr,
+              basePercentage: Math.floor(progressPercentage),
+              boostedPercentage: Math.floor(boostedProgressPercentage),
+              dataLabel: lifeAspect ? lifeAspect.title : "<<no name found>>",
+              tooltipLabel: (
                 <div className="mr-2">
                   {allTheProgress.map((pr) => (
                     <div key={pr.label}>
@@ -153,6 +152,7 @@ const HealthChart: FC<HealthChartProps> = (): JSX.Element => {
           </CardHeader>
           <RadarChart
             data={chartData}
+            dataValueKeys={["basePercentage", "boostedPercentage"]}
             onLabelClickAction={setSelectedCategory}
             config={
               {
