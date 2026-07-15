@@ -60,6 +60,7 @@ describe("RadarChart", () => {
   it("renders a radar polygon for each value key present in the data", () => {
     const { container } = renderComponent();
 
+    // eslint-disable-next-line testing-library/no-container
     expect(container.querySelectorAll(".recharts-radar")).toHaveLength(2);
   });
 
@@ -75,9 +76,10 @@ describe("RadarChart", () => {
     const { container } = renderComponent({
       // "boostedPercentage" is requested but absent from the data
       dataValueKeys: ["basePercentage", "boostedPercentage"],
-      data: data.map(({ boostedPercentage, ...rest }) => rest) as never,
+      data: data.map(({ boostedPercentage: _, ...rest }) => rest) as never,
     });
 
+    // eslint-disable-next-line testing-library/no-container
     expect(container.querySelectorAll(".recharts-radar")).toHaveLength(1);
   });
 
