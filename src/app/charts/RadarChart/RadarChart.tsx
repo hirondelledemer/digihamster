@@ -3,6 +3,7 @@
 import {
   RadarChart as RadarChartRecharts,
   PolarAngleAxis,
+  PolarRadiusAxis,
   Text,
   PolarGrid,
   Radar,
@@ -16,37 +17,35 @@ import {
 } from "@/app/components/ui/chart";
 import { ReactNode } from "react";
 
-export interface RadarChartProps {
-  data: {
-    dataId: string;
-    dataValue: number;
-    dataValue1: number;
-    dataLabel: string;
-    tooltipLabel: ReactNode;
-  }[];
-  dataValueKeys: string[];
+export type RadarChartDataItem<ValueKey extends string = never> = {
+  dataId: string | number;
+  dataLabel: string;
+  tooltipLabel: ReactNode;
+} & Record<ValueKey, number>;
+
+export interface RadarChartProps<ValueKey extends string = never> {
+  data: RadarChartDataItem<ValueKey>[];
+  dataValueKeys: ValueKey[];
   config?: ChartConfig;
   onLabelClickAction?: (label: string) => void;
+  /** Radius axis domain [min, max]. Defaults to [0, 100]. */
+  domain?: [number, number];
 }
 
-export function RadarChart({
+export function RadarChart<ValueKey extends string>({
   data,
   config = {},
   onLabelClickAction,
   dataValueKeys,
-}: RadarChartProps) {
+  domain = [0, 100],
+}: RadarChartProps<ValueKey>) {
   if (!data.length) {
     return null;
   }
 
   const firstItem = data[0];
 
-  const itemsToShow = dataValueKeys.reduce((acc, key: string) => {
-    if (key in firstItem) {
-      acc[key] = firstItem[key];
-    }
-    return acc;
-  }, {});
+  const keysToShow = dataValueKeys.filter((key) => key in firstItem);
 
   return (
     <ChartContainer
@@ -81,12 +80,16 @@ export function RadarChart({
           )}
         />
         <PolarGrid gridType="circle" />
-        {Object.keys(itemsToShow).map((key) => (
+        <PolarRadiusAxis domain={domain} tick={false} axisLine={false} />
+        {keysToShow.map((key) => (
           <Radar
             key={key}
             dataKey={key}
             fill="var(--color-value)"
             fillOpacity={0.6}
+            stroke="var(--color-value)"
+            strokeWidth={2}
+            dot={{ r: 3, fillOpacity: 1 }}
           />
         ))}
       </RadarChartRecharts>

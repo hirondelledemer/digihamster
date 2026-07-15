@@ -40,8 +40,8 @@ export const getHabitProgressForLifeAspect = (
     );
   }, 0);
 
-  console.log("progress", progress, total);
-  const progressPercentage = Math.min((progress / total) * 100, 100);
+  const progressPercentage =
+    total > 0 ? Math.min((progress / total) * 100, 100) : 0;
 
   if (!addBoosts) {
     return progressPercentage;
