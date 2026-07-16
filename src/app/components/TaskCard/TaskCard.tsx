@@ -47,6 +47,12 @@ const TaskCard: FC<TaskCardProps> = ({
     },
   });
 
+  const project = projects.find((p) => p.id === task.project_id);
+
+  const baseStyle: CSSProperties = {
+    borderColor: project?.color,
+  };
+
   const style: CSSProperties | undefined = transform
     ? {
         transform: `translate(${transform.x}px, ${transform.y}px)`,
@@ -56,8 +62,6 @@ const TaskCard: FC<TaskCardProps> = ({
       }
     : undefined;
 
-  const project = projects.find((p) => p.id === task.project_id);
-
   return (
     <div data-testid={testId}>
       <TaskActions task={task}>
@@ -65,13 +69,19 @@ const TaskCard: FC<TaskCardProps> = ({
           data-testid={cardTestId}
           className={`p-0 rounded-md ${
             task.status === "done" ? "opacity-40 line-through" : ""
-          } `}
+          }`}
           ref={setNodeRef}
-          style={style}
+          style={{ ...baseStyle, ...style }}
           {...listeners}
           {...attributes}
         >
-          <CardHeader className="p-4">
+          <CardHeader className="p-4 pt-2">
+            <div
+              style={{ color: project?.color }}
+              className="text-[10px] uppercase underline"
+            >
+              {project?.title}
+            </div>
             <CardTitle
               data-testid={titleTestId}
               className="font-normal flex items-center justify-between"
@@ -106,11 +116,11 @@ const TaskCard: FC<TaskCardProps> = ({
                 )}
               </div>
             </CardTitle>
-            {!(task.status === "done") && (
+            {/* {!(task.status === "done") && (
               <CardDescription>
                 <div style={{ color: project?.color }}>{project?.title}</div>
               </CardDescription>
-            )}
+            )} */}
           </CardHeader>
           {task.description && !(task.status === "done") && (
             <CardContent className="pb-4 px-4 text-xs whitespace-pre-wrap muted">
