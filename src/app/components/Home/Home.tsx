@@ -13,6 +13,7 @@ import HealthChart from "../HealthChart";
 // import DailyProgress from "../DailyProgress";
 import TaskInfo from "../TaskInfo";
 import ProjectProgress from "../ProjectProgress";
+import { Agent } from "../Agent";
 
 export const Home = (): JSX.Element => {
   return (
@@ -47,6 +48,7 @@ export const Home = (): JSX.Element => {
             {/* <div className="min-h-16 overflow-auto p-[1px]">
               <DailyProgress />
             </div> */}
+            <Agent />
 
             <ProjectProgress />
 
