@@ -18,7 +18,8 @@ import {
 
 import { GardenContainer } from "../Garden/GardenContainer";
 import { useLifeAspectsState } from "@/app/utils/hooks/use-life-aspects/state-context";
-import { getTodayWithZeroHours, toBackendDate } from "@/app/utils/date/date";
+import { getTodayWithZeroHours } from "@/app/utils/date/now";
+import { toBackendDate } from "@/app/utils/date/date";
 import { subDays } from "date-fns";
 import { RadarChartDataItem } from "@/app/charts/RadarChart/RadarChart";
 
@@ -83,56 +84,60 @@ const HealthChart: FC<HealthChartProps> = (): JSX.Element => {
       habits
         .map((habit) => habit.life_aspect_id)
         .filter((item, pos, self) => self.indexOf(item) == pos)
-        .reduce((prev: RadarChartDataItem<HealthChartValueKey>[], curr: string) => {
-          const habitsForCategory = habits.filter(
-            (h) => h.life_aspect_id === curr,
-          );
-          const lifeAspect = lifeAspects.find(
-            (la) => la.id.toString() === curr.toString(),
-          );
+        .reduce(
+          (prev: RadarChartDataItem<HealthChartValueKey>[], curr: string) => {
+            const habitsForCategory = habits.filter(
+              (h) => h.life_aspect_id === curr,
+            );
+            const lifeAspect = lifeAspects.find(
+              (la) => la.id.toString() === curr.toString(),
+            );
 
-          const progressPercentage = getHabitProgressForLifeAspect(
-            habits,
-            lifeAspect || [],
-          );
-          const boostedProgressPercentage = getHabitProgressForLifeAspect(
-            habits,
-            lifeAspect || [],
-            true,
-          );
+            const progressPercentage = getHabitProgressForLifeAspect(
+              habits,
+              lifeAspect || [],
+            );
+            const boostedProgressPercentage = getHabitProgressForLifeAspect(
+              habits,
+              lifeAspect || [],
+              true,
+            );
 
-          const allTheProgress = habitsForCategory.map((habit) => ({
-            label: habit.title,
-            progress: getHabitProgress(habit),
-          }));
+            const allTheProgress = habitsForCategory.map((habit) => ({
+              label: habit.title,
+              progress: getHabitProgress(habit),
+            }));
 
-          return [
-            ...prev,
-            {
-              dataId: lifeAspect ? lifeAspect.id.toString() : curr,
-              basePercentage: Math.floor(progressPercentage),
-              boostedPercentage: Math.floor(boostedProgressPercentage),
-              dataLabel: lifeAspect ? lifeAspect.title : "<<no name found>>",
-              tooltipLabel: (
-                <div className="mr-2">
-                  {allTheProgress.map((pr) => (
-                    <div key={pr.label}>
-                      {pr.label} - {Math.floor(pr.progress)}%
-                    </div>
-                  ))}
-                  {boostedProgressPercentage > progressPercentage && (
-                    <>
-                      <div>-----</div>
-                      <div>
-                        boosts: {boostedProgressPercentage - progressPercentage}
+            return [
+              ...prev,
+              {
+                dataId: lifeAspect ? lifeAspect.id.toString() : curr,
+                basePercentage: Math.floor(progressPercentage),
+                boostedPercentage: Math.floor(boostedProgressPercentage),
+                dataLabel: lifeAspect ? lifeAspect.title : "<<no name found>>",
+                tooltipLabel: (
+                  <div className="mr-2">
+                    {allTheProgress.map((pr) => (
+                      <div key={pr.label}>
+                        {pr.label} - {Math.floor(pr.progress)}%
                       </div>
-                    </>
-                  )}
-                </div>
-              ),
-            },
-          ];
-        }, []),
+                    ))}
+                    {boostedProgressPercentage > progressPercentage && (
+                      <>
+                        <div>-----</div>
+                        <div>
+                          boosts:{" "}
+                          {boostedProgressPercentage - progressPercentage}
+                        </div>
+                      </>
+                    )}
+                  </div>
+                ),
+              },
+            ];
+          },
+          [],
+        ),
     [habits, lifeAspects],
   );
 

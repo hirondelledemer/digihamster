@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 
 import CalendarWeatherEvent from ".";
 import { CalendarWeatherEventProps } from "./CalendarWeatherEvent";
-import { now } from "@/app/utils/date/date";
+import { now } from "@/app/utils/date/now";
 
 const meta: Meta<typeof CalendarWeatherEvent> = {
   title: "Calendar/CalendarWeatherEvent",

@@ -1,7 +1,7 @@
 import { Habit } from "@/models/habit";
 import { LifeAspect } from "@/models/life-aspect.js";
-import { now } from "#utils/date";
 import { isAfter, subDays } from "date-fns";
+import { now } from "../date/now";
 
 export const getHabitProgress = (habit: Habit) => {
   const earliestDay = subDays(now(), 28).getTime();

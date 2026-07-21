@@ -1,5 +1,5 @@
 "use client";
-import { now } from "@/app/utils/date/date";
+import { now } from "@/app/utils/date/now";
 import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
 import { useTasksNewState } from "@/app/utils/hooks/use-tasks-new/state-context";
 import { Project } from "@/models/project";

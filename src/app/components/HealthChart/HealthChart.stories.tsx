@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import HealthChart from ".";
 import { HealthChartProps } from "./HealthChart";
 import { HabitsContext } from "@/app/utils/hooks/use-habits";
-import { now } from "@/app/utils/date/date";
+import { now } from "@/app/utils/date/now";
 import { subDays } from "date-fns";
 import { generateCustomHabitList } from "@/app/utils/mocks/habit";
 import { generateListOfLifeAspects } from "@/app/utils/mocks/lifeAspect";

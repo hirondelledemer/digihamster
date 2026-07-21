@@ -3,7 +3,7 @@ import TodayHabit, { TodayHabitProps } from "./TodayHabit";
 import { getTodayHabitTestkit } from "./TodayHabit.testkit";
 import { DAY } from "@/app/utils/consts/dates";
 
-jest.mock("../../utils/date/date");
+jest.mock("../../utils/date/now");
 
 describe("TodayHabit", () => {
   const defaultProps: TodayHabitProps = {

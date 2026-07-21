@@ -1,11 +1,5 @@
 import React, { CSSProperties, FC } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "../ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { format } from "date-fns";
 import StaleIndicator from "../StaleIndicator";
 import { useDraggable } from "@dnd-kit/core";
@@ -14,7 +8,7 @@ import { useCalendarDate } from "../../utils/hooks/use-calendar-date";
 import { Tooltip, TooltipContent, TooltipProvider } from "../ui/tooltip";
 import { TooltipTrigger } from "@radix-ui/react-tooltip";
 import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
-import { TaskWithRelations } from "@/app/utils/types/task";
+import { ITask } from "@/app/utils/types/task";
 import { TaskActions } from "../TaskActions";
 
 export const titleTestId = "TaskCard-title-testid";
@@ -22,7 +16,7 @@ export const cardTestId = "TaskCard-card-testid";
 
 export interface TaskCardProps {
   testId?: string;
-  task: TaskWithRelations;
+  task: ITask;
   dragId: string;
   indicateActive?: boolean;
 }
@@ -78,15 +72,9 @@ const TaskCard: FC<TaskCardProps> = ({
           <CardHeader className="p-4 pt-2">
             <div
               style={{ color: project?.color }}
-              className="text-[10px] uppercase underline"
+              className="text-[10px] uppercase underline flex items-center justify-between"
             >
               {project?.title}
-            </div>
-            <CardTitle
-              data-testid={titleTestId}
-              className="font-normal flex items-center justify-between"
-            >
-              <div>{task.title}</div>
 
               <div className="flex items-center gap-1">
                 {indicateActive && task.status === "doing" && (
@@ -115,29 +103,19 @@ const TaskCard: FC<TaskCardProps> = ({
                   </TooltipProvider>
                 )}
               </div>
+            </div>
+            <CardTitle
+              data-testid={titleTestId}
+              className="font-normal flex items-center justify-between"
+            >
+              <div>{task.title}</div>
             </CardTitle>
-            {/* {!(task.status === "done") && (
-              <CardDescription>
-                <div style={{ color: project?.color }}>{project?.title}</div>
-              </CardDescription>
-            )} */}
           </CardHeader>
           {task.description && !(task.status === "done") && (
             <CardContent className="pb-4 px-4 text-xs whitespace-pre-wrap muted">
               {task.description}
             </CardContent>
           )}
-          {/* {!!taskTags.length && (
-            <CardFooter className="p-4">
-              <div className="space-x-1">
-                {taskTags.map((tag) => (
-                  <Badge variant="outline" key={tag._id}>
-                    {tag.title}
-                  </Badge>
-                ))}
-              </div>
-            </CardFooter>
-          )} */}
         </Card>
       </TaskActions>
     </div>

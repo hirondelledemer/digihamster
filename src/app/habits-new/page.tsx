@@ -8,7 +8,7 @@ import { useHabitsNewActions } from "@/app/utils/hooks/use-habits-new/actions-co
 import { LifeAspectsContextProvider } from "@/app/utils/hooks/use-life-aspects/provider";
 import { useLifeAspectsState } from "@/app/utils/hooks/use-life-aspects/state-context";
 import { Habit } from "@/models/habit";
-import { getTodayWithZeroHours } from "@/app/utils/date/date";
+import { getTodayWithZeroHours } from "@/app/utils/date/now";
 import {
   Table,
   TableBody,

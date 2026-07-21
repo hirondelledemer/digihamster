@@ -1,5 +1,5 @@
 "use client";
-import { now } from "@/app/utils/date/date";
+import { now } from "@/app/utils/date/now";
 import { createContext, ReactNode, useContext, useState } from "react";
 
 interface CalendarDateContextValue {

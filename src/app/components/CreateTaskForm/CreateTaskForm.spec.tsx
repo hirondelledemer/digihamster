@@ -7,7 +7,7 @@ import { getRichTextEditorTestkit } from "../RichTextEditor/RichTextEditor.testk
 import mockAxios from "jest-mock-axios";
 import { wrapWithTasksProvider } from "@/app/utils/tests/wraps";
 
-jest.mock("../../utils/date/date");
+jest.mock("../../utils/date/now");
 
 describe("CreateTaskForm", () => {
   const defaultProps: CreateTaskFormProps = {
@@ -82,7 +82,7 @@ describe("CreateTaskForm", () => {
     const rteWrapper = getRichTextEditorTestkit(rte);
 
     rteWrapper.enterValue(
-      '<p>feed the cat</p><p><span data-type="projectMention" class="rte-hook_project__UsSIv" data-id="679cbfd01c93c55e18e183dd:#3b82f6" data-label="perfect cat">/p perfect cat</span> </p><p></p><p><span data-type="mention" class="rte-hook_tag__Ghi7L" data-id="678a222ffc21119042d789b7:#364FC7" data-label="task">@task</span> get the water</p><p><span data-type="mention" class="rte-hook_tag__Ghi7L" data-id="678a222ffc21119042d789b7:#364FC7" data-label="task">@task</span> get the food</p><p></p><p>cat has to be fed!!!!!!</p><p></p><p><span data-type="paramsMention" class="rte-hook_project__UsSIv" data-id="active" data-label="active">$active</span> </p><p><span data-type="mention" class="rte-hook_tag__Ghi7L" data-id="65c6a43d38a23c2c6627d07c:#FF6B6B" data-label="mmm">@mmm</span> </p>'
+      '<p>feed the cat</p><p><span data-type="projectMention" class="rte-hook_project__UsSIv" data-id="679cbfd01c93c55e18e183dd:#3b82f6" data-label="perfect cat">/p perfect cat</span> </p><p></p><p><span data-type="mention" class="rte-hook_tag__Ghi7L" data-id="678a222ffc21119042d789b7:#364FC7" data-label="task">@task</span> get the water</p><p><span data-type="mention" class="rte-hook_tag__Ghi7L" data-id="678a222ffc21119042d789b7:#364FC7" data-label="task">@task</span> get the food</p><p></p><p>cat has to be fed!!!!!!</p><p></p><p><span data-type="paramsMention" class="rte-hook_project__UsSIv" data-id="active" data-label="active">$active</span> </p><p><span data-type="mention" class="rte-hook_tag__Ghi7L" data-id="65c6a43d38a23c2c6627d07c:#FF6B6B" data-label="mmm">@mmm</span> </p>',
     );
     rteWrapper.blur();
     await userEvent.click(screen.getByRole("button", { name: /create/i }));
@@ -207,7 +207,7 @@ describe("CreateTaskForm", () => {
       const rteWrapper = getRichTextEditorTestkit(rte);
 
       rteWrapper.enterValue(
-        '<p>new task</p><p><span data-type="paramsMention" class="rte-hook_param__6mOZb" data-id="today" data-label="today">$today</span> </p>'
+        '<p>new task</p><p><span data-type="paramsMention" class="rte-hook_param__6mOZb" data-id="today" data-label="today">$today</span> </p>',
       );
       rteWrapper.blur();
       await userEvent.click(screen.getByRole("button", { name: /create/i }));
@@ -257,7 +257,7 @@ describe("CreateTaskForm", () => {
       const rteWrapper = getRichTextEditorTestkit(rte);
 
       rteWrapper.enterValue(
-        '<p>new task</p><p><span data-type="paramsMention" class="rte-hook_param__6mOZb" data-id="tmr" data-label="tmr">$tmr</span> </p>'
+        '<p>new task</p><p><span data-type="paramsMention" class="rte-hook_param__6mOZb" data-id="tmr" data-label="tmr">$tmr</span> </p>',
       );
       rteWrapper.blur();
       await userEvent.click(screen.getByRole("button", { name: /create/i }));

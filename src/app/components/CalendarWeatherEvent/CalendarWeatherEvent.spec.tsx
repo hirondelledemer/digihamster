@@ -3,7 +3,7 @@ import CalendarWeatherEvent, {
   CalendarWeatherEventProps,
 } from "./CalendarWeatherEvent";
 import { getCalendarWeatherEventTestkit } from "./CalendarWeatherEvent.testkit";
-import { now } from "@/app/utils/date/date";
+import { now } from "@/app/utils/date/now";
 
 describe("CalendarWeatherEvent", () => {
   const defaultProps: CalendarWeatherEventProps = {
@@ -25,7 +25,7 @@ describe("CalendarWeatherEvent", () => {
   };
   const renderComponent = (props = defaultProps) =>
     getCalendarWeatherEventTestkit(
-      render(<CalendarWeatherEvent {...props} />).container
+      render(<CalendarWeatherEvent {...props} />).container,
     );
 
   it("should render CalendarWeatherEvent", () => {

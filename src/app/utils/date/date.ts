@@ -1,13 +1,5 @@
 import { subDays, format, formatISO, parseISO } from "date-fns";
 
-export const now = () => new Date();
-
-export const getTodayWithZeroHours = () => {
-  const today = now();
-  today.setHours(0, 0, 0, 0);
-  return today;
-};
-
 // TODO: add commentary. Maybe rename
 export const getTimestampsFrom = (startingDate: Date, howMany: number) => {
   const array = [];
