@@ -1,8 +1,11 @@
 import axios from "axios";
+import "dotenv/config";
 
 const apiClient = axios.create({
-  baseURL: "https://digihamster-api.duckdns.org",
-  // baseURL: "http://localhost:8080",
+  baseURL:
+    process.env.NEXT_PUBLIC_SERVER_ENV === "local"
+      ? "http://localhost:8080"
+      : "https://digihamster-api.duckdns.org",
 });
 
 apiClient.interceptors.request.use((config) => {
