@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import { Taggable, TimeStamps } from "./shared-types";
 
+/** @deprecated use IJournalEntry */
 export interface JournalEntry extends Taggable, TimeStamps {
   id: number;
   title: string;

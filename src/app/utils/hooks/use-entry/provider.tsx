@@ -8,17 +8,23 @@ import { EntriesStateAction, EntriesStateActionType } from "./actions";
 import { api, CreateEntryParams } from "./api";
 import { EntriesStateContext } from "./state-context";
 import { EntriesActionsContext } from "./actions-context";
-import { JournalEntry } from "@/models/entry";
+import { IJournalEntry } from "../../types/journal-entry";
+import { toBackendDateTime } from "#utils/date";
+import { now } from "../../date/now";
+import axios from "axios";
+
+const getApiErrorMessage = (e: unknown): string =>
+  axios.isAxiosError(e)
+    ? (e.response?.data?.message ?? "An unexpected error occurred")
+    : "An unexpected error occurred";
 
 const handleApiError = (
-  error: any,
+  error: unknown,
   toast: ReturnType<typeof useToast>["toast"],
 ) => {
-  const errorMessage =
-    error.response?.data?.message || "An unexpected error occurred";
   toast({
     title: "Error",
-    description: errorMessage,
+    description: getApiErrorMessage(error),
     variant: "destructive",
   });
 };
@@ -76,13 +82,15 @@ export const EntriesContextProvider = ({
 
   const createEntry = useCallback(
     async (data: CreateEntryParams, onDone?: () => void) => {
-      const tempId = "temp-id";
+      const nowDate = now();
+      const tempId = -nowDate.valueOf();
 
       const tempEntry = {
-        _id: tempId,
-        updatedAt: "",
+        id: tempId,
+        created_at: toBackendDateTime(nowDate),
         ...data,
-      } as unknown as JournalEntry;
+      } as const satisfies IJournalEntry;
+
       dispatch({
         type: EntriesStateActionType.CreateEntry,
         payload: { entry: tempEntry },
@@ -94,6 +102,7 @@ export const EntriesContextProvider = ({
 
       try {
         const response = await api.createEntry(data);
+        console.log("response", response);
 
         dispatch({
           type: EntriesStateActionType.UpdateEntry,
@@ -104,24 +113,22 @@ export const EntriesContextProvider = ({
         });
 
         handleSuccessToast(toast, "Entry has been created");
-      } catch (e: any) {
-        // todo: fix
+      } catch (e: unknown) {
         dispatch({
           type: EntriesStateActionType.DeleteEntry,
           payload: {
             id: tempId,
           },
         });
-        const errorMessage =
-          e.response?.data?.message || "An unexpected error occurred";
-        handleApiError(errorMessage, toast);
+
+        handleApiError(getApiErrorMessage(e), toast);
       }
     },
     [toast],
   );
 
   const updateEntry = useCallback(
-    async (id: string, props: Partial<JournalEntry>, onDone?: () => void) => {
+    async (id: number, props: Partial<IJournalEntry>, onDone?: () => void) => {
       try {
         dispatch({
           type: EntriesStateActionType.UpdateEntry,
@@ -137,17 +144,15 @@ export const EntriesContextProvider = ({
         await api.updateEntry(id, props);
 
         handleSuccessToast(toast, "Entry has been updated");
-      } catch (e: any) {
-        const errorMessage =
-          e.response?.data?.message || "An unexpected error occurred";
-        handleApiError(errorMessage, toast);
+      } catch (e: unknown) {
+        handleApiError(getApiErrorMessage(e), toast);
       }
     },
     [toast],
   );
 
   const deleteEntry = useCallback(
-    async (id: string, onDone?: () => void) => {
+    async (id: number, onDone?: () => void) => {
       try {
         dispatch({
           type: EntriesStateActionType.DeleteEntry,
@@ -162,10 +167,8 @@ export const EntriesContextProvider = ({
         await api.deleteEntry(id);
 
         handleSuccessToast(toast, "Entry has been deleted");
-      } catch (e: any) {
-        const errorMessage =
-          e.response?.data?.message || "An unexpected error occurred";
-        handleApiError(errorMessage, toast);
+      } catch (e: unknown) {
+        handleApiError(getApiErrorMessage(e), toast);
       }
     },
     [toast],

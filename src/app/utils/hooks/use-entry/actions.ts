@@ -1,7 +1,7 @@
-import { JournalEntry } from "@/models/entry";
+import { IJournalEntry } from "../../types/journal-entry";
 
 export interface EntriesState {
-  data: JournalEntry[];
+  data: IJournalEntry[];
   isLoading: boolean;
   errorMessage?: unknown;
 }
@@ -21,7 +21,7 @@ export interface EntriesLoadAction {
 export interface EntriesFinishLoadingAction {
   type: EntriesStateActionType.FinishLoading;
   payload: {
-    data: JournalEntry[];
+    data: IJournalEntry[];
   };
 }
 
@@ -34,21 +34,21 @@ export interface EntriesErrorAction {
 export interface CreateEntryAction {
   type: EntriesStateActionType.CreateEntry;
   payload: {
-    entry: JournalEntry;
+    entry: IJournalEntry;
   };
 }
 
 export interface UpdateEntryAction {
   type: EntriesStateActionType.UpdateEntry;
   payload: {
-    id: string;
-    entry: Partial<JournalEntry>;
+    id: number;
+    entry: Partial<IJournalEntry>;
   };
 }
 export interface DeleteEntryAction {
   type: EntriesStateActionType.DeleteEntry;
   payload: {
-    id: string;
+    id: number;
   };
 }
 
