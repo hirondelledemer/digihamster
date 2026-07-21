@@ -6,7 +6,7 @@ import { TasksContext } from "@/app/utils/hooks/use-tasks";
 import { generateCustomTasksList } from "@/app/utils/mocks/task";
 import { generateProject } from "@/app/utils/mocks/project";
 import { subDays } from "date-fns";
-import { now } from "@/app/utils/date/date";
+import { now } from "@/app/utils/date/now";
 
 const project1 = generateProject(1, { color: "#f59e0b" });
 

@@ -132,10 +132,13 @@ const TodayEvent: FC<TodayEventProps> = ({
             {isCalendarDeadlineEntry(event) && (
               <span className="text-xs">{event.resource.task.description}</span>
             )}
-            {isCalendarEventEntry(event) &&
-              event.resource.tasks.map((t) => (
-                <TaskCard key={t.id} task={t} dragId={t.id} />
-              ))}
+            {isCalendarEventEntry(event) && (
+              <div className="grid gap-2">
+                {event.resource.tasks.map((t) => (
+                  <TaskCard key={t.id} task={t} dragId={t.id} />
+                ))}
+              </div>
+            )}
           </div>
         </div>
 

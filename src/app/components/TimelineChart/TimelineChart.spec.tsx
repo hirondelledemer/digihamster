@@ -2,9 +2,9 @@ import { render } from "@testing-library/react";
 import TimelineChart, { TimelineChartProps } from "./TimelineChart";
 import { getTimelineChartTestkit } from "./TimelineChart.testkit";
 import { sub } from "date-fns";
-import { now } from "../../utils/date/date";
+import { now } from "../../utils/date/now";
 
-jest.mock("../../utils/date/date");
+jest.mock("../../utils/date/now");
 
 describe("TimelineChart", () => {
   const defaultProps: TimelineChartProps = {

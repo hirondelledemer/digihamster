@@ -2,7 +2,7 @@ import { render, screen, userEvent } from "@/config/utils/test-utils";
 import Today, { TodayProps } from "./Today";
 import { generateCustomTasksList, generateTask } from "@/app/utils/mocks/task";
 
-jest.mock("../../utils/date/date");
+jest.mock("../../utils/date/now");
 
 describe("Today", () => {
   const relatedTasks = generateCustomTasksList([
@@ -110,7 +110,7 @@ describe("Today", () => {
       expect(todayEventEntries[2]).not.toHaveClass("bg-muted");
 
       await userEvent.keyboard(
-        "[ArrowDown][ArrowUp][ArrowUp][ArrowUp][ArrowUp][ArrowUp][ArrowUp]"
+        "[ArrowDown][ArrowUp][ArrowUp][ArrowUp][ArrowUp][ArrowUp][ArrowUp]",
       );
 
       expect(todayEventEntries[0]).toHaveClass("bg-muted");
@@ -128,7 +128,7 @@ describe("Today", () => {
       expect(todayEventEntries[2]).not.toHaveClass("bg-muted");
 
       await userEvent.keyboard(
-        "[ArrowDown][ArrowDown][ArrowDown][ArrowDown][ArrowDown][ArrowDown]"
+        "[ArrowDown][ArrowDown][ArrowDown][ArrowDown][ArrowDown][ArrowDown]",
       );
 
       expect(todayEventEntries[0]).not.toHaveClass("bg-muted");

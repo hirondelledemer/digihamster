@@ -13,7 +13,7 @@ import { generateCustomListOfJournalEntries } from "@/app/utils/mocks/journal-en
 import mockAxios from "jest-mock-axios";
 import { EventsContextProvider } from "@/app/utils/hooks/use-events/provider";
 
-jest.mock("../../utils/date/date");
+jest.mock("../../utils/date/now");
 
 const getThisWeekButton = () =>
   screen.getByRole("radio", { name: /this week/i });
@@ -66,14 +66,14 @@ describe("Timeline", () => {
             </EventsContextProvider>,
             {
               data: defaultEntires,
-            }
+            },
           ),
 
           {
             data: defaultTasks,
-          }
-        )
-      ).container
+          },
+        ),
+      ).container,
     );
 
   it("should render Timeline", () => {

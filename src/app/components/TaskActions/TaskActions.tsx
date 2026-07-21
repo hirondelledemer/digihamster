@@ -5,15 +5,14 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from "../ui/context-menu";
-import { TaskWithRelations } from "@/app/utils/types/task";
+import { ITask } from "@/app/utils/types/task";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "../ui/sheet";
-import NoteForm from "../NoteForm";
 import TaskFormModal from "../TaskFormModal";
 import { useTasksNewActions } from "@/app/utils/hooks/use-tasks-new/actions-context";
 
 interface TaskActionProps {
   children: ReactNode;
-  task: TaskWithRelations;
+  task: ITask;
 }
 
 export const TaskActions: React.FC<TaskActionProps> = ({ children, task }) => {
@@ -35,10 +34,10 @@ export const TaskActions: React.FC<TaskActionProps> = ({ children, task }) => {
           <SheetHeader>
             <SheetTitle>Add note</SheetTitle>
           </SheetHeader>
-          <NoteForm
+          {/* <NoteForm
             onDone={() => setAddNoteFormOpen(false)}
             parentTaskId={task.id}
-          />
+          /> */}
         </SheetContent>
       </Sheet>
       <TaskFormModal

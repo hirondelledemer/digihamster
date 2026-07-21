@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 
 import EventTaskFormModal from ".";
 import { EventTaskFormModalProps } from "./EventTaskFormModal";
-import { now } from "@/app/utils/date/date";
+import { now } from "@/app/utils/date/now";
 import { addHours } from "date-fns";
 
 const meta: Meta<typeof EventTaskFormModal> = {

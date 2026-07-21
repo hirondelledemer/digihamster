@@ -1,7 +1,7 @@
 import React, { FC, useState } from "react";
 import useHabits from "@/app/utils/hooks/use-habits";
 import { Habit } from "@/models/habit";
-import { getTodayWithZeroHours } from "@/app/utils/date/date";
+import { getTodayWithZeroHours } from "@/app/utils/date/now";
 import { Checkbox } from "../ui/checkbox";
 import { differenceInDays, subDays } from "date-fns";
 import { Button } from "../ui/button";

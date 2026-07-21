@@ -10,7 +10,7 @@ import mockAxios from "jest-mock-axios";
 import { generateCustomProjectsList } from "@/app/utils/mocks/project";
 import { ProjectsStateContext } from "@/app/utils/hooks/use-projects/state-context";
 
-jest.mock("../../utils/date/date");
+jest.mock("../../utils/date/now");
 
 const onDoneMock = jest.fn();
 
@@ -23,7 +23,7 @@ describe("TaskForm", () => {
     props: TaskFormProps = defaultProps,
     projectsProps: any = {
       data: [],
-    }
+    },
   ) =>
     getTaskFormTestkit(
       render(
@@ -37,8 +37,8 @@ describe("TaskForm", () => {
           >
             <TaskForm {...props} />
           </TasksContext.Provider>
-        </ProjectsStateContext.Provider>
-      ).container
+        </ProjectsStateContext.Provider>,
+      ).container,
     );
 
   afterEach(() => {

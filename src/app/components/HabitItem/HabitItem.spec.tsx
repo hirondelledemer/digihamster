@@ -1,13 +1,13 @@
 import HabitItem, { HabitItemProps } from "./HabitItem";
 import { subDays } from "date-fns";
-import { now } from "../../utils/date/date";
+import { now } from "../../utils/date/now";
 import { userEvent, render, screen, waitFor } from "@/config/utils/test-utils";
 import { wrapWithHabitsProvider } from "@/app/utils/tests/wraps";
 import { generateListOfLifeAspects } from "@/app/utils/mocks/lifeAspect";
 import mockAxios from "jest-mock-axios";
 import { LifeAspectsContextProvider } from "@/app/utils/hooks/use-life-aspects/provider";
 
-jest.mock("../../utils/date/date");
+jest.mock("../../utils/date/now");
 
 describe("HabitItem", () => {
   const lifeAspects = generateListOfLifeAspects(2);
@@ -37,7 +37,7 @@ describe("HabitItem", () => {
     render(
       <LifeAspectsContextProvider>
         <HabitItem {...defaultProps} />
-      </LifeAspectsContextProvider>
+      </LifeAspectsContextProvider>,
     );
 
     expect(screen.getByText(defaultProps.habit.title)).toBeInTheDocument();
@@ -69,8 +69,8 @@ describe("HabitItem", () => {
         </LifeAspectsContextProvider>,
         {
           updateHabit: updateHabitSpy,
-        }
-      )
+        },
+      ),
     );
 
     await userEvent.click(screen.getByRole("button", { name: /edit/i }));
@@ -91,7 +91,7 @@ describe("HabitItem", () => {
     await userEvent.click(categoryInput);
     screen.logTestingPlaygroundURL();
     await userEvent.click(
-      screen.getByRole("option", { name: lifeAspects[0].title })
+      screen.getByRole("option", { name: lifeAspects[0].title }),
     );
 
     await userEvent.type(titleInput, "edited");
@@ -99,7 +99,7 @@ describe("HabitItem", () => {
     await userEvent.click(timesInput);
 
     await userEvent.click(
-      screen.getByRole("option", { name: /twice a month/i })
+      screen.getByRole("option", { name: /twice a month/i }),
     );
 
     await userEvent.click(screen.getByRole("button", { name: /save/i }));

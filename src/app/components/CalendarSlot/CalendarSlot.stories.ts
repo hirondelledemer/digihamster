@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 
 import CalendarSlot from ".";
 import { CalendarSlotProps } from "./CalendarSlot";
-import { now } from "@/app/utils/date/date";
+import { now } from "@/app/utils/date/now";
 
 const meta: Meta<typeof CalendarSlot> = {
   title: "Calendar/CalendarSlot",

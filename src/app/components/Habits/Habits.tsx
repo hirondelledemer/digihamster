@@ -15,10 +15,8 @@ import {
   TableRow,
 } from "../ui/table";
 import { format } from "date-fns";
-import {
-  getTimestampsFrom,
-  getTodayWithZeroHours,
-} from "@/app/utils/date/date";
+import { getTodayWithZeroHours } from "@/app/utils/date/now";
+import { getTimestampsFrom } from "@/app/utils/date/date";
 
 export interface HabitsProps {
   testId?: string;

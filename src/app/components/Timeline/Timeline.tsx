@@ -14,7 +14,6 @@ import {
   startOfWeek,
   sub,
 } from "date-fns";
-import { now } from "#utils/date";
 import { sortBy } from "remeda";
 import MinimalNote from "../MinimalNote";
 import {
@@ -34,6 +33,7 @@ import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
 import TimelineChart from "../TimelineChart";
 import { useEventsState } from "@/app/utils/hooks/use-events/state-context";
 import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
+import { now } from "@/app/utils/date/now";
 
 export interface TimelineProps {
   testId?: string;

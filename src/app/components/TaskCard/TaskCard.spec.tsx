@@ -1,6 +1,4 @@
-import { TagsStateContext } from "@/app/utils/hooks/use-tags/state-context";
 import TaskCard, { cardTestId, TaskCardProps } from "./TaskCard";
-import { TasksContext, TasksContextValues } from "@/app/utils/hooks/use-tasks";
 import { generateTask } from "@/app/utils/mocks/task";
 import {
   render,
@@ -12,65 +10,37 @@ import {
 
 import mockAxios from "jest-mock-axios";
 import { ProjectsContextProvider } from "@/app/utils/hooks/use-projects/provider";
-import { generateListOfProjects } from "@/app/utils/mocks/project";
-import { taskFormTestId } from "../TaskForm/TaskForm";
-import { rteTestId } from "../NoteForm/NoteForm";
-import { getRichTextEditorTestkit } from "../RichTextEditor/RichTextEditor.testkit";
-import { NotesContextProvider } from "@/app/utils/hooks/use-notes/provider";
+import { generateProject } from "@/app/utils/mocks/project";
+import { TasksNewContextProvider } from "@/app/utils/hooks/use-tasks-new/provider";
+import { PROJECTS_PATH } from "@/app/utils/hooks/use-projects/api";
+import { getTasksPath } from "@/app/utils/hooks/use-tasks-new/api";
+import { TaskStatus } from "@/app/utils/types/task";
+import { toBackendDateTime } from "#utils/date";
 
-jest.mock("../../utils/date/date");
+jest.mock("../../utils/date/now");
 jest.mock("next/navigation");
 
-// todo redo the test without testkit
 describe("TaskCard", () => {
   afterEach(() => {
     mockAxios.reset();
   });
 
-  const defaultTask = generateTask();
-  const defaultProps: TaskCardProps = {
-    task: defaultTask,
+  const DEFAULT_PROJECT = generateProject();
+  const DEFAULT_PROJECTS = [DEFAULT_PROJECT];
+  const DEFAULT_TASK = generateTask(1, { project_id: DEFAULT_PROJECT.id });
+
+  const DEFAULT_PROPS: TaskCardProps = {
+    task: DEFAULT_TASK,
     dragId: "drag-id",
   };
 
-  const defaultTasksContextValues: TasksContextValues = {
-    data: [],
-    loading: false,
-    setData: jest.fn(),
-  };
-
-  const renderComponent = (
-    props = defaultProps,
-    tasksContextValues = defaultTasksContextValues
-  ) =>
+  const renderComponent = (props = DEFAULT_PROPS) =>
     render(
-      <NotesContextProvider>
-        <ProjectsContextProvider>
-          <TagsStateContext.Provider
-            value={{
-              data: [
-                {
-                  _id: "tag1",
-                  title: "Tag 1",
-                  deleted: false,
-                  color: "color1",
-                },
-                {
-                  _id: "tag2",
-                  title: "Tag 2",
-                  deleted: false,
-                  color: "color2",
-                },
-              ],
-              isLoading: false,
-            }}
-          >
-            <TasksContext.Provider value={tasksContextValues}>
-              <TaskCard {...props} />
-            </TasksContext.Provider>
-          </TagsStateContext.Provider>
-        </ProjectsContextProvider>
-      </NotesContextProvider>
+      <ProjectsContextProvider>
+        <TasksNewContextProvider>
+          <TaskCard {...props} />
+        </TasksNewContextProvider>
+      </ProjectsContextProvider>,
     );
 
   const openContextMenu = () => {
@@ -78,16 +48,26 @@ describe("TaskCard", () => {
     fireEvent.contextMenu(title);
   };
 
+  const assertLoaded = async () => {
+    await waitFor(() => expect(mockAxios.queue()).toHaveLength(2));
+
+    mockAxios.mockResponseFor(
+      { url: PROJECTS_PATH },
+      { data: DEFAULT_PROJECTS },
+    );
+  };
+
   it("shows task title, project name, description, tags", async () => {
-    const mockData = {
-      projects: generateListOfProjects(3),
-      defaultProject: null,
-    };
-    mockAxios.get.mockResolvedValue({ data: mockData });
     renderComponent();
-    await expect(screen.findByText("Task 1")).resolves.toBeInTheDocument();
-    expect(screen.getByText("Project 1")).toBeInTheDocument();
-    expect(screen.getByText("task description 1")).toBeInTheDocument();
+
+    await assertLoaded();
+
+    await expect(
+      screen.findByText(DEFAULT_TASK.title),
+    ).resolves.toBeInTheDocument();
+
+    expect(screen.getByText(DEFAULT_PROJECT.title)).toBeInTheDocument();
+    expect(screen.getByText(DEFAULT_TASK.description!)).toBeInTheDocument();
   });
 
   it("should not show stale indicator", () => {
@@ -95,33 +75,11 @@ describe("TaskCard", () => {
     expect(screen.queryByTestId("dinosaur-icon")).not.toBeInTheDocument();
   });
 
-  it("should open task form", async () => {
-    const mockData = {
-      projects: generateListOfProjects(3),
-      defaultProject: generateListOfProjects(3)[1],
-    };
-    mockAxios.get.mockResolvedValue({ data: mockData });
-
-    renderComponent(defaultProps);
-    openContextMenu();
-    fireEvent.click(screen.getByText("Edit"));
-
-    expect(screen.queryAllByTestId(taskFormTestId).length === 1).toBe(true);
-    expect(
-      screen.getByRole("textbox", { name: /title/i }).getAttribute("value")
-    ).toBe(defaultProps.task.title);
-    expect(
-      screen.getByRole("textbox", { name: /description/i }).innerHTML
-    ).toBe(defaultProps.task.description);
-
-    // todo: fix projects mock
-    // expect(screen.getByRole("combobox", { name: /project/i }).textContent).toBe(
-    //   "Project 1"
-    // );
-  });
-
   it("should edit task", async () => {
-    renderComponent(defaultProps);
+    renderComponent();
+
+    await assertLoaded();
+
     openContextMenu();
     fireEvent.click(screen.getByText("Edit"));
 
@@ -136,128 +94,132 @@ describe("TaskCard", () => {
     const button = screen.getByRole("button", { name: /save/i });
     await userEvent.click(button);
 
-    expect(mockAxios.patch).toHaveBeenCalledWith("/api/tasks/v2", {
-      deadline: null,
-      description: "task description 1new desc",
-      estimate: 0,
-      projectId: "project1",
-      taskId: "task1",
-      title: "new title",
-      tags: [],
-    });
-  });
-
-  it("should add note to the task", async () => {
-    mockAxios.get.mockResolvedValueOnce({ data: { projects: [] } });
-    mockAxios.get.mockResolvedValueOnce({ data: [] });
-
-    renderComponent(defaultProps);
-    openContextMenu();
-    fireEvent.click(screen.getByText("Add note"));
-    expect(
-      screen.getByRole("heading", { name: /Add note/i })
-    ).toBeInTheDocument();
-
-    const rte = screen.getByTestId(rteTestId);
-    const rteWrapper = getRichTextEditorTestkit(rte);
-    rteWrapper.enterValue("<p>new note/p><p>new desc</p>");
-    rteWrapper.blur();
-
-    await waitFor(async () => {
-      expect(
-        screen.getByRole("button", { name: /create/i })
-      ).not.toBeDisabled();
-    });
-    await userEvent.click(screen.getByRole("button", { name: /create/i }));
-
-    expect(mockAxios.post).toHaveBeenCalledWith("/api/notes", {
-      jsonNote: {
-        content: [
-          {
-            content: [
-              {
-                text: "new note/p>",
-                type: "text",
-              },
-            ],
-            type: "paragraph",
-          },
-          {
-            content: [
-              {
-                text: "new desc",
-                type: "text",
-              },
-            ],
-            type: "paragraph",
-          },
-        ],
-        type: "doc",
+    expect(mockAxios.patch).toHaveBeenCalledWith(
+      getTasksPath(DEFAULT_TASK.id),
+      {
+        deadline: null,
+        description: "task description 1new desc",
+        project_id: 1,
+        title: "new title",
       },
-      note: "new desc",
-      parentTaskId: "task1",
-      tags: [],
-      title: "new note/p>",
-    });
+    );
   });
+
+  // TODO add this feature
+  // it("should add note to the task", async () => {
+  //   mockAxios.get.mockResolvedValueOnce({ data: { projects: [] } });
+  //   mockAxios.get.mockResolvedValueOnce({ data: [] });
+
+  //   renderComponent(defaultProps);
+  //   openContextMenu();
+  //   fireEvent.click(screen.getByText("Add note"));
+  //   expect(
+  //     screen.getByRole("heading", { name: /Add note/i }),
+  //   ).toBeInTheDocument();
+
+  //   const rte = screen.getByTestId(rteTestId);
+  //   const rteWrapper = getRichTextEditorTestkit(rte);
+  //   rteWrapper.enterValue("<p>new note/p><p>new desc</p>");
+  //   rteWrapper.blur();
+
+  //   await waitFor(async () => {
+  //     expect(
+  //       screen.getByRole("button", { name: /create/i }),
+  //     ).not.toBeDisabled();
+  //   });
+  //   await userEvent.click(screen.getByRole("button", { name: /create/i }));
+
+  //   expect(mockAxios.post).toHaveBeenCalledWith("/api/notes", {
+  //     jsonNote: {
+  //       content: [
+  //         {
+  //           content: [
+  //             {
+  //               text: "new note/p>",
+  //               type: "text",
+  //             },
+  //           ],
+  //           type: "paragraph",
+  //         },
+  //         {
+  //           content: [
+  //             {
+  //               text: "new desc",
+  //               type: "text",
+  //             },
+  //           ],
+  //           type: "paragraph",
+  //         },
+  //       ],
+  //       type: "doc",
+  //     },
+  //     note: "new desc",
+  //     parentTaskId: "task1",
+  //     tags: [],
+  //     title: "new note/p>",
+  //   });
+  // });
 
   describe("task is not completed", () => {
     it("should complete the task", async () => {
-      const setTasksMock = jest.fn();
-      const tasksContextValues: TasksContextValues = {
-        ...defaultTasksContextValues,
-        setData: setTasksMock,
-      };
-      renderComponent(defaultProps, tasksContextValues);
+      renderComponent();
+
+      await assertLoaded();
 
       openContextMenu();
       fireEvent.click(screen.getByText("Complete"));
 
-      expect(mockAxios.patch).toHaveBeenCalledWith("/api/tasks/v2", {
-        completed: true,
-        taskId: defaultTask._id,
-      });
-      expect(setTasksMock).toHaveBeenCalled();
+      expect(mockAxios.patch).toHaveBeenCalledWith(
+        getTasksPath(DEFAULT_TASK.id),
+        {
+          status: TaskStatus.Done,
+        },
+      );
     });
 
     it("should show task without opacity and full info", () => {
       renderComponent();
 
       expect(
-        screen.getByTestId(cardTestId).className.includes("opacity-40")
+        screen.getByTestId(cardTestId).className.includes("opacity-40"),
       ).toBe(false);
       expect(
-        screen.getByTestId(cardTestId).className.includes("line-through")
+        screen.getByTestId(cardTestId).className.includes("line-through"),
       ).toBe(false);
     });
   });
 
   describe("task is completed", () => {
-    const task = generateTask(1, { completed: true });
+    const COMPLETED_TASK = generateTask(1, { status: TaskStatus.Done });
     const props: TaskCardProps = {
-      task,
+      task: COMPLETED_TASK,
       dragId: "dragId",
     };
 
     it("should undo the task", async () => {
       renderComponent(props);
+
+      await assertLoaded();
+
       openContextMenu();
 
       fireEvent.click(screen.getByText("Undo"));
-      expect(mockAxios.patch).toHaveBeenCalledWith("/api/tasks/v2", {
-        completed: false,
-        taskId: defaultTask._id,
-      });
+      expect(mockAxios.patch).toHaveBeenCalledWith(
+        getTasksPath(COMPLETED_TASK.id),
+        {
+          status: TaskStatus.Doing,
+        },
+      );
     });
 
     it("should show task as with opacity and limited info", () => {
       renderComponent(props);
 
       expect(
-        screen.getByTestId(cardTestId).className.includes("opacity-40")
+        screen.getByTestId(cardTestId).className.includes("opacity-40"),
       ).toBe(true);
       expect(
-        screen.getByTestId(cardTestId).className.includes("line-through")
+        screen.getByTestId(cardTestId).className.includes("line-through"),
       ).toBe(true);
     });
   });
@@ -266,11 +228,13 @@ describe("TaskCard", () => {
     const weekInMs = 7 * 24 * 60 * 60 * 1000;
     const dayInMs = 24 * 60 * 60 * 1000;
 
+    const STALE_TASK = generateTask(1, {
+      activated_at: toBackendDateTime(new Date((weekInMs + dayInMs) * -1)),
+      status: TaskStatus.Doing,
+    });
+
     const props: TaskCardProps = {
-      task: generateTask(0, {
-        activatedAt: (weekInMs + dayInMs) * -1,
-        isActive: true,
-      }),
+      task: STALE_TASK,
       dragId: "dragId",
     };
 
@@ -281,8 +245,9 @@ describe("TaskCard", () => {
   });
 
   describe("task has an event", () => {
+    const TASK_WITH_EVENT = generateTask(1, { event_id: 2 });
     const props: TaskCardProps = {
-      task: generateTask(0, { eventId: "event1" }),
+      task: TASK_WITH_EVENT,
       dragId: "",
     };
 
@@ -292,10 +257,12 @@ describe("TaskCard", () => {
       openContextMenu();
       fireEvent.click(screen.getByText("Remove from event"));
 
-      expect(mockAxios.patch).toHaveBeenCalledWith("/api/tasks/v2", {
-        eventId: null,
-        taskId: props.task._id,
-      });
+      expect(mockAxios.patch).toHaveBeenCalledWith(
+        getTasksPath(TASK_WITH_EVENT.id),
+        {
+          event_id: null,
+        },
+      );
     });
 
     it("should not allow to deactivate it", () => {

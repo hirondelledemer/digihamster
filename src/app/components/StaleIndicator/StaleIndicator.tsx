@@ -1,6 +1,5 @@
 import React, { FC, useMemo } from "react";
 import { differenceInCalendarDays } from "date-fns";
-import { now } from "@/app/utils/date/date";
 import DinosaurIcon from "../icons/DinosaurIcon";
 import { cn } from "../utils";
 import {
@@ -9,6 +8,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/app/components/ui/tooltip";
+import { now } from "@/app/utils/date/now";
 
 export interface StaleIndicatorProps {
   className?: string;

@@ -1,4 +1,4 @@
-import { now } from "@/app/utils/date/date";
+import { now } from "@/app/utils/date/now";
 import CalendarToolbar, { CalendarToolbarProps } from "./CalendarToolbar";
 import { getCalendarToolbarTestkit } from "./CalendarToolbar.testkit";
 import { render } from "@/config/utils/test-utils";

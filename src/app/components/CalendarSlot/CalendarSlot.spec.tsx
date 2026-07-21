@@ -1,7 +1,7 @@
 import { render } from "@testing-library/react";
 import CalendarSlot, { CalendarSlotProps } from "./CalendarSlot";
 import { getCalendarSlotTestkit } from "./CalendarSlot.testkit";
-import { now } from "@/app/utils/date/date";
+import { now } from "@/app/utils/date/now";
 
 describe("CalendarSlot", () => {
   const defaultProps: CalendarSlotProps = {

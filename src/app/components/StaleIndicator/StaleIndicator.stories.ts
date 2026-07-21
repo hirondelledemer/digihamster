@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import StaleIndicator from ".";
 import { StaleIndicatorProps } from "./StaleIndicator";
 import { subSeconds } from "date-fns";
-import { now } from "@/app/utils/date/date";
+import { now } from "@/app/utils/date/now";
 
 const days8InS = 8 * 24 * 60 * 60;
 const days15inS = 15 * 24 * 60 * 60;

@@ -7,7 +7,7 @@ import { DAY } from "@/app/utils/consts/dates";
 import { generateProject } from "@/app/utils/mocks/project";
 import { ProjectsContextProvider } from "@/app/utils/hooks/use-projects/provider";
 
-jest.mock("../../utils/date/date");
+jest.mock("../../utils/date/now");
 jest.mock("next/navigation");
 
 describe("ProjectProgress", () => {
@@ -50,8 +50,8 @@ describe("ProjectProgress", () => {
               projectId: PROJECT._id,
             },
           ]),
-        }
-      )
+        },
+      ),
     );
 
   afterEach(() => {

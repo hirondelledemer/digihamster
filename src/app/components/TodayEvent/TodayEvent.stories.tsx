@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import TodayEvent from ".";
 import { TodayEventProps } from "./TodayEvent";
 import { generateCustomTasksList, generateTask } from "@/app/utils/mocks/task";
-import { now } from "@/app/utils/date/date";
+import { now } from "@/app/utils/date/now";
 
 const meta: Meta<typeof TodayEvent> = {
   title: "Calendar/TodayEvent",

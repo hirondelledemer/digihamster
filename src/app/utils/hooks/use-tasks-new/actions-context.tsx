@@ -4,8 +4,8 @@ import { TaskV2 } from "@/models/taskV2";
 
 export interface TasksNewActionsContextValue {
   createTask(data: CreateTaskParams, onDone?: () => void): void;
-  updateTask(id: string, data: Partial<TaskV2>, onDone?: () => void): void;
-  deleteTask(id: string, onDone?: () => void): void;
+  updateTask(id: number, data: Partial<TaskV2>, onDone?: () => void): void;
+  deleteTask(id: number, onDone?: () => void): void;
 }
 
 const DEFAULT_ACTIONS: TasksNewActionsContextValue = {
