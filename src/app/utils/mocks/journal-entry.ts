@@ -1,29 +1,29 @@
-import { JournalEntry } from "@/models/entry";
+import { IJournalEntry } from "../types/journal-entry";
+import { DEFAULT_TEST_DATE } from "./date";
 
 export const generateJournalEntry: (
   i?: number,
-  properties?: Partial<JournalEntry>
-) => JournalEntry = (i = 1, properties) => {
+  properties?: Partial<IJournalEntry>,
+) => IJournalEntry = (i = 1, properties) => {
   return {
-    _id: `entry${i}`,
+    id: i,
     title: `Entry ${i}`,
     note: `entry ${i} note`,
-    jsonNote: {},
-    updatedAt: "",
-    tags: [],
+    json_note: {},
+    created_at: DEFAULT_TEST_DATE,
     ...properties,
   };
 };
 
-export const generateListOfJournalEntries: (count: number) => JournalEntry[] = (
-  count
-) => {
+export const generateListOfJournalEntries: (
+  count: number,
+) => IJournalEntry[] = (count) => {
   return [...Array(count)].map((_v, i) => generateJournalEntry(i));
 };
 
 export const generateCustomListOfJournalEntries: (
-  entryInfo: Partial<JournalEntry>[]
-) => JournalEntry[] = (entryInfo) => {
+  entryInfo: Partial<IJournalEntry>[],
+) => IJournalEntry[] = (entryInfo) => {
   return entryInfo.map((entryProperties, i) => ({
     ...generateJournalEntry(i, entryProperties),
   }));

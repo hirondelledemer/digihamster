@@ -1,9 +1,9 @@
 import { createContext, useContext } from "react";
 import { CreateNoteParams } from "./api";
-import { Note } from "@/models/note";
 import { ActionsContextValue } from "../use-crud/actions-context";
+import { INote } from "../../types/note";
 
-type NoteActionsContextValue = ActionsContextValue<CreateNoteParams, Note>;
+type NoteActionsContextValue = ActionsContextValue<CreateNoteParams, INote>;
 
 const DEFAULT_NOTES_ACTIONS: NoteActionsContextValue = {
   create: () => {},
@@ -12,7 +12,7 @@ const DEFAULT_NOTES_ACTIONS: NoteActionsContextValue = {
 } as const;
 
 export const NotesActionsContext = createContext<NoteActionsContextValue>(
-  DEFAULT_NOTES_ACTIONS
+  DEFAULT_NOTES_ACTIONS,
 );
 
 export const useNotesActions = () => useContext(NotesActionsContext);

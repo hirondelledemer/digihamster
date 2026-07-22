@@ -9,7 +9,8 @@ import { useNotesState } from "./state-context";
 import { NotesContextProvider } from "./provider";
 import { useNotesActions } from "./actions-context";
 import { generateListOfNotes } from "../../mocks/note";
-import { Note } from "@/models/note";
+import { getNotesPath, NOTES_PATH } from "./api";
+import { INote } from "../../types/note";
 
 describe("NotesContextProvider", () => {
   afterEach(() => {
@@ -26,7 +27,7 @@ describe("NotesContextProvider", () => {
         <div>
           {isLoading
             ? "Loading..."
-            : data.map((note) => <div key={note._id}>{note.title}</div>)}
+            : data.map((note) => <div key={note.id}>{note.title}</div>)}
         </div>
       );
     };
@@ -34,17 +35,17 @@ describe("NotesContextProvider", () => {
     render(
       <NotesContextProvider>
         <TestComponent />
-      </NotesContextProvider>
+      </NotesContextProvider>,
     );
 
     expect(screen.getByText("Loading...")).toBeInTheDocument();
 
     await waitFor(() =>
-      expect(screen.findByText("Note 0")).resolves.toBeInTheDocument()
+      expect(screen.findByText("Note 0")).resolves.toBeInTheDocument(),
     );
     expect(screen.getByText("Note 1")).toBeInTheDocument();
     expect(screen.getByText("Note 2")).toBeInTheDocument();
-    expect(mockAxios.get).toHaveBeenCalledWith("/api/notes");
+    expect(mockAxios.get).toHaveBeenCalledWith(NOTES_PATH);
   });
 
   it("should handle fetch error and update the state", async () => {
@@ -66,27 +67,25 @@ describe("NotesContextProvider", () => {
     render(
       <NotesContextProvider>
         <TestComponent />
-      </NotesContextProvider>
+      </NotesContextProvider>,
     );
 
     expect(screen.getByText("Loading...")).toBeInTheDocument();
 
     await waitFor(() =>
-      expect(screen.findByText(/Error:/)).resolves.toBeInTheDocument()
+      expect(screen.findByText(/Error:/)).resolves.toBeInTheDocument(),
     );
-    expect(mockAxios.get).toHaveBeenCalledWith("/api/notes");
+    expect(mockAxios.get).toHaveBeenCalledWith(NOTES_PATH);
   });
 
   it("should create an note and update the state", async () => {
-    const mockNote: Omit<Note, "_id"> = {
+    const mockNote: Omit<INote, "id"> = {
       title: "new note",
-      note: "",
-      jsonNote: {},
-      isActive: false,
-      userId: "",
+      content: "",
+      json_content: {},
+      user_id: "",
       deleted: false,
-      tags: [],
-      updatedAt: "",
+      created_at: "",
     };
 
     mockAxios.post.mockResolvedValueOnce({ data: [] });
@@ -99,7 +98,7 @@ describe("NotesContextProvider", () => {
           <button onClick={() => createNote(mockNote)}>Create Note</button>
           <div>
             {data.map((note) => (
-              <div key={note._id}>{note.title}</div>
+              <div key={note.id}>{note.title}</div>
             ))}
           </div>
         </div>
@@ -111,7 +110,7 @@ describe("NotesContextProvider", () => {
         <NotesContextProvider>
           <TestComponent />
         </NotesContextProvider>
-      </ToastProvider>
+      </ToastProvider>,
     );
 
     expect(screen.queryByText("new note")).not.toBeInTheDocument();
@@ -119,9 +118,9 @@ describe("NotesContextProvider", () => {
     await userEvent.click(screen.getByRole("button"));
 
     await waitFor(() =>
-      expect(screen.findByText("new note")).resolves.toBeInTheDocument()
+      expect(screen.findByText("new note")).resolves.toBeInTheDocument(),
     );
-    expect(mockAxios.post).toHaveBeenCalledWith("/api/notes", mockNote);
+    expect(mockAxios.post).toHaveBeenCalledWith(NOTES_PATH, mockNote);
   });
 
   it("should delete a note and update the state", async () => {
@@ -136,9 +135,9 @@ describe("NotesContextProvider", () => {
         <div>
           <div>
             {data.map((note) => (
-              <div key={note._id}>
+              <div key={note.id}>
                 <div>{note.title}</div>
-                <button onClick={() => deleteNote(note._id)}>Delete</button>
+                <button onClick={() => deleteNote(note.id)}>Delete</button>
               </div>
             ))}
           </div>
@@ -151,7 +150,7 @@ describe("NotesContextProvider", () => {
         <NotesContextProvider>
           <TestComponent />
         </NotesContextProvider>
-      </ToastProvider>
+      </ToastProvider>,
     );
 
     await expect(screen.findByText("Note 0")).resolves.toBeInTheDocument();
@@ -161,12 +160,9 @@ describe("NotesContextProvider", () => {
     await userEvent.click(screen.getAllByRole("button")[0]);
 
     await waitFor(() =>
-      expect(screen.findByText("Note 1")).resolves.toBeInTheDocument()
+      expect(screen.findByText("Note 1")).resolves.toBeInTheDocument(),
     );
     expect(screen.queryByText("Note 0")).not.toBeInTheDocument();
-    expect(mockAxios.patch).toHaveBeenCalledWith("/api/notes", {
-      deleted: true,
-      id: notes[0]._id,
-    });
+    expect(mockAxios.delete).toHaveBeenCalledWith(getNotesPath(notes[0].id));
   });
 });

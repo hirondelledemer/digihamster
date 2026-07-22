@@ -1,5 +1,5 @@
-import { JournalEntry } from "@/models/entry";
 import { updateObjById } from "../../common/update-array";
+import { IJournalEntry } from "../../types/journal-entry";
 import {
   EntriesState,
   EntriesStateAction,
@@ -36,17 +36,17 @@ export function reducer(state: EntriesState, action: EntriesStateAction) {
     case EntriesStateActionType.UpdateEntry: {
       return {
         isLoading: false,
-        data: updateObjById<JournalEntry>(
+        data: updateObjById<IJournalEntry>(
           state.data,
           action.payload.id,
-          action.payload.entry
+          action.payload.entry,
         ),
       };
     }
     case EntriesStateActionType.DeleteEntry: {
       return {
         isLoading: false,
-        data: state.data.filter((entry) => entry._id !== action.payload.id),
+        data: state.data.filter((entry) => entry.id !== action.payload.id),
       };
     }
     default: {

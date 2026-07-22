@@ -5,10 +5,14 @@ export type FieldsRequired = Pick<INote, "title" | "content" | "json_content">;
 
 export type CreateNoteParams = FieldsRequired & { parentTaskId?: string };
 
+export const NOTES_PATH = "/notes";
+
+export const getNotesPath = (id: number) => `${NOTES_PATH}/${id}`;
+
 export const api = {
   getNotes: () => apiClient.get<INote[]>("/notes"),
   createNote: (data: CreateNoteParams) => apiClient.post<INote>("/notes", data),
   updateNote: (id: number, props: Partial<INote>) =>
-    apiClient.patch(`/notes/${id}`, props),
-  deleteNote: (id: number) => apiClient.delete(`/notes/${id}`),
+    apiClient.patch(getNotesPath(id), props),
+  deleteNote: (id: number) => apiClient.delete(getNotesPath(id)),
 } as const;

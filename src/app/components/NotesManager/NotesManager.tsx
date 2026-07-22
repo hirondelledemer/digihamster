@@ -18,6 +18,9 @@ export interface NotesManagerProps {
   testId?: string;
 }
 
+export const rteCreateNoteTestId = "note-create-rte-test-id";
+export const rteEditNoteTestId = "note-edit-rte-test-id";
+
 const NotesManager: FC<NotesManagerProps> = ({ testId }) => {
   const { data, isLoading } = useNotesState();
   const { create, update, delete: remove } = useNotesActions();
@@ -35,6 +38,7 @@ const NotesManager: FC<NotesManagerProps> = ({ testId }) => {
         <CardContent>
           <RteForm
             submitLabel="Create"
+            testId={rteCreateNoteTestId}
             clearOnSubmit
             onSubmit={({ title, textContent, contentJSON }) =>
               create({
@@ -67,17 +71,17 @@ const NotesManager: FC<NotesManagerProps> = ({ testId }) => {
               {editingId === item.id ? (
                 <CardContent className="pt-6">
                   <RteForm
+                    testId={rteEditNoteTestId}
                     value={item.json_content}
                     submitLabel="Save"
                     onCancel={() => setEditingId(null)}
-                    onSubmit={({ title, textContent, tags, contentJSON }) =>
+                    onSubmit={({ title, textContent, contentJSON }) =>
                       update(
                         item.id,
                         {
                           title,
-                          note: textContent || "(no content)",
-                          tags,
-                          json_note: contentJSON,
+                          content: textContent || "(no content)",
+                          json_content: contentJSON,
                         },
                         () => setEditingId(null),
                       )
