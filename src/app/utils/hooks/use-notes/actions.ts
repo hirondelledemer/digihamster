@@ -1,7 +1,7 @@
-import { Note } from "@/models/note";
+import { INote } from "../../types/note";
 
 export interface NotesState {
-  data: Note[];
+  data: INote[];
   isLoading: boolean;
   errorMessage?: unknown;
 }
@@ -21,7 +21,7 @@ export interface NotesLoadAction {
 export interface NotesFinishLoadingAction {
   type: NotesStateActionType.FinishLoading;
   payload: {
-    data: Note[];
+    data: INote[];
   };
 }
 
@@ -34,21 +34,21 @@ export interface NotesErrorAction {
 export interface CreateNoteAction {
   type: NotesStateActionType.CreateNote;
   payload: {
-    note: Note;
+    note: INote;
   };
 }
 
 export interface UpdateNoteAction {
   type: NotesStateActionType.UpdateNote;
   payload: {
-    id: string;
-    note: Partial<Note>;
+    id: number;
+    note: Partial<INote>;
   };
 }
 export interface DeleteNoteAction {
   type: NotesStateActionType.DeleteNote;
   payload: {
-    id: string;
+    id: number;
   };
 }
 

@@ -1,5 +1,5 @@
-import { Note } from "@/models/note";
 import { updateObjById } from "../../common/update-array";
+import { INote } from "../../types/note";
 import { NotesState, NotesStateAction, NotesStateActionType } from "./actions";
 
 export function reducer(state: NotesState, action: NotesStateAction) {
@@ -32,17 +32,17 @@ export function reducer(state: NotesState, action: NotesStateAction) {
     case NotesStateActionType.UpdateNote: {
       return {
         isLoading: false,
-        data: updateObjById<Note>(
+        data: updateObjById<INote>(
           state.data,
           action.payload.id,
-          action.payload.note
+          action.payload.note,
         ),
       };
     }
     case NotesStateActionType.DeleteNote: {
       return {
         isLoading: false,
-        data: state.data.filter((note) => note._id !== action.payload.id),
+        data: state.data.filter((note) => note.id !== action.payload.id),
       };
     }
     default: {

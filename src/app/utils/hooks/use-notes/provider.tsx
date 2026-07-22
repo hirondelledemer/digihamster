@@ -8,17 +8,18 @@ import { NotesStateAction, NotesStateActionType } from "./actions";
 import { api, CreateNoteParams } from "./api";
 import { NotesStateContext } from "./state-context";
 import { NotesActionsContext } from "./actions-context";
-import { Note } from "@/models/note";
+import { getApiErrorMessage } from "../../axios";
+import { now } from "../../date/now";
+import { INote } from "../../types/note";
+import { toBackendDateTime } from "#utils/date";
 
 const handleApiError = (
-  error: any,
+  error: unknown,
   toast: ReturnType<typeof useToast>["toast"],
 ) => {
-  const errorMessage =
-    error.response?.data?.message || "An unexpected error occurred";
   toast({
     title: "Error",
-    description: errorMessage,
+    description: getApiErrorMessage(error),
     variant: "destructive",
   });
 };
@@ -72,13 +73,14 @@ export const NotesContextProvider = ({ children }: { children: ReactNode }) => {
 
   const createNote = useCallback(
     async (data: CreateNoteParams, onDone?: () => void) => {
-      const tempId = "temp-id";
+      const nowDate = now();
+      const tempId = -nowDate.valueOf();
 
-      const tempNote: Note = {
+      const tempNote: INote = {
         id: tempId,
         deleted: false,
-        isActive: false,
-        userId: "", // todo: why this is not required in other places?
+        created_at: toBackendDateTime(nowDate),
+        user_id: "",
         ...data,
       };
       dispatch({
@@ -102,24 +104,22 @@ export const NotesContextProvider = ({ children }: { children: ReactNode }) => {
         });
 
         handleSuccessToast(toast, "Note has been created");
-      } catch (e: any) {
-        // todo: fix
+      } catch (e: unknown) {
         dispatch({
           type: NotesStateActionType.DeleteNote,
           payload: {
             id: tempId,
           },
         });
-        const errorMessage =
-          e.response?.data?.message || "An unexpected error occurred";
-        handleApiError(errorMessage, toast);
+
+        handleApiError(getApiErrorMessage(e), toast);
       }
     },
     [toast],
   );
 
   const updateNote = useCallback(
-    async (id: string, props: Partial<Note>, onDone?: () => void) => {
+    async (id: number, props: Partial<INote>, onDone?: () => void) => {
       try {
         dispatch({
           type: NotesStateActionType.UpdateNote,
@@ -135,17 +135,15 @@ export const NotesContextProvider = ({ children }: { children: ReactNode }) => {
         await api.updateNote(id, props);
 
         handleSuccessToast(toast, "Note has been updated");
-      } catch (e: any) {
-        const errorMessage =
-          e.response?.data?.message || "An unexpected error occurred";
-        handleApiError(errorMessage, toast);
+      } catch (e: unknown) {
+        handleApiError(getApiErrorMessage(e), toast);
       }
     },
     [toast],
   );
 
   const deleteNote = useCallback(
-    async (id: string, onDone?: () => void) => {
+    async (id: number, onDone?: () => void) => {
       try {
         dispatch({
           type: NotesStateActionType.DeleteNote,
@@ -160,10 +158,8 @@ export const NotesContextProvider = ({ children }: { children: ReactNode }) => {
         await api.deleteNote(id);
 
         handleSuccessToast(toast, "Note has been deleted");
-      } catch (e: any) {
-        const errorMessage =
-          e.response?.data?.message || "An unexpected error occurred";
-        handleApiError(errorMessage, toast);
+      } catch (e: unknown) {
+        handleApiError(getApiErrorMessage(e), toast);
       }
     },
     [toast],
