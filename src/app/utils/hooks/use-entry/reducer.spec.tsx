@@ -79,8 +79,8 @@ describe("EntriesContext reducer", () => {
   });
 
   it("should handle UPDATE_ENTRY action", () => {
-    const tempId = "new-id";
-    const entry = generateJournalEntry(0, { _id: tempId });
+    const tempId = -1;
+    const entry = generateJournalEntry(0, { id: tempId });
     const initialState = {
       isLoading: true,
       data: [entry],
@@ -110,7 +110,7 @@ describe("EntriesContext reducer", () => {
       errorMessage: undefined,
     };
 
-    const idToDelete = entries[0]._id;
+    const idToDelete = entries[0].id;
 
     const action: DeleteEntryAction = {
       type: EntriesStateActionType.DeleteEntry,

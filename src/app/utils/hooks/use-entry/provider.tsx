@@ -11,12 +11,7 @@ import { EntriesActionsContext } from "./actions-context";
 import { IJournalEntry } from "../../types/journal-entry";
 import { toBackendDateTime } from "#utils/date";
 import { now } from "../../date/now";
-import axios from "axios";
-
-const getApiErrorMessage = (e: unknown): string =>
-  axios.isAxiosError(e)
-    ? (e.response?.data?.message ?? "An unexpected error occurred")
-    : "An unexpected error occurred";
+import { getApiErrorMessage } from "../../axios";
 
 const handleApiError = (
   error: unknown,

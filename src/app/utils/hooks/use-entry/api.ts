@@ -6,13 +6,18 @@ export type FieldsRequired = Pick<
   "title" | "note" | "json_note"
 >;
 
-export type CreateEntryParams = FieldsRequired & { jsonNote: object };
+export type CreateEntryParams = FieldsRequired;
+
+export const JOURNAL_ENTRIES_PATH = "/journal-entries";
+
+export const getJournalEntriesPath = (id: number) =>
+  `${JOURNAL_ENTRIES_PATH}/${id}`;
 
 export const api = {
-  getEntries: () => apiClient.get<IJournalEntry[]>("/journal-entries"),
+  getEntries: () => apiClient.get<IJournalEntry[]>(JOURNAL_ENTRIES_PATH),
   createEntry: (data: CreateEntryParams) =>
-    apiClient.post<IJournalEntry>("/journal-entries", data),
+    apiClient.post<IJournalEntry>(JOURNAL_ENTRIES_PATH, data),
   updateEntry: (id: number, props: Partial<IJournalEntry>) =>
-    apiClient.patch(`/journal-entries/${id}`, props),
-  deleteEntry: (id: number) => apiClient.delete(`/journal-entries/${id}`),
+    apiClient.patch(getJournalEntriesPath(id), props),
+  deleteEntry: (id: number) => apiClient.delete(getJournalEntriesPath(id)),
 } as const;

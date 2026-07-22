@@ -76,8 +76,8 @@ describe("NotesContext reducer", () => {
   });
 
   it("should handle UPDATE_NOTE action", () => {
-    const tempId = "new-id";
-    const note = generateNote(0, { _id: tempId });
+    const tempId = -1;
+    const note = generateNote(0, { id: tempId });
     const initialState = {
       isLoading: true,
       data: [note],
@@ -107,7 +107,7 @@ describe("NotesContext reducer", () => {
       errorMessage: undefined,
     };
 
-    const idToDelete = notes[0]._id;
+    const idToDelete = notes[0].id;
 
     const action: DeleteNoteAction = {
       type: NotesStateActionType.DeleteNote,

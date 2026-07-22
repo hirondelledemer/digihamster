@@ -12,10 +12,14 @@ import {
 } from "../ui/card";
 import { Button } from "../ui/button";
 import MinimalNote from "../MinimalNote";
+import { format } from "date-fns";
 
 export interface NotesManagerProps {
   testId?: string;
 }
+
+export const rteCreateNoteTestId = "note-create-rte-test-id";
+export const rteEditNoteTestId = "note-edit-rte-test-id";
 
 const NotesManager: FC<NotesManagerProps> = ({ testId }) => {
   const { data, isLoading } = useNotesState();
@@ -34,13 +38,13 @@ const NotesManager: FC<NotesManagerProps> = ({ testId }) => {
         <CardContent>
           <RteForm
             submitLabel="Create"
+            testId={rteCreateNoteTestId}
             clearOnSubmit
-            onSubmit={({ title, textContent, tags, contentJSON }) =>
+            onSubmit={({ title, textContent, contentJSON }) =>
               create({
                 title,
-                note: textContent || "(no content)",
-                tags,
-                json_note: contentJSON,
+                content: textContent || "(no content)",
+                json_content: contentJSON,
               })
             }
           />
@@ -56,53 +60,65 @@ const NotesManager: FC<NotesManagerProps> = ({ testId }) => {
       ) : null}
 
       <div className="space-y-3">
-        {data.map((item) => (
-          <Card key={item.id}>
-            {editingId === item.id ? (
-              <CardContent className="pt-6">
-                <RteForm
-                  value={item.jsonNote}
-                  submitLabel="Save"
-                  onCancel={() => setEditingId(null)}
-                  onSubmit={({ title, textContent, tags, contentJSON }) =>
-                    update(
-                      item.id.toString(),
-                      {
-                        title,
-                        note: textContent || "(no content)",
-                        tags,
-                        json_note: contentJSON,
-                      },
-                      () => setEditingId(null),
-                    )
-                  }
-                />
-              </CardContent>
-            ) : (
-              <>
-                <CardHeader>
-                  <CardTitle>{item.title || "(untitled)"}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="whitespace-pre-wrap">
-                    <MinimalNote note={item.json_note}></MinimalNote>
-                  </p>
+        {data
+          .sort(
+            (itemA, itemB) =>
+              new Date(itemB.created_at).valueOf() -
+              new Date(itemA.created_at).valueOf(),
+          )
+          .map((item) => (
+            <Card key={item.id}>
+              {editingId === item.id ? (
+                <CardContent className="pt-6">
+                  <RteForm
+                    testId={rteEditNoteTestId}
+                    value={item.json_content}
+                    submitLabel="Save"
+                    onCancel={() => setEditingId(null)}
+                    onSubmit={({ title, textContent, contentJSON }) =>
+                      update(
+                        item.id,
+                        {
+                          title,
+                          content: textContent || "(no content)",
+                          json_content: contentJSON,
+                        },
+                        () => setEditingId(null),
+                      )
+                    }
+                  />
                 </CardContent>
-                <CardFooter className="gap-2">
-                  <Button
-                    variant="outline"
-                    onClick={() => setEditingId(item.id)}
-                  >
-                    Edit
-                  </Button>
-                  <Button variant="destructive" onClick={() => remove(item.id)}>
-                    Delete
-                  </Button>
-                </CardFooter>
-              </>
-            )}
-          </Card>
-        ))}
+              ) : (
+                <>
+                  <CardHeader>
+                    <CardTitle>{item.title || "(untitled)"} </CardTitle>
+                    <div className="mt-2 text-xs">
+                      {format(item.created_at, "yyyy-MM-dd")}
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="whitespace-pre-wrap">
+                      <MinimalNote note={item.json_content}></MinimalNote>
+                    </p>
+                  </CardContent>
+                  <CardFooter className="gap-2">
+                    <Button
+                      variant="outline"
+                      onClick={() => setEditingId(item.id)}
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      onClick={() => remove(item.id)}
+                    >
+                      Delete
+                    </Button>
+                  </CardFooter>
+                </>
+              )}
+            </Card>
+          ))}
       </div>
     </div>
   );

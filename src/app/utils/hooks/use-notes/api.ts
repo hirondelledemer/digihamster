@@ -1,17 +1,18 @@
-import { Note } from "@/models/note";
 import apiClient from "../../api-client";
+import { INote } from "../../types/note";
 
-export type FieldsRequired = Pick<
-  Note,
-  "title" | "note" | "tags" | "json_note"
->;
+export type FieldsRequired = Pick<INote, "title" | "content" | "json_content">;
 
 export type CreateNoteParams = FieldsRequired & { parentTaskId?: string };
 
+export const NOTES_PATH = "/notes";
+
+export const getNotesPath = (id: number) => `${NOTES_PATH}/${id}`;
+
 export const api = {
-  getNotes: () => apiClient.get<Note[]>("/notes"),
-  createNote: (data: CreateNoteParams) => apiClient.post<Note>("/notes", data),
-  updateNote: (id: string, props: Partial<Note>) =>
-    apiClient.patch(`/notes/${id}`, props),
-  deleteNote: (id: string) => apiClient.delete(`/notes/${id}`),
+  getNotes: () => apiClient.get<INote[]>("/notes"),
+  createNote: (data: CreateNoteParams) => apiClient.post<INote>("/notes", data),
+  updateNote: (id: number, props: Partial<INote>) =>
+    apiClient.patch(getNotesPath(id), props),
+  deleteNote: (id: number) => apiClient.delete(getNotesPath(id)),
 } as const;

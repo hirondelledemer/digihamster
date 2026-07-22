@@ -9,7 +9,7 @@ import { useEntriesState } from "./state-context";
 import { EntriesContextProvider } from "./provider";
 import { useEntriesActions } from "./actions-context";
 import { generateListOfJournalEntries } from "../../mocks/journal-entry";
-import { CreateEntryParams } from "./api";
+import { CreateEntryParams, JOURNAL_ENTRIES_PATH } from "./api";
 
 describe("EntriesContextProvider", () => {
   afterEach(() => {
@@ -18,7 +18,7 @@ describe("EntriesContextProvider", () => {
 
   it("should fetch entries and update the state", async () => {
     const mockData = generateListOfJournalEntries(3);
-    mockAxios.get.mockResolvedValueOnce({ data: { data: mockData } });
+    mockAxios.get.mockResolvedValueOnce({ data: mockData });
 
     const TestComponent = () => {
       const { data, isLoading } = useEntriesState();
@@ -26,7 +26,7 @@ describe("EntriesContextProvider", () => {
         <div>
           {isLoading
             ? "Loading..."
-            : data.map((entry) => <div key={entry._id}>{entry.title}</div>)}
+            : data.map((entry) => <div key={entry.id}>{entry.title}</div>)}
         </div>
       );
     };
@@ -34,13 +34,13 @@ describe("EntriesContextProvider", () => {
     render(
       <EntriesContextProvider>
         <TestComponent />
-      </EntriesContextProvider>
+      </EntriesContextProvider>,
     );
 
     expect(screen.getByText("Loading...")).toBeInTheDocument();
 
     await waitFor(() =>
-      expect(screen.findByText("Entry 0")).resolves.toBeInTheDocument()
+      expect(screen.findByText("Entry 0")).resolves.toBeInTheDocument(),
     );
     expect(screen.getByText("Entry 1")).toBeInTheDocument();
     expect(screen.getByText("Entry 2")).toBeInTheDocument();
@@ -65,13 +65,13 @@ describe("EntriesContextProvider", () => {
     render(
       <EntriesContextProvider>
         <TestComponent />
-      </EntriesContextProvider>
+      </EntriesContextProvider>,
     );
 
     expect(screen.getByText("Loading...")).toBeInTheDocument();
 
     await waitFor(() =>
-      expect(screen.findByText(/Error:/)).resolves.toBeInTheDocument()
+      expect(screen.findByText(/Error:/)).resolves.toBeInTheDocument(),
     );
   });
 
@@ -79,8 +79,7 @@ describe("EntriesContextProvider", () => {
     const mockEntry: CreateEntryParams = {
       title: "new entry",
       note: "",
-      jsonNote: {},
-      tags: [],
+      json_note: {},
     };
 
     mockAxios.post.mockResolvedValueOnce({ data: [] });
@@ -93,7 +92,7 @@ describe("EntriesContextProvider", () => {
           <button onClick={() => createEntry(mockEntry)}>Create Entry</button>
           <div>
             {data.map((entry) => (
-              <div key={entry._id}>{entry.title}</div>
+              <div key={entry.id}>{entry.title}</div>
             ))}
           </div>
         </div>
@@ -105,15 +104,18 @@ describe("EntriesContextProvider", () => {
         <EntriesContextProvider>
           <TestComponent />
         </EntriesContextProvider>
-      </ToastProvider>
+      </ToastProvider>,
     );
 
     expect(screen.queryByText("new entry")).not.toBeInTheDocument();
     await userEvent.click(screen.getByRole("button"));
 
     await waitFor(() =>
-      expect(screen.findByText("new entry")).resolves.toBeInTheDocument()
+      expect(screen.findByText("new entry")).resolves.toBeInTheDocument(),
     );
-    expect(mockAxios.post).toHaveBeenCalledWith("/api/entries", mockEntry);
+    expect(mockAxios.post).toHaveBeenCalledWith(
+      JOURNAL_ENTRIES_PATH,
+      mockEntry,
+    );
   });
 });

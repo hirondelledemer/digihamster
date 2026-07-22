@@ -1,14 +1,15 @@
-import { Note } from "@/models/note";
+import { INote } from "../types/note";
+import { DEFAULT_TEST_DATE } from "./date";
 
-export const generateNote: (i?: number, properties?: Partial<Note>) => Note = (
-  i = 1,
-  properties
-) => {
+export const generateNote: (
+  i?: number,
+  properties?: Partial<INote>,
+) => INote = (i = 1, properties) => {
   return {
-    _id: `note${i}`,
+    id: i,
     title: `Note ${i}`,
-    note: `note ${i}`,
-    jsonNote: {
+    content: `note ${i}`,
+    json_content: {
       content: [
         {
           content: [
@@ -22,22 +23,20 @@ export const generateNote: (i?: number, properties?: Partial<Note>) => Note = (
       ],
       type: "doc",
     },
-    isActive: false,
+    user_id: "",
     deleted: false,
-    userId: "",
-    tags: [],
-    updatedAt: "",
+    created_at: DEFAULT_TEST_DATE,
     ...properties,
   };
 };
 
-export const generateListOfNotes: (count: number) => Note[] = (count) => {
+export const generateListOfNotes: (count: number) => INote[] = (count) => {
   return [...Array(count)].map((_v, i) => generateNote(i));
 };
 
-export const generateCustomNotesList: (noteInfo: Partial<Note>[]) => Note[] = (
-  noteInfo
-) => {
+export const generateCustomNotesList: (
+  noteInfo: Partial<INote>[],
+) => INote[] = (noteInfo) => {
   return noteInfo.map((taskProperties, i) => ({
     ...generateNote(i, taskProperties),
   }));
