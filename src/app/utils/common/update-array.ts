@@ -1,6 +1,6 @@
-export function updateObjById<T extends { id: string }>(
+export function updateObjById<T extends { id: number | string }>(
   arr: T[],
-  id: string,
+  id: number | string,
   updatedData: Partial<T>,
 ) {
   return arr.map((item) =>

@@ -9,6 +9,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { eachDayOfInterval, format } from "date-fns";
 import { firstBy, pipe } from "remeda";
+import { now } from "@/app/utils/date/now";
 // import useTasks from "@/app/utils/hooks/use-tasks";
 
 export interface ProjectBurnDownChartProps {
