@@ -18,6 +18,26 @@ import { useEffect, useState } from "react";
 //   curl -H "Authorization: Bearer $TOKEN" \
 //     'http://localhost:8080/agent/state?focus=project_created&project_id=42&tz=Europe/Vilnius'
 
+/////
+
+// Try it
+
+// Deploy the Go server to your Hetzner box alongside Ollama, then:
+
+// curl -X POST \
+//   -H "Authorization: Bearer $TOKEN" \
+//   'http://65.21.106.111:8080/agent/review?tz=Europe/Vilnius'
+
+// Expect a 20–45 second wait (cold Ollama call), then something like:
+
+// {
+//   "mood": "amused",
+//   "comments": [
+//     "Four projects idle and one new task today. Consistent.",
+//     "You did not journal yesterday. Just observing."
+//   ]
+// }
+
 export const Agent = () => {
   const [isLoading, setLoading] = useState<boolean>(false);
   const [_agentData, setAgentData] = useState<string | null>(null);
@@ -26,8 +46,11 @@ export const Agent = () => {
     (async function () {
       try {
         setLoading(true);
-        const weatherResponse = await apiClient.get(
+        const _raw1 = await apiClient.get(
           "/agent/state?focus=freechat&tz=Europe/Vilnius",
+        );
+        const weatherResponse = await apiClient.post(
+          "/agent/review?tz=Europe/Vilnius",
         );
         setAgentData(weatherResponse.data);
       } catch (error: unknown) {

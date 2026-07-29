@@ -17,7 +17,7 @@ export const cardTestId = "TaskCard-card-testid";
 export interface TaskCardProps {
   testId?: string;
   task: ITask;
-  dragId: string;
+  dragId: number;
   indicateActive?: boolean;
 }
 

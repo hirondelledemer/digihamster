@@ -9,6 +9,7 @@ import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
 import MinimalNote from "../MinimalNote";
 import { useRouter, useSearchParams } from "#lib/navigation";
 import { useTasksNewState } from "@/app/utils/hooks/use-tasks-new/state-context";
+import { ITask } from "@/app/utils/types/task";
 
 export interface TaskInfoProps {
   testId?: string;
@@ -18,7 +19,7 @@ const TaskInfo: FC<TaskInfoProps> = (): JSX.Element | null => {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const projectId = searchParams.get("projectId");
+  const projectId = searchParams.get("projectId"); // TODO: convert to number
 
   const { data: tasks } = useTasksNewState();
 
@@ -33,9 +34,42 @@ const TaskInfo: FC<TaskInfoProps> = (): JSX.Element | null => {
 
   const title = selectedProject?.title;
 
-  const tasksToShow = tasks.filter(
-    (t) => t.project_id && t.project_id.toString() === projectId,
-  );
+  // const tasksToShow = tasks
+  //   .filter((t) => t.project_id && t.project_id.toString() === projectId)
+  //   .sort(
+  //     (taskA, taskB) =>
+  //       new Date(taskA.created_at).valueOf() -
+  //       new Date(taskB.created_at).valueOf(),
+  //   )
+  //   .sort((taskA) => (taskA.status === "doing" || !!taskA.event_id ? 0 : 1))
+  //   .sort((taskA) => (taskA.status === "done" ? 1 : 0));
+
+  const tasksToShow = tasks
+    .filter((t) => t.project_id && t.project_id.toString() === projectId)
+    .sort((taskA, taskB) => {
+      // Helper helpers to identify priority tiers
+      const isPriority = (t: ITask) =>
+        t.status === "doing" || !!t.event_id || !!t.deadline;
+      const isDone = (t: ITask) => t.status === "done";
+
+      // 1. Check "done" status (Done tasks always go to the bottom)
+      if (isDone(taskA) !== isDone(taskB)) {
+        return isDone(taskA) ? 1 : -1;
+      }
+
+      // 2. Check priority status (Active/scheduled tasks go above regular Todo tasks)
+      if (isPriority(taskA) !== isPriority(taskB)) {
+        return isPriority(taskA) ? -1 : 1;
+      }
+
+      // 3. Fallback: If they are in the same priority group, sort by date (Oldest first)
+      return (
+        new Date(taskA.created_at).valueOf() -
+        new Date(taskB.created_at).valueOf()
+      );
+    });
+
+  console.log(tasksToShow);
 
   return (
     <Sheet open>

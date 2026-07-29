@@ -1,5 +1,5 @@
 import apiClient from "../../api-client";
-import { TaskV2 } from "@/models/taskV2";
+import { ITask } from "../../types/task";
 
 export type CreateTaskParams = {
   title: string;
@@ -14,10 +14,10 @@ export const TASKS_PATH = "/tasks";
 export const getTasksPath = (id: number) => `${TASKS_PATH}/${id}`;
 
 export const api = {
-  getTasks: () => apiClient.get<TaskV2[]>("/tasks"),
+  getTasks: () => apiClient.get<ITask[]>("/tasks"),
   createTask: (data: CreateTaskParams) =>
-    apiClient.post<TaskV2>(TASKS_PATH, data),
-  updateTask: (id: number, data: Partial<TaskV2>) =>
-    apiClient.patch<TaskV2>(getTasksPath(id), data),
+    apiClient.post<ITask>(TASKS_PATH, data),
+  updateTask: (id: number, data: Partial<ITask>) =>
+    apiClient.patch<ITask>(getTasksPath(id), data),
   deleteTask: (id: number) => apiClient.delete(getTasksPath(id)),
 } as const;

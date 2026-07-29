@@ -1,10 +1,10 @@
 import { createContext, useContext } from "react";
 import { CreateTaskParams } from "./api";
-import { TaskV2 } from "@/models/taskV2";
+import { ITask } from "../../types/task";
 
 export interface TasksNewActionsContextValue {
   createTask(data: CreateTaskParams, onDone?: () => void): void;
-  updateTask(id: number, data: Partial<TaskV2>, onDone?: () => void): void;
+  updateTask(id: number, data: Partial<ITask>, onDone?: () => void): void;
   deleteTask(id: number, onDone?: () => void): void;
 }
 
