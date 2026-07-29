@@ -8,17 +8,16 @@ import { ProjectsStateAction, ProjectsStateActionType } from "./actions";
 import { api, FieldsRequired } from "./api";
 import { ProjectsStateContext } from "./state-context";
 import { ProjectsActionsContext } from "./actions-context";
-import { Project } from "@/models/project";
+import { IProject, ProjectStatus } from "../../types/project";
+import { getApiErrorMessage } from "../../axios";
 
 const handleApiError = (
-  error: any,
+  error: unknown,
   toast: ReturnType<typeof useToast>["toast"],
 ) => {
-  const errorMessage =
-    error.response?.data?.message || "An unexpected error occurred";
   toast({
     title: "Error",
-    description: errorMessage,
+    description: getApiErrorMessage(error),
     variant: "destructive",
   });
 };
@@ -63,7 +62,7 @@ export const ProjectsContextProvider = ({
 }) => {
   const [state, dispatch] = useReducer(reducer, {
     isLoading: true,
-    data: [] as Project[],
+    data: [] as IProject[],
     defaultProject: null,
   });
 
@@ -81,14 +80,12 @@ export const ProjectsContextProvider = ({
     async (data: FieldsRequired, onDone?: () => void) => {
       const tempId = -1;
 
-      const tempProject: Project = {
+      const tempProject: IProject = {
         id: tempId,
         sort_order: 0,
         description: "",
-        status: "todo",
-        disabled: false,
+        status: ProjectStatus.Todo,
         created_at: "",
-        updated_at: "",
         ...data,
       };
       dispatch({
@@ -106,30 +103,33 @@ export const ProjectsContextProvider = ({
         dispatch({
           type: ProjectsStateActionType.UpdateProject,
           payload: {
-            id: tempId.toString(),
+            id: tempId,
             project: response.data,
           },
         });
 
         handleSuccessToast(toast, "Project has been created");
-      } catch (e: any) {
+      } catch (e: unknown) {
         // todo: fix
         dispatch({
           type: ProjectsStateActionType.DeleteProject,
           payload: {
-            id: tempId.toString(),
+            id: tempId,
           },
         });
-        const errorMessage =
-          e.response?.data?.message || "An unexpected error occurred";
-        handleApiError(errorMessage, toast);
+
+        handleApiError(e, toast);
       }
     },
     [toast],
   );
 
   const updateProject = useCallback(
-    async (projectId: string, props: Partial<Project>, onDone?: () => void) => {
+    async (
+      projectId: number,
+      props: Partial<IProject>,
+      onDone?: () => void,
+    ) => {
       try {
         dispatch({
           type: ProjectsStateActionType.UpdateProject,
@@ -145,17 +145,15 @@ export const ProjectsContextProvider = ({
         await api.updateProject(projectId, props);
 
         handleSuccessToast(toast, "Project has been updated");
-      } catch (e: any) {
-        const errorMessage =
-          e.response?.data?.message || "An unexpected error occurred";
-        handleApiError(errorMessage, toast);
+      } catch (e: unknown) {
+        handleApiError(e, toast);
       }
     },
     [toast],
   );
 
   const deleteProject = useCallback(
-    async (projectId: string, onDone?: () => void) => {
+    async (projectId: number, onDone?: () => void) => {
       try {
         dispatch({
           type: ProjectsStateActionType.DeleteProject,
@@ -170,18 +168,16 @@ export const ProjectsContextProvider = ({
         await api.deleteProject(projectId);
 
         handleSuccessToast(toast, "Project has been deleted");
-      } catch (e: any) {
-        const errorMessage =
-          e.response?.data?.message || "An unexpected error occurred";
-        handleApiError(errorMessage, toast);
+      } catch (e: unknown) {
+        handleApiError(e, toast);
       }
     },
     [toast],
   );
 
   const updateOrder = async (
-    movedProjectId: string,
-    overProjectId: string,
+    movedProjectId: number,
+    overProjectId: number,
     onDone?: () => void,
   ) => {
     try {
@@ -199,10 +195,8 @@ export const ProjectsContextProvider = ({
 
       // TODO: wire up updateOrder API once endpoint is available
       handleSuccessToast(toast, "Project order been updated");
-    } catch (e: any) {
-      const errorMessage =
-        e.response?.data?.message || "An unexpected error occurred";
-      handleApiError(errorMessage, toast);
+    } catch (e: unknown) {
+      handleApiError(e, toast);
     }
   };
 

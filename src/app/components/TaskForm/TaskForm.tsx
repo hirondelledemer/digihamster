@@ -24,11 +24,13 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { cn } from "../utils";
 import { format } from "date-fns";
 import { Calendar } from "../ui/calendar";
-import { TaskV2 as Task } from "@/models/taskV2";
-// import { useTagsState } from "@/app/utils/hooks/use-tags/state-context";
 import { Textarea } from "../ui/textarea";
 import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
 import { useTasksNewActions } from "@/app/utils/hooks/use-tasks-new/actions-context";
+import { ITask, TaskStatus } from "@/app/utils/types/task";
+import { toBackendDateTime } from "#utils/date";
+import { Badge } from "../ui/badge";
+import { ProjectStatus } from "@/app/utils/types/project";
 
 export const minimalNoteTestId = "TaskForm-minimal-note-testId" as const;
 export const taskFormTestId = "TaskForm-form-testid" as const;
@@ -37,7 +39,7 @@ const FormSchema = z.object({
   title: z.string().min(1, { message: "This field has to be filled." }),
   description: z.string(),
   deadline: z.union([z.string(), z.null(), z.undefined()]),
-  project: z.string(),
+  project: z.union([z.number(), z.undefined()]),
 });
 
 export type FormValues = z.infer<typeof FormSchema>;
@@ -45,7 +47,7 @@ export type FormValues = z.infer<typeof FormSchema>;
 export interface TaskFormProps {
   testId?: string;
   onDone(): void;
-  task: Task;
+  task: ITask;
 }
 
 const TaskForm: FC<TaskFormProps> = ({
@@ -54,7 +56,6 @@ const TaskForm: FC<TaskFormProps> = ({
   ...restProps
 }): JSX.Element => {
   const { data: projects } = useProjectsState();
-  // const { data: tags } = useTagsState();
   const { updateTask: editTask, deleteTask } = useTasksNewActions();
 
   const form = useForm<FormValues>({
@@ -62,7 +63,7 @@ const TaskForm: FC<TaskFormProps> = ({
     defaultValues: {
       title: restProps.task.title,
       description: restProps.task.description || "",
-      project: restProps.task.project_id?.toString() || "",
+      project: restProps.task.project_id || undefined,
       deadline: restProps.task.deadline,
     },
   });
@@ -80,7 +81,7 @@ const TaskForm: FC<TaskFormProps> = ({
   const handleDelete = useCallback(
     async (event: React.MouseEvent<HTMLButtonElement>) => {
       event.preventDefault();
-      await deleteTask(restProps.task.id);
+      deleteTask(restProps.task.id);
       onDone();
     },
     [deleteTask, restProps, onDone],
@@ -90,8 +91,8 @@ const TaskForm: FC<TaskFormProps> = ({
     async (event: React.MouseEvent<HTMLButtonElement>) => {
       event.preventDefault();
 
-      await editTask(restProps.task.id, {
-        status: "done",
+      editTask(restProps.task.id, {
+        status: TaskStatus.Done,
       });
       onDone();
     },
@@ -102,8 +103,8 @@ const TaskForm: FC<TaskFormProps> = ({
     async (event: React.MouseEvent<HTMLButtonElement>) => {
       event.preventDefault();
 
-      await editTask(restProps.task.id, {
-        status: "doing",
+      editTask(restProps.task.id, {
+        status: TaskStatus.Doing,
       });
       onDone();
     },
@@ -139,9 +140,11 @@ const TaskForm: FC<TaskFormProps> = ({
             <FormItem>
               <FormLabel>Project</FormLabel>
               <Select
-                onValueChange={field.onChange}
-                defaultValue={field.value}
-                value={field.value}
+                onValueChange={(value) => {
+                  field.onChange(Number(value));
+                }}
+                defaultValue={field.value ? field.value.toString() : undefined}
+                value={field.value ? field.value.toString() : undefined}
               >
                 <FormControl>
                   <SelectTrigger>
@@ -149,17 +152,30 @@ const TaskForm: FC<TaskFormProps> = ({
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {projects
-                    .filter((project) => !project.disabled)
-                    .map((project) => (
-                      <SelectItem
-                        key={project.id as unknown as string}
-                        value={project.id as unknown as string}
-                        role="option"
-                      >
+                  {projects.map((project) => (
+                    <SelectItem
+                      key={project.id}
+                      value={project.id.toString()}
+                      role="option"
+                      disabled={
+                        project.status === ProjectStatus.Cancelled ||
+                        project.status === ProjectStatus.Done
+                      }
+                    >
+                      <div className="flex gap-4">
                         {project.title}
-                      </SelectItem>
-                    ))}
+                        {project.status === ProjectStatus.Doing && (
+                          <Badge
+                            variant="default"
+                            className="mr-4"
+                            color={project.color}
+                          >
+                            active
+                          </Badge>
+                        )}
+                      </div>
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
               <FormMessage />
@@ -211,7 +227,10 @@ const TaskForm: FC<TaskFormProps> = ({
                     mode="single"
                     selected={field.value ? new Date(field.value) : undefined}
                     onSelect={(date) => {
-                      field.onChange(date ? date.getTime() : undefined);
+                      // console.log(date);
+                      field.onChange(
+                        date ? toBackendDateTime(date) : undefined,
+                      );
                     }}
                   />
                 </PopoverContent>

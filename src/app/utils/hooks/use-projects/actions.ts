@@ -1,8 +1,8 @@
-import { Project } from "@/models/project";
+import { IProject } from "../../types/project";
 
 export interface ProjectsState {
-  data: Project[];
-  defaultProject: Project | null;
+  data: IProject[];
+  defaultProject: IProject | null;
   isLoading: boolean;
   errorMessage?: unknown;
 }
@@ -23,8 +23,8 @@ export interface ProjectsLoadAction {
 export interface ProjectsFinishLoadingAction {
   type: ProjectsStateActionType.FinishLoading;
   payload: {
-    data: Project[];
-    defaultProject?: Project;
+    data: IProject[];
+    defaultProject?: IProject;
   };
 }
 
@@ -37,30 +37,30 @@ export interface ProjectsErrorAction {
 export interface CreateProjectAction {
   type: ProjectsStateActionType.CreateProject;
   payload: {
-    project: Project;
+    project: IProject;
   };
 }
 
 export interface UpdateProjectAction {
   type: ProjectsStateActionType.UpdateProject;
   payload: {
-    id: string;
-    project: Partial<Project>;
+    id: number;
+    project: Partial<IProject>;
   };
 }
 
 export interface UpdateOrderAction {
   type: ProjectsStateActionType.UpdateOrder;
   payload: {
-    movedProjectId: string;
-    overProjectId: string;
+    movedProjectId: number;
+    overProjectId: number;
   };
 }
 
 export interface DeleteProjectAction {
   type: ProjectsStateActionType.DeleteProject;
   payload: {
-    id: string;
+    id: number;
   };
 }
 

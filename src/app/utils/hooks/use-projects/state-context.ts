@@ -1,9 +1,9 @@
 import { createContext, useContext } from "react";
 import { ProjectsState } from "./actions";
-import { Project } from "@/models/project";
+import { IProject } from "../../types/project";
 
 type ProjectContextValue = ProjectsState & {
-  getProjectById: (id: string) => Project | null;
+  getProjectById: (id: string) => IProject | null;
 };
 
 const DEFAULT_PROJECTS_STATE: ProjectsState = {

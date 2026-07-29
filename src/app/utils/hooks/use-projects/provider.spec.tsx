@@ -9,8 +9,12 @@ import { useProjectsState } from "./state-context";
 import { ProjectsContextProvider } from "./provider";
 
 import { generateListOfProjects } from "../../mocks/project";
-import { Project } from "@/models/project";
 import { useProjectsActions } from "./actions-context";
+import { IProject, ProjectStatus } from "../../types/project";
+import { getProjectsPath, PROJECTS_PATH } from "./api";
+import { DEFAULT_TEST_DATE } from "../../mocks/date";
+
+const DEFAULT_PROJECTS = generateListOfProjects(3);
 
 describe("ProjectsContextProvider", () => {
   afterEach(() => {
@@ -18,21 +22,16 @@ describe("ProjectsContextProvider", () => {
   });
 
   it("should fetch projects and update the state", async () => {
-    const mockData = {
-      projects: generateListOfProjects(3),
-      defaultProject: null,
-    };
-    mockAxios.get.mockResolvedValueOnce({ data: mockData });
+    mockAxios.get.mockResolvedValueOnce({ data: DEFAULT_PROJECTS });
 
     const TestComponent = () => {
       const { data, isLoading } = useProjectsState();
-      console.log(data);
       return (
         <div>
           {isLoading
             ? "Loading..."
-            : data.map((project: Project) => (
-                <div key={project._id}>{project.title}</div>
+            : data.map((project: IProject) => (
+                <div key={project.id}>{project.title}</div>
               ))}
         </div>
       );
@@ -41,17 +40,17 @@ describe("ProjectsContextProvider", () => {
     render(
       <ProjectsContextProvider>
         <TestComponent />
-      </ProjectsContextProvider>
+      </ProjectsContextProvider>,
     );
 
     expect(screen.getByText("Loading...")).toBeInTheDocument();
 
     await waitFor(() =>
-      expect(screen.findByText("Project 0")).resolves.toBeInTheDocument()
+      expect(screen.findByText("Project 0")).resolves.toBeInTheDocument(),
     );
     expect(screen.getByText("Project 1")).toBeInTheDocument();
     expect(screen.getByText("Project 2")).toBeInTheDocument();
-    expect(mockAxios.get).toHaveBeenCalledWith("/api/projects");
+    expect(mockAxios.get).toHaveBeenCalledWith(PROJECTS_PATH);
   });
 
   it("should handle fetch error and update the state", async () => {
@@ -73,26 +72,26 @@ describe("ProjectsContextProvider", () => {
     render(
       <ProjectsContextProvider>
         <TestComponent />
-      </ProjectsContextProvider>
+      </ProjectsContextProvider>,
     );
 
     expect(screen.getByText("Loading...")).toBeInTheDocument();
 
     await waitFor(() =>
-      expect(screen.findByText(/Error:/)).resolves.toBeInTheDocument()
+      expect(screen.findByText(/Error:/)).resolves.toBeInTheDocument(),
     );
-    expect(mockAxios.get).toHaveBeenCalledWith("/api/projects");
+    expect(mockAxios.get).toHaveBeenCalledWith(PROJECTS_PATH);
   });
 
   it("should create an project and update the state", async () => {
-    const mockProject: Omit<Project, "_id"> = {
+    const mockProject: Omit<IProject, "id"> = {
       title: "new project",
-      deleted: false,
       color: "",
-      disabled: false,
-      jsonDescription: null,
-      order: 0,
-      category: "",
+      life_aspect_id: 1,
+      status: ProjectStatus.Todo,
+      description: "",
+      sort_order: 0,
+      created_at: DEFAULT_TEST_DATE,
     };
 
     mockAxios.post.mockResolvedValueOnce({ data: [] });
@@ -107,7 +106,7 @@ describe("ProjectsContextProvider", () => {
           </button>
           <div>
             {data.map((project) => (
-              <div key={project._id}>{project.title}</div>
+              <div key={project.id}>{project.title}</div>
             ))}
           </div>
         </div>
@@ -119,7 +118,7 @@ describe("ProjectsContextProvider", () => {
         <ProjectsContextProvider>
           <TestComponent />
         </ProjectsContextProvider>
-      </ToastProvider>
+      </ToastProvider>,
     );
 
     expect(screen.queryByText("new project")).not.toBeInTheDocument();
@@ -127,18 +126,13 @@ describe("ProjectsContextProvider", () => {
     await userEvent.click(screen.getByRole("button"));
 
     await waitFor(() =>
-      expect(screen.findByText("new project")).resolves.toBeInTheDocument()
+      expect(screen.findByText("new project")).resolves.toBeInTheDocument(),
     );
-    expect(mockAxios.post).toHaveBeenCalledWith("/api/projects", mockProject);
+    expect(mockAxios.post).toHaveBeenCalledWith(PROJECTS_PATH, mockProject);
   });
 
   it("should delete an project and update the state", async () => {
-    const mockData = {
-      projects: generateListOfProjects(2),
-      defaultProject: null,
-    };
-
-    mockAxios.get.mockResolvedValueOnce({ data: mockData });
+    mockAxios.get.mockResolvedValueOnce({ data: DEFAULT_PROJECTS });
 
     const TestComponent = () => {
       const { data } = useProjectsState();
@@ -147,9 +141,9 @@ describe("ProjectsContextProvider", () => {
         <div>
           <div>
             {data.map((project) => (
-              <div key={project._id}>
+              <div key={project.id}>
                 <div>{project.title}</div>
-                <button onClick={() => deleteProject(project._id)}>
+                <button onClick={() => deleteProject(project.id)}>
                   Delete
                 </button>
               </div>
@@ -164,7 +158,7 @@ describe("ProjectsContextProvider", () => {
         <ProjectsContextProvider>
           <TestComponent />
         </ProjectsContextProvider>
-      </ToastProvider>
+      </ToastProvider>,
     );
 
     await expect(screen.findByText("Project 0")).resolves.toBeInTheDocument();
@@ -174,12 +168,11 @@ describe("ProjectsContextProvider", () => {
     await userEvent.click(screen.getAllByRole("button")[0]);
 
     await waitFor(() =>
-      expect(screen.findByText("Project 1")).resolves.toBeInTheDocument()
+      expect(screen.findByText("Project 1")).resolves.toBeInTheDocument(),
     );
     expect(screen.queryByText("Project 0")).not.toBeInTheDocument();
-    expect(mockAxios.patch).toHaveBeenCalledWith("/api/projects", {
-      deleted: true,
-      id: mockData.projects[0]._id,
-    });
+    expect(mockAxios.delete).toHaveBeenCalledWith(
+      getProjectsPath(DEFAULT_PROJECTS[0].id),
+    );
   });
 });
