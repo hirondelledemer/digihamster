@@ -99,8 +99,8 @@ describe("ProjectsContext reducer", () => {
   });
 
   it("should handle UPDATE_PROJECT action", () => {
-    const tempId = "new-id";
-    const project = generateProject(0, { _id: tempId });
+    const tempId = -1;
+    const project = generateProject(0, { id: tempId });
     const initialState = {
       isLoading: true,
       data: [project],
@@ -134,7 +134,7 @@ describe("ProjectsContext reducer", () => {
       defaultProject: null,
     };
 
-    const idToDelete = projects[0]._id;
+    const idToDelete = projects[0].id;
 
     const action: DeleteProjectAction = {
       type: ProjectsStateActionType.DeleteProject,

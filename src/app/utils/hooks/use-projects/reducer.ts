@@ -44,9 +44,7 @@ export function reducer(state: ProjectsState, action: ProjectsStateAction) {
         ...state,
         isLoading: false,
         data: state.data.map((p) =>
-          p.id.toString() === action.payload.id
-            ? { ...p, ...action.payload.project }
-            : p,
+          p.id === action.payload.id ? { ...p, ...action.payload.project } : p,
         ),
       };
     }
@@ -54,17 +52,15 @@ export function reducer(state: ProjectsState, action: ProjectsStateAction) {
       return {
         ...state,
         isLoading: false,
-        data: state.data.filter(
-          (project) => project.id.toString() !== action.payload.id,
-        ),
+        data: state.data.filter((project) => project.id !== action.payload.id),
       };
     }
     case ProjectsStateActionType.UpdateOrder: {
       const oldIndex = state.data.findIndex(
-        (p) => p.id.toString() === action.payload.movedProjectId,
+        (p) => p.id === action.payload.movedProjectId,
       );
       const newIndex = state.data.findIndex(
-        (p) => p.id.toString() === action.payload.overProjectId,
+        (p) => p.id === action.payload.overProjectId,
       );
 
       return {
