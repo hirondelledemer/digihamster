@@ -1,7 +1,7 @@
-import { TaskV2 } from "@/models/taskV2";
+import { ITask } from "../../types/task";
 
 export interface TasksNewState {
-  data: TaskV2[];
+  data: ITask[];
   isLoading: boolean;
   errorMessage?: unknown;
 }
@@ -20,7 +20,7 @@ export interface StartLoadingAction {
 }
 export interface FinishLoadingAction {
   type: TasksNewActionType.FinishLoading;
-  payload: { data: TaskV2[] };
+  payload: { data: ITask[] };
 }
 export interface ErrorAction {
   type: TasksNewActionType.Error;
@@ -28,15 +28,15 @@ export interface ErrorAction {
 }
 export interface CreateTaskAction {
   type: TasksNewActionType.CreateTask;
-  payload: { task: TaskV2 };
+  payload: { task: ITask };
 }
 export interface UpdateTaskAction {
   type: TasksNewActionType.UpdateTask;
-  payload: { id: string; task: Partial<TaskV2> };
+  payload: { id: number; task: Partial<ITask> };
 }
 export interface DeleteTaskAction {
   type: TasksNewActionType.DeleteTask;
-  payload: { id: string };
+  payload: { id: number };
 }
 
 export type TasksNewAction =

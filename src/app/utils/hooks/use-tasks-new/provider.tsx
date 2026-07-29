@@ -6,7 +6,8 @@ import { TasksNewAction, TasksNewActionType } from "./actions";
 import { api, CreateTaskParams } from "./api";
 import { TasksNewStateContext } from "./state-context";
 import { TasksNewActionsContext } from "./actions-context";
-import { TaskV2 } from "@/models/taskV2";
+import { ITask, TaskStatus } from "../../types/task";
+import { now } from "../../date/now";
 
 const handleApiError = (
   error: any,
@@ -59,21 +60,25 @@ export const TasksNewContextProvider = ({
 
   const createTask = useCallback(
     async (data: CreateTaskParams, onDone?: () => void) => {
-      const tempId = "temp-id";
-      const tempTask: TaskV2 = {
+      const nowDate = now().valueOf();
+      const tempId = -nowDate;
+      const tempTask: ITask = {
         id: tempId,
         title: data.title,
-        project_id: data.project_id,
+        project_id: data.project_id || null,
         event_id: null,
         description: null,
-        status: "todo",
+        status: TaskStatus.Todo,
         deadline: null,
         activated_at: null,
         completed_at: null,
         created_at: new Date().toISOString(),
       };
 
-      dispatch({ type: TasksNewActionType.CreateTask, payload: { task: tempTask } });
+      dispatch({
+        type: TasksNewActionType.CreateTask,
+        payload: { task: tempTask },
+      });
       if (onDone) onDone();
 
       try {
@@ -95,8 +100,11 @@ export const TasksNewContextProvider = ({
   );
 
   const updateTask = useCallback(
-    async (id: string, data: Partial<TaskV2>, onDone?: () => void) => {
-      dispatch({ type: TasksNewActionType.UpdateTask, payload: { id, task: data } });
+    async (id: number, data: Partial<ITask>, onDone?: () => void) => {
+      dispatch({
+        type: TasksNewActionType.UpdateTask,
+        payload: { id, task: data },
+      });
       if (onDone) onDone();
       try {
         await api.updateTask(id, data);
@@ -109,7 +117,7 @@ export const TasksNewContextProvider = ({
   );
 
   const deleteTask = useCallback(
-    async (id: string, onDone?: () => void) => {
+    async (id: number, onDone?: () => void) => {
       dispatch({ type: TasksNewActionType.DeleteTask, payload: { id } });
       if (onDone) onDone();
       try {
@@ -124,7 +132,9 @@ export const TasksNewContextProvider = ({
 
   return (
     <TasksNewStateContext.Provider value={state}>
-      <TasksNewActionsContext.Provider value={{ createTask, updateTask, deleteTask }}>
+      <TasksNewActionsContext.Provider
+        value={{ createTask, updateTask, deleteTask }}
+      >
         {children}
       </TasksNewActionsContext.Provider>
     </TasksNewStateContext.Provider>
