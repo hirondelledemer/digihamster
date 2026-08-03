@@ -31,8 +31,8 @@ describe("MentionList", () => {
   const renderComponent = (props = defaultProps) =>
     getMentionListTestkit(
       render(
-        wrapWithTagsProvider(<MentionList {...props} />, generateListOfTags(2))
-      ).container
+        wrapWithTagsProvider(<MentionList {...props} />, generateListOfTags(2)),
+      ).container,
     );
 
   it("should render MentionList", () => {
@@ -81,7 +81,7 @@ describe("MentionList", () => {
       const command = jest.fn();
       MockAxios.post.mockResolvedValueOnce({
         data: {
-          _id: "newTag1",
+          id: "newTag1",
           color: "#F06595",
           title: "new",
         },

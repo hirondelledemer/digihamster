@@ -10,6 +10,7 @@ export enum TaskStatus {
   Done = "done",
   Cancelled = "cancelled",
 }
+
 export interface ITask {
   id: number;
   project_id: number | null;

@@ -4,26 +4,42 @@ import React, {
   useImperativeHandle,
   useState,
 } from "react";
-
 import { Card, CardContent } from "@/app/components/ui/card";
-
+import { Button } from "@/app/components/ui/button";
 import { Badge } from "@/app/components/ui/badge";
 import { MentionsConfigProps } from "./types";
 import { SuggestionKeyDownProps } from "@tiptap/suggestion";
-import { useProjectsState } from "../hooks/use-projects/state-context";
-import { IProject } from "../types/project";
+import apiClient from "../api-client";
+import { useTasksNewState } from "../hooks/use-tasks-new/state-context";
+import { ITask } from "../types/task";
 
-export type ProjectMentionsProps = MentionsConfigProps;
+export type TasksListProps = MentionsConfigProps;
 
-export const ProjectsList = forwardRef(
-  ({ command, query }: ProjectMentionsProps, ref) => {
+export const TasksList = forwardRef(
+  ({ command, query }: TasksListProps, ref) => {
     const [selectedIndex, setSelectedIndex] = useState(0);
 
-    const { data: projects } = useProjectsState();
+    const { data: tasks } = useTasksNewState();
 
     useEffect(() => {
       setSelectedIndex(0);
-    }, [projects]);
+    }, [tasks]);
+
+    const handleAddTag = async (title: string) => {
+      // todo: handle error
+      // TODO: use hook
+      const response = await apiClient.post<unknown, { data: ITask }>(
+        "/tasks",
+        {
+          title,
+        },
+      );
+
+      command({
+        id: `${response.data.id}`,
+        label: response.data.title,
+      });
+    };
 
     useImperativeHandle(ref, () => ({
       onKeyDown: ({ event }: SuggestionKeyDownProps) => {
@@ -46,9 +62,9 @@ export const ProjectsList = forwardRef(
       },
     }));
 
-    const items = projects
-      .filter((project) =>
-        project.title.toLowerCase().startsWith(query.toLowerCase()),
+    const items = tasks
+      .filter((task) =>
+        task.title.toLowerCase().startsWith(query.toLowerCase()),
       )
       .slice(0, 5);
 
@@ -57,9 +73,11 @@ export const ProjectsList = forwardRef(
 
       if (item) {
         command({
-          id: `${item.id}:${item.color}`,
+          id: `${item.id}`,
           label: item.title,
         });
+      } else {
+        handleAddTag(query);
       }
     };
 
@@ -79,25 +97,18 @@ export const ProjectsList = forwardRef(
       <Card>
         <CardContent className="py-2 px-4">
           {items.length ? (
-            items.map((project: IProject, index: number) => (
-              <div key={project.id}>
+            items.map((task: ITask, index: number) => (
+              <div key={task.id}>
                 <Badge
-                  variant={selectedIndex === index ? "secondary" : "outline"}
+                  variant={selectedIndex === index ? "default" : "outline"}
                   onClick={() => selectItem(index)}
-                  style={{
-                    color: project.color,
-                    border:
-                      selectedIndex === index
-                        ? `1px solid ${project.color}`
-                        : undefined,
-                  }}
                 >
-                  {project.title}
+                  {task.title}
                 </Badge>
               </div>
             ))
           ) : (
-            <div>No such project</div>
+            <Button>{`Create"${query}"`}</Button>
           )}
         </CardContent>
       </Card>
@@ -105,4 +116,4 @@ export const ProjectsList = forwardRef(
   },
 );
 
-ProjectsList.displayName = "ProjectsList";
+TasksList.displayName = "TaskList";

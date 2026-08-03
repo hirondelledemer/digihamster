@@ -106,6 +106,7 @@ export const EventsContextProvider = ({
         });
 
         handleSuccessToast(toast, "Event has been created");
+        return response.data;
       } catch (e: any) {
         // todo: fix
         dispatch({
@@ -117,6 +118,7 @@ export const EventsContextProvider = ({
         const errorMessage =
           e.response?.data?.message || "An unexpected error occurred";
         handleApiError(errorMessage, toast);
+        return null;
       }
     },
     [toast],
