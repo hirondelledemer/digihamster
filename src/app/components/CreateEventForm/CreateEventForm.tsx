@@ -19,7 +19,7 @@ export interface CreateEventFormProps {
   projectId?: number;
 }
 
-export const rteTestId = "CreateTaskForm-rte-testId";
+export const rteTestId = "CreateEventForm-rte-testId";
 
 const FormSchema = z.object({
   description: z.object({

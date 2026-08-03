@@ -6,7 +6,7 @@ export type FieldsRequired = Pick<
   "title" | "description" | "project_id" | "all_day" | "start_at" | "end_at"
 >;
 
-const EVENTS_PATH = "/events";
+export const EVENTS_PATH = "/events";
 
 export const api = {
   getEvents: () => apiClient.get<IEvent[]>(EVENTS_PATH),
