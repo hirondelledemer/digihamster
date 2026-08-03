@@ -72,7 +72,6 @@ export const CreateEventForm: FC<CreateEventFormProps> = ({
 
     const event = await createEvent(eventData, onDone);
 
-    console.log("event event ", event);
     if (event) {
       values.description.tasks.forEach((taskId) => {
         updateTask(Number(taskId), { event_id: event.id });

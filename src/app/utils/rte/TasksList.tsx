@@ -5,7 +5,6 @@ import React, {
   useState,
 } from "react";
 import { Card, CardContent } from "@/app/components/ui/card";
-import { Button } from "@/app/components/ui/button";
 import { Badge } from "@/app/components/ui/badge";
 import { MentionsConfigProps } from "./types";
 import { SuggestionKeyDownProps } from "@tiptap/suggestion";
@@ -25,7 +24,7 @@ export const TasksList = forwardRef(
       setSelectedIndex(0);
     }, [tasks]);
 
-    const handleAddTag = async (title: string) => {
+    const handleAddTask = async (title: string) => {
       // todo: handle error
       // TODO: use hook
       const response = await apiClient.post<unknown, { data: ITask }>(
@@ -62,22 +61,24 @@ export const TasksList = forwardRef(
       },
     }));
 
-    const items = tasks
+    const filteredItems = tasks
       .filter((task) =>
         task.title.toLowerCase().startsWith(query.toLowerCase()),
       )
       .slice(0, 5);
 
+    const items = [...filteredItems, { id: -1, title: query }];
+
     const selectItem = (index: number) => {
       const item = items[index];
 
-      if (item) {
+      if (item.id !== -1) {
         command({
           id: `${item.id}`,
           label: item.title,
         });
       } else {
-        handleAddTag(query);
+        handleAddTask(query);
       }
     };
 
@@ -96,19 +97,33 @@ export const TasksList = forwardRef(
     return (
       <Card>
         <CardContent className="py-2 px-4">
-          {items.length ? (
-            items.map((task: ITask, index: number) => (
-              <div key={task.id}>
-                <Badge
-                  variant={selectedIndex === index ? "default" : "outline"}
-                  onClick={() => selectItem(index)}
-                >
-                  {task.title}
-                </Badge>
-              </div>
-            ))
-          ) : (
-            <Button>{`Create"${query}"`}</Button>
+          {items.map(
+            (task: ITask | { id: number; title: string }, index: number) => {
+              if (task.id === -1 && !query) return null;
+              if (task.id === -1) {
+                return (
+                  <div key={task.id}>
+                    Create:
+                    <Badge
+                      variant={selectedIndex === index ? "default" : "outline"}
+                      onClick={() => selectItem(index)}
+                    >
+                      {task.title}
+                    </Badge>
+                  </div>
+                );
+              }
+              return (
+                <div key={task.id}>
+                  <Badge
+                    variant={selectedIndex === index ? "default" : "outline"}
+                    onClick={() => selectItem(index)}
+                  >
+                    {task.title}
+                  </Badge>
+                </div>
+              );
+            },
           )}
         </CardContent>
       </Card>
