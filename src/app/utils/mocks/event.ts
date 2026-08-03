@@ -1,32 +1,31 @@
-import { Event } from "@/models/event";
+import { EventStatus, IEvent } from "../types/event";
+import { DEFAULT_TEST_DATE } from "./date";
 
 export const generateEvent: (
   i?: number,
-  properties?: Partial<Event>
-) => Event = (i = 1, properties) => {
+  properties?: Partial<IEvent>,
+) => IEvent = (i = 1, properties) => {
   return {
-    _id: `event${i}`,
+    id: i,
     title: `Event ${i}`,
     description: `event description ${i}`,
-    completed: false,
-    deleted: false,
-    projectId: "project1",
-    allDay: false,
-    startAt: 0,
-    endAt: 20000,
-    tags: [],
-    updatedAt: "",
+    project_id: null,
+    start_at: DEFAULT_TEST_DATE,
+    end_at: DEFAULT_TEST_DATE,
+    created_at: DEFAULT_TEST_DATE,
+    all_day: false,
+    status: EventStatus.Pending,
     ...properties,
   };
 };
 
-export const generateListOfEvents: (count: number) => Event[] = (count) => {
+export const generateListOfEvents: (count: number) => IEvent[] = (count) => {
   return [...Array(count)].map((_v, i) => generateEvent(i));
 };
 
 export const generateCustomEventList: (
-  eventInfo: Partial<Event>[]
-) => Event[] = (eventInfo) => {
+  eventInfo: Partial<IEvent>[],
+) => IEvent[] = (eventInfo) => {
   return eventInfo.map((taskProperties, i) => ({
     ...generateEvent(i, taskProperties),
   }));

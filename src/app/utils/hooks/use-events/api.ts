@@ -8,12 +8,13 @@ export type FieldsRequired = Pick<
 
 export const EVENTS_PATH = "/events";
 
+export const getEventsPath = (id: number) => `${EVENTS_PATH}/${id}`;
+
 export const api = {
   getEvents: () => apiClient.get<IEvent[]>(EVENTS_PATH),
   createEvent: (data: FieldsRequired) =>
     apiClient.post<IEvent>(EVENTS_PATH, data),
   updateEvent: (eventId: number, props: Partial<IEvent>) =>
-    apiClient.patch(`${EVENTS_PATH}/${eventId}`, props),
-  deleteEvent: (eventId: number) =>
-    apiClient.delete(`${EVENTS_PATH}/${eventId}`),
+    apiClient.patch(getEventsPath(eventId), props),
+  deleteEvent: (eventId: number) => apiClient.delete(getEventsPath(eventId)),
 } as const;

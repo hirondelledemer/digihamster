@@ -76,8 +76,8 @@ describe("EventsContext reducer", () => {
   });
 
   it("should handle UPDATE_EVENT action", () => {
-    const tempId = "new-id";
-    const event = generateEvent(0, { _id: tempId });
+    const tempId = -1;
+    const event = generateEvent(0, { id: tempId });
     const initialState = {
       isLoading: true,
       data: [event],
@@ -107,7 +107,7 @@ describe("EventsContext reducer", () => {
       errorMessage: undefined,
     };
 
-    const idToDelete = events[0]._id;
+    const idToDelete = events[0].id;
 
     const action: DeleteEventAction = {
       type: EventsStateActionType.DeleteEvent,

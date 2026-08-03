@@ -7,7 +7,6 @@ export enum EventStatus {
 
 export interface IEvent {
   id: number;
-  user_id: number;
   project_id: number | undefined | null;
   title: string;
   description: string;

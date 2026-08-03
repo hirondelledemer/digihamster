@@ -1,13 +1,13 @@
 import { createContext, useContext } from "react";
 import { FieldsRequired } from "./api";
-import { Event } from "@/models/event";
 import { ActionsContextValue } from "../use-crud/actions-context";
+import { IEvent } from "../../types/event";
 
-type EventActionsContextValue = ActionsContextValue<FieldsRequired, Event>;
+type EventActionsContextValue = ActionsContextValue<FieldsRequired, IEvent>;
 
 const DEFAULT_EVENTS_ACTIONS: EventActionsContextValue = {
   create: async () => null,
-  update: () => null,
+  update: () => {},
   delete: () => {},
 } as const;
 

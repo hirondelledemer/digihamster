@@ -1,10 +1,10 @@
 import { updateObjById } from "../../common/update-array";
+import { IEvent } from "../../types/event";
 import {
   EventsState,
   EventsStateAction,
   EventsStateActionType,
 } from "./actions";
-import { Event } from "@/models/event";
 
 export function reducer(state: EventsState, action: EventsStateAction) {
   switch (action.type) {
@@ -36,7 +36,7 @@ export function reducer(state: EventsState, action: EventsStateAction) {
     case EventsStateActionType.UpdateEvent: {
       return {
         isLoading: false,
-        data: updateObjById<Event>(
+        data: updateObjById<IEvent>(
           state.data,
           action.payload.id,
           action.payload.event,
