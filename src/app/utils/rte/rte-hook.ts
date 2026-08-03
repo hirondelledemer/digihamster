@@ -63,6 +63,7 @@ const TaskMention = Mention.extend({
   suggestion: {
     char: "/t ",
     pluginKey: new PluginKey("taskSuggestion"),
+    allowSpaces: true,
   },
 });
 

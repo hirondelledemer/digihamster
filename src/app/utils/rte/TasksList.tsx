@@ -23,7 +23,7 @@ export const TasksList = forwardRef(
 
     useEffect(() => {
       setSelectedIndex(0);
-    }, [tasks]);
+    }, [query]);
 
     const handleAddTask = async (title: string) => {
       const createdTask = await createTask({ title });
@@ -94,7 +94,6 @@ export const TasksList = forwardRef(
         <CardContent className="py-2 px-4">
           {items.map(
             (task: ITask | { id: number; title: string }, index: number) => {
-              console.log("query", query);
               if (task.id === -1 && !query) return null;
               if (task.id === -1) {
                 return (
