@@ -8,9 +8,9 @@ import { Card, CardContent } from "@/app/components/ui/card";
 import { Badge } from "@/app/components/ui/badge";
 import { MentionsConfigProps } from "./types";
 import { SuggestionKeyDownProps } from "@tiptap/suggestion";
-import apiClient from "../api-client";
 import { useTasksNewState } from "../hooks/use-tasks-new/state-context";
 import { ITask } from "../types/task";
+import { useTasksNewActions } from "../hooks/use-tasks-new/actions-context";
 
 export type TasksListProps = MentionsConfigProps;
 
@@ -19,25 +19,20 @@ export const TasksList = forwardRef(
     const [selectedIndex, setSelectedIndex] = useState(0);
 
     const { data: tasks } = useTasksNewState();
+    const { createTask } = useTasksNewActions();
 
     useEffect(() => {
       setSelectedIndex(0);
     }, [tasks]);
 
     const handleAddTask = async (title: string) => {
-      // todo: handle error
-      // TODO: use hook
-      const response = await apiClient.post<unknown, { data: ITask }>(
-        "/tasks",
-        {
-          title,
-        },
-      );
-
-      command({
-        id: `${response.data.id}`,
-        label: response.data.title,
-      });
+      const createdTask = await createTask({ title });
+      if (createdTask) {
+        command({
+          id: `${createdTask.id}`,
+          label: createdTask.title,
+        });
+      }
     };
 
     useImperativeHandle(ref, () => ({
@@ -99,6 +94,7 @@ export const TasksList = forwardRef(
         <CardContent className="py-2 px-4">
           {items.map(
             (task: ITask | { id: number; title: string }, index: number) => {
+              console.log("query", query);
               if (task.id === -1 && !query) return null;
               if (task.id === -1) {
                 return (
