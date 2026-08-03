@@ -1,12 +1,11 @@
 import React, { FC, useState } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "../ui/sheet";
 
-import EventForm from "../EventForm";
 import { Switch } from "../ui/switch";
 import { Label } from "../ui/label";
 import { FormMode } from "./types";
 import CreateTaskForm from "../CreateTaskForm";
-// import { toBackendDateTime } from "#utils/date";
+import { CreateEventForm } from "../CreateEventForm";
 
 export interface EventTaskFormModalProps {
   testId?: string;
@@ -38,7 +37,6 @@ const EventTaskFormModal: FC<EventTaskFormModalProps> = ({
     onDone();
   };
 
-  console.log("aaa", initialValues.startAt, initialValues.endAt);
   return (
     <div data-testid={testId}>
       <Sheet open={open}>
@@ -68,15 +66,10 @@ const EventTaskFormModal: FC<EventTaskFormModalProps> = ({
               deadline={initialValues.startAt}
             />
           ) : (
-            <EventForm
-              editMode={false}
+            <CreateEventForm
+              startAt={initialValues.startAt}
+              endAt={initialValues.endAt}
               onDone={handleOnDone}
-              initialValues={{
-                startAt: initialValues.startAt,
-                endAt: initialValues.endAt,
-                title: "",
-                description: "",
-              }}
             />
           )}
         </SheetContent>

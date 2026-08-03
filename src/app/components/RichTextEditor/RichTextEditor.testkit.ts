@@ -4,7 +4,8 @@ export const getRichTextEditorTestkit = (component: HTMLElement) => ({
   getComponent: () => component,
   getTextarea: () =>
     queryHelpers.queryByAttribute("contenteditable", component, "true"),
-  enterValue: (value: string) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  enterValue: (value: any) => {
     const comp = queryHelpers.queryByAttribute(
       "contenteditable",
       component,

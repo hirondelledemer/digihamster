@@ -9,6 +9,7 @@ import { MentionList } from "./MentionList";
 import { ProjectsList } from "./ProjectsList";
 import { ParamsList } from "./ParamList";
 import { getRteValue } from "./get-rte-value";
+import { TasksList } from "./TasksList";
 
 export interface RteValue {
   title: string;
@@ -49,10 +50,20 @@ const ProjectMention = Mention.extend({
               curr.content?.filter((val) => val.type === "projectMention") || []
             ).map((mention) => mention!.attrs!),
           ],
-          []
+          [],
         ).length < 1
       );
     },
+  },
+});
+
+const TaskMention = Mention.extend({
+  name: "taskMention",
+}).configure({
+  suggestion: {
+    char: "/t ",
+    pluginKey: new PluginKey("taskSuggestion"),
+    allowSpaces: true,
   },
 });
 
@@ -80,6 +91,12 @@ export function useRte({
           class: styles.tag,
         },
         suggestion: getMentionsConfig(MentionList),
+      }),
+      TaskMention.configure({
+        HTMLAttributes: {
+          class: styles.project,
+        },
+        suggestion: getMentionsConfig(TasksList),
       }),
       ProjectMention.configure({
         HTMLAttributes: {

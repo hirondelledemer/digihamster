@@ -2,14 +2,15 @@ import { render, screen, waitFor } from "@testing-library/react";
 
 import mockAxios from "jest-mock-axios";
 import { generateListOfEvents } from "../../mocks/event";
-import { Event } from "@/models/event";
-import { HOUR } from "../../consts/dates";
 import userEvent from "@testing-library/user-event";
 import { ToastProvider } from "@/app/components/ui/toast";
 
 import { useEventsState } from "./state-context";
 import { EventsContextProvider } from "./provider";
 import { useEventsActions } from "./actions-context";
+import { EventStatus, IEvent } from "../../types/event";
+import { DEFAULT_TEST_DATE } from "../../mocks/date";
+import { EVENTS_PATH, getEventsPath } from "./api";
 
 describe("EventsContextProvider", () => {
   afterEach(() => {
@@ -26,7 +27,7 @@ describe("EventsContextProvider", () => {
         <div>
           {isLoading
             ? "Loading..."
-            : data.map((event) => <div key={event._id}>{event.title}</div>)}
+            : data.map((event) => <div key={event.id}>{event.title}</div>)}
         </div>
       );
     };
@@ -34,17 +35,17 @@ describe("EventsContextProvider", () => {
     render(
       <EventsContextProvider>
         <TestComponent />
-      </EventsContextProvider>
+      </EventsContextProvider>,
     );
 
     expect(screen.getByText("Loading...")).toBeInTheDocument();
 
     await waitFor(() =>
-      expect(screen.findByText("Event 0")).resolves.toBeInTheDocument()
+      expect(screen.findByText("Event 0")).resolves.toBeInTheDocument(),
     );
     expect(screen.getByText("Event 1")).toBeInTheDocument();
     expect(screen.getByText("Event 2")).toBeInTheDocument();
-    expect(mockAxios.get).toHaveBeenCalledWith("/api/events");
+    expect(mockAxios.get).toHaveBeenCalledWith(EVENTS_PATH);
   });
 
   it("should handle fetch error and update the state", async () => {
@@ -66,29 +67,27 @@ describe("EventsContextProvider", () => {
     render(
       <EventsContextProvider>
         <TestComponent />
-      </EventsContextProvider>
+      </EventsContextProvider>,
     );
 
     expect(screen.getByText("Loading...")).toBeInTheDocument();
 
     await waitFor(() =>
-      expect(screen.findByText(/Error:/)).resolves.toBeInTheDocument()
+      expect(screen.findByText(/Error:/)).resolves.toBeInTheDocument(),
     );
-    expect(mockAxios.get).toHaveBeenCalledWith("/api/events");
+    expect(mockAxios.get).toHaveBeenCalledWith(EVENTS_PATH);
   });
 
   it("should create an event and update the state", async () => {
-    const mockEvent: Omit<Event, "_id"> = {
+    const mockEvent: Omit<IEvent, "id"> = {
       title: "new event",
       description: "",
-      completed: false,
-      deleted: false,
-      projectId: "",
-      allDay: false,
-      startAt: 0,
-      endAt: HOUR,
-      tags: [],
-      updatedAt: "",
+      status: EventStatus.Pending,
+      project_id: null,
+      start_at: DEFAULT_TEST_DATE,
+      end_at: DEFAULT_TEST_DATE,
+      created_at: DEFAULT_TEST_DATE,
+      all_day: false,
     };
 
     mockAxios.post.mockResolvedValueOnce({ data: [] });
@@ -101,7 +100,7 @@ describe("EventsContextProvider", () => {
           <button onClick={() => createEvent(mockEvent)}>Create Event</button>
           <div>
             {data.map((event) => (
-              <div key={event._id}>{event.title}</div>
+              <div key={event.id}>{event.title}</div>
             ))}
           </div>
         </div>
@@ -113,7 +112,7 @@ describe("EventsContextProvider", () => {
         <EventsContextProvider>
           <TestComponent />
         </EventsContextProvider>
-      </ToastProvider>
+      </ToastProvider>,
     );
 
     expect(screen.queryByText("new event")).not.toBeInTheDocument();
@@ -121,9 +120,9 @@ describe("EventsContextProvider", () => {
     await userEvent.click(screen.getByRole("button"));
 
     await waitFor(() =>
-      expect(screen.findByText("new event")).resolves.toBeInTheDocument()
+      expect(screen.findByText("new event")).resolves.toBeInTheDocument(),
     );
-    expect(mockAxios.post).toHaveBeenCalledWith("/api/events", mockEvent);
+    expect(mockAxios.post).toHaveBeenCalledWith(EVENTS_PATH, mockEvent);
   });
 
   it("should delete an event and update the state", async () => {
@@ -138,9 +137,9 @@ describe("EventsContextProvider", () => {
         <div>
           <div>
             {data.map((event) => (
-              <div key={event._id}>
+              <div key={event.id}>
                 <div>{event.title}</div>
-                <button onClick={() => deleteEvent(event._id)}>Delete</button>
+                <button onClick={() => deleteEvent(event.id)}>Delete</button>
               </div>
             ))}
           </div>
@@ -153,7 +152,7 @@ describe("EventsContextProvider", () => {
         <EventsContextProvider>
           <TestComponent />
         </EventsContextProvider>
-      </ToastProvider>
+      </ToastProvider>,
     );
 
     await expect(screen.findByText("Event 0")).resolves.toBeInTheDocument();
@@ -163,12 +162,9 @@ describe("EventsContextProvider", () => {
     await userEvent.click(screen.getAllByRole("button")[0]);
 
     await waitFor(() =>
-      expect(screen.findByText("Event 1")).resolves.toBeInTheDocument()
+      expect(screen.findByText("Event 1")).resolves.toBeInTheDocument(),
     );
     expect(screen.queryByText("Event 0")).not.toBeInTheDocument();
-    expect(mockAxios.patch).toHaveBeenCalledWith("/api/events", {
-      deleted: true,
-      eventId: events[0]._id,
-    });
+    expect(mockAxios.delete).toHaveBeenCalledWith(getEventsPath(0));
   });
 });

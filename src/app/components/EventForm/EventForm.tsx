@@ -19,20 +19,22 @@ import {
   SelectItem,
 } from "../ui/select";
 import { Button } from "../ui/button";
-import { Event } from "@/models/event";
 
 import { Textarea } from "../ui/textarea";
 import { useEventsActions } from "@/app/utils/hooks/use-events/actions-context";
 import { FieldsRequired } from "@/app/utils/hooks/use-events/api";
 import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
 import { toBackendDateTime } from "#utils/date";
+import { ProjectStatus } from "@/app/utils/types/project";
+import { Badge } from "../ui/badge";
+import { IEvent } from "@/app/utils/types/event";
 
 export const minimalNoteTestId = "EventForm-minimal-note-testId";
 
 const FormSchema = z.object({
   title: z.string().min(1, { message: "This field has to be filled." }),
   description: z.string(),
-  project: z.string(),
+  project: z.union([z.number(), z.undefined()]),
   startAt: z.string(),
   endAt: z.string(),
   allDay: z.boolean(),
@@ -50,7 +52,7 @@ export interface EventFormRegularProps extends CommonProps {
   initialValues?: Partial<FormValues>;
 }
 export interface EventFormEditModeProps extends CommonProps {
-  event: Event;
+  event: IEvent;
   editMode: true;
 }
 
@@ -69,7 +71,7 @@ const EventForm: FC<EventFormProps> = ({
       return {
         title: restProps.event.title,
         description: restProps.event.description || "",
-        project: restProps.event.project_id || "",
+        project: Number(restProps.event.project_id) || undefined,
         allDay: restProps.event.all_day,
         startAt: restProps.event.start_at,
         endAt: restProps.event.end_at,
@@ -84,7 +86,7 @@ const EventForm: FC<EventFormProps> = ({
     defaultValues: {
       title: "",
       description: "",
-      project: "",
+      project: undefined,
       allDay: false,
       ...getInitialValues(),
     },
@@ -97,7 +99,7 @@ const EventForm: FC<EventFormProps> = ({
         {
           title: data.title,
           description: data.description,
-          project_id: data.project,
+          project_id: data.project || null,
         },
         onDone,
       );
@@ -107,7 +109,6 @@ const EventForm: FC<EventFormProps> = ({
     const eventData: FieldsRequired = {
       title: data.title,
       description: data.description,
-      // @ts-expect-error TODO: fix later
       project_id: data.project || undefined,
       all_day: data.allDay,
       start_at: toBackendDateTime(new Date(data.startAt)),
@@ -142,9 +143,13 @@ const EventForm: FC<EventFormProps> = ({
               <FormItem>
                 <FormLabel>Project</FormLabel>
                 <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                  value={field.value}
+                  onValueChange={(value) => {
+                    field.onChange(Number(value));
+                  }}
+                  defaultValue={
+                    field.value ? field.value.toString() : undefined
+                  }
+                  value={field.value ? field.value.toString() : undefined}
                 >
                   <FormControl>
                     <SelectTrigger>
@@ -154,11 +159,26 @@ const EventForm: FC<EventFormProps> = ({
                   <SelectContent>
                     {projects.map((project) => (
                       <SelectItem
-                        key={project.id as unknown as string}
-                        value={project.id as unknown as string}
+                        key={project.id}
+                        value={project.id.toString()}
                         role="option"
+                        disabled={
+                          project.status === ProjectStatus.Cancelled ||
+                          project.status === ProjectStatus.Done
+                        }
                       >
-                        {project.title}
+                        <div className="flex gap-4">
+                          {project.title}
+                          {project.status === ProjectStatus.Doing && (
+                            <Badge
+                              variant="default"
+                              className="mr-4"
+                              color={project.color}
+                            >
+                              active
+                            </Badge>
+                          )}
+                        </div>
                       </SelectItem>
                     ))}
                   </SelectContent>

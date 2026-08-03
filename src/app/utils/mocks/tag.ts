@@ -3,10 +3,10 @@ import { Tag } from "@/models/tag";
 // TODO :check why typescript does not work?
 export const generateTag: (i?: number, properties?: Partial<Tag>) => Tag = (
   i = 1,
-  properties
+  properties,
 ) => {
   const tag: Tag = {
-    _id: `tag${i}`,
+    id: `tag${i}`,
     title: `Tag ${i}`,
     color: `tag-color-${i}`,
     deleted: false,
@@ -21,7 +21,7 @@ export const generateListOfTags: (count: number) => Tag[] = (count) => {
 };
 
 export const generateCustomTagsList: (taskInfo: Partial<Tag>[]) => Tag[] = (
-  projectInfo
+  projectInfo,
 ) => {
   return projectInfo.map((projectProperties, i) => ({
     ...generateTag(i, projectProperties),

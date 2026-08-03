@@ -8,6 +8,7 @@ import { TasksNewStateContext } from "./state-context";
 import { TasksNewActionsContext } from "./actions-context";
 import { ITask, TaskStatus } from "../../types/task";
 import { now } from "../../date/now";
+import { toBackendDateTime } from "#utils/date";
 
 const handleApiError = (
   error: any,
@@ -60,8 +61,8 @@ export const TasksNewContextProvider = ({
 
   const createTask = useCallback(
     async (data: CreateTaskParams, onDone?: () => void) => {
-      const nowDate = now().valueOf();
-      const tempId = -nowDate;
+      const nowDate = now();
+      const tempId = -nowDate.valueOf();
       const tempTask: ITask = {
         id: tempId,
         title: data.title,
@@ -72,13 +73,14 @@ export const TasksNewContextProvider = ({
         deadline: null,
         activated_at: null,
         completed_at: null,
-        created_at: new Date().toISOString(),
+        created_at: toBackendDateTime(nowDate),
       };
 
       dispatch({
         type: TasksNewActionType.CreateTask,
         payload: { task: tempTask },
       });
+
       if (onDone) onDone();
 
       try {
@@ -88,12 +90,15 @@ export const TasksNewContextProvider = ({
           payload: { id: tempId, task: response.data },
         });
         toast({ title: "Success", description: "Task has been created" });
+
+        return response.data;
       } catch (e: any) {
         dispatch({
           type: TasksNewActionType.DeleteTask,
           payload: { id: tempId },
         });
         handleApiError(e, toast);
+        return null;
       }
     },
     [toast],

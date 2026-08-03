@@ -8,10 +8,10 @@ import React, {
 import { Card, CardContent } from "@/app/components/ui/card";
 
 import { Badge } from "@/app/components/ui/badge";
-import { Project } from "@/models/project";
 import { MentionsConfigProps } from "./types";
 import { SuggestionKeyDownProps } from "@tiptap/suggestion";
 import { useProjectsState } from "../hooks/use-projects/state-context";
+import { IProject } from "../types/project";
 
 export type ProjectMentionsProps = MentionsConfigProps;
 
@@ -48,7 +48,7 @@ export const ProjectsList = forwardRef(
 
     const items = projects
       .filter((project) =>
-        project.title.toLowerCase().startsWith(query.toLowerCase())
+        project.title.toLowerCase().startsWith(query.toLowerCase()),
       )
       .slice(0, 5);
 
@@ -57,7 +57,7 @@ export const ProjectsList = forwardRef(
 
       if (item) {
         command({
-          id: `${item._id}:${item.color}`,
+          id: `${item.id}:${item.color}`,
           label: item.title,
         });
       }
@@ -79,8 +79,8 @@ export const ProjectsList = forwardRef(
       <Card>
         <CardContent className="py-2 px-4">
           {items.length ? (
-            items.map((project: Project, index: number) => (
-              <div key={project._id}>
+            items.map((project: IProject, index: number) => (
+              <div key={project.id}>
                 <Badge
                   variant={selectedIndex === index ? "secondary" : "outline"}
                   onClick={() => selectItem(index)}
@@ -102,7 +102,7 @@ export const ProjectsList = forwardRef(
         </CardContent>
       </Card>
     );
-  }
+  },
 );
 
 ProjectsList.displayName = "ProjectsList";

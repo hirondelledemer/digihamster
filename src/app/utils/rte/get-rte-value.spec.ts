@@ -105,19 +105,20 @@ describe("getRteValue", () => {
             },
           ],
         },
+
         {
           type: "paragraph",
           content: [
             {
-              type: "mention",
+              type: "taskMention",
               attrs: {
-                id: "678a222ffc21119042d789b7:#364FC7",
-                label: "task",
+                id: "1",
+                label: "task 1",
               },
             },
             {
               type: "text",
-              text: " task 1",
+              text: " ",
             },
           ],
         },
@@ -125,15 +126,15 @@ describe("getRteValue", () => {
           type: "paragraph",
           content: [
             {
-              type: "mention",
+              type: "taskMention",
               attrs: {
-                id: "678a222ffc21119042d789b7:#364FC7",
-                label: "task",
+                id: "2",
+                label: "task 2",
               },
             },
             {
               type: "text",
-              text: " task 2",
+              text: " ",
             },
           ],
         },
@@ -145,8 +146,8 @@ describe("getRteValue", () => {
       params: [],
       projectId: undefined,
       tags: [],
-      tasks: ["task 1", "task 2"],
-      textContent: "description",
+      tasks: ["1", "2"],
+      textContent: "description\n \n ",
       title: "title",
     });
   });

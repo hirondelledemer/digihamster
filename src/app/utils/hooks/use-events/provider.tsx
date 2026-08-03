@@ -4,22 +4,22 @@ import { useToast } from "@/app/components/ui/use-toast";
 
 import { reducer } from "./reducer";
 
-import { Event } from "@/models/event";
-
 import { EventsStateAction, EventsStateActionType } from "./actions";
 import { api, FieldsRequired } from "./api";
 import { EventsStateContext } from "./state-context";
 import { EventsActionsContext } from "./actions-context";
+import { EventStatus, IEvent } from "../../types/event";
+import { now } from "../../date/now";
+import { toBackendDateTime } from "#utils/date";
+import { getApiErrorMessage } from "../../axios";
 
 const handleApiError = (
-  error: any,
+  error: unknown,
   toast: ReturnType<typeof useToast>["toast"],
 ) => {
-  const errorMessage =
-    error.response?.data?.message || "An unexpected error occurred";
   toast({
     title: "Error",
-    description: errorMessage,
+    description: getApiErrorMessage(error),
     variant: "destructive",
   });
 };
@@ -77,14 +77,16 @@ export const EventsContextProvider = ({
 
   const createEvent = useCallback(
     async (data: FieldsRequired, onDone?: () => void) => {
-      const tempId = "temp-id";
+      const nowDate = now();
+      const tempId = -nowDate.valueOf();
 
-      const tempEvent: Event = {
+      const tempEvent: IEvent = {
         id: tempId,
-        status: "pending",
-        tags: [],
+        status: EventStatus.Pending,
+        created_at: toBackendDateTime(nowDate),
         ...data,
       };
+
       dispatch({
         type: EventsStateActionType.CreateEvent,
         payload: { event: tempEvent },
@@ -106,24 +108,24 @@ export const EventsContextProvider = ({
         });
 
         handleSuccessToast(toast, "Event has been created");
-      } catch (e: any) {
-        // todo: fix
+        return response.data;
+      } catch (e: unknown) {
         dispatch({
           type: EventsStateActionType.DeleteEvent,
           payload: {
             id: tempId,
           },
         });
-        const errorMessage =
-          e.response?.data?.message || "An unexpected error occurred";
-        handleApiError(errorMessage, toast);
+
+        handleApiError(e, toast);
+        return null;
       }
     },
     [toast],
   );
 
   const updateEvent = useCallback(
-    async (eventId: string, props: Partial<Event>, onDone?: () => void) => {
+    async (eventId: number, props: Partial<IEvent>, onDone?: () => void) => {
       try {
         dispatch({
           type: EventsStateActionType.UpdateEvent,
@@ -139,17 +141,15 @@ export const EventsContextProvider = ({
         await api.updateEvent(eventId, props);
 
         handleSuccessToast(toast, "Event has been updated");
-      } catch (e: any) {
-        const errorMessage =
-          e.response?.data?.message || "An unexpected error occurred";
-        handleApiError(errorMessage, toast);
+      } catch (e: unknown) {
+        handleApiError(e, toast);
       }
     },
     [toast],
   );
 
   const deleteEvent = useCallback(
-    async (eventId: string, onDone?: () => void) => {
+    async (eventId: number, onDone?: () => void) => {
       try {
         dispatch({
           type: EventsStateActionType.DeleteEvent,
@@ -164,10 +164,8 @@ export const EventsContextProvider = ({
         await api.deleteEvent(eventId);
 
         handleSuccessToast(toast, "Event has been deleted");
-      } catch (e: any) {
-        const errorMessage =
-          e.response?.data?.message || "An unexpected error occurred";
-        handleApiError(errorMessage, toast);
+      } catch (e: unknown) {
+        handleApiError(e, toast);
       }
     },
     [toast],

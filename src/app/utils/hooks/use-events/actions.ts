@@ -1,7 +1,7 @@
-import { Event } from "@/models/event";
+import { IEvent } from "../../types/event";
 
 export interface EventsState {
-  data: Event[];
+  data: IEvent[];
   isLoading: boolean;
   errorMessage?: unknown;
 }
@@ -21,7 +21,7 @@ export interface EventsLoadAction {
 export interface EventsFinishLoadingAction {
   type: EventsStateActionType.FinishLoading;
   payload: {
-    data: Event[];
+    data: IEvent[];
   };
 }
 
@@ -34,21 +34,21 @@ export interface EventsErrorAction {
 export interface CreateEventAction {
   type: EventsStateActionType.CreateEvent;
   payload: {
-    event: Event;
+    event: IEvent;
   };
 }
 
 export interface UpdateEventAction {
   type: EventsStateActionType.UpdateEvent;
   payload: {
-    id: string;
-    event: Partial<Event>;
+    id: number;
+    event: Partial<IEvent>;
   };
 }
 export interface DeleteEventAction {
   type: EventsStateActionType.DeleteEvent;
   payload: {
-    id: string;
+    id: number;
   };
 }
 
