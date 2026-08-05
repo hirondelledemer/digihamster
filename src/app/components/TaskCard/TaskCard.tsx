@@ -41,17 +41,6 @@ const TaskCard: FC<TaskCardProps> = ({
   const { data: projects } = useProjectsState();
   const { setSelectedDate } = useCalendarDate();
 
-  // // const { attributes, listeners, setNodeRef, transform } = useDraggable({
-  // //   id: dragId,
-  // //   disabled: task.status === "done" || !!task.event_id,
-  // //   data: {
-  // //     id: task.id,
-  // //   },
-  // // });
-
-  // const { attributes, listeners, setNodeRef, transform, transition } =
-  //   useSortable({ id: task.id });
-
   const project = projects.find((p) => p.id === task.project_id);
 
   const baseStyle: CSSProperties = {
@@ -59,15 +48,6 @@ const TaskCard: FC<TaskCardProps> = ({
     borderColor: project?.color,
     transition,
   };
-
-  // const style: CSSProperties | undefined = transform
-  //   ? {
-  //       transform: `translate(${transform.x}px, ${transform.y}px)`,
-  //       position: "fixed",
-  //       zIndex: 999,
-  //       opacity: 0.5,
-  //     }
-  //   : undefined;
 
   return (
     <div data-testid={testId}>

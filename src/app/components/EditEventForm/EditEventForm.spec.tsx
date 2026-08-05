@@ -1,5 +1,5 @@
-import { render, screen, waitFor } from "@/config/utils/test-utils";
-import EventForm, { EventFormProps } from "./EventForm";
+import { act, render, screen, waitFor } from "@/config/utils/test-utils";
+import EditEventForm, { EventFormProps } from "./EditEventForm";
 import mockAxios from "jest-mock-axios";
 
 import { generateEvent } from "@/app/utils/mocks/event";
@@ -28,13 +28,15 @@ const DEFAULT_PROPS: EventFormProps = {
 
 const assertLoaded = async () => {
   await waitFor(() => expect(mockAxios.queue()).toHaveLength(3));
-
-  mockAxios.mockResponseFor({ url: PROJECTS_PATH }, { data: PROJECTS });
-  mockAxios.mockResponseFor({ url: TASKS_PATH }, { data: TASKS });
-  mockAxios.mockResponseFor({ url: EVENTS_PATH }, { data: [] });
+  await act(async () => {
+    mockAxios.mockResponseFor({ url: PROJECTS_PATH }, { data: PROJECTS });
+    mockAxios.mockResponseFor({ url: TASKS_PATH }, { data: TASKS });
+    mockAxios.mockResponseFor({ url: EVENTS_PATH }, { data: [] });
+  });
+  // await new Promise((resolve) => setTimeout(resolve, 0));
 };
 
-describe("EventForm", () => {
+describe("EditEventForm", () => {
   afterEach(() => {
     mockAxios.reset();
   });
@@ -44,7 +46,7 @@ describe("EventForm", () => {
       <ProjectsContextProvider>
         <EventsContextProvider>
           <TasksNewContextProvider>
-            <EventForm {...props} />
+            <EditEventForm {...props} />
           </TasksNewContextProvider>
         </EventsContextProvider>
       </ProjectsContextProvider>,
@@ -69,11 +71,9 @@ describe("EventForm", () => {
       screen.getByRole("combobox", { name: /project/i }),
     ).toBeInTheDocument();
 
-    await waitFor(() => {
-      expect(
-        screen.getByRole("combobox", { name: /project/i }),
-      ).toHaveTextContent(PROJECTS[1].title);
-    });
+    expect(
+      screen.getByRole("combobox", { name: /project/i }),
+    ).toHaveTextContent(PROJECTS[1].title);
     expect(screen.getByRole("button", { name: /save/i })).toBeInTheDocument();
   });
 
@@ -109,10 +109,9 @@ describe("EventForm", () => {
   it("should render the tasks", async () => {
     renderComponent();
 
-    assertLoaded();
-    await waitFor(() => {
-      expect(screen.getByText(TASKS[0].title)).toBeInTheDocument();
-    });
+    await assertLoaded();
+
+    expect(screen.getByText(TASKS[0].title)).toBeInTheDocument();
     expect(screen.getByText(TASKS[1].title)).toBeInTheDocument();
   });
 });

@@ -16,7 +16,6 @@ export const taskFormTestId = "TaskCard-task-form-test-id";
 
 export const DraggableTaskCard: FC<TaskCardProps> = ({
   task,
-
   dragId,
   indicateActive,
 }): JSX.Element => {

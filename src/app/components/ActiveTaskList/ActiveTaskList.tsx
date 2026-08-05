@@ -8,13 +8,7 @@ import { IconCircle, IconCircleCheck } from "@tabler/icons-react";
 import { useTasksNewState } from "@/app/utils/hooks/use-tasks-new/state-context";
 import { DraggableTaskCard } from "../TaskCard/DraggableTaskCard";
 
-export interface ActiveTaskListProps {
-  testId?: string;
-}
-
-const ActiveTaskList: FC<ActiveTaskListProps> = ({
-  testId,
-}): JSX.Element | null => {
+const ActiveTaskList: FC = (): JSX.Element | null => {
   const { data: tasks } = useTasksNewState();
 
   const tasksToShow = useMemo(
@@ -40,7 +34,7 @@ const ActiveTaskList: FC<ActiveTaskListProps> = ({
   );
 
   return (
-    <div data-testid={testId} className="w-full h-full">
+    <div className="w-full h-full">
       <div className="text-sm flex items-center mb-3 space-x-2">
         <IconCircle size={16} color="green" className="mr-1" />
         {pendingTasksCount}

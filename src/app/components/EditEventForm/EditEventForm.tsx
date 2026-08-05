@@ -64,7 +64,7 @@ export interface EventFormProps {
   event: IEvent;
 }
 
-const EventForm: FC<EventFormProps> = ({ onDone, event }): JSX.Element => {
+const EditEventForm: FC<EventFormProps> = ({ onDone, event }): JSX.Element => {
   const { data: projects } = useProjectsState();
   const { data: tasks } = useTasksNewState();
   const { reorderTasksInTheEvent } = useTasksNewActions();
@@ -231,4 +231,4 @@ const EventForm: FC<EventFormProps> = ({ onDone, event }): JSX.Element => {
   );
 };
 
-export default EventForm;
+export default EditEventForm;
