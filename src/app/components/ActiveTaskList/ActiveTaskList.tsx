@@ -5,18 +5,10 @@ import React, { FC, useMemo } from "react";
 
 import { ScrollArea } from "../ui/scroll-area";
 import { IconCircle, IconCircleCheck } from "@tabler/icons-react";
-import TaskCard from "../TaskCard";
 import { useTasksNewState } from "@/app/utils/hooks/use-tasks-new/state-context";
+import { DraggableTaskCard } from "../TaskCard/DraggableTaskCard";
 
-export const taskTestId = "ActiveTaskList-task-testid";
-
-export interface ActiveTaskListProps {
-  testId?: string;
-}
-
-const ActiveTaskList: FC<ActiveTaskListProps> = ({
-  testId,
-}): JSX.Element | null => {
+const ActiveTaskList: FC = (): JSX.Element | null => {
   const { data: tasks } = useTasksNewState();
 
   const tasksToShow = useMemo(
@@ -42,7 +34,7 @@ const ActiveTaskList: FC<ActiveTaskListProps> = ({
   );
 
   return (
-    <div data-testid={testId} className="w-full h-full">
+    <div className="w-full h-full">
       <div className="text-sm flex items-center mb-3 space-x-2">
         <IconCircle size={16} color="green" className="mr-1" />
         {pendingTasksCount}
@@ -57,12 +49,7 @@ const ActiveTaskList: FC<ActiveTaskListProps> = ({
       <ScrollArea className="h-full pb-[60px]">
         <div className="flex flex-col gap-4">
           {tasksToShow.map((task) => (
-            <TaskCard
-              dragId={task.id}
-              key={task.id}
-              task={task}
-              testId={taskTestId}
-            />
+            <DraggableTaskCard dragId={task.id} key={task.id} task={task} />
           ))}
         </div>
       </ScrollArea>

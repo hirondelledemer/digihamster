@@ -2,7 +2,7 @@ import React, { CSSProperties, FC } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { format } from "date-fns";
 import StaleIndicator from "../StaleIndicator";
-import { useDraggable } from "@dnd-kit/core";
+import { DraggableAttributes } from "@dnd-kit/core";
 import { IconCalendar, IconProgressCheck } from "@tabler/icons-react";
 import { useCalendarDate } from "../../utils/hooks/use-calendar-date";
 import { Tooltip, TooltipContent, TooltipProvider } from "../ui/tooltip";
@@ -10,6 +10,7 @@ import { TooltipTrigger } from "@radix-ui/react-tooltip";
 import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
 import { ITask } from "@/app/utils/types/task";
 import { TaskActions } from "../TaskActions";
+import { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
 
 export const titleTestId = "TaskCard-title-testid";
 export const cardTestId = "TaskCard-card-testid";
@@ -17,8 +18,12 @@ export const cardTestId = "TaskCard-card-testid";
 export interface TaskCardProps {
   testId?: string;
   task: ITask;
-  dragId: number;
   indicateActive?: boolean;
+  transition?: string;
+  setNodeRef?: (node: HTMLElement | null) => void;
+  listeners?: SyntheticListenerMap;
+  attributes?: DraggableAttributes;
+  style?: CSSProperties;
 }
 
 export const taskFormTestId = "TaskCard-task-form-test-id";
@@ -26,35 +31,23 @@ export const taskFormTestId = "TaskCard-task-form-test-id";
 const TaskCard: FC<TaskCardProps> = ({
   testId,
   task,
-
-  dragId,
   indicateActive,
+  transition,
+  setNodeRef,
+  listeners,
+  attributes,
+  style,
 }): JSX.Element => {
   const { data: projects } = useProjectsState();
   const { setSelectedDate } = useCalendarDate();
 
-  const { attributes, listeners, setNodeRef, transform } = useDraggable({
-    id: dragId,
-    disabled: task.status === "done" || !!task.event_id,
-    data: {
-      id: task.id,
-    },
-  });
-
   const project = projects.find((p) => p.id === task.project_id);
 
   const baseStyle: CSSProperties = {
+    ...style,
     borderColor: project?.color,
+    transition,
   };
-
-  const style: CSSProperties | undefined = transform
-    ? {
-        transform: `translate(${transform.x}px, ${transform.y}px)`,
-        position: "fixed",
-        zIndex: 999,
-        opacity: 0.5,
-      }
-    : undefined;
 
   return (
     <div data-testid={testId}>

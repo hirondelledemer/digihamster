@@ -1,4 +1,4 @@
-import React, { FC, useCallback } from "react";
+import React, { FC } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -19,15 +19,32 @@ import {
   SelectItem,
 } from "../ui/select";
 import { Button } from "../ui/button";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+  Collision,
+} from "@dnd-kit/core";
+
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 
 import { Textarea } from "../ui/textarea";
 import { useEventsActions } from "@/app/utils/hooks/use-events/actions-context";
-import { FieldsRequired } from "@/app/utils/hooks/use-events/api";
 import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
-import { toBackendDateTime } from "#utils/date";
 import { ProjectStatus } from "@/app/utils/types/project";
 import { Badge } from "../ui/badge";
 import { IEvent } from "@/app/utils/types/event";
+import { useTasksNewState } from "@/app/utils/hooks/use-tasks-new/state-context";
+import { useTasksNewActions } from "@/app/utils/hooks/use-tasks-new/actions-context";
+import { SortableTaskCard } from "../TaskCard/SortableTaskCard";
 
 export const minimalNoteTestId = "EventForm-minimal-note-testId";
 
@@ -42,84 +59,68 @@ const FormSchema = z.object({
 
 export type FormValues = z.infer<typeof FormSchema>;
 
-interface CommonProps {
-  testId?: string;
+export interface EventFormProps {
   onDone(): void;
-}
-
-export interface EventFormRegularProps extends CommonProps {
-  editMode?: undefined | false;
-  initialValues?: Partial<FormValues>;
-}
-export interface EventFormEditModeProps extends CommonProps {
   event: IEvent;
-  editMode: true;
 }
 
-export type EventFormProps = EventFormRegularProps | EventFormEditModeProps;
-
-const EventForm: FC<EventFormProps> = ({
-  testId,
-  onDone,
-  ...restProps
-}): JSX.Element => {
+const EditEventForm: FC<EventFormProps> = ({ onDone, event }): JSX.Element => {
   const { data: projects } = useProjectsState();
-  const { create: createEvent, update: updateEvent } = useEventsActions();
+  const { data: tasks } = useTasksNewState();
+  const { reorderTasksInTheEvent } = useTasksNewActions();
+  const { update: updateEvent } = useEventsActions();
 
-  const getInitialValues = useCallback(() => {
-    if (restProps.editMode) {
-      return {
-        title: restProps.event.title,
-        description: restProps.event.description || "",
-        project: Number(restProps.event.project_id) || undefined,
-        allDay: restProps.event.all_day,
-        startAt: restProps.event.start_at,
-        endAt: restProps.event.end_at,
-      };
-    }
-
-    return restProps.initialValues;
-  }, [restProps]);
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
+  );
 
   const form = useForm<FormValues>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      title: "",
-      description: "",
-      project: undefined,
-      allDay: false,
-      ...getInitialValues(),
+      title: event.title,
+      description: event.description || "",
+      project: event.project_id || undefined,
+      allDay: event.all_day,
+      startAt: event.start_at,
+      endAt: event.end_at,
     },
   });
 
   const handleSubmit = async (data: FormValues) => {
-    if (restProps.editMode) {
-      updateEvent(
-        restProps.event.id,
-        {
-          title: data.title,
-          description: data.description,
-          project_id: data.project || null,
-        },
-        onDone,
-      );
-      return;
-    }
-
-    const eventData: FieldsRequired = {
-      title: data.title,
-      description: data.description,
-      project_id: data.project || undefined,
-      all_day: data.allDay,
-      start_at: toBackendDateTime(new Date(data.startAt)),
-      end_at: toBackendDateTime(new Date(data.endAt)),
-    };
-
-    createEvent(eventData, onDone);
+    updateEvent(
+      event.id,
+      {
+        title: data.title,
+        description: data.description,
+        project_id: data.project || null,
+      },
+      onDone,
+    );
   };
 
+  const handleDragEnd = async (e: DragEndEvent) => {
+    if (!e.collisions) {
+      return null;
+    }
+
+    reorderTasksInTheEvent(
+      event.id,
+      e.collisions.map((obj: Collision) => obj.id as number),
+    );
+  };
+
+  const eventTasks = tasks
+    .filter((task) => task.event_id === event.id)
+    .sort(
+      (taskA, taskB) =>
+        (taskA.event_sort_order || 0) - (taskB.event_sort_order || 0),
+    );
+
   return (
-    <div data-testid={testId}>
+    <div>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
           <FormField
@@ -147,9 +148,15 @@ const EventForm: FC<EventFormProps> = ({
                     field.onChange(Number(value));
                   }}
                   defaultValue={
-                    field.value ? field.value.toString() : undefined
+                    field.value !== undefined
+                      ? field.value.toString()
+                      : undefined
                   }
-                  value={field.value ? field.value.toString() : undefined}
+                  value={
+                    field.value !== undefined
+                      ? field.value.toString()
+                      : undefined
+                  }
                 >
                   <FormControl>
                     <SelectTrigger>
@@ -200,13 +207,28 @@ const EventForm: FC<EventFormProps> = ({
               </FormItem>
             )}
           />
-          <Button type="submit">
-            {restProps.editMode ? "Save" : "Create"}
-          </Button>
+          <Button type="submit">Save</Button>
         </form>
       </Form>
+
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+      >
+        <SortableContext
+          items={eventTasks}
+          strategy={verticalListSortingStrategy}
+        >
+          <div className="flex flex-col gap-2 mt-2">
+            {eventTasks.map((task) => (
+              <SortableTaskCard key={task.id} task={task} />
+            ))}
+          </div>
+        </SortableContext>
+      </DndContext>
     </div>
   );
 };
 
-export default EventForm;
+export default EditEventForm;

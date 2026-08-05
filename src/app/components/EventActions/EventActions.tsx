@@ -14,7 +14,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "../ui/sheet";
-import EventForm from "../EventForm";
+import EventForm from "../EditEventForm";
 
 interface EventActionsProps {
   event: CalendarEventEntry;

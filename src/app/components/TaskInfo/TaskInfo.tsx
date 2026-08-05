@@ -2,7 +2,6 @@
 import React, { FC } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "../ui/sheet";
 import { cn } from "../utils";
-import TaskCard from "../TaskCard";
 import CreateTaskForm from "../CreateTaskForm";
 import { ScrollArea } from "../ui/scroll-area";
 import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
@@ -10,6 +9,7 @@ import MinimalNote from "../MinimalNote";
 import { useRouter, useSearchParams } from "#lib/navigation";
 import { useTasksNewState } from "@/app/utils/hooks/use-tasks-new/state-context";
 import { ITask } from "@/app/utils/types/task";
+import { DraggableTaskCard } from "../TaskCard/DraggableTaskCard";
 
 export interface TaskInfoProps {
   testId?: string;
@@ -92,7 +92,7 @@ const TaskInfo: FC<TaskInfoProps> = (): JSX.Element | null => {
             )}
 
             {tasksToShow.map((rTask) => (
-              <TaskCard
+              <DraggableTaskCard
                 task={rTask}
                 key={rTask.id}
                 dragId={rTask.id}
