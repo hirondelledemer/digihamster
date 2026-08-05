@@ -121,6 +121,27 @@ export const TasksNewContextProvider = ({
     [toast],
   );
 
+  const reorderTasksInTheEvent = useCallback(
+    async (eventId: number, taskIds: number[]) => {
+      taskIds.forEach((id, index) => {
+        dispatch({
+          type: TasksNewActionType.UpdateTask,
+          payload: { id, task: { event_sort_order: index + 1 } },
+        });
+      });
+      try {
+        await api.reorderTasksInTheEvent(eventId, taskIds);
+        toast({
+          title: "Success",
+          description: "Tasks have been reordered successfully",
+        });
+      } catch (e: unknown) {
+        handleApiError(e, toast);
+      }
+    },
+    [toast],
+  );
+
   const deleteTask = useCallback(
     async (id: number, onDone?: () => void) => {
       dispatch({ type: TasksNewActionType.DeleteTask, payload: { id } });
@@ -138,7 +159,7 @@ export const TasksNewContextProvider = ({
   return (
     <TasksNewStateContext.Provider value={state}>
       <TasksNewActionsContext.Provider
-        value={{ createTask, updateTask, deleteTask }}
+        value={{ createTask, updateTask, deleteTask, reorderTasksInTheEvent }}
       >
         {children}
       </TasksNewActionsContext.Provider>

@@ -19,6 +19,22 @@ import {
   SelectItem,
 } from "../ui/select";
 import { Button } from "../ui/button";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+  Collision,
+} from "@dnd-kit/core";
+
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 
 import { Textarea } from "../ui/textarea";
 import { useEventsActions } from "@/app/utils/hooks/use-events/actions-context";
@@ -27,7 +43,8 @@ import { ProjectStatus } from "@/app/utils/types/project";
 import { Badge } from "../ui/badge";
 import { IEvent } from "@/app/utils/types/event";
 import { useTasksNewState } from "@/app/utils/hooks/use-tasks-new/state-context";
-import TaskCard from "../TaskCard";
+import { useTasksNewActions } from "@/app/utils/hooks/use-tasks-new/actions-context";
+import { SortableTaskCard } from "../TaskCard/SortableTaskCard";
 
 export const minimalNoteTestId = "EventForm-minimal-note-testId";
 
@@ -50,7 +67,15 @@ export interface EventFormProps {
 const EventForm: FC<EventFormProps> = ({ onDone, event }): JSX.Element => {
   const { data: projects } = useProjectsState();
   const { data: tasks } = useTasksNewState();
+  const { reorderTasksInTheEvent } = useTasksNewActions();
   const { update: updateEvent } = useEventsActions();
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
+  );
 
   const form = useForm<FormValues>({
     resolver: zodResolver(FormSchema),
@@ -75,6 +100,24 @@ const EventForm: FC<EventFormProps> = ({ onDone, event }): JSX.Element => {
       onDone,
     );
   };
+
+  const handleDragEnd = async (e: DragEndEvent) => {
+    if (!e.collisions) {
+      return null;
+    }
+
+    reorderTasksInTheEvent(
+      event.id,
+      e.collisions.map((obj: Collision) => obj.id as number),
+    );
+  };
+
+  const eventTasks = tasks
+    .filter((task) => task.event_id === event.id)
+    .sort(
+      (taskA, taskB) =>
+        (taskA.event_sort_order || 0) - (taskB.event_sort_order || 0),
+    );
 
   return (
     <div>
@@ -168,17 +211,22 @@ const EventForm: FC<EventFormProps> = ({ onDone, event }): JSX.Element => {
         </form>
       </Form>
 
-      <div className="flex flex-col gap-2 mt-2">
-        {tasks
-          .filter((task) => task.event_id === event.id)
-          .sort(
-            (taskA, taskB) =>
-              (taskB.event_sort_order || 0) - (taskA.event_sort_order || 0),
-          )
-          .map((task) => (
-            <TaskCard dragId={task.id} key={task.id} task={task} />
-          ))}
-      </div>
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+      >
+        <SortableContext
+          items={eventTasks}
+          strategy={verticalListSortingStrategy}
+        >
+          <div className="flex flex-col gap-2 mt-2">
+            {eventTasks.map((task) => (
+              <SortableTaskCard key={task.id} task={task} />
+            ))}
+          </div>
+        </SortableContext>
+      </DndContext>
     </div>
   );
 };

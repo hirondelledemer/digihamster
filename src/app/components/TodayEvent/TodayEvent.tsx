@@ -12,7 +12,6 @@ import {
   isCalendarDeadlineEntry,
   isCalendarEventEntry,
 } from "../CalendarEvent/CalendarEvent.types";
-import TaskCard from "../TaskCard";
 import { useDroppable } from "@dnd-kit/core";
 import { Button } from "../ui/button";
 import { ChevronRightIcon } from "lucide-react";
@@ -22,6 +21,7 @@ import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
 import { TaskActions } from "../TaskActions";
 import { EventActions } from "../EventActions";
 import { useTasksNewActions } from "@/app/utils/hooks/use-tasks-new/actions-context";
+import { DraggableTaskCard } from "../TaskCard/DraggableTaskCard";
 
 export interface TodayEventProps {
   showDate?: boolean;
@@ -134,9 +134,15 @@ const TodayEvent: FC<TodayEventProps> = ({
             )}
             {isCalendarEventEntry(event) && (
               <div className="grid gap-2">
-                {event.resource.tasks.map((t) => (
-                  <TaskCard key={t.id} task={t} dragId={t.id} />
-                ))}
+                {event.resource.tasks
+                  .sort(
+                    (taskA, taskB) =>
+                      (taskA.event_sort_order || 0) -
+                      (taskB.event_sort_order || 0),
+                  )
+                  .map((t) => (
+                    <DraggableTaskCard key={t.id} task={t} dragId={t.id} />
+                  ))}
               </div>
             )}
           </div>

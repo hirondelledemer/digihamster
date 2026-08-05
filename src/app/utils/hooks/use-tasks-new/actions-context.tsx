@@ -9,12 +9,14 @@ export interface TasksNewActionsContextValue {
   ): Promise<ITask | null>;
   updateTask(id: number, data: Partial<ITask>, onDone?: () => void): void;
   deleteTask(id: number, onDone?: () => void): void;
+  reorderTasksInTheEvent(eventId: number, taskIds: number[]): void;
 }
 
 const DEFAULT_ACTIONS: TasksNewActionsContextValue = {
   createTask: async () => null,
   updateTask: () => {},
   deleteTask: () => {},
+  reorderTasksInTheEvent: () => {},
 };
 
 export const TasksNewActionsContext =
