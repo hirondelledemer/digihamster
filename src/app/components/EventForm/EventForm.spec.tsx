@@ -1,116 +1,118 @@
-import { render, waitFor } from "@/config/utils/test-utils";
+import { render, screen, waitFor } from "@/config/utils/test-utils";
 import EventForm, { EventFormProps } from "./EventForm";
-import { getEventFormTestkit } from "./EventForm.testkit";
 import mockAxios from "jest-mock-axios";
-import { HOUR } from "@/app/utils/consts/dates";
+
 import { generateEvent } from "@/app/utils/mocks/event";
 import { EventsContextProvider } from "@/app/utils/hooks/use-events/provider";
 import { ProjectsContextProvider } from "@/app/utils/hooks/use-projects/provider";
+import { TasksNewContextProvider } from "@/app/utils/hooks/use-tasks-new/provider";
+import { PROJECTS_PATH } from "@/app/utils/hooks/use-projects/api";
+import { generateListOfProjects } from "@/app/utils/mocks/project";
+import { TASKS_PATH } from "@/app/utils/hooks/use-tasks-new/api";
+import { EVENTS_PATH, getEventsPath } from "@/app/utils/hooks/use-events/api";
+import { userEvent } from "@storybook/test";
+import { generateCustomTasksList } from "@/app/utils/mocks/task";
+
+const PROJECTS = generateListOfProjects(3);
+const EVENT = generateEvent(1, { project_id: PROJECTS[1].id });
+const TASKS = generateCustomTasksList([
+  { event_id: EVENT.id },
+  { event_id: EVENT.id },
+  { event_id: null },
+]);
+
+const DEFAULT_PROPS: EventFormProps = {
+  onDone: jest.fn(),
+  event: EVENT,
+};
+
+const assertLoaded = async () => {
+  await waitFor(() => expect(mockAxios.queue()).toHaveLength(3));
+
+  mockAxios.mockResponseFor({ url: PROJECTS_PATH }, { data: PROJECTS });
+  mockAxios.mockResponseFor({ url: TASKS_PATH }, { data: TASKS });
+  mockAxios.mockResponseFor({ url: EVENTS_PATH }, { data: [] });
+};
 
 describe("EventForm", () => {
   afterEach(() => {
     mockAxios.reset();
   });
 
-  const defaultProps: EventFormProps = {
-    editMode: false,
-    onDone: jest.fn(),
-  };
-
-  const projects = [1, 2].map((n) => ({
-    _id: `project${n}`,
-    title: `Project ${n}`,
-    deleted: false,
-    color: "",
-    order: 0,
-  }));
-
-  const renderComponent = (props: EventFormProps = defaultProps) =>
-    getEventFormTestkit(
-      render(
-        <ProjectsContextProvider>
-          <EventsContextProvider>
+  const renderComponent = (props: EventFormProps = DEFAULT_PROPS) =>
+    render(
+      <ProjectsContextProvider>
+        <EventsContextProvider>
+          <TasksNewContextProvider>
             <EventForm {...props} />
-          </EventsContextProvider>
-        </ProjectsContextProvider>
-      ).container
+          </TasksNewContextProvider>
+        </EventsContextProvider>
+      </ProjectsContextProvider>,
     );
 
-  it("shows all the inputs", () => {
-    const wrapper = renderComponent();
-    expect(wrapper.getComponent()).not.toBe(null);
-    expect(wrapper.getTitleInputExists()).toBe(true);
-    expect(wrapper.getDesriptionInputExists()).toBe(true);
-    expect(wrapper.getProjectFieldExists()).toBe(true);
-    expect(wrapper.getCreateButtonExists()).toBe(true);
-  });
+  it("shows all the inputs", async () => {
+    renderComponent();
 
-  it("shows initial values", () => {
-    const props: EventFormProps = {
-      ...defaultProps,
-      initialValues: {
-        title: "title",
-        description: "content",
-        project: "project1",
-      },
-    };
-    const wrapper = renderComponent(props);
+    await assertLoaded();
 
-    expect(wrapper.getTitleInputValue()).toBe(props.initialValues!.title);
-    expect(wrapper.getDescriptionInputValue()).toBe(
-      props.initialValues!.description
+    expect(screen.getByRole("textbox", { name: /title/i })).toBeInTheDocument();
+    expect(screen.getByRole("textbox", { name: /title/i })).toHaveValue(
+      EVENT.title,
     );
-    // todo
-    // expect(wrapper.getProjectInputValue()).toBe(projects[0].title);
-  });
+    expect(
+      screen.getByRole("textbox", { name: /description/i }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("textbox", { name: /description/i })).toHaveValue(
+      EVENT.description,
+    );
+    expect(
+      screen.getByRole("combobox", { name: /project/i }),
+    ).toBeInTheDocument();
 
-  // for some reason testing-library does not allow to select cobobox
-  // heve project value is set as initial
-  // todo: test this case in e2e
-
-  it("submits form", async () => {
-    const newTitle = "new title";
-    const newDescription = "new desc";
-
-    const props: EventFormProps = {
-      ...defaultProps,
-
-      initialValues: {
-        title: "",
-        description: "",
-        project: projects[0]._id as unknown as string,
-        startAt: 0,
-        endAt: HOUR,
-      },
-    };
-    const wrapper = renderComponent(props);
-    wrapper.setTitle(newTitle);
-    await wrapper.setDescription(newDescription);
-
-    wrapper.clickCreateButton();
     await waitFor(() => {
-      expect(mockAxios.post).toHaveBeenCalledWith("/api/events", {
-        description: newDescription,
-        projectId: "project1",
-        title: newTitle,
-        allDay: false,
-        endAt: HOUR,
-        startAt: 0,
+      expect(
+        screen.getByRole("combobox", { name: /project/i }),
+      ).toHaveTextContent(PROJECTS[1].title);
+    });
+    expect(screen.getByRole("button", { name: /save/i })).toBeInTheDocument();
+  });
+
+  it("edits event", async () => {
+    renderComponent();
+
+    assertLoaded();
+
+    await userEvent.type(
+      screen.getByRole("textbox", { name: /title/i }),
+      " edited",
+    );
+
+    await userEvent.type(
+      screen.getByRole("textbox", { name: /description/i }),
+      " edited",
+    );
+
+    await userEvent.click(screen.getByRole("combobox", { name: /project/i }));
+    await userEvent.click(screen.getAllByRole("option")[2]);
+
+    await userEvent.click(screen.getByRole("button", { name: /save/i }));
+
+    await waitFor(() => {
+      expect(mockAxios.patch).toHaveBeenCalledWith(getEventsPath(EVENT.id), {
+        description: "event description 1 edited",
+        project_id: 2,
+        title: "Event 1 edited",
       });
     });
   });
 
-  describe("editMode", () => {
-    it("should show edit mode", () => {
-      const eventToEdit = generateEvent();
-      const props: EventFormProps = {
-        editMode: true,
-        onDone: jest.fn(),
-        event: eventToEdit,
-      };
-      const wrapper = renderComponent(props);
-      expect(wrapper.getCreateButtonExists()).toBe(false);
-      expect(wrapper.getEditButtonExists()).toBe(true);
+  it("should render the tasks", async () => {
+    renderComponent();
+
+    assertLoaded();
+    await waitFor(() => {
+      expect(screen.getByText(TASKS[0].title)).toBeInTheDocument();
     });
+    expect(screen.getByText(TASKS[1].title)).toBeInTheDocument();
   });
 });
