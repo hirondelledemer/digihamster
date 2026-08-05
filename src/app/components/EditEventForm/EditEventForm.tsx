@@ -45,6 +45,7 @@ import { IEvent } from "@/app/utils/types/event";
 import { useTasksNewState } from "@/app/utils/hooks/use-tasks-new/state-context";
 import { useTasksNewActions } from "@/app/utils/hooks/use-tasks-new/actions-context";
 import { SortableTaskCard } from "../TaskCard/SortableTaskCard";
+import CreateTaskForm from "../CreateTaskForm";
 
 export const minimalNoteTestId = "EventForm-minimal-note-testId";
 
@@ -227,6 +228,9 @@ const EditEventForm: FC<EventFormProps> = ({ onDone, event }): JSX.Element => {
           </div>
         </SortableContext>
       </DndContext>
+      <div className="mt-2">
+        <CreateTaskForm onDone={() => {}} eventId={event.id} />
+      </div>
     </div>
   );
 };

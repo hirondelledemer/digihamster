@@ -17,6 +17,7 @@ export interface CreateTaskFormProps {
   onDone(): void;
   deadline?: string;
   projectId?: number;
+  eventId?: number;
 }
 
 export const rteTestId = "CreateTaskForm-rte-testId";
@@ -41,6 +42,7 @@ const CreateTaskForm: FC<CreateTaskFormProps> = ({
   onDone,
   deadline,
   projectId,
+  eventId,
 }): JSX.Element => {
   const { createTask: createNewTask } = useTasksNewActions();
 
@@ -76,7 +78,8 @@ const CreateTaskForm: FC<CreateTaskFormProps> = ({
     const taskData: CreateTaskParams = {
       title: values.description.title,
       description: values.description.textContent,
-      project_id: Number(projectId) || Number(values.description.projectId),
+      project_id: projectId || Number(values.description.projectId),
+      event_id: eventId,
       status: values.description.params.includes("active") ? "doing" : "todo",
       deadline: getDeadline(values.description.params),
     };

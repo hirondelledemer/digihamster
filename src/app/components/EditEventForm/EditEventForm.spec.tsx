@@ -12,6 +12,9 @@ import { TASKS_PATH } from "@/app/utils/hooks/use-tasks-new/api";
 import { EVENTS_PATH, getEventsPath } from "@/app/utils/hooks/use-events/api";
 import { userEvent } from "@storybook/test";
 import { generateCustomTasksList } from "@/app/utils/mocks/task";
+import { rteTestId } from "../CreateTaskForm/CreateTaskForm";
+import { getRichTextEditorTestkit } from "../RichTextEditor/RichTextEditor.testkit";
+import { TaskStatus } from "@/app/utils/types/task";
 
 const PROJECTS = generateListOfProjects(3);
 const EVENT = generateEvent(1, { project_id: PROJECTS[1].id });
@@ -33,7 +36,6 @@ const assertLoaded = async () => {
     mockAxios.mockResponseFor({ url: TASKS_PATH }, { data: TASKS });
     mockAxios.mockResponseFor({ url: EVENTS_PATH }, { data: [] });
   });
-  // await new Promise((resolve) => setTimeout(resolve, 0));
 };
 
 describe("EditEventForm", () => {
@@ -113,5 +115,28 @@ describe("EditEventForm", () => {
 
     expect(screen.getByText(TASKS[0].title)).toBeInTheDocument();
     expect(screen.getByText(TASKS[1].title)).toBeInTheDocument();
+  });
+
+  it("should create the task for the event", async () => {
+    renderComponent();
+
+    await assertLoaded();
+
+    const rte = await screen.findByTestId(rteTestId);
+    const rteWrapper = getRichTextEditorTestkit(rte);
+
+    rteWrapper.enterValue("<p>test</p><p>note</p>");
+    rteWrapper.blur();
+
+    await userEvent.click(screen.getByRole("button", { name: /create/i }));
+
+    expect(mockAxios.post).toHaveBeenCalledWith(TASKS_PATH, {
+      deadline: null,
+      description: "note",
+      event_id: EVENT.id,
+      project_id: NaN, // TODO: fix
+      status: TaskStatus.Todo,
+      title: "test",
+    });
   });
 });
