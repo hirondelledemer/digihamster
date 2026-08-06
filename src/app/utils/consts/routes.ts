@@ -6,5 +6,5 @@ export const VERIFY_EMAIL = "/verifyemail";
 export const HOME = "/";
 export const HABITS = "/habits-new"; // TODO: rename
 export const TASKS = "/tasks";
-export const PROJECTS = "/projects-new"; // TODO: rename
+export const PROJECTS = "/projects";
 export const WIKI = "/wiki";
