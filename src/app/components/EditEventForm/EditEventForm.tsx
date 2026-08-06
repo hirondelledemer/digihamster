@@ -27,11 +27,11 @@ import {
   useSensor,
   useSensors,
   DragEndEvent,
-  Collision,
 } from "@dnd-kit/core";
 
 import {
   SortableContext,
+  arrayMove,
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
@@ -102,14 +102,20 @@ const EditEventForm: FC<EventFormProps> = ({ onDone, event }): JSX.Element => {
     );
   };
 
-  const handleDragEnd = async (e: DragEndEvent) => {
-    if (!e.collisions) {
-      return null;
+  const handleDragEnd = (e: DragEndEvent) => {
+    const { active, over } = e;
+
+    if (!over || active.id === over.id) {
+      return;
     }
+
+    const oldIndex = eventTasks.findIndex((task) => task.id === active.id);
+    const newIndex = eventTasks.findIndex((task) => task.id === over.id);
+    const reordered = arrayMove(eventTasks, oldIndex, newIndex);
 
     reorderTasksInTheEvent(
       event.id,
-      e.collisions.map((obj: Collision) => obj.id as number),
+      reordered.map((task) => task.id),
     );
   };
 
