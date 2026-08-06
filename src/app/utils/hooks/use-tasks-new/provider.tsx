@@ -9,14 +9,17 @@ import { TasksNewActionsContext } from "./actions-context";
 import { ITask, TaskStatus } from "../../types/task";
 import { now } from "../../date/now";
 import { toBackendDateTime } from "#utils/date";
+import { getApiErrorMessage } from "../../axios";
 
 const handleApiError = (
-  error: any,
+  error: unknown,
   toast: ReturnType<typeof useToast>["toast"],
 ) => {
-  const errorMessage =
-    error.response?.data?.message || "An unexpected error occurred";
-  toast({ title: "Error", description: errorMessage, variant: "destructive" });
+  toast({
+    title: "Error",
+    description: getApiErrorMessage(error),
+    variant: "destructive",
+  });
 };
 
 const fetchTasks = async (
@@ -122,15 +125,15 @@ export const TasksNewContextProvider = ({
   );
 
   const reorderTasksInTheEvent = useCallback(
-    async (eventId: number, taskIds: number[]) => {
-      taskIds.forEach((id, index) => {
+    async (eventId: number, sortedTaskIds: number[]) => {
+      sortedTaskIds.forEach((id, index) => {
         dispatch({
           type: TasksNewActionType.UpdateTask,
           payload: { id, task: { event_sort_order: index + 1 } },
         });
       });
       try {
-        await api.reorderTasksInTheEvent(eventId, taskIds);
+        await api.reorderTasksInTheEvent(eventId, sortedTaskIds);
         toast({
           title: "Success",
           description: "Tasks have been reordered successfully",

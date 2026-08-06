@@ -19,7 +19,6 @@ export interface TaskCardProps {
   testId?: string;
   task: ITask;
   indicateActive?: boolean;
-  transition?: string;
   setNodeRef?: (node: HTMLElement | null) => void;
   listeners?: SyntheticListenerMap;
   attributes?: DraggableAttributes;
@@ -32,7 +31,6 @@ const TaskCard: FC<TaskCardProps> = ({
   testId,
   task,
   indicateActive,
-  transition,
   setNodeRef,
   listeners,
   attributes,
@@ -46,7 +44,6 @@ const TaskCard: FC<TaskCardProps> = ({
   const baseStyle: CSSProperties = {
     ...style,
     borderColor: project?.color,
-    transition,
   };
 
   return (
