@@ -1,13 +1,17 @@
 import { createContext, useContext } from "react";
 import { CreateHabitParams } from "./api";
-import { Habit, HabitLog } from "@/models/habit";
+import { HabitLog, IHabitWithLogs } from "../../types/habit";
 
 export interface HabitsNewActionsContextValue {
   createHabit(data: CreateHabitParams, onDone?: () => void): void;
-  updateHabit(id: string, data: Partial<Habit>, onDone?: () => void): void;
-  deleteHabit(id: string, onDone?: () => void): void;
+  updateHabit(
+    id: number,
+    data: Partial<IHabitWithLogs>,
+    onDone?: () => void,
+  ): void;
+  deleteHabit(id: number, onDone?: () => void): void;
   addLog(
-    habitId: string,
+    habitId: number,
     props: { at: number; completed: boolean; existingLog?: HabitLog },
     onDone?: () => void,
   ): void;

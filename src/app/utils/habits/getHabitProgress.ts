@@ -1,9 +1,9 @@
-import { Habit } from "@/models/habit";
-import { LifeAspect } from "@/models/life-aspect.js";
 import { isAfter, subDays } from "date-fns";
 import { now } from "../date/now";
+import { ILifeAspect } from "../types/life-aspect";
+import { IHabitWithLogs } from "../types/habit";
 
-export const getHabitProgress = (habit: Habit) => {
+export const getHabitProgress = (habit: IHabitWithLogs) => {
   const earliestDay = subDays(now(), 28).getTime();
 
   const progress = habit.logs.filter(
@@ -15,8 +15,8 @@ export const getHabitProgress = (habit: Habit) => {
 };
 
 export const getHabitProgressForLifeAspect = (
-  habits: Habit[],
-  lifeAspect: LifeAspect | LifeAspect[],
+  habits: IHabitWithLogs[],
+  lifeAspect: ILifeAspect | ILifeAspect[],
   addBoosts: boolean = false,
 ) => {
   const lifeAspects = Array.isArray(lifeAspect) ? lifeAspect : [lifeAspect];
@@ -50,14 +50,14 @@ export const getHabitProgressForLifeAspect = (
   const boostsValue = lifeAspects
     .map((la) => la.boosts)
     .flat()
-    .filter((boost) => isAfter(boost.expires, now()))
     .map((boost) => boost.value)
     .reduce((prev, acc) => prev + acc, 0);
 
   return Math.min(progressPercentage + boostsValue, 100);
 };
 
-export const hasActiveBoosts = (aspect: LifeAspect) => {
+/** @deprecated */
+export const hasActiveBoosts = (aspect: ILifeAspect) => {
   return !!aspect.boosts.filter((boost) => isAfter(boost.expires, now()))
     .length;
 };

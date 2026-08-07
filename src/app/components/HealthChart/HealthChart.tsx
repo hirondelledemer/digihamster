@@ -9,7 +9,6 @@ import "./style.css";
 import { BarChart } from "../../charts/BarChart";
 import { Button } from "../ui/button";
 import { IconArrowLeft } from "@tabler/icons-react";
-import { Habit } from "@/models/habit";
 import { RadarChart } from "../../charts/RadarChart";
 import {
   getHabitProgress,
@@ -22,6 +21,7 @@ import { getTodayWithZeroHours } from "@/app/utils/date/now";
 import { toBackendDate } from "@/app/utils/date/date";
 import { subDays } from "date-fns";
 import { RadarChartDataItem } from "@/app/charts/RadarChart/RadarChart";
+import { IHabitWithLogs } from "@/app/utils/types/habit";
 
 type HealthChartValueKey = "basePercentage" | "boostedPercentage";
 
@@ -39,7 +39,7 @@ const HealthChart: FC<HealthChartProps> = (): JSX.Element => {
   >("chart");
 
   const getHabitsData = useCallback(
-    (habits: Habit[]) => {
+    (habits: IHabitWithLogs[]) => {
       return habits.map((habit) => {
         const dataValue = Math.max(Math.min(getHabitProgress(habit), 100), 1);
         const todayTimestamp = getTodayWithZeroHours().getTime();
@@ -85,13 +85,11 @@ const HealthChart: FC<HealthChartProps> = (): JSX.Element => {
         .map((habit) => habit.life_aspect_id)
         .filter((item, pos, self) => self.indexOf(item) == pos)
         .reduce(
-          (prev: RadarChartDataItem<HealthChartValueKey>[], curr: string) => {
+          (prev: RadarChartDataItem<HealthChartValueKey>[], curr: number) => {
             const habitsForCategory = habits.filter(
               (h) => h.life_aspect_id === curr,
             );
-            const lifeAspect = lifeAspects.find(
-              (la) => la.id.toString() === curr.toString(),
-            );
+            const lifeAspect = lifeAspects.find((la) => la.id === curr);
 
             const progressPercentage = getHabitProgressForLifeAspect(
               habits,

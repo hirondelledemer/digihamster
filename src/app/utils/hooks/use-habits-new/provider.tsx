@@ -7,16 +7,20 @@ import { HabitsNewAction, HabitsNewActionType } from "./actions";
 import { api, CreateHabitParams } from "./api";
 import { HabitsNewStateContext } from "./state-context";
 import { HabitsNewActionsContext } from "./actions-context";
-import { Habit, HabitLog } from "@/models/habit";
-import { toBackendDate } from "#utils/date";
+import { toBackendDate, toBackendDateTime } from "#utils/date";
+import { getApiErrorMessage } from "../../axios";
+import { now } from "../../date/now";
+import { HabitLog, IHabitWithLogs } from "../../types/habit";
 
 const handleApiError = (
-  error: any,
+  error: unknown,
   toast: ReturnType<typeof useToast>["toast"],
 ) => {
-  const errorMessage =
-    error.response?.data?.message || "An unexpected error occurred";
-  toast({ title: "Error", description: errorMessage, variant: "destructive" });
+  toast({
+    title: "Error",
+    description: getApiErrorMessage(error),
+    variant: "destructive",
+  });
 };
 
 const fetchHabits = async (
@@ -61,14 +65,16 @@ export const HabitsNewContextProvider = ({
 
   const createHabit = useCallback(
     async (data: CreateHabitParams, onDone?: () => void) => {
-      const tempId = "temp-id";
-      const tempHabit: Habit = {
+      const nowDate = now();
+      const tempId = -nowDate.valueOf();
+      const tempHabit: IHabitWithLogs = {
         id: tempId,
         title: data.title,
         logs: [],
         times_per_month: data.times_per_month,
-        life_aspect_id: data.life_aspect_id.toString(),
-        updatedAt: "",
+        life_aspect_id: data.life_aspect_id,
+        description: data.description,
+        created_at: toBackendDateTime(nowDate),
       };
 
       dispatch({
@@ -85,14 +91,7 @@ export const HabitsNewContextProvider = ({
           payload: { id: tempId, habit: response.data },
         });
         toast({ title: "Success", description: "Habit has been created" });
-      } catch (e: any) {
-        dispatch({
-          type: HabitsNewActionType.UpdateHabit,
-          payload: {
-            id: tempId,
-            habit: { id: "" },
-          },
-        });
+      } catch (e: unknown) {
         handleApiError(e, toast);
       }
     },
@@ -100,7 +99,7 @@ export const HabitsNewContextProvider = ({
   );
 
   const updateHabit = useCallback(
-    async (id: string, data: Partial<Habit>, onDone?: () => void) => {
+    async (id: number, data: Partial<IHabitWithLogs>, onDone?: () => void) => {
       dispatch({
         type: HabitsNewActionType.UpdateHabit,
         payload: { id, habit: data },
@@ -109,7 +108,7 @@ export const HabitsNewContextProvider = ({
       try {
         await api.updateHabit(id, data);
         toast({ title: "Success", description: "Habit has been updated" });
-      } catch (e: any) {
+      } catch (e: unknown) {
         handleApiError(e, toast);
       }
     },
@@ -117,13 +116,13 @@ export const HabitsNewContextProvider = ({
   );
 
   const deleteHabit = useCallback(
-    async (id: string, onDone?: () => void) => {
+    async (id: number, onDone?: () => void) => {
       dispatch({ type: HabitsNewActionType.DeleteHabit, payload: { id } });
       if (onDone) onDone();
       try {
         await api.deleteHabit(id);
         toast({ title: "Success", description: "Habit has been deleted" });
-      } catch (e: any) {
+      } catch (e: unknown) {
         handleApiError(e, toast);
       }
     },
@@ -132,7 +131,7 @@ export const HabitsNewContextProvider = ({
 
   const addLog = useCallback(
     async (
-      habitId: string,
+      habitId: number,
       props: { at: number; completed: boolean; existingLog?: HabitLog },
       onDone?: () => void,
     ) => {
@@ -158,7 +157,7 @@ export const HabitsNewContextProvider = ({
           });
         }
         toast({ title: "Success", description: "Log has been updated" });
-      } catch (e: any) {
+      } catch (e: unknown) {
         handleApiError(e, toast);
       }
     },

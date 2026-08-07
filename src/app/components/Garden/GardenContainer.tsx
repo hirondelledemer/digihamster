@@ -2,22 +2,20 @@
 import React, { FC, useState } from "react";
 import "./style.css";
 
-import {
-  getHabitProgressForLifeAspect,
-  hasActiveBoosts,
-} from "@/app/utils/habits/getHabitProgress";
+import { getHabitProgressForLifeAspect } from "@/app/utils/habits/getHabitProgress";
 import { Button } from "../ui/button";
 
 import { IconMinus, IconPlus } from "@tabler/icons-react";
 import { Garden, GardenConfig } from "./Garden";
 import { useLifeAspectsState } from "@/app/utils/hooks/use-life-aspects/state-context";
-import useHabits from "@/app/utils/hooks/use-habits";
+
+import { useHabitsNewState } from "@/app/utils/hooks/use-habits-new/state-context";
 
 export const GardenContainer: FC<{
   onAssetClickAction: (category?: number) => void;
 }> = ({ onAssetClickAction: onAssetClick }) => {
   const [score, setScore] = useState(100);
-  const { data: habits } = useHabits();
+  const { data: habits } = useHabitsNewState();
   const { data: lifeAspects } = useLifeAspectsState();
 
   const treeLifeAspect = lifeAspects.find((la) => la.asset === "tree");
@@ -58,43 +56,41 @@ export const GardenContainer: FC<{
     getHabitProgressForLifeAspect(habits, pumpkinsLifeAspect || [], true) / 10,
   );
 
-  console.log(houseLifeAspect && hasActiveBoosts(houseLifeAspect));
-
   const config: GardenConfig = {
     house: {
       score: houseScore,
       onClick: () => onAssetClick(houseLifeAspect?.id),
-      withBoosts: !!houseLifeAspect && hasActiveBoosts(houseLifeAspect),
+      withBoosts: !!houseLifeAspect && !!houseLifeAspect.boosts.length,
     },
     tree: {
       score: treeScore,
       onClick: () => onAssetClick(treeLifeAspect?.id),
-      withBoosts: !!treeLifeAspect && hasActiveBoosts(treeLifeAspect),
+      withBoosts: !!treeLifeAspect && !!treeLifeAspect.boosts.length,
     },
     shed: {
       score: shedScore,
       onClick: () => onAssetClick(shedLifeAspect?.id),
-      withBoosts: !!shedLifeAspect && hasActiveBoosts(shedLifeAspect),
+      withBoosts: !!shedLifeAspect && !!shedLifeAspect.boosts.length,
     },
     animals: {
       score: animalsScore,
       onClick: () => onAssetClick(animalsLifeAspect?.id),
-      withBoosts: !!animalsLifeAspect && hasActiveBoosts(animalsLifeAspect),
+      withBoosts: !!animalsLifeAspect && !!animalsLifeAspect.boosts.length,
     },
     river: {
       score: riverScore,
       onClick: () => onAssetClick(riverLifeAspect?.id),
-      withBoosts: !!riverLifeAspect && hasActiveBoosts(riverLifeAspect),
+      withBoosts: !!riverLifeAspect && !!riverLifeAspect.boosts.length,
     },
     mountains: {
       score: mountainsScore,
       onClick: () => onAssetClick(mountainsLifeAspect?.id),
-      withBoosts: !!mountainsLifeAspect && hasActiveBoosts(mountainsLifeAspect),
+      withBoosts: !!mountainsLifeAspect && !!mountainsLifeAspect.boosts.length,
     },
     pumpkinGarden: {
       score: pumpkinGardenScore,
       onClick: () => onAssetClick(pumpkinsLifeAspect?.id),
-      withBoosts: !!pumpkinsLifeAspect && hasActiveBoosts(pumpkinsLifeAspect),
+      withBoosts: !!pumpkinsLifeAspect && !!pumpkinsLifeAspect.boosts.length,
     },
     defaultScore: { score, onClick: () => {}, withBoosts: false },
   };

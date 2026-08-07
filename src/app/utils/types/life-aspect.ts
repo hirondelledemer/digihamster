@@ -8,9 +8,13 @@ export type LifeAspectAsset =
   | "pumpkinGarden"
   | "defaultScore";
 
-export interface LifeAspectLog {
-  at: number;
-  completed: boolean;
+export interface LifeAspectBoost {
+  id: number;
+  life_aspect_id: number;
+  value: number;
+  source_type: "task" | "habit" | "event" | "manual" | "ai";
+  source_id: string;
+  created_at: string;
 }
 
 export interface ILifeAspect {

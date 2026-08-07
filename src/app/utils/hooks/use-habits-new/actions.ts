@@ -1,7 +1,7 @@
-import { Habit } from "@/models/habit";
+import { IHabitWithLogs } from "../../types/habit";
 
 export interface HabitsNewState {
-  data: Habit[];
+  data: IHabitWithLogs[];
   isLoading: boolean;
   errorMessage?: unknown;
 }
@@ -21,7 +21,7 @@ export interface StartLoadingAction {
 }
 export interface FinishLoadingAction {
   type: HabitsNewActionType.FinishLoading;
-  payload: { data: Habit[] };
+  payload: { data: IHabitWithLogs[] };
 }
 export interface ErrorAction {
   type: HabitsNewActionType.Error;
@@ -29,19 +29,19 @@ export interface ErrorAction {
 }
 export interface CreateHabitAction {
   type: HabitsNewActionType.CreateHabit;
-  payload: { habit: Habit };
+  payload: { habit: IHabitWithLogs };
 }
 export interface UpdateHabitAction {
   type: HabitsNewActionType.UpdateHabit;
-  payload: { id: string; habit: Partial<Habit> };
+  payload: { id: number; habit: Partial<IHabitWithLogs> };
 }
 export interface DeleteHabitAction {
   type: HabitsNewActionType.DeleteHabit;
-  payload: { id: string };
+  payload: { id: number };
 }
 export interface UpsertLogAction {
   type: HabitsNewActionType.UpsertLog;
-  payload: { habitId: string; logDate: string; completed: boolean };
+  payload: { habitId: number; logDate: string; completed: boolean };
 }
 
 export type HabitsNewAction =
