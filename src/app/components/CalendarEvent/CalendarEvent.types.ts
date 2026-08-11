@@ -1,4 +1,5 @@
-import { TaskWithRelations } from "@/app/utils/types/task";
+import { IEvent } from "@/app/utils/types/event";
+import { ITask } from "@/app/utils/types/task";
 import { JournalEntry } from "@/models/entry";
 import { Event } from "react-big-calendar";
 
@@ -42,9 +43,9 @@ export interface CalendarDeadlineEntry extends Event {
   start: Date;
   resource: {
     type: "deadline";
-    id: string;
+    id: number;
     completed?: boolean;
-    task: TaskWithRelations;
+    task: ITask;
   };
 }
 
@@ -52,35 +53,33 @@ export interface CalendarEventEntry extends Event {
   title: string;
   start: Date;
   resource: {
-    id: string;
-    completed?: boolean;
+    id: number;
     type: "event";
-    description?: string;
-    projectId?: string;
-    tasks: TaskWithRelations[];
+    event: IEvent;
+    tasks: ITask[];
   };
 }
 
 export function isCalendarEventEntry(
-  event: CalendarEventType
+  event: CalendarEventType,
 ): event is CalendarEventEntry {
   return (event as CalendarEventType).resource.type === "event";
 }
 
 export function isCalendarDeadlineEntry(
-  event: CalendarEventType
+  event: CalendarEventType,
 ): event is CalendarDeadlineEntry {
   return (event as CalendarDeadlineEntry).resource.type === "deadline";
 }
 
 export function isCalendarWeatherEntry(
-  event: CalendarEventType
+  event: CalendarEventType,
 ): event is CalendarWeatherEntry {
   return (event as CalendarWeatherEntry).resource.type === "weather";
 }
 
 export function isCalendarJournalEntry(
-  event: CalendarEventType
+  event: CalendarEventType,
 ): event is CalendarJournalEntry {
   return (event as CalendarJournalEntry).resource.type === "journal";
 }

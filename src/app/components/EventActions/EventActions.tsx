@@ -1,5 +1,5 @@
 import React, { ReactNode, useState } from "react";
-import { CalendarEventEntry } from "../CalendarEvent/CalendarEvent.types";
+
 import {
   ContextMenu,
   ContextMenuContent,
@@ -15,13 +15,12 @@ import {
   SheetTitle,
 } from "../ui/sheet";
 import EventForm from "../EditEventForm";
+import { EventStatus, IEvent } from "@/app/utils/types/event";
 
 interface EventActionsProps {
-  event: CalendarEventEntry;
+  event: IEvent;
   children: ReactNode;
 }
-
-export const taskFormTestId = "CalendarEvent-task-form-test-id";
 
 export const EventActions: React.FC<EventActionsProps> = ({
   event,
@@ -31,11 +30,11 @@ export const EventActions: React.FC<EventActionsProps> = ({
   const [eventFormOpen, setEventFormOpen] = useState<boolean>(false);
 
   const handleDeleteClick = async () => {
-    deleteEvent(event.resource.id);
+    deleteEvent(event.id);
   };
 
-  const handleCompleteClick = () => {
-    updateEvent(event.resource.id, { status: "completed" });
+  const handleStatusChange = (status: EventStatus) => {
+    updateEvent(event.id, { status });
   };
 
   return (
@@ -49,22 +48,7 @@ export const EventActions: React.FC<EventActionsProps> = ({
           <SheetHeader>
             <SheetTitle>Edit Event</SheetTitle>
             <SheetDescription>
-              <EventForm
-                testId={taskFormTestId}
-                editMode
-                event={{
-                  id: event.resource.id,
-                  title: event.title,
-                  description: event.resource.description || "",
-                  status: event.resource.completed ? "completed" : "pending",
-                  project_id: event.resource.projectId || "",
-                  all_day: event.allDay || false,
-                  start_at: event.start.toString(),
-                  end_at: (event.end || 0).toString(),
-                  tags: [],
-                }}
-                onDone={() => setEventFormOpen(false)}
-              />
+              <EventForm event={event} onDone={() => setEventFormOpen(false)} />
             </SheetDescription>
           </SheetHeader>
         </SheetContent>
@@ -72,15 +56,41 @@ export const EventActions: React.FC<EventActionsProps> = ({
       <ContextMenu>
         <ContextMenuTrigger>{children}</ContextMenuTrigger>
         <ContextMenuContent className="w-64">
-          <ContextMenuItem inset onClick={handleDeleteClick}>
-            Delete
-          </ContextMenuItem>
-          {!event.resource.completed && (
-            <ContextMenuItem inset onClick={handleCompleteClick}>
+          {event.status !== EventStatus.Completed && (
+            <ContextMenuItem
+              inset
+              onClick={() => handleStatusChange(EventStatus.Completed)}
+            >
               Complete
             </ContextMenuItem>
           )}
-
+          {event.status !== EventStatus.Cancelled && (
+            <ContextMenuItem
+              inset
+              onClick={() => handleStatusChange(EventStatus.Cancelled)}
+            >
+              Cancel
+            </ContextMenuItem>
+          )}
+          {event.status !== EventStatus.Moved && (
+            <ContextMenuItem
+              inset
+              onClick={() => handleStatusChange(EventStatus.Moved)} // todo: handle moved properly
+            >
+              Move
+            </ContextMenuItem>
+          )}
+          {event.status !== EventStatus.Pending && (
+            <ContextMenuItem
+              inset
+              onClick={() => handleStatusChange(EventStatus.Pending)}
+            >
+              Undo
+            </ContextMenuItem>
+          )}
+          <ContextMenuItem inset onClick={handleDeleteClick}>
+            Delete
+          </ContextMenuItem>
           <ContextMenuItem inset onClick={() => setEventFormOpen(true)}>
             Edit
           </ContextMenuItem>
