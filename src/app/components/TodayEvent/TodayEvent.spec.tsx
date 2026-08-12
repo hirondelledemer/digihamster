@@ -1,189 +1,128 @@
 import { generateTask } from "@/app/utils/mocks/task";
 import TodayEvent, { TodayEventProps } from "./TodayEvent";
-import { getTodayEventTestkit } from "./TodayEvent.testkit";
-import { render, screen, userEvent } from "@/config/utils/test-utils";
+import { fireEvent, render, screen } from "@/config/utils/test-utils";
 import mockAxios from "jest-mock-axios";
 import { EventsContextProvider } from "@/app/utils/hooks/use-events/provider";
+import { generateEvent } from "@/app/utils/mocks/event";
+import { DEFAULT_TEST_DATE } from "@/app/utils/mocks/date";
+import { ProjectsContextProvider } from "@/app/utils/hooks/use-projects/provider";
+import { TasksNewContextProvider } from "@/app/utils/hooks/use-tasks-new/provider";
+import { getTasksPath } from "@/app/utils/hooks/use-tasks-new/api";
+import { TaskStatus } from "@/app/utils/types/task";
+import { addHours } from "date-fns";
 
 describe("TodayEvent", () => {
   afterEach(() => {
     mockAxios.reset();
   });
 
-  const defaultProps: TodayEventProps = {
+  const EVENT = generateEvent();
+
+  const DEFAULT_PROPS: TodayEventProps = {
     isFocused: false,
     event: {
-      title: "Title",
-      start: new Date(),
+      title: EVENT.title,
+      start: new Date(DEFAULT_TEST_DATE),
+      end: addHours(new Date(DEFAULT_TEST_DATE), 1),
       resource: {
-        completed: false,
-        id: "event1",
+        id: EVENT.id,
         type: "event",
-        description: "",
+        event: EVENT,
         tasks: [],
       },
     },
   };
-  const renderComponent = (props = defaultProps) =>
-    getTodayEventTestkit(
-      render(
-        <EventsContextProvider>
-          <TodayEvent {...props} />
-        </EventsContextProvider>
-      ).container
+  const renderComponent = (props = DEFAULT_PROPS) =>
+    render(
+      <ProjectsContextProvider>
+        <TasksNewContextProvider>
+          <EventsContextProvider>
+            <TodayEvent {...props} />
+          </EventsContextProvider>
+        </TasksNewContextProvider>
+      </ProjectsContextProvider>,
     );
 
-  it("should render TodayEvent", () => {
-    const { getComponent } = renderComponent();
-    expect(getComponent()).not.toBe(null);
-  });
-
-  it("should not show deadline label", () => {
-    const { getComponent } = renderComponent();
-    expect(getComponent().textContent).toBe("Title");
-  });
-
-  it('should not show "move back to list" icon', () => {
-    renderComponent();
-
-    expect(
-      screen.queryByRole("button", { name: /move back to list/i })
-    ).not.toBeInTheDocument();
-  });
-
   describe("event is a task", () => {
-    const props: TodayEventProps = {
+    const TASK = generateTask(1, { deadline: DEFAULT_TEST_DATE });
+    const TASK_PROPS: TodayEventProps = {
       isFocused: false,
       event: {
-        title: "Title",
-        start: new Date(),
+        title: TASK.title,
+        start: new Date(DEFAULT_TEST_DATE),
         resource: {
           completed: false,
-          id: "event1",
+          id: TASK.id,
           type: "deadline",
-          task: generateTask(),
+          task: TASK,
         },
       },
     };
+
+    it("should show actions", async () => {
+      renderComponent(TASK_PROPS);
+
+      fireEvent.contextMenu(screen.getByText(TASK.title));
+
+      const options = (await screen.findAllByRole("menuitem")).map(
+        (option) => option.textContent,
+      );
+
+      expect(options).toStrictEqual([
+        "Add note",
+        "Complete",
+        "Activate",
+        "Edit",
+        "Move to the list",
+      ]);
+    });
 
     it("should move back to list", async () => {
-      renderComponent(props);
+      renderComponent(TASK_PROPS);
 
-      const button = screen.getByRole("button", { name: /move back to list/i });
-      expect(button).toBeInTheDocument();
-      await userEvent.click(button);
+      fireEvent.contextMenu(screen.getByText(TASK.title));
 
-      expect(mockAxios.patch).toHaveBeenCalledWith("/api/tasks/v2", {
-        deadline: null,
-        isActive: true,
-        taskId: props.event.resource.id,
+      const moveBackToListItem = await screen.findByRole("menuitem", {
+        name: /move to the list/i,
       });
-    });
-  });
 
-  describe("event is all day", () => {
-    const props: TodayEventProps = {
-      isFocused: false,
-      event: {
-        title: "Title",
-        allDay: true,
-        start: new Date(),
-        resource: {
-          completed: false,
-          id: "event1",
-          type: "event",
-          description: "",
-          tasks: [],
-        },
-      },
-    };
+      fireEvent.click(moveBackToListItem);
 
-    it("should show label all day", () => {
-      const { getAllDayLabel } = renderComponent(props);
-      expect(getAllDayLabel()).toBeInTheDocument();
-    });
-
-    it("should show title", () => {
-      const { getTitle } = renderComponent(props);
-      expect(getTitle(props.event.title as string)).toBeInTheDocument();
-    });
-
-    it("should show checkbox in red", () => {
-      const { getCheckbox, checkboxIsPrimary } = renderComponent(props);
-      expect(getCheckbox()).toBeInTheDocument();
-      expect(checkboxIsPrimary()).toBe(true);
-    });
-
-    it("should complete task", () => {
-      const { clickCheckbox } = renderComponent(props);
-      clickCheckbox();
-      expect(mockAxios.patch).toHaveBeenCalledWith("/api/events", {
-        completed: true,
-        eventId: "event1",
+      expect(mockAxios.patch).toHaveBeenCalledWith(getTasksPath(TASK.id), {
+        deadline: null,
+        status: TaskStatus.Doing,
       });
     });
   });
 
   describe("event is not all day", () => {
-    const props: TodayEventProps = {
-      isFocused: false,
-      event: {
-        title: "Title",
-        start: new Date(0),
-        end: new Date(800000000),
-        resource: {
-          completed: false,
-          id: "event1",
-          type: "event",
-          description: "",
-          tasks: [],
-        },
-      },
-    };
-
     it("should show label with time", () => {
-      const { getTimeLabel } = renderComponent(props);
-      expect(getTimeLabel("0:00-6:13")).toBeInTheDocument();
+      renderComponent();
+
+      expect(screen.getByText("10:10-11:10")).toBeInTheDocument();
     });
 
     it("should show title", () => {
-      const { getTitle } = renderComponent(props);
-      expect(getTitle(props.event.title as string)).toBeInTheDocument();
+      renderComponent();
+
+      expect(screen.getByText(DEFAULT_PROPS.event.title)).toBeInTheDocument();
     });
 
-    it("should show checkbox", () => {
-      const { getCheckbox } = renderComponent(props);
-      expect(getCheckbox()).toBeInTheDocument();
-    });
-  });
+    it("should show actions", async () => {
+      renderComponent();
+      fireEvent.contextMenu(screen.getByText(DEFAULT_PROPS.event.title));
 
-  describe("event is completed", () => {
-    const props: TodayEventProps = {
-      isFocused: false,
-      event: {
-        title: "Title",
-        start: new Date(0),
-        end: new Date(800000000),
-        resource: {
-          completed: true,
-          id: "event1",
-          type: "event",
-          description: "",
-          tasks: [],
-        },
-      },
-    };
+      const options = (await screen.findAllByRole("menuitem")).map(
+        (option) => option.textContent,
+      );
 
-    it.skip("should show strike-through", () => {
-      const { getTitle } = renderComponent(props);
-      expect(getTitle(props.event.title as string)).toBeInTheDocument();
-      // todo: find out how to test
-      // expect(wrapper.componentHasAStrike(props.title as string)).toBe(true);
-    });
-
-    it("shold show grey checkbox", () => {
-      const { checkboxIsSecondary } = renderComponent(props);
-      expect(checkboxIsSecondary()).toBe(true);
+      expect(options).toStrictEqual([
+        "Complete",
+        "Cancel",
+        "Move", // TODO: moving cancels the event and creates the new one.
+        "Delete",
+        "Edit",
+      ]);
     });
   });
 });

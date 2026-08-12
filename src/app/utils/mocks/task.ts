@@ -12,6 +12,7 @@ export const generateTask: (
     status: TaskStatus.Todo,
     project_id: null,
     event_id: null,
+    event_sort_order: null,
     completed_at: null,
     activated_at: null,
     created_at: DEFAULT_TEST_DATE,

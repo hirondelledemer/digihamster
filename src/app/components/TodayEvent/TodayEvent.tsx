@@ -2,7 +2,6 @@
 
 import { lightFormat, format } from "date-fns";
 import React, { FC, useEffect, useMemo, useRef } from "react";
-// import { Checkbox } from "../ui/checkbox";
 import { cn } from "../utils";
 import styles from "./TodayEvent.module.scss";
 import {
@@ -13,16 +12,11 @@ import {
   isCalendarEventEntry,
 } from "../CalendarEvent/CalendarEvent.types";
 import { useDroppable } from "@dnd-kit/core";
-import { Button } from "../ui/button";
-import { ChevronRightIcon } from "lucide-react";
 import CalendarWeatherEvent from "../CalendarWeatherEvent";
-// import { useEventsActions } from "@/app/utils/hooks/use-events/actions-context";
 import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
 import { TaskActions } from "../TaskActions";
 import { EventActions } from "../EventActions";
-import { useTasksNewActions } from "@/app/utils/hooks/use-tasks-new/actions-context";
 import { DraggableTaskCard } from "../TaskCard/DraggableTaskCard";
-import { TaskStatus } from "@/app/utils/types/task";
 import { EventStatus } from "@/app/utils/types/event";
 
 export interface TodayEventProps {
@@ -38,8 +32,6 @@ const TodayEvent: FC<TodayEventProps> = ({
   weatherEvent,
   isFocused,
 }): JSX.Element => {
-  // const { update: updateEvent } = useEventsActions();
-  const { updateTask: editTask } = useTasksNewActions();
   const { getProjectById } = useProjectsState();
   const ref = useRef<HTMLDivElement>(null);
 
@@ -53,18 +45,6 @@ const TodayEvent: FC<TodayEventProps> = ({
     id: event.resource.id,
     disabled: isCalendarDeadlineEntry(event),
   });
-
-  // const handleCompleteClick = async (val: boolean) => {
-  //   if (isCalendarDeadlineEntry(event)) {
-  //     editTask(event.resource.id, { status: val ? TaskStatus.Done : TaskStatus.Doing });
-  //   } else {
-  //     updateEvent(event.resource.id, { status: val ? EventStatus.Completed: EventStatus.Pending });
-  //   }
-  // };
-
-  const handleSendBackToListClick = async () => {
-    editTask(event.resource.id, { deadline: null, status: TaskStatus.Doing });
-  };
 
   const project = useMemo(
     () =>
@@ -156,25 +136,6 @@ const TodayEvent: FC<TodayEventProps> = ({
               </div>
             )}
           </div>
-        </div>
-
-        <div className="flex justify-end self-baseline gap-1">
-          {isCalendarDeadlineEntry(event) && (
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-[16px] w-[16px] rounded-sm"
-              aria-label="Move back to list"
-              onClick={handleSendBackToListClick}
-            >
-              <ChevronRightIcon className="h-4 w-4" size={1} name="ass" />
-            </Button>
-          )}
-          {/* <Checkbox
-            checked={event.resource.completed}
-            onCheckedChange={handleCompleteClick}
-            variant={event.resource.completed ? "secondary" : "default"}
-          /> */}
         </div>
       </div>
     </div>
