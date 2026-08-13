@@ -25,10 +25,15 @@
     --input: 240 5.9% 90%;
     --ring: 346.8 77.2% 49.8%;
     --radius: 0.5rem;
+    /* blue */
     --chart-1: 12 76% 61%;
+    /* green */
     --chart-2: 173 58% 39%;
+    /* yellow */
     --chart-3: 197 37% 24%;
+    /* purple  */
     --chart-4: 43 74% 66%;
+    /* red */
     --chart-5: 27 87% 67%;
     
     --scale-color-1: 0, 83%, 47%;     /* red-600 */

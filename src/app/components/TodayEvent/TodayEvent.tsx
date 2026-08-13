@@ -26,6 +26,13 @@ export interface TodayEventProps {
   isFocused: boolean;
 }
 
+const eventStyles = {
+  [EventStatus.Completed]: styles.containerCompleted,
+  [EventStatus.Moved]: styles.containerMoved,
+  [EventStatus.Cancelled]: styles.containerCancelled,
+  [EventStatus.Pending]: styles.container,
+};
+
 const TodayEvent: FC<TodayEventProps> = ({
   showDate,
   event,
@@ -65,8 +72,13 @@ const TodayEvent: FC<TodayEventProps> = ({
       <div
         className={cn([
           "grid grid-cols-3 gap-4 italic p-2",
-          eventIsCompleted ? "text-muted-foreground" : "",
           eventIsCompleted ? styles.container : "",
+          isCalendarEventEntry(event)
+            ? eventStyles[event.resource.event.status]
+            : "",
+          isCalendarDeadlineEntry(event) && event.resource.completed
+            ? styles.containerCompleted
+            : "",
           isFocused ? "bg-muted" : "",
         ])}
         data-testid={"today-event-container"}
