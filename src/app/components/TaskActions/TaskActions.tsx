@@ -5,7 +5,7 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from "../ui/context-menu";
-import { ITask } from "@/app/utils/types/task";
+import { ITask, TaskStatus } from "@/app/utils/types/task";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "../ui/sheet";
 import TaskFormModal from "../TaskFormModal";
 import { useTasksNewActions } from "@/app/utils/hooks/use-tasks-new/actions-context";
@@ -110,6 +110,16 @@ export const TaskActions: React.FC<TaskActionProps> = ({ children, task }) => {
               onClick={() => editTask(task.id, { event_id: null })}
             >
               Remove from event
+            </ContextMenuItem>
+          )}
+          {!!task.deadline && (
+            <ContextMenuItem
+              inset
+              onClick={() =>
+                editTask(task.id, { deadline: null, status: TaskStatus.Doing })
+              }
+            >
+              Move to the list
             </ContextMenuItem>
           )}
         </ContextMenuContent>

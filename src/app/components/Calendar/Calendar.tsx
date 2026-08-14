@@ -126,13 +126,9 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
       allDay: event.all_day,
       resource: {
         id: event.id,
-        completed: event.status === "completed",
         type: "event",
-        description: event.description,
-        projectId: event.project_id,
-        tasks: tasksData.filter(
-          (t) => t.event_id?.toString() === event.id.toString(),
-        ),
+        event,
+        tasks: tasksData.filter((t) => t.event_id === event.id),
       },
     };
   });
@@ -165,9 +161,6 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
     }),
   );
 
-  console.log("aaaa");
-  console.log(entriesResolved);
-  // const weatherResolved = [] as const satisfies CalendarWeatherEntry[];
   const weatherResolved = (weatherData?.list || [])
     .filter(
       (entry) =>

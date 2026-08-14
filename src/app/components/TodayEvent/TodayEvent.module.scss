@@ -1,7 +1,9 @@
+
+
 .container {
     position: relative;  
+    color: rgb(161, 161, 170);
 }
-
 
 .container:after {
     position: absolute;
@@ -13,3 +15,25 @@
     width: 100%;
     display: block;
   }
+
+.containerMoved { 
+    @extend .container;
+    &:after{
+        background: hsl(var(--scale-color-5));
+    }
+}
+
+.containerCancelled { 
+    @extend .container;
+    &:after{
+        background: hsl(var(--scale-color-1));
+    }
+}
+
+.containerCompleted { 
+    @extend .container;
+    &:after{
+        background: hsl(var(--scale-color-10));
+    }
+}
+

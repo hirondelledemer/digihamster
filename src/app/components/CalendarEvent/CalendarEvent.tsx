@@ -14,6 +14,7 @@ import { cn } from "../utils";
 import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
 import { TaskActions } from "../TaskActions";
 import { EventActions } from "../EventActions";
+import { EventStatus } from "@/app/utils/types/event";
 
 export interface CalendarEventProps {
   testId?: string;
@@ -27,6 +28,12 @@ const CalendarEvent: FC<CalendarEventProps> = ({
   event,
 }): JSX.Element | null => {
   const { getProjectById } = useProjectsState();
+
+  const eventIsCompleted = isCalendarDeadlineEntry(event)
+    ? event.resource.completed
+    : isCalendarEventEntry(event)
+      ? event.resource.event.status === EventStatus.Completed
+      : false;
 
   const content = useMemo(() => {
     if (
@@ -42,14 +49,14 @@ const CalendarEvent: FC<CalendarEventProps> = ({
         style={{
           border: isCalendarDeadlineEntry(event)
             ? `2px solid ${
-                getProjectById(event.resource.task.project_id || "")?.color ??
-                "#000"
+                getProjectById(event.resource.task.project_id?.toString() || "")
+                  ?.color ?? "#000"
               }`
             : "",
         }}
         className={cn(
           "h-full p-1 cursor-pointer bg-[#29221f] rounded-lg hover:border hover:border-primary mt-[-1px]",
-          event.resource.completed && "text-muted-foreground line-through",
+          eventIsCompleted && "text-muted-foreground line-through",
         )}
       >
         <div className={`italic`}>
@@ -68,7 +75,7 @@ const CalendarEvent: FC<CalendarEventProps> = ({
         </div>
       </div>
     );
-  }, [event, testId, getProjectById]);
+  }, [event, testId, getProjectById, eventIsCompleted]);
 
   if (isCalendarJournalEntry(event) || isCalendarWeatherEntry(event)) {
     return null;
@@ -76,7 +83,7 @@ const CalendarEvent: FC<CalendarEventProps> = ({
   if (isCalendarDeadlineEntry(event)) {
     return <TaskActions task={event.resource.task}>{content}</TaskActions>;
   }
-  return <EventActions event={event}>{content}</EventActions>;
+  return <EventActions event={event.resource.event}>{content}</EventActions>;
 };
 
 export default CalendarEvent;

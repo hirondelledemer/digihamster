@@ -2,7 +2,6 @@
 
 import { lightFormat, format } from "date-fns";
 import React, { FC, useEffect, useMemo, useRef } from "react";
-import { Checkbox } from "../ui/checkbox";
 import { cn } from "../utils";
 import styles from "./TodayEvent.module.scss";
 import {
@@ -13,15 +12,12 @@ import {
   isCalendarEventEntry,
 } from "../CalendarEvent/CalendarEvent.types";
 import { useDroppable } from "@dnd-kit/core";
-import { Button } from "../ui/button";
-import { ChevronRightIcon } from "lucide-react";
 import CalendarWeatherEvent from "../CalendarWeatherEvent";
-import { useEventsActions } from "@/app/utils/hooks/use-events/actions-context";
 import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
 import { TaskActions } from "../TaskActions";
 import { EventActions } from "../EventActions";
-import { useTasksNewActions } from "@/app/utils/hooks/use-tasks-new/actions-context";
 import { DraggableTaskCard } from "../TaskCard/DraggableTaskCard";
+import { EventStatus } from "@/app/utils/types/event";
 
 export interface TodayEventProps {
   showDate?: boolean;
@@ -30,14 +26,19 @@ export interface TodayEventProps {
   isFocused: boolean;
 }
 
+const eventStyles = {
+  [EventStatus.Completed]: styles.containerCompleted,
+  [EventStatus.Moved]: styles.containerMoved,
+  [EventStatus.Cancelled]: styles.containerCancelled,
+  [EventStatus.Pending]: styles.container,
+};
+
 const TodayEvent: FC<TodayEventProps> = ({
   showDate,
   event,
   weatherEvent,
   isFocused,
 }): JSX.Element => {
-  const { update: updateEvent } = useEventsActions();
-  const { updateTask: editTask } = useTasksNewActions();
   const { getProjectById } = useProjectsState();
   const ref = useRef<HTMLDivElement>(null);
 
@@ -52,18 +53,6 @@ const TodayEvent: FC<TodayEventProps> = ({
     disabled: isCalendarDeadlineEntry(event),
   });
 
-  const handleCompleteClick = async (val: boolean) => {
-    if (isCalendarDeadlineEntry(event)) {
-      editTask(event.resource.id, { status: val ? "done" : "doing" });
-    } else {
-      updateEvent(event.resource.id, { status: val ? "completed" : "pending" });
-    }
-  };
-
-  const handleSendBackToListClick = async () => {
-    editTask(event.resource.id, { deadline: null, status: "doing" });
-  };
-
   const project = useMemo(
     () =>
       isCalendarDeadlineEntry(event)
@@ -72,13 +61,24 @@ const TodayEvent: FC<TodayEventProps> = ({
     [getProjectById, event],
   );
 
+  const eventIsCompleted = isCalendarDeadlineEntry(event)
+    ? event.resource.completed
+    : isCalendarEventEntry(event)
+      ? event.resource.event.status === EventStatus.Completed
+      : false;
+
   return (
     <div ref={setNodeRef} className={cn(isOver ? "border border-primary" : "")}>
       <div
         className={cn([
           "grid grid-cols-3 gap-4 italic p-2",
-          event.resource.completed ? "text-muted-foreground" : "",
-          event.resource.completed ? styles.container : "",
+          eventIsCompleted ? styles.container : "",
+          isCalendarEventEntry(event)
+            ? eventStyles[event.resource.event.status]
+            : "",
+          isCalendarDeadlineEntry(event) && event.resource.completed
+            ? styles.containerCompleted
+            : "",
           isFocused ? "bg-muted" : "",
         ])}
         data-testid={"today-event-container"}
@@ -120,14 +120,16 @@ const TodayEvent: FC<TodayEventProps> = ({
               </div>
             </TaskActions>
           ) : (
-            <EventActions event={event}>
+            <EventActions event={event.resource.event}>
               <div ref={ref}>{event.title}</div>
             </EventActions>
           )}
 
           <div>
             {isCalendarEventEntry(event) && (
-              <span className="text-xs">{event.resource.description}</span>
+              <span className="text-xs">
+                {event.resource.event.description}
+              </span>
             )}
             {isCalendarDeadlineEntry(event) && (
               <span className="text-xs">{event.resource.task.description}</span>
@@ -146,25 +148,6 @@ const TodayEvent: FC<TodayEventProps> = ({
               </div>
             )}
           </div>
-        </div>
-
-        <div className="flex justify-end self-baseline gap-1">
-          {isCalendarDeadlineEntry(event) && (
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-[16px] w-[16px] rounded-sm"
-              aria-label="Move back to list"
-              onClick={handleSendBackToListClick}
-            >
-              <ChevronRightIcon className="h-4 w-4" size={1} name="ass" />
-            </Button>
-          )}
-          <Checkbox
-            checked={event.resource.completed}
-            onCheckedChange={handleCompleteClick}
-            variant={event.resource.completed ? "secondary" : "default"}
-          />
         </div>
       </div>
     </div>
