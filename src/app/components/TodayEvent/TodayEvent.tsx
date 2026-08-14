@@ -30,7 +30,7 @@ const eventStyles = {
   [EventStatus.Completed]: styles.containerCompleted,
   [EventStatus.Moved]: styles.containerMoved,
   [EventStatus.Cancelled]: styles.containerCancelled,
-  [EventStatus.Pending]: styles.container,
+  [EventStatus.Pending]: undefined,
 };
 
 const TodayEvent: FC<TodayEventProps> = ({
