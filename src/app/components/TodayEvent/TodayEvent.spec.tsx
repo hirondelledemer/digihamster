@@ -60,6 +60,7 @@ describe("TodayEvent", () => {
 
     expect(mockAxios.patch).toHaveBeenCalledWith(getEventsPath(EVENT.id), {
       status: "moved",
+      description: "(Moved to the 01-12)\nevent description 1",
     });
 
     expect(mockAxios.post).toHaveBeenCalledWith(EVENTS_PATH, {
@@ -107,6 +108,7 @@ describe("TodayEvent", () => {
       getEventsPath(EVENT.id),
       {
         status: "moved",
+        description: "(Moved to the 01-12)\nevent description 1",
       },
     );
     expect(mockAxios.patch).toHaveBeenNthCalledWith(
@@ -211,10 +213,10 @@ describe("TodayEvent", () => {
 
       expect(options).toStrictEqual([
         "Complete",
-        "Cancel",
         "Move",
-        "Delete",
+        "Cancel",
         "Edit",
+        "Delete",
       ]);
     });
   });

@@ -5,6 +5,7 @@ import {
   ContextMenuContent,
   ContextMenuGroup,
   ContextMenuItem,
+  ContextMenuSeparator,
   ContextMenuSub,
   ContextMenuSubContent,
   ContextMenuSubTrigger,
@@ -20,10 +21,18 @@ import {
 } from "../ui/sheet";
 import EventForm from "../EditEventForm";
 import { EventStatus, IEvent } from "@/app/utils/types/event";
-import { addDays } from "date-fns";
+import { addDays, format } from "date-fns";
 import { toBackendDateTime } from "#utils/date";
 import { useTasksNewActions } from "@/app/utils/hooks/use-tasks-new/actions-context";
 import { useTasksNewState } from "@/app/utils/hooks/use-tasks-new/state-context";
+import { CheckIcon } from "lucide-react";
+import {
+  IconBackspace,
+  IconCalendar,
+  IconCancel,
+  IconEdit,
+  IconTrash,
+} from "@tabler/icons-react";
 
 interface EventActionsProps {
   event: IEvent;
@@ -53,22 +62,28 @@ export const EventActions: React.FC<EventActionsProps> = ({
   };
 
   const handleMoving = async (to: "day" | "week") => {
-    updateEvent(event.id, { status: EventStatus.Moved });
     const { id: _, ...restOfEvent } = event;
+
+    const newStartDate = addDays(restOfEvent.start_at, to === "day" ? 1 : 7);
+    const newEndDate = addDays(restOfEvent.end_at, to === "day" ? 1 : 7);
+
+    const newDescription =
+      `(Moved to the ${format(newStartDate, "MM-dd")})\n` +
+      restOfEvent.description;
+
+    updateEvent(event.id, {
+      status: EventStatus.Moved,
+      description: newDescription,
+    });
 
     const eventToCreate = {
       ...restOfEvent,
       title: `(Moved) ${restOfEvent.title}`,
-      start_at: toBackendDateTime(
-        addDays(restOfEvent.start_at, to === "day" ? 1 : 7),
-      ),
-      end_at: toBackendDateTime(
-        addDays(restOfEvent.end_at, to === "day" ? 1 : 7),
-      ),
+      start_at: toBackendDateTime(newStartDate),
+      end_at: toBackendDateTime(newEndDate),
     };
 
     const newEvent = await create(eventToCreate);
-    console.log(newEvent);
 
     if (!newEvent) {
       return null;
@@ -100,45 +115,58 @@ export const EventActions: React.FC<EventActionsProps> = ({
       <ContextMenu>
         <ContextMenuTrigger>{children}</ContextMenuTrigger>
         <ContextMenuContent className="w-64">
-          {event.status !== EventStatus.Completed && (
-            <ContextMenuItem
-              onClick={() => handleStatusChange(EventStatus.Completed)}
-            >
-              Complete
-            </ContextMenuItem>
-          )}
+          <ContextMenuGroup>
+            {event.status !== EventStatus.Completed && (
+              <ContextMenuItem
+                onClick={() => handleStatusChange(EventStatus.Completed)}
+              >
+                <CheckIcon />
+                Complete
+              </ContextMenuItem>
+            )}
+            {event.status !== EventStatus.Moved && (
+              <ContextMenuSub>
+                <ContextMenuSubTrigger>
+                  <IconCalendar />
+                  Move
+                </ContextMenuSubTrigger>
+                <ContextMenuSubContent>
+                  <ContextMenuGroup>
+                    <ContextMenuItem onClick={() => handleMoving("day")}>
+                      To tomorrow
+                    </ContextMenuItem>
+                    <ContextMenuItem onClick={() => handleMoving("week")}>
+                      To next week
+                    </ContextMenuItem>
+                  </ContextMenuGroup>
+                </ContextMenuSubContent>
+              </ContextMenuSub>
+            )}
+          </ContextMenuGroup>
           {event.status !== EventStatus.Cancelled && (
             <ContextMenuItem
               onClick={() => handleStatusChange(EventStatus.Cancelled)}
             >
+              <IconCancel />
               Cancel
             </ContextMenuItem>
-          )}
-          {event.status !== EventStatus.Moved && (
-            <ContextMenuSub>
-              <ContextMenuSubTrigger>Move</ContextMenuSubTrigger>
-              <ContextMenuSubContent>
-                <ContextMenuGroup>
-                  <ContextMenuItem onClick={() => handleMoving("day")}>
-                    To tomorrow
-                  </ContextMenuItem>
-                  <ContextMenuItem onClick={() => handleMoving("week")}>
-                    To next week
-                  </ContextMenuItem>
-                </ContextMenuGroup>
-              </ContextMenuSubContent>
-            </ContextMenuSub>
           )}
           {event.status !== EventStatus.Pending && (
             <ContextMenuItem
               onClick={() => handleStatusChange(EventStatus.Pending)}
             >
+              <IconBackspace />
               Undo
             </ContextMenuItem>
           )}
-          <ContextMenuItem onClick={handleDeleteClick}>Delete</ContextMenuItem>
           <ContextMenuItem onClick={() => setEventFormOpen(true)}>
+            <IconEdit />
             Edit
+          </ContextMenuItem>
+          <ContextMenuSeparator />
+          <ContextMenuItem onClick={handleDeleteClick} variant="destructive">
+            <IconTrash />
+            Delete
           </ContextMenuItem>
         </ContextMenuContent>
       </ContextMenu>
