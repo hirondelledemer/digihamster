@@ -6,6 +6,7 @@ import { Cross2Icon } from "@radix-ui/react-icons";
 import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "@/app/components/utils";
+import { PopupContainerProvider } from "./popup-container";
 
 const Sheet = SheetPrimitive.Root;
 
@@ -70,25 +71,46 @@ const SheetContent = React.forwardRef<
       ...props
     },
     ref
-  ) => (
-    <SheetPortal>
-      {showOverlay && <SheetOverlay onClick={onCloseClick} />}
-      <SheetPrimitive.Content
-        ref={ref}
-        className={cn(sheetVariants({ side }), className)}
-        {...props}
-      >
-        {children}
-        <SheetPrimitive.Close
-          className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-secondary"
-          onClick={onCloseClick}
+  ) => {
+    // Published so popups (context menus, dropdowns) portal into this layer
+    // instead of <body>, where Radix's modal pointer-events lock kills them.
+    const [contentNode, setContentNode] = React.useState<HTMLDivElement | null>(
+      null
+    );
+    const composedRef = React.useCallback(
+      (node: HTMLDivElement | null) => {
+        setContentNode(node);
+        if (typeof ref === "function") {
+          ref(node);
+        } else if (ref) {
+          ref.current = node;
+        }
+      },
+      [ref]
+    );
+
+    return (
+      <SheetPortal>
+        {showOverlay && <SheetOverlay onClick={onCloseClick} />}
+        <SheetPrimitive.Content
+          ref={composedRef}
+          className={cn(sheetVariants({ side }), className)}
+          {...props}
         >
-          <Cross2Icon className="h-4 w-4" />
-          <span className="sr-only">Close</span>
-        </SheetPrimitive.Close>
-      </SheetPrimitive.Content>
-    </SheetPortal>
-  )
+          <PopupContainerProvider value={contentNode}>
+            {children}
+          </PopupContainerProvider>
+          <SheetPrimitive.Close
+            className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-secondary"
+            onClick={onCloseClick}
+          >
+            <Cross2Icon className="h-4 w-4" />
+            <span className="sr-only">Close</span>
+          </SheetPrimitive.Close>
+        </SheetPrimitive.Content>
+      </SheetPortal>
+    );
+  }
 );
 SheetContent.displayName = SheetPrimitive.Content.displayName;
 

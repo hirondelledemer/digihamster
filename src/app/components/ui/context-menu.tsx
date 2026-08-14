@@ -4,6 +4,7 @@ import * as React from "react";
 import { ContextMenu as ContextMenuPrimitive } from "@base-ui/react/context-menu";
 import { CheckIcon, ChevronRightIcon } from "lucide-react";
 import { cn } from "../utils";
+import { usePopupContainer } from "./popup-container";
 
 function ContextMenu({ ...props }: ContextMenuPrimitive.Root.Props) {
   return <ContextMenuPrimitive.Root data-slot="context-menu" {...props} />;
@@ -34,14 +35,20 @@ function ContextMenuContent({
   alignOffset = 4,
   side = "right",
   sideOffset = 0,
+  container,
   ...props
 }: ContextMenuPrimitive.Popup.Props &
   Pick<
     ContextMenuPrimitive.Positioner.Props,
     "align" | "alignOffset" | "side" | "sideOffset"
-  >) {
+  > &
+  Pick<ContextMenuPrimitive.Portal.Props, "container">) {
+  // Inside a modal Sheet/Dialog the popup must portal into that layer, or it
+  // inherits `pointer-events: none` from <body>. See ./popup-container.
+  const layerContainer = usePopupContainer();
+
   return (
-    <ContextMenuPrimitive.Portal>
+    <ContextMenuPrimitive.Portal container={container ?? layerContainer}>
       <ContextMenuPrimitive.Positioner
         className="isolate z-50 outline-none"
         align={align}
