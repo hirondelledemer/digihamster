@@ -83,7 +83,11 @@ const CalendarEvent: FC<CalendarEventProps> = ({
   if (isCalendarDeadlineEntry(event)) {
     return <TaskActions task={event.resource.task}>{content}</TaskActions>;
   }
-  return <EventActions event={event.resource.event}>{content}</EventActions>;
+  return (
+    <EventActions event={event.resource.event} triggerClassName="h-full">
+      {content}
+    </EventActions>
+  );
 };
 
 export default CalendarEvent;

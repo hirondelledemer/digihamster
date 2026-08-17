@@ -37,11 +37,13 @@ import {
 interface EventActionsProps {
   event: IEvent;
   children: ReactNode;
+  triggerClassName?: string;
 }
 
 export const EventActions: React.FC<EventActionsProps> = ({
   event,
   children,
+  triggerClassName,
 }) => {
   const {
     delete: deleteEvent,
@@ -113,7 +115,9 @@ export const EventActions: React.FC<EventActionsProps> = ({
         </SheetContent>
       </Sheet>
       <ContextMenu>
-        <ContextMenuTrigger className="h-full">{children}</ContextMenuTrigger>
+        <ContextMenuTrigger className={triggerClassName}>
+          {children}
+        </ContextMenuTrigger>
         <ContextMenuContent className="w-64">
           <ContextMenuGroup>
             {event.status !== EventStatus.Completed && (
