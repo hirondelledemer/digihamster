@@ -35,6 +35,7 @@ import { useTasksNewState } from "@/app/utils/hooks/use-tasks-new/state-context"
 import CreateTaskForm from "../CreateTaskForm";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "../ui/sheet";
 import { ITask } from "@/app/utils/types/task";
+import { Card, CardHeader, CardTitle } from "../ui/card";
 
 const Projects: FC = (): JSX.Element => {
   const { data: projects, isLoading } = useProjectsState();
@@ -64,9 +65,12 @@ const Projects: FC = (): JSX.Element => {
   }>({ selectedTask: null, open: false });
   const [openProjectForm, setOpenProjectForm] = useState<boolean>(false);
 
-  const filteredTasks = tasks.filter(
-    (task) => task.project_id === selectedProjectId,
-  );
+  const filteredTasks = tasks.filter((task) => {
+    if (!selectedProjectId) {
+      return !task.project_id;
+    }
+    return task.project_id === selectedProjectId;
+  });
   const columns = getColumns(projects, []);
 
   const closeTaskForm = () => {
@@ -150,6 +154,22 @@ const Projects: FC = (): JSX.Element => {
               strategy={verticalListSortingStrategy}
               disabled={!enableSorting}
             >
+              <div
+                onClick={() => {
+                  setSelectedProjectId(null);
+                }}
+              >
+                <Card
+                  className={`w-[350px] p-0 rounded-md hover:border hover:border-primary ${selectedProjectId === null && "border border-[#791027]"}`}
+                >
+                  <CardHeader className="p-4">
+                    <CardTitle className="font-normal flex items-center justify-between">
+                      <div>No Project</div>
+                      <div className="flex"></div>
+                    </CardTitle>
+                  </CardHeader>
+                </Card>
+              </div>
               {sortedProjects.map((project, index) => (
                 <div
                   key={project.id}
