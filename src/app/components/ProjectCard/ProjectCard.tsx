@@ -1,8 +1,6 @@
 import React, { FC, useMemo, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { Project } from "@/models/project";
-// import useTasks from "@/app/utils/hooks/use-tasks";
-import { addEstimates } from "@/app/utils/tasks/estimates";
+import { Card, CardHeader, CardTitle } from "../ui/card";
+// import { addEstimates } from "@/app/utils/tasks/estimates";
 import {
   ContextMenu,
   ContextMenuContent,
@@ -13,10 +11,13 @@ import ProjectModalForm from "../ProjectModalForm";
 import { IconCircleCheck, IconXboxX } from "@tabler/icons-react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { IProject, ProjectStatus } from "@/app/utils/types/project";
+import { useTasksNewState } from "@/app/utils/hooks/use-tasks-new/state-context";
+import { TaskStatus } from "@/app/utils/types/task";
 
 export interface ProjectCardProps {
   testId?: string;
-  project: Project;
+  project: IProject;
   selected: boolean;
 }
 
@@ -25,11 +26,11 @@ const ProjectCard: FC<ProjectCardProps> = ({
   project,
   selected,
 }): JSX.Element => {
-  // const { data: tasks } = useTasks();
-  const tasks = [] as any[];
+  const { data: tasks } = useTasksNewState();
+
   const [projectModalOpen, setProjectModalOpen] = useState<boolean>(false);
   const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id: project._id });
+    useSortable({ id: project.id });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -37,41 +38,24 @@ const ProjectCard: FC<ProjectCardProps> = ({
   };
 
   const taskCount = useMemo(
-    () => tasks.filter((t) => t.projectId === project._id).length,
+    () => tasks.filter((t) => t.project_id === project.id).length,
     [tasks, project],
   );
 
   const completedTasksCount = useMemo(
     () =>
-      tasks.filter((t) => t.projectId === project._id && t.completed).length,
-    [tasks, project._id],
-  );
-
-  const estimatedTaskCount = useMemo(
-    () =>
-      tasks.filter((t) => t.projectId === project._id && !!t.estimate).length,
-    [project._id, tasks],
+      tasks.filter(
+        (t) => t.project_id === project.id && t.status === TaskStatus.Done,
+      ).length,
+    [tasks, project.id],
   );
 
   const completed = useMemo(
     () =>
-      tasks.filter((t) => t.projectId === project._id && !t.completed)
-        .length === 0,
+      tasks.filter(
+        (t) => t.project_id === project.id && t.status !== TaskStatus.Done,
+      ).length === 0,
     [tasks, project],
-  );
-
-  const completedTasksEta = useMemo(
-    () =>
-      tasks
-        .filter((t) => t.projectId === project._id && t.completed)
-        .reduce(addEstimates, 0),
-    [tasks, project._id],
-  );
-
-  const totalTaskEta = useMemo(
-    () =>
-      tasks.filter((t) => t.projectId === project._id).reduce(addEstimates, 0),
-    [tasks, project._id],
   );
 
   const closeProjectForm = () => setProjectModalOpen(false);
@@ -88,7 +72,9 @@ const ProjectCard: FC<ProjectCardProps> = ({
         <ContextMenuTrigger>
           <Card
             className={`w-[350px] p-0 rounded-md hover:border hover:border-primary ${
-              project.disabled ? "opacity-40 line-through" : ""
+              project.status === ProjectStatus.Cancelled
+                ? "opacity-40 line-through"
+                : ""
             } ${selected && "border border-[#791027]"}`}
             ref={setNodeRef}
             style={style}
@@ -108,12 +94,12 @@ const ProjectCard: FC<ProjectCardProps> = ({
                       className="mr-1"
                     />
                   )}
-                  {!completed && !project.disabled && (
+                  {!completed && project.status !== ProjectStatus.Cancelled && (
                     <div className="flex items-center text-xs">
                       {completedTasksCount}/{taskCount}
                     </div>
                   )}
-                  {project.disabled && (
+                  {project.status === ProjectStatus.Cancelled && (
                     <IconXboxX
                       data-testid="disabled-icon"
                       size={19}
@@ -126,7 +112,7 @@ const ProjectCard: FC<ProjectCardProps> = ({
               </CardTitle>
             </CardHeader>
 
-            {!completed && !project.disabled && (
+            {/* {!completed && !project.disabled && (
               <CardContent className="pb-4 px-4 text-xs whitespace-pre-wrap muted">
                 <div
                   data-testid="progress-bar"
@@ -151,7 +137,7 @@ const ProjectCard: FC<ProjectCardProps> = ({
                   </div>
                 </div>
               </CardContent>
-            )}
+            )} */}
           </Card>
         </ContextMenuTrigger>
         <ContextMenuContent className="w-64">

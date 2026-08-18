@@ -21,22 +21,20 @@ interface DataTableRowActionsProps<TData> {
 
 // todo: this is not okey. data should be normalized
 export const taskSchema = z.object({
-  _id: z.string(),
+  id: z.number(),
   title: z.string(),
   description: z.union([z.string(), z.undefined(), z.null()]),
   estimate: z.union([z.number(), z.undefined(), z.null()]),
-  projectId: z.union([z.string(), z.null()]),
-  deadline: z.union([z.number(), z.undefined(), z.null()]),
-  isActive: z.boolean() || z.undefined(),
-  completed: z.boolean(),
-  deleted: z.boolean(),
+  project_id: z.union([z.number(), z.null()]),
+  deadline: z.union([z.string(), z.undefined(), z.null()]),
+  status: z.string(),
   sortOrder: z.union([z.number(), z.undefined(), z.null()]),
   completedAt: z.union([z.number(), z.undefined()]),
   activatedAt: z.union([z.number(), z.undefined(), z.null()]),
   parentTaskId: z.union([z.string(), z.null(), z.undefined()]),
-  tags: z.array(z.string()),
-  createdAt: z.string(),
-  updatedAt: z.string(),
+  // tags: z.array(z.string()),
+  created_at: z.string(),
+  // updatedAt: z.string(),
 });
 
 export function DataTableRowActions<TData>({

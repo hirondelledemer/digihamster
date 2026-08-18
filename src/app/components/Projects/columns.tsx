@@ -1,19 +1,19 @@
 "use client";
 
-import { TaskV2 as Task } from "@/models/taskV2";
 import { ColumnDef } from "@tanstack/react-table";
-import { Project } from "@/models/project";
 import { format } from "date-fns";
 import { Tag } from "@/models/tag";
 import { DataTableColumnHeader } from "../Tasks/components/DataTableColumnHeader/DataTableColumnHeader";
 import { Badge } from "../ui/badge";
 import Estimate from "../Estimate";
 import { DataTableRowActions } from "../Tasks/components/DataTableRowActions/DataTableRowActions";
+import { IProject } from "@/app/utils/types/project";
+import { ITask, TaskStatus } from "@/app/utils/types/task";
 
 export const getColumns: (
-  projects: Project[],
+  projects: IProject[],
   tags: Tag[],
-) => ColumnDef<Task>[] = (projects, tags) => [
+) => ColumnDef<ITask>[] = (_projects, _tags) => [
   {
     accessorKey: "title",
     header: ({ column }) => (
@@ -27,13 +27,13 @@ export const getColumns: (
             {row.original.deadline && (
               <Badge variant="destructive">Deadline</Badge>
             )}
-            {tags
+            {/* {tags
               .filter((tag) => row.original.tags.includes(tag._id))
               .map((tag) => (
                 <Badge variant="outline" key={tag._id}>
                   {tag.title}
                 </Badge>
-              ))}
+              ))} */}
           </span>
         </div>
       );
@@ -53,37 +53,39 @@ export const getColumns: (
         </div>
       );
     },
-    filterFn: (row, _id, value: string[]) => {
-      return !!value.filter((tagId) => row.original.tags.includes(tagId))
-        .length;
-    },
+    // filterFn: (row, _id, value: string[]) => {
+    //   return !!value.filter((tagId) => row.original.tags.includes(tagId))
+    //     .length;
+    // },
   },
+  // {
+  //   accessorKey: "estimate",
+  //   header: ({ column }) => (
+  //     <DataTableColumnHeader column={column} title="Estimate" />
+  //   ),
+  //   cell: ({ row }) => {
+  //     return (
+  //       <div className="flex w-[50px] items-center">
+  //         <Estimate estimate={row.getValue("estimate")} />
+  //       </div>
+  //     );
+  //   },
+  //   filterFn: (row, id, value) => {
+  //     return value.includes(row.getValue(id));
+  //   },
+  //   sortUndefined: false,
+  // },
   {
-    accessorKey: "estimate",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Estimate" />
-    ),
-    cell: ({ row }) => {
-      return (
-        <div className="flex w-[50px] items-center">
-          <Estimate estimate={row.getValue("estimate")} />
-        </div>
-      );
-    },
-    filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id));
-    },
-    sortUndefined: false,
-  },
-  {
-    accessorKey: "isActive",
+    accessorKey: "status",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Status" />
     ),
     cell: ({ row }) => {
       return (
         <div className="flex w-[50px] items-center">
-          <span>{row.original.isActive ? "ACTIVE" : ""}</span>
+          <span>
+            {row.original.status === TaskStatus.Doing ? "ACTIVE" : ""}
+          </span>
         </div>
       );
     },
@@ -92,14 +94,14 @@ export const getColumns: (
     },
   },
   {
-    accessorKey: "createdAt",
+    accessorKey: "created_at",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Created At" />
     ),
     cell: ({ row }) => {
       return (
         <div className="flex w-[100px] items-center">
-          <span>{format(row.getValue("createdAt"), "yyyy-MM-dd")}</span>
+          <span>{format(row.getValue("created_at"), "yyyy-MM-dd")}</span>
         </div>
       );
     },
@@ -107,22 +109,22 @@ export const getColumns: (
       return value.includes(row.getValue(id));
     },
   },
-  {
-    accessorKey: "updatedAt",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Updated At" />
-    ),
-    cell: ({ row }) => {
-      return (
-        <div className="flex w-[100px] items-center">
-          <span>{format(row.getValue("updatedAt"), "yyyy-MM-dd")}</span>
-        </div>
-      );
-    },
-    filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id));
-    },
-  },
+  // {
+  //   accessorKey: "updatedAt",
+  //   header: ({ column }) => (
+  //     <DataTableColumnHeader column={column} title="Updated At" />
+  //   ),
+  //   cell: ({ row }) => {
+  //     return (
+  //       <div className="flex w-[100px] items-center">
+  //         <span>{format(row.getValue("updatedAt"), "yyyy-MM-dd")}</span>
+  //       </div>
+  //     );
+  //   },
+  //   filterFn: (row, id, value) => {
+  //     return value.includes(row.getValue(id));
+  //   },
+  // },
   {
     id: "actions",
     cell: ({ row }) => <DataTableRowActions row={row} />,
