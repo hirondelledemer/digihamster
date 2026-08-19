@@ -217,6 +217,7 @@ const NewProjectForm: FC = () => {
       title: title.trim(),
       life_aspect_id: Number(category),
       color,
+      description: "",
       status: ProjectStatus.Todo,
     });
     setTitle("");

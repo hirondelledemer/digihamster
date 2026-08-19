@@ -83,7 +83,6 @@ export const ProjectsContextProvider = ({
       const tempProject: IProject = {
         id: tempId,
         sort_order: 0,
-        description: "",
         created_at: "",
         ...data,
       };
