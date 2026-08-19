@@ -2,10 +2,6 @@
 import React, { FC, useState } from "react";
 
 import { DataTable } from "../Tasks/components/DataTable/DataTable";
-// import useTasks from "@/app/utils/hooks/use-tasks";
-// import { useTagsState } from "@/app/utils/hooks/use-tags/state-context";
-// import { TaskV2 } from "@/models/taskV2";
-// import TaskFormModal from "../TaskFormModal";
 import ProjectCard from "../ProjectCard";
 import { Button } from "../ui/button";
 import ProjectModalForm from "../ProjectModalForm";
@@ -27,7 +23,6 @@ import {
 } from "@dnd-kit/core";
 import { Switch } from "../ui/switch";
 import { Label } from "../ui/label";
-// import ProjectBurnDownChart from "../ProjectBurnDownChart";
 import { getColumns } from "./columns";
 import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
 import { useProjectsActions } from "@/app/utils/hooks/use-projects/actions-context";
@@ -191,16 +186,7 @@ const Projects: FC = (): JSX.Element => {
           </DndContext>
         </div>
         <div className="grow">
-          {/* {selectedProjectId && (
-            <ProjectBurnDownChart projectId={selectedProjectId} />
-          )} */}
-          <DataTable
-            data={filteredTasks}
-            columns={columns}
-            // onRowClick={(task: ITask) => {
-            //   setOpenTaskForm({ selectedTask: task, open: true });
-            // }}
-          />
+          <DataTable data={filteredTasks} columns={columns} />
         </div>
       </div>
     </div>
