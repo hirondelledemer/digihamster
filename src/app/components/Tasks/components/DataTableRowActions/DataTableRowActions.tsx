@@ -2,72 +2,19 @@
 
 import { DotsHorizontalIcon } from "@radix-ui/react-icons";
 import { Row } from "@tanstack/react-table";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-  DropdownMenuItem,
-} from "../../../ui/dropdown-menu";
 import { Button } from "../../../ui/button";
-import { MouseEvent, useState } from "react";
-// import useEditTask from "@/app/utils/hooks/use-edit-task";
-import { z } from "zod";
+import { useState } from "react";
 import TaskFormModal from "@/app/components/TaskFormModal";
 import { TaskActions } from "@/app/components/TaskActions";
+import { ITask } from "@/app/utils/types/task";
 
-interface DataTableRowActionsProps<TData> {
-  row: Row<TData>;
+interface DataTableRowActionsProps {
+  row: Row<ITask>;
 }
 
-// todo: this is not okey. data should be normalized
-export const taskSchema = z.object({
-  id: z.number(),
-  title: z.string(),
-  description: z.union([z.string(), z.undefined(), z.null()]),
-  estimate: z.union([z.number(), z.undefined(), z.null()]),
-  project_id: z.union([z.number(), z.null()]),
-  deadline: z.union([z.string(), z.undefined(), z.null()]),
-  status: z.string(),
-  sortOrder: z.union([z.number(), z.undefined(), z.null()]),
-  completedAt: z.union([z.number(), z.undefined()]),
-  activatedAt: z.union([z.number(), z.undefined(), z.null()]),
-  parentTaskId: z.union([z.string(), z.null(), z.undefined()]),
-  // tags: z.array(z.string()),
-  created_at: z.string(),
-  // updatedAt: z.string(),
-});
-
-export function DataTableRowActions<TData>({
-  row,
-}: DataTableRowActionsProps<TData>) {
-  const task = taskSchema.parse(row.original);
+export function DataTableRowActions({ row }: DataTableRowActionsProps) {
+  const task = row.original;
   const [taskFormOpen, setTaskFormOpen] = useState<boolean>(false);
-  // const { editTask, deleteTask } = useEditTask();
-
-  const handleActivateClick = (event: MouseEvent) => {
-    event.stopPropagation();
-    // editTask(task._id, {
-    //   isActive: true,
-    // });
-  };
-
-  const handleDeactivateClick = (event: MouseEvent) => {
-    event.stopPropagation();
-    // editTask(task._id, {
-    //   isActive: false,
-    // });
-  };
-
-  const handleEditClick = (event: MouseEvent) => {
-    event.stopPropagation();
-    setTaskFormOpen(true);
-  };
-
-  const handleDeleteClick = (event: MouseEvent) => {
-    event.stopPropagation();
-    // deleteTask(task._id);
-  };
 
   const closeTaskForm = () => setTaskFormOpen(false);
 
@@ -90,34 +37,6 @@ export function DataTableRowActions<TData>({
           <span className="sr-only">Open menu</span>
         </Button>
       </TaskActions>
-      {/* <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="ghost"
-            className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
-          >
-            <DotsHorizontalIcon className="h-4 w-4" />
-            <span className="sr-only">Open menu</span>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-[160px]">
-          <DropdownMenuItem onClick={handleEditClick}>Edit</DropdownMenuItem>
-          {!task.isActive && (
-            <DropdownMenuItem onClick={handleActivateClick}>
-              Activate
-            </DropdownMenuItem>
-          )}
-          {task.isActive && (
-            <DropdownMenuItem onClick={handleDeactivateClick}>
-              Deactivate
-            </DropdownMenuItem>
-          )}
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={handleDeleteClick}>
-            Delete
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu> */}
     </>
   );
 }
