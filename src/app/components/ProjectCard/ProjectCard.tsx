@@ -1,6 +1,5 @@
 import React, { FC, useMemo, useState } from "react";
-import { Card, CardHeader, CardTitle } from "../ui/card";
-// import { addEstimates } from "@/app/utils/tasks/estimates";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import {
   ContextMenu,
   ContextMenuContent,
@@ -14,6 +13,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { IProject, ProjectStatus } from "@/app/utils/types/project";
 import { useTasksNewState } from "@/app/utils/hooks/use-tasks-new/state-context";
 import { TaskStatus } from "@/app/utils/types/task";
+import { ProjectProgressBar } from "../ProjectProgressBar";
 
 export interface ProjectCardProps {
   testId?: string;
@@ -112,32 +112,11 @@ const ProjectCard: FC<ProjectCardProps> = ({
               </CardTitle>
             </CardHeader>
 
-            {/* {!completed && !project.disabled && (
-              <CardContent className="pb-4 px-4 text-xs whitespace-pre-wrap muted">
-                <div
-                  data-testid="progress-bar"
-                  className="w-full border bg--secondary h-2 bg-[#22040b]"
-                >
-                  <div
-                    data-testid="progress-bar-outer"
-                    style={{
-                      height: "100%",
-                      width: `${(estimatedTaskCount / taskCount) * 100}%`,
-                      backgroundColor: "#1b1917",
-                    }}
-                  >
-                    <div
-                      data-testid="progress-bar-inner"
-                      style={{
-                        height: "100%",
-                        backgroundColor: project.color,
-                        width: `${(completedTasksEta / totalTaskEta) * 100}%`,
-                      }}
-                    />
-                  </div>
-                </div>
+            {project.status === ProjectStatus.Doing && (
+              <CardContent>
+                <ProjectProgressBar project={project} />
               </CardContent>
-            )} */}
+            )}
           </Card>
         </ContextMenuTrigger>
         <ContextMenuContent className="w-64">
