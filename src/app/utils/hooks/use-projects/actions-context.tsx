@@ -7,15 +7,11 @@ type ProjectActionsContextValue = ActionsContextValue<
   FieldsRequired,
   IProject
 > & {
-  updateOrder(
-    movedProjectId: number,
-    overProjectId: number,
-    onDone?: () => void,
-  ): void;
+  updateOrder(projectIds: number[]): void;
 };
 
 const DEFAULT_PROJECTS_ACTIONS: ProjectActionsContextValue = {
-  create: () => {},
+  create: async () => null,
   update: () => {},
   delete: () => {},
   updateOrder: () => {},

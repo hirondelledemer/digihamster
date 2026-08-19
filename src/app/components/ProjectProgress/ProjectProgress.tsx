@@ -1,19 +1,16 @@
 "use client";
+import React, { FC, useCallback, useMemo } from "react";
+
 import { now } from "@/app/utils/date/now";
 import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
 import { useTasksNewState } from "@/app/utils/hooks/use-tasks-new/state-context";
-import { Project } from "@/models/project";
-import { ProjectStatus } from "@/app/utils/types/project";
+import { IProject, ProjectStatus } from "@/app/utils/types/project";
 import { addDays, differenceInCalendarDays, format, isValid } from "date-fns";
 import { useRouter } from "next/navigation";
+import { ProjectProgressBar } from "../ProjectProgressBar";
 
-import React, { FC, useCallback, useMemo } from "react";
-
-export interface ProjectProgressProps {
-  testId?: string;
-}
-
-const ProjectProgressBar: FC<{ project: Project }> = ({
+// TODO: project should have normal reusable card
+const ProjectProgressItem: FC<{ project: IProject }> = ({
   project,
 }): JSX.Element => {
   const { data: tasks } = useTasksNewState();
@@ -23,11 +20,6 @@ const ProjectProgressBar: FC<{ project: Project }> = ({
   const allTasks = useMemo(
     () => tasks.filter((task) => task.project_id === project.id),
     [project.id, tasks],
-  );
-
-  const activeTaskCount = useMemo(
-    () => allTasks.filter((task) => task.status === "doing").length,
-    [allTasks],
   );
 
   const getCompletionEta = useCallback(() => {
@@ -57,11 +49,6 @@ const ProjectProgressBar: FC<{ project: Project }> = ({
     return "date unknown";
   }, [allTasks]);
 
-  const completedTaskCount = useMemo(
-    () => allTasks.filter((task) => task.status === "done").length,
-    [allTasks],
-  );
-
   return (
     <div
       key={project.id}
@@ -73,55 +60,24 @@ const ProjectProgressBar: FC<{ project: Project }> = ({
         <div className="text-sm">
           {project.title} ({getCompletionEta()})
         </div>
-        <div
-          data-testid="progress-bar"
-          className="w-full h-2"
-          style={{
-            border: `1px solid ${project.color}`,
-            borderRadius: "3px",
-          }}
-        >
-          <div
-            data-testid="progress-bar-outer"
-            style={{
-              height: "100%",
-              width: `${
-                ((activeTaskCount + completedTaskCount) / allTasks.length) * 100
-              }%`,
-              background: `repeating-linear-gradient(135deg, ${project.color}, ${project.color} 2px, transparent 2px, transparent 4px)`,
-            }}
-          >
-            <div
-              data-testid="progress-bar-inner"
-              style={{
-                height: "100%",
-                backgroundColor: project.color,
-
-                width: `${
-                  (completedTaskCount /
-                    (activeTaskCount + completedTaskCount)) *
-                  100
-                }%`,
-              }}
-            />
-          </div>
-        </div>
+        <ProjectProgressBar project={project} />
       </div>
     </div>
   );
 };
 
-const ProjectProgress: FC<ProjectProgressProps> = (): JSX.Element => {
+const ProjectProgress: FC = (): JSX.Element => {
   const { data: projects } = useProjectsState();
 
-  const activeProjects = projects.filter(
-    (project) => project.status === ProjectStatus.Doing,
-  );
+  const activeProjects = projects
+    .filter((project) => project.status === ProjectStatus.Doing)
+    // .sortBy((a, b) => a.sort_order - b.sort_order);
+    .sort((a, b) => a.sort_order - b.sort_order);
 
   return (
     <div className="flex flex-col gap-3">
       {activeProjects.map((project) => (
-        <ProjectProgressBar key={project.id} project={project} />
+        <ProjectProgressItem key={project.id} project={project} />
       ))}
     </div>
   );

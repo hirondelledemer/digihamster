@@ -1,4 +1,3 @@
-import { Project } from "@/models/project";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React, { FC, useCallback } from "react";
 import { useForm } from "react-hook-form";
@@ -6,7 +5,6 @@ import { z } from "zod";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -22,10 +20,11 @@ import {
 } from "../ui/select";
 import { colors } from "./ProjectForm.consts";
 import { Button } from "../ui/button";
-import { Switch } from "../ui/switch";
-import RteFormField from "../RteFormField";
 import { useProjectsActions } from "@/app/utils/hooks/use-projects/actions-context";
 import { useLifeAspectsState } from "@/app/utils/hooks/use-life-aspects/state-context";
+import { IProject, ProjectStatus } from "@/app/utils/types/project";
+import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
+import { Textarea } from "../ui/textarea";
 
 interface CommonProps {
   testId?: string;
@@ -39,7 +38,7 @@ export interface ProjectFormRegularProps extends CommonProps {
   initialValues?: Partial<FormValues>;
 }
 export interface ProjectFormEditModeProps extends CommonProps {
-  project: Project;
+  project: IProject;
   editMode: true;
 }
 
@@ -50,9 +49,14 @@ export type ProjectFormProps =
 const FormSchema = z.object({
   title: z.string().min(1, { message: "Required." }),
   color: z.string().min(1, { message: "Required." }),
-  disabled: z.boolean(),
-  category: z.string(),
-  jsonDescription: z.any(),
+  status: z.enum([
+    ProjectStatus.Cancelled,
+    ProjectStatus.Doing,
+    ProjectStatus.Done,
+    ProjectStatus.Todo,
+  ]),
+  lifeAspectId: z.union([z.number(), z.undefined()]),
+  description: z.union([z.string(), z.undefined()]),
 });
 
 export type FormValues = z.infer<typeof FormSchema>;
@@ -70,17 +74,9 @@ const ProjectForm: FC<ProjectFormProps> = ({
       return {
         title: restProps.project.title,
         color: restProps.project.color,
-        category: restProps.project.category || "",
-        disabled: restProps.project.disabled,
-        jsonDescription: {
-          title: "",
-          content: "",
-          tags: [],
-          tasks: [],
-          textContent: "",
-          contentJSON: restProps.project.jsonDescription,
-          projectId: "",
-        },
+        lifeAspectId: restProps.project.life_aspect_id,
+        status: restProps.project.status,
+        description: restProps.project.description,
       };
     }
     return restProps.initialValues;
@@ -91,37 +87,28 @@ const ProjectForm: FC<ProjectFormProps> = ({
     defaultValues: {
       title: "",
       color: "#e11d48",
-      disabled: false,
-      category: lifeAspects[0]?._id || "",
-      jsonDescription: {
-        title: "",
-        content: "",
-        tags: [],
-        tasks: [],
-        textContent: "",
-        contentJSON: {},
-        projectId: "",
-      },
+      status: ProjectStatus.Todo,
+      lifeAspectId: lifeAspects[0]?.id,
       ...getInitialValues(),
     },
   });
 
   const handleSubmit = (values: FormValues) => {
     if (restProps.editMode) {
-      updateProject(restProps.project._id, {
+      updateProject(restProps.project.id, {
         title: values.title,
         color: values.color,
-        disabled: values.disabled,
-        category: values.category,
-        jsonDescription: values.jsonDescription.contentJSON,
+        description: values.description,
+        status: values.status || ProjectStatus.Todo,
+        life_aspect_id: Number(values.lifeAspectId),
       });
     } else {
       createProject({
         title: values.title,
         color: values.color,
-        disabled: values.disabled,
-        category: values.category,
-        jsonDescription: values.jsonDescription.contentJSON,
+        description: values.description || "",
+        status: values.status,
+        life_aspect_id: Number(values.lifeAspectId),
       });
     }
     onDone();
@@ -146,16 +133,12 @@ const ProjectForm: FC<ProjectFormProps> = ({
 
         <FormField
           control={form.control}
-          name="jsonDescription"
+          name="description"
           render={({ field }) => (
             <FormItem className="flex flex-col">
               <FormLabel>Goal</FormLabel>
               <FormControl>
-                <RteFormField
-                  testId={rteTestId}
-                  value={field.value.contentJSON}
-                  onChange={field.onChange}
-                />
+                <Textarea placeholder="description" {...field} />
               </FormControl>
             </FormItem>
           )}
@@ -198,14 +181,16 @@ const ProjectForm: FC<ProjectFormProps> = ({
 
         <FormField
           control={form.control}
-          name="category"
+          name="lifeAspectId"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Life aspect</FormLabel>
               <Select
-                onValueChange={field.onChange}
-                defaultValue={field.value}
-                value={field.value}
+                onValueChange={(value) => {
+                  field.onChange(Number(value));
+                }}
+                defaultValue={field.value ? field.value.toString() : undefined}
+                value={field.value ? field.value.toString() : undefined}
               >
                 <FormControl>
                   <SelectTrigger>
@@ -214,7 +199,11 @@ const ProjectForm: FC<ProjectFormProps> = ({
                 </FormControl>
                 <SelectContent>
                   {lifeAspects.map((la) => (
-                    <SelectItem key={la._id} value={la._id} role="option">
+                    <SelectItem
+                      key={la.id}
+                      value={la.id.toString()}
+                      role="option"
+                    >
                       {la.title}
                     </SelectItem>
                   ))}
@@ -227,18 +216,28 @@ const ProjectForm: FC<ProjectFormProps> = ({
 
         <FormField
           control={form.control}
-          name="disabled"
+          name="status"
           render={({ field }) => (
-            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
-              <div className="space-y-0.5">
-                <FormLabel>Disable</FormLabel>
-                <FormDescription>Do not allow selection</FormDescription>
-              </div>
+            <FormItem>
               <FormControl>
-                <Switch
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                />
+                <ToggleGroup
+                  type="single"
+                  value={field.value}
+                  onValueChange={field.onChange}
+                >
+                  <ToggleGroupItem value={ProjectStatus.Todo}>
+                    Todo
+                  </ToggleGroupItem>
+                  <ToggleGroupItem value={ProjectStatus.Doing}>
+                    In Progress
+                  </ToggleGroupItem>
+                  <ToggleGroupItem value={ProjectStatus.Done}>
+                    Done
+                  </ToggleGroupItem>
+                  <ToggleGroupItem value={ProjectStatus.Cancelled}>
+                    Canceled
+                  </ToggleGroupItem>
+                </ToggleGroup>
               </FormControl>
             </FormItem>
           )}

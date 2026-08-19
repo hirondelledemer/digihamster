@@ -7,9 +7,11 @@ export type LifeAspectFields = {
   asset: LifeAspectAsset;
 };
 
+export const LIFE_ASPECTS_WITH_BOOSTS_PATH = "/life-aspects/with-boosts";
+
 export const api = {
   getLifeAspects: () =>
-    apiClient.get<LifeAspect[]>("/life-aspects/with-boosts"),
+    apiClient.get<LifeAspect[]>(LIFE_ASPECTS_WITH_BOOSTS_PATH),
   createLifeAspect: (data: LifeAspectFields) =>
     apiClient.post<LifeAspect>("/life-aspects", data),
   updateLifeAspect: (id: string, data: Partial<LifeAspectFields>) =>

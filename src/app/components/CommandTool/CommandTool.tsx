@@ -11,7 +11,7 @@ import {
   CommandList,
 } from "../ui/command";
 import useHotKeys from "@/app/utils/hooks/use-hotkeys";
-import { HABITS, HOME, PROJECTS, TASKS, WIKI } from "@/app/utils/consts/routes";
+import { HABITS, HOME, PROJECTS, WIKI } from "@/app/utils/consts/routes";
 import { DialogTitle } from "@radix-ui/react-dialog";
 import TaskFormModal from "../TaskFormModal";
 import { WIKI_MESSAGES } from "./types";
@@ -54,10 +54,6 @@ const CommandTool: FC<CommandToolProps> = (): JSX.Element => {
     return 0;
   };
 
-  const gotToTasks = useCallback(() => {
-    router.push(TASKS);
-  }, [router]);
-
   const gotToProjects = useCallback(() => {
     router.push(PROJECTS);
   }, [router]);
@@ -83,7 +79,7 @@ const CommandTool: FC<CommandToolProps> = (): JSX.Element => {
     createNewTask({
       title: searchValue,
       status: "doing",
-      deadline: null,
+      deadline: undefined,
       description: "",
     });
     setOpen(false);
@@ -125,7 +121,6 @@ const CommandTool: FC<CommandToolProps> = (): JSX.Element => {
           </CommandGroup>
           <CommandGroup heading="Go to">
             <CommandItem onSelect={goToHome}>/home</CommandItem>
-            <CommandItem onSelect={gotToTasks}>/tasks</CommandItem>
             <CommandItem onSelect={gotToProjects}>/projects</CommandItem>
             <CommandItem onSelect={goToHabits}>/habits</CommandItem>
             <CommandItem onSelect={gotToWiki}>/wiki</CommandItem>

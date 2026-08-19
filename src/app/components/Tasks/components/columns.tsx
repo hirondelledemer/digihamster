@@ -1,19 +1,20 @@
 "use client";
 
-import { TaskV2 as Task } from "@/models/taskV2";
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTableColumnHeader } from "./DataTableColumnHeader/DataTableColumnHeader";
 import { DataTableRowActions } from "./DataTableRowActions/DataTableRowActions";
-import { Project } from "@/models/project";
 import Estimate from "../../Estimate";
 import { format } from "date-fns";
 import { Tag } from "@/models/tag";
 import { Badge } from "../../ui/badge";
+import { ITask, TaskStatus } from "@/app/utils/types/task";
+import { IProject } from "@/app/utils/types/project";
 
+// TODO: is this even used anywhere?
 export const getColumns: (
-  projects: Project[],
-  tags: Tag[]
-) => ColumnDef<Task>[] = (projects, tags) => [
+  projects: IProject[],
+  tags: Tag[],
+) => ColumnDef<ITask>[] = (projects, _tags) => [
   // {
   //   id: "select",
   //   header: ({ table }) => (
@@ -51,13 +52,13 @@ export const getColumns: (
             {row.original.deadline && (
               <Badge variant="destructive">Deadline</Badge>
             )}
-            {tags
+            {/* {tags
               .filter((tag) => row.original.tags.includes(tag._id))
               .map((tag) => (
                 <Badge variant="outline" key={tag._id}>
                   {tag.title}
                 </Badge>
-              ))}
+              ))} */}
           </span>
         </div>
       );
@@ -77,10 +78,10 @@ export const getColumns: (
         </div>
       );
     },
-    filterFn: (row, _id, value: string[]) => {
-      return !!value.filter((tagId) => row.original.tags.includes(tagId))
-        .length;
-    },
+    // filterFn: (row, _id, value: string[]) => {
+    //   return !!value.filter((tagId) => row.original.tags.includes(tagId))
+    //     .length;
+    // },
   },
   {
     accessorKey: "estimate",
@@ -100,12 +101,12 @@ export const getColumns: (
     sortUndefined: false,
   },
   {
-    accessorKey: "projectId",
+    accessorKey: "project_id",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Project" />
     ),
     cell: ({ row }) => {
-      const project = projects.find((p) => p._id === row.getValue("projectId"));
+      const project = projects.find((p) => p.id === row.getValue("project_id"));
 
       if (!project) {
         return null;
@@ -129,7 +130,9 @@ export const getColumns: (
     cell: ({ row }) => {
       return (
         <div className="flex w-[100px] items-center">
-          <span>{row.original.isActive ? "ACTIVE" : ""}</span>
+          <span>
+            {row.original.status === TaskStatus.Doing ? "ACTIVE" : ""}
+          </span>
         </div>
       );
     },
@@ -145,7 +148,7 @@ export const getColumns: (
     cell: ({ row }) => {
       return (
         <div className="flex w-[100px] items-center">
-          <span>{format(row.getValue("createdAt"), "yyyy-MM-dd")}</span>
+          <span>{format(row.getValue("created_at"), "yyyy-MM-dd")}</span>
         </div>
       );
     },
@@ -153,22 +156,22 @@ export const getColumns: (
       return value.includes(row.getValue(id));
     },
   },
-  {
-    accessorKey: "updatedAt",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Updated At" />
-    ),
-    cell: ({ row }) => {
-      return (
-        <div className="flex w-[100px] items-center">
-          <span>{format(row.getValue("updatedAt"), "yyyy-MM-dd")}</span>
-        </div>
-      );
-    },
-    filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id));
-    },
-  },
+  // {
+  //   accessorKey: "updatedAt",
+  //   header: ({ column }) => (
+  //     <DataTableColumnHeader column={column} title="Updated At" />
+  //   ),
+  //   cell: ({ row }) => {
+  //     return (
+  //       <div className="flex w-[100px] items-center">
+  //         <span>{format(row.getValue("updatedAt"), "yyyy-MM-dd")}</span>
+  //       </div>
+  //     );
+  //   },
+  //   filterFn: (row, id, value) => {
+  //     return value.includes(row.getValue(id));
+  //   },
+  // },
   {
     id: "actions",
     cell: ({ row }) => <DataTableRowActions row={row} />,

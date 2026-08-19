@@ -28,10 +28,11 @@ import {
 import { colors } from "@/app/components/ProjectForm/ProjectForm.consts";
 import { Badge } from "@/app/components/ui/badge";
 import { cn } from "@/app/components/utils";
-import { IProject } from "../utils/types/project";
+import { IProject, ProjectStatus } from "../utils/types/project";
 import { ProjectRow } from "../modules/projects/components/ProjectRow";
 import { ITask, TaskStatus } from "../utils/types/task";
 import CommandTool from "../components/CommandTool";
+import Projects from "../components/Projects";
 
 // ─── Task components ──────────────────────────────────────────────────────────
 
@@ -216,6 +217,8 @@ const NewProjectForm: FC = () => {
       title: title.trim(),
       life_aspect_id: Number(category),
       color,
+      description: "",
+      status: ProjectStatus.Todo,
     });
     setTitle("");
     setCategory("");
@@ -263,6 +266,7 @@ const NewProjectForm: FC = () => {
   );
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const ProjectsNewTable: FC = () => {
   const { data = [], isLoading } = useProjectsState();
   const [selectedProjectId, setSelectedProjectId] = useState<number | null>(
@@ -316,7 +320,8 @@ export default function ProjectsNewPage() {
       <LifeAspectsContextProvider>
         <TasksNewContextProvider>
           <CommandTool />
-          <ProjectsNewTable />
+          {/* <ProjectsNewTable /> */}
+          <Projects />
         </TasksNewContextProvider>
       </LifeAspectsContextProvider>
     </ProjectsContextProvider>

@@ -2,14 +2,11 @@
 import React, { FC, useState } from "react";
 
 import { DataTable } from "../Tasks/components/DataTable/DataTable";
-// import useTasks from "@/app/utils/hooks/use-tasks";
-import { useTagsState } from "@/app/utils/hooks/use-tags/state-context";
-import { TaskV2 } from "@/models/taskV2";
-import TaskFormModal from "../TaskFormModal";
 import ProjectCard from "../ProjectCard";
 import { Button } from "../ui/button";
 import ProjectModalForm from "../ProjectModalForm";
 import {
+  arrayMove,
   SortableContext,
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
@@ -22,27 +19,31 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
+  DragEndEvent,
 } from "@dnd-kit/core";
 import { Switch } from "../ui/switch";
 import { Label } from "../ui/label";
-import ProjectBurnDownChart from "../ProjectBurnDownChart";
 import { getColumns } from "./columns";
 import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
 import { useProjectsActions } from "@/app/utils/hooks/use-projects/actions-context";
+import { useTasksNewState } from "@/app/utils/hooks/use-tasks-new/state-context";
+import CreateTaskForm from "../CreateTaskForm";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "../ui/sheet";
+import { ITask } from "@/app/utils/types/task";
+import { Card, CardHeader, CardTitle } from "../ui/card";
 
-export interface ProjectsProps {
-  testId?: string;
-}
-
-const Projects: FC<ProjectsProps> = ({ testId }): JSX.Element => {
-  const { data: projects, defaultProject, isLoading } = useProjectsState();
+const Projects: FC = (): JSX.Element => {
+  const { data: projects, isLoading } = useProjectsState();
   const { updateOrder } = useProjectsActions();
-  // const { data: tasks } = useTasks();
-  const tasks = [] as any[];
-  const { data: tags } = useTagsState();
+  const { data: tasks } = useTasksNewState();
 
-  const [selectedProjectId, setSelectedProjectId] = useState(
-    defaultProject?._id,
+  const sortedProjects = projects.sort(
+    (projectA, projectB) =>
+      (projectA.sort_order || 0) - (projectB.sort_order || 0),
+  );
+
+  const [selectedProjectId, setSelectedProjectId] = useState<number | null>(
+    null,
   );
 
   const [enableSorting, setEnableSorting] = useState<boolean>(false);
@@ -55,14 +56,17 @@ const Projects: FC<ProjectsProps> = ({ testId }): JSX.Element => {
   );
   const [openTaskForm, setOpenTaskForm] = useState<{
     open: boolean;
-    selectedTask: TaskV2 | null;
+    selectedTask: ITask | null;
   }>({ selectedTask: null, open: false });
   const [openProjectForm, setOpenProjectForm] = useState<boolean>(false);
 
-  const filteredTasks = tasks.filter(
-    (task) => task.projectId === selectedProjectId && !task.completed,
-  );
-  const columns = getColumns(projects, tags);
+  const filteredTasks = tasks.filter((task) => {
+    if (!selectedProjectId) {
+      return !task.project_id;
+    }
+    return task.project_id === selectedProjectId;
+  });
+  const columns = getColumns(projects, []);
 
   const closeTaskForm = () => {
     setOpenTaskForm({ selectedTask: null, open: false });
@@ -71,12 +75,18 @@ const Projects: FC<ProjectsProps> = ({ testId }): JSX.Element => {
     setOpenProjectForm(false);
   };
 
-  const handleDragEnd = async (event: any) => {
-    const { active, over } = event;
+  const handleDragEnd = async (e: DragEndEvent) => {
+    const { active, over } = e;
 
-    if (active.id !== over.id) {
-      updateOrder(active.id, over.id);
+    if (!over || active.id === over.id) {
+      return;
     }
+
+    const oldIndex = projects.findIndex((project) => project.id === active.id);
+    const newIndex = projects.findIndex((project) => project.id === over.id);
+    const reordered = arrayMove(projects, oldIndex, newIndex);
+
+    updateOrder(reordered.map((project) => project.id));
   };
 
   if (isLoading) {
@@ -84,19 +94,24 @@ const Projects: FC<ProjectsProps> = ({ testId }): JSX.Element => {
   }
 
   return (
-    <div data-testid={testId}>
-      <TaskFormModal
-        onDone={closeTaskForm}
-        onClose={closeTaskForm}
-        editMode={!!openTaskForm.selectedTask}
-        task={
-          !!openTaskForm.selectedTask
-            ? openTaskForm.selectedTask
-            : (null as any)
-        }
-        projectId={selectedProjectId}
-        open={openTaskForm.open}
-      />
+    <div>
+      <Sheet open={openTaskForm.open}>
+        <SheetContent
+          side="left"
+          onCloseClick={closeTaskForm}
+          onEscapeKeyDown={closeTaskForm}
+          aria-describedby="Task Modal"
+        >
+          <SheetHeader>
+            <SheetTitle>Create Task</SheetTitle>
+          </SheetHeader>
+          <CreateTaskForm
+            onDone={closeTaskForm}
+            projectId={selectedProjectId || undefined}
+          />
+        </SheetContent>
+      </Sheet>
+
       <ProjectModalForm
         onDone={closeOpenProjectForm}
         onClose={closeOpenProjectForm}
@@ -127,15 +142,31 @@ const Projects: FC<ProjectsProps> = ({ testId }): JSX.Element => {
             onDragEnd={handleDragEnd}
           >
             <SortableContext
-              items={projects.map((p) => ({ ...p, id: p._id }))}
+              items={sortedProjects}
               strategy={verticalListSortingStrategy}
               disabled={!enableSorting}
             >
-              {projects.map((project, index) => (
+              <div
+                onClick={() => {
+                  setSelectedProjectId(null);
+                }}
+              >
+                <Card
+                  className={`w-[350px] p-0 rounded-md hover:border hover:border-primary ${selectedProjectId === null && "border border-[#791027]"}`}
+                >
+                  <CardHeader className="p-4">
+                    <CardTitle className="font-normal flex items-center justify-between">
+                      <div>No Project</div>
+                      <div className="flex"></div>
+                    </CardTitle>
+                  </CardHeader>
+                </Card>
+              </div>
+              {sortedProjects.map((project, index) => (
                 <div
-                  key={project._id}
+                  key={project.id}
                   onClick={() => {
-                    setSelectedProjectId(project._id);
+                    setSelectedProjectId(project.id);
                   }}
                   className={
                     enableSorting
@@ -147,7 +178,7 @@ const Projects: FC<ProjectsProps> = ({ testId }): JSX.Element => {
                 >
                   <ProjectCard
                     project={project}
-                    selected={project._id === selectedProjectId}
+                    selected={project.id === selectedProjectId}
                   />
                 </div>
               ))}
@@ -155,16 +186,7 @@ const Projects: FC<ProjectsProps> = ({ testId }): JSX.Element => {
           </DndContext>
         </div>
         <div className="grow">
-          {selectedProjectId && (
-            <ProjectBurnDownChart projectId={selectedProjectId} />
-          )}
-          <DataTable
-            data={filteredTasks}
-            columns={columns}
-            onRowClick={(task: TaskV2) => {
-              setOpenTaskForm({ selectedTask: task, open: true });
-            }}
-          />
+          <DataTable data={filteredTasks} columns={columns} />
         </div>
       </div>
     </div>

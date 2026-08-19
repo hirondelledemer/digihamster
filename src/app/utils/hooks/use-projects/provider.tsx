@@ -8,7 +8,7 @@ import { ProjectsStateAction, ProjectsStateActionType } from "./actions";
 import { api, FieldsRequired } from "./api";
 import { ProjectsStateContext } from "./state-context";
 import { ProjectsActionsContext } from "./actions-context";
-import { IProject, ProjectStatus } from "../../types/project";
+import { IProject } from "../../types/project";
 import { getApiErrorMessage } from "../../axios";
 
 const handleApiError = (
@@ -83,8 +83,6 @@ export const ProjectsContextProvider = ({
       const tempProject: IProject = {
         id: tempId,
         sort_order: 0,
-        description: "",
-        status: ProjectStatus.Todo,
         created_at: "",
         ...data,
       };
@@ -109,8 +107,8 @@ export const ProjectsContextProvider = ({
         });
 
         handleSuccessToast(toast, "Project has been created");
+        return response.data;
       } catch (e: unknown) {
-        // todo: fix
         dispatch({
           type: ProjectsStateActionType.DeleteProject,
           payload: {
@@ -119,6 +117,7 @@ export const ProjectsContextProvider = ({
         });
 
         handleApiError(e, toast);
+        return null;
       }
     },
     [toast],
@@ -175,26 +174,19 @@ export const ProjectsContextProvider = ({
     [toast],
   );
 
-  const updateOrder = async (
-    movedProjectId: number,
-    overProjectId: number,
-    onDone?: () => void,
-  ) => {
-    try {
+  const updateOrder = async (sortedProjectIds: number[]) => {
+    sortedProjectIds.forEach((id, index) => {
       dispatch({
-        type: ProjectsStateActionType.UpdateOrder,
-        payload: {
-          movedProjectId,
-          overProjectId,
-        },
+        type: ProjectsStateActionType.UpdateProject,
+        payload: { id, project: { sort_order: index + 1 } },
       });
-
-      if (onDone) {
-        onDone();
-      }
-
-      // TODO: wire up updateOrder API once endpoint is available
-      handleSuccessToast(toast, "Project order been updated");
+    });
+    try {
+      await api.reorder(sortedProjectIds);
+      toast({
+        title: "Success",
+        description: "Projects have been reordered successfully",
+      });
     } catch (e: unknown) {
       handleApiError(e, toast);
     }
