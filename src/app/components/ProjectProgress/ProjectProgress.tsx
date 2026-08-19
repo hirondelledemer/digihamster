@@ -9,10 +9,6 @@ import { addDays, differenceInCalendarDays, format, isValid } from "date-fns";
 import { useRouter } from "next/navigation";
 import { ProjectProgressBar } from "../ProjectProgressBar";
 
-export interface ProjectProgressProps {
-  project: IProject;
-}
-
 // TODO: project should have normal reusable card
 const ProjectProgressItem: FC<{ project: IProject }> = ({
   project,
@@ -70,12 +66,13 @@ const ProjectProgressItem: FC<{ project: IProject }> = ({
   );
 };
 
-const ProjectProgress: FC<ProjectProgressProps> = (): JSX.Element => {
+const ProjectProgress: FC = (): JSX.Element => {
   const { data: projects } = useProjectsState();
 
-  const activeProjects = projects.filter(
-    (project) => project.status === ProjectStatus.Doing,
-  );
+  const activeProjects = projects
+    .filter((project) => project.status === ProjectStatus.Doing)
+    // .sortBy((a, b) => a.sort_order - b.sort_order);
+    .sort((a, b) => a.sort_order - b.sort_order);
 
   return (
     <div className="flex flex-col gap-3">
