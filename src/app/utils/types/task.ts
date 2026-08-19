@@ -13,10 +13,10 @@ export enum TaskStatus {
 
 export interface ITask {
   id: number;
+  title: string;
   project_id: number | null;
   event_id: number | null;
   event_sort_order: number | null; // this should be null only when the event_id is null, think of how to express it in types
-  title: string;
   description: string | null;
   status: TaskStatus;
   deadline: string | null;

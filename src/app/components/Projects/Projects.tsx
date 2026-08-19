@@ -110,13 +110,10 @@ const Projects: FC = (): JSX.Element => {
           <SheetHeader>
             <SheetTitle>Create Task</SheetTitle>
           </SheetHeader>
-
-          {selectedProjectId && (
-            <CreateTaskForm
-              onDone={closeTaskForm}
-              projectId={selectedProjectId}
-            />
-          )}
+          <CreateTaskForm
+            onDone={closeTaskForm}
+            projectId={selectedProjectId || undefined}
+          />
         </SheetContent>
       </Sheet>
 
