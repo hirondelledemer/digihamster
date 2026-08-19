@@ -24,6 +24,7 @@ import { useProjectsActions } from "@/app/utils/hooks/use-projects/actions-conte
 import { useLifeAspectsState } from "@/app/utils/hooks/use-life-aspects/state-context";
 import { IProject, ProjectStatus } from "@/app/utils/types/project";
 import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
+import { Textarea } from "../ui/textarea";
 
 interface CommonProps {
   testId?: string;
@@ -55,7 +56,7 @@ const FormSchema = z.object({
     ProjectStatus.Todo,
   ]),
   lifeAspectId: z.union([z.number(), z.undefined()]),
-  // jsonDescription: z.any(),
+  description: z.union([z.string(), z.undefined()]),
 });
 
 export type FormValues = z.infer<typeof FormSchema>;
@@ -73,16 +74,9 @@ const ProjectForm: FC<ProjectFormProps> = ({
       return {
         title: restProps.project.title,
         color: restProps.project.color,
-        lifeAspectId: restProps.project.life_aspect_id, // todo: types do not work here
+        lifeAspectId: restProps.project.life_aspect_id,
         status: restProps.project.status,
-        jsonDescription: {
-          title: "",
-          content: "",
-          tags: [],
-          tasks: [],
-          textContent: "",
-          projectId: "",
-        },
+        description: restProps.project.description,
       };
     }
     return restProps.initialValues;
@@ -94,16 +88,7 @@ const ProjectForm: FC<ProjectFormProps> = ({
       title: "",
       color: "#e11d48",
       status: ProjectStatus.Todo,
-      lifeAspectId: lifeAspects[0].id,
-      // jsonDescription: {
-      //   title: "",
-      //   content: "",
-      //   tags: [],
-      //   tasks: [],
-      //   textContent: "",
-      //   contentJSON: {},
-      //   projectId: "",
-      // },
+      lifeAspectId: lifeAspects[0]?.id,
       ...getInitialValues(),
     },
   });
@@ -113,17 +98,17 @@ const ProjectForm: FC<ProjectFormProps> = ({
       updateProject(restProps.project.id, {
         title: values.title,
         color: values.color,
+        description: values.description,
         status: values.status || ProjectStatus.Todo,
         life_aspect_id: Number(values.lifeAspectId),
-        // jsonDescription: values.jsonDescription.contentJSON,
       });
     } else {
       createProject({
         title: values.title,
         color: values.color,
+        description: values.description || "",
         status: values.status,
         life_aspect_id: Number(values.lifeAspectId),
-        // jsonDescription: values.jsonDescription.contentJSON,
       });
     }
     onDone();
@@ -146,22 +131,18 @@ const ProjectForm: FC<ProjectFormProps> = ({
           )}
         />
 
-        {/* <FormField
+        <FormField
           control={form.control}
-          name="jsonDescription"
+          name="description"
           render={({ field }) => (
             <FormItem className="flex flex-col">
               <FormLabel>Goal</FormLabel>
               <FormControl>
-                <RteFormField
-                  testId={rteTestId}
-                  value={field.value.contentJSON}
-                  onChange={field.onChange}
-                />
+                <Textarea placeholder="description" {...field} />
               </FormControl>
             </FormItem>
           )}
-        /> */}
+        />
 
         <FormField
           control={form.control}
@@ -238,19 +219,10 @@ const ProjectForm: FC<ProjectFormProps> = ({
           name="status"
           render={({ field }) => (
             <FormItem>
-              {/* <div className="space-y-0.5">
-                <FormLabel>Disable</FormLabel>
-                <FormDescription>Do not allow selection</FormDescription>
-              </div> */}
               <FormControl>
-                {/* <Switch
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                /> */}
                 <ToggleGroup
                   type="single"
                   value={field.value}
-                  // onClick={(e) => e.stopPropagation()}
                   onValueChange={field.onChange}
                 >
                   <ToggleGroupItem value={ProjectStatus.Todo}>

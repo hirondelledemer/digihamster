@@ -3,7 +3,7 @@ import { IProject } from "../../types/project";
 
 export type FieldsRequired = Pick<
   IProject,
-  "title" | "color" | "life_aspect_id" | "status"
+  "title" | "color" | "life_aspect_id" | "status" | "description"
 >;
 
 export const PROJECTS_PATH = "/projects";

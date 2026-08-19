@@ -5,78 +5,117 @@ import {
   userEvent,
   waitFor,
 } from "@/config/utils/test-utils";
-import ProjectForm, { ProjectFormProps, rteTestId } from "./ProjectForm";
+import ProjectForm, { ProjectFormProps } from "./ProjectForm";
 
 import mockAxios from "jest-mock-axios";
 import { ProjectsContextProvider } from "@/app/utils/hooks/use-projects/provider";
-import { getRichTextEditorTestkit } from "../RichTextEditor/RichTextEditor.testkit";
 import { LifeAspectsContextProvider } from "@/app/utils/hooks/use-life-aspects/provider";
+import { generateListOfLifeAspects } from "@/app/utils/mocks/lifeAspect";
+import { LIFE_ASPECTS_WITH_BOOSTS_PATH } from "@/app/utils/hooks/use-life-aspects/api";
+import {
+  getProjectsPath,
+  PROJECTS_PATH,
+} from "@/app/utils/hooks/use-projects/api";
+import { generateProject } from "@/app/utils/mocks/project";
+
+const LIFE_ASPECTS = generateListOfLifeAspects(3);
+const assertLoaded = async () => {
+  await waitFor(() => expect(mockAxios.queue()).toHaveLength(2));
+  await act(async () => {
+    mockAxios.mockResponseFor(
+      { url: LIFE_ASPECTS_WITH_BOOSTS_PATH },
+      { data: LIFE_ASPECTS },
+    );
+  });
+};
+
+const DEFAULT_PROPS = {
+  editMode: false,
+  initialValues: {},
+  onDone: jest.fn(),
+} as const satisfies ProjectFormProps;
 
 describe("ProjectForm", () => {
-  const defaultProps: ProjectFormProps = {
-    editMode: false,
-    initialValues: {},
-    onDone: jest.fn(),
-  };
-  const renderComponent = (props = defaultProps) =>
+  const renderComponent = (props: ProjectFormProps = DEFAULT_PROPS) =>
     render(
       <ProjectsContextProvider>
         <LifeAspectsContextProvider>
-          <ProjectForm {...props} />{" "}
+          <ProjectForm {...props} />
         </LifeAspectsContextProvider>
-      </ProjectsContextProvider>
+      </ProjectsContextProvider>,
     );
 
   afterEach(() => {
     mockAxios.reset();
   });
 
-  it("should create project", async () => {
+  it("should edit project", async () => {
     renderComponent();
+    await assertLoaded();
 
-    // eslint-disable-next-line testing-library/no-unnecessary-act
-    await act(async () => {
-      expect(
-        screen.getByRole("textbox", {
-          name: /title/i,
-        })
-      ).toBeInTheDocument();
-      await userEvent.type(
-        screen.getByRole("textbox", {
-          name: /title/i,
-        }),
-        "Title"
-      );
+    await userEvent.type(
+      screen.getByRole("textbox", {
+        name: /title/i,
+      }),
+      "Title",
+    );
+    await userEvent.type(
+      screen.getByRole("textbox", {
+        name: /goal/i,
+      }),
+      "description",
+    );
 
-      const rte = screen.getByTestId(rteTestId);
-      const rteWrapper = getRichTextEditorTestkit(rte);
+    await userEvent.click(screen.getByRole("button", { name: /create/i }));
 
-      rteWrapper.enterValue("<p>description</p>");
-      rteWrapper.blur();
-      await userEvent.click(screen.getByRole("button", { name: /create/i }));
-
-      await waitFor(() => {
-        expect(mockAxios.post).toHaveBeenCalledWith("/api/projects", {
-          color: "#e11d48",
-          disabled: false,
-          category: "",
-          jsonDescription: {
-            content: [
-              {
-                content: [
-                  {
-                    text: "description",
-                    type: "text",
-                  },
-                ],
-                type: "paragraph",
-              },
-            ],
-            type: "doc",
-          },
-          title: "Title",
-        });
+    await waitFor(() => {
+      expect(mockAxios.post).toHaveBeenCalledWith(PROJECTS_PATH, {
+        color: "#e11d48",
+        description: "description",
+        life_aspect_id: NaN,
+        status: "todo",
+        title: "Title",
       });
+    });
+  });
+
+  it("should create project", async () => {
+    const PROJECT = generateProject(1, { life_aspect_id: LIFE_ASPECTS[1].id });
+    const EDIT_PROPS = {
+      editMode: true,
+      project: PROJECT,
+      onDone: jest.fn(),
+    } as const satisfies ProjectFormProps;
+
+    renderComponent(EDIT_PROPS);
+    await assertLoaded();
+
+    await userEvent.type(
+      screen.getByRole("textbox", {
+        name: /title/i,
+      }),
+      "edited",
+    );
+    await userEvent.type(
+      screen.getByRole("textbox", {
+        name: /goal/i,
+      }),
+      "edited",
+    );
+
+    await userEvent.click(screen.getByRole("button", { name: /save/i }));
+
+    await waitFor(() => {
+      expect(mockAxios.patch).toHaveBeenCalledWith(
+        getProjectsPath(PROJECT.id),
+        {
+          color: "#FF6B6B",
+          description: "Project description 1edited",
+          life_aspect_id: 1,
+          status: "todo",
+          title: "Project 1edited",
+        },
+      );
     });
   });
 });
