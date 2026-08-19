@@ -14,6 +14,7 @@ import { MouseEvent, useState } from "react";
 // import useEditTask from "@/app/utils/hooks/use-edit-task";
 import { z } from "zod";
 import TaskFormModal from "@/app/components/TaskFormModal";
+import { TaskActions } from "@/app/components/TaskActions";
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
@@ -80,7 +81,16 @@ export function DataTableRowActions<TData>({
         open={taskFormOpen}
       />
 
-      <DropdownMenu>
+      <TaskActions task={task}>
+        <Button
+          variant="ghost"
+          className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
+        >
+          <DotsHorizontalIcon className="h-4 w-4" />
+          <span className="sr-only">Open menu</span>
+        </Button>
+      </TaskActions>
+      {/* <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
             variant="ghost"
@@ -107,7 +117,7 @@ export function DataTableRowActions<TData>({
             Delete
           </DropdownMenuItem>
         </DropdownMenuContent>
-      </DropdownMenu>
+      </DropdownMenu> */}
     </>
   );
 }

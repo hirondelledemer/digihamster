@@ -10,6 +10,7 @@ import { Badge } from "../../ui/badge";
 import { ITask, TaskStatus } from "@/app/utils/types/task";
 import { IProject } from "@/app/utils/types/project";
 
+// TODO: is this even used anywhere?
 export const getColumns: (
   projects: IProject[],
   tags: Tag[],

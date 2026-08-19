@@ -83,9 +83,7 @@ export const getColumns: (
     cell: ({ row }) => {
       return (
         <div className="flex w-[50px] items-center">
-          <span>
-            {row.original.status === TaskStatus.Doing ? "ACTIVE" : ""}
-          </span>
+          <span>{row.original.status}</span>
         </div>
       );
     },

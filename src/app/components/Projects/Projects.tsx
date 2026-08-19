@@ -197,9 +197,9 @@ const Projects: FC = (): JSX.Element => {
           <DataTable
             data={filteredTasks}
             columns={columns}
-            onRowClick={(task: ITask) => {
-              setOpenTaskForm({ selectedTask: task, open: true });
-            }}
+            // onRowClick={(task: ITask) => {
+            //   setOpenTaskForm({ selectedTask: task, open: true });
+            // }}
           />
         </div>
       </div>
