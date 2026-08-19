@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation";
 import { ProjectProgressBar } from "../ProjectProgressBar";
 
 export interface ProjectProgressProps {
-  testId?: string;
+  project: IProject;
 }
 
 // TODO: project should have normal reusable card
