@@ -5,10 +5,9 @@ import { format } from "date-fns";
 import { Tag } from "@/models/tag";
 import { DataTableColumnHeader } from "../Tasks/components/DataTableColumnHeader/DataTableColumnHeader";
 import { Badge } from "../ui/badge";
-import Estimate from "../Estimate";
 import { DataTableRowActions } from "../Tasks/components/DataTableRowActions/DataTableRowActions";
 import { IProject } from "@/app/utils/types/project";
-import { ITask, TaskStatus } from "@/app/utils/types/task";
+import { ITask } from "@/app/utils/types/task";
 
 export const getColumns: (
   projects: IProject[],
@@ -27,13 +26,6 @@ export const getColumns: (
             {row.original.deadline && (
               <Badge variant="destructive">Deadline</Badge>
             )}
-            {/* {tags
-              .filter((tag) => row.original.tags.includes(tag._id))
-              .map((tag) => (
-                <Badge variant="outline" key={tag._id}>
-                  {tag.title}
-                </Badge>
-              ))} */}
           </span>
         </div>
       );
@@ -53,28 +45,7 @@ export const getColumns: (
         </div>
       );
     },
-    // filterFn: (row, _id, value: string[]) => {
-    //   return !!value.filter((tagId) => row.original.tags.includes(tagId))
-    //     .length;
-    // },
   },
-  // {
-  //   accessorKey: "estimate",
-  //   header: ({ column }) => (
-  //     <DataTableColumnHeader column={column} title="Estimate" />
-  //   ),
-  //   cell: ({ row }) => {
-  //     return (
-  //       <div className="flex w-[50px] items-center">
-  //         <Estimate estimate={row.getValue("estimate")} />
-  //       </div>
-  //     );
-  //   },
-  //   filterFn: (row, id, value) => {
-  //     return value.includes(row.getValue(id));
-  //   },
-  //   sortUndefined: false,
-  // },
   {
     accessorKey: "status",
     header: ({ column }) => (
@@ -107,22 +78,6 @@ export const getColumns: (
       return value.includes(row.getValue(id));
     },
   },
-  // {
-  //   accessorKey: "updatedAt",
-  //   header: ({ column }) => (
-  //     <DataTableColumnHeader column={column} title="Updated At" />
-  //   ),
-  //   cell: ({ row }) => {
-  //     return (
-  //       <div className="flex w-[100px] items-center">
-  //         <span>{format(row.getValue("updatedAt"), "yyyy-MM-dd")}</span>
-  //       </div>
-  //     );
-  //   },
-  //   filterFn: (row, id, value) => {
-  //     return value.includes(row.getValue(id));
-  //   },
-  // },
   {
     id: "actions",
     cell: ({ row }) => <DataTableRowActions row={row} />,
