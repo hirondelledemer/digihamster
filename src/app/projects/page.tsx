@@ -266,6 +266,7 @@ const NewProjectForm: FC = () => {
   );
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const ProjectsNewTable: FC = () => {
   const { data = [], isLoading } = useProjectsState();
   const [selectedProjectId, setSelectedProjectId] = useState<number | null>(
