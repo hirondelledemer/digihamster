@@ -24,7 +24,6 @@ import withDragAndDrop, {
 import "react-big-calendar/lib/addons/dragAndDrop/styles.scss";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import * as dates from "date-arithmetic";
-import style from "./Calendar.module.scss";
 import "./Calendar.scss";
 
 import Today from "../Today";
@@ -186,13 +185,6 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
 
   const events = [...eventsResolved, ...entriesResolved, ...tasksResolved];
 
-  const customSlotPropGetter = useCallback(
-    () => ({
-      className: style.slot,
-    }),
-    [],
-  );
-
   const customDayPropGetter = useCallback(
     (date: Date) => {
       const dayIsCycleDay =
@@ -214,9 +206,16 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
         isWithinInterval(date, interval(i.start_date, i.end_date)),
       );
 
+      if (view === "day") {
+        return {
+          style: {
+            backgroundColor: "transparent",
+          },
+        };
+      }
+
       if (isSameDay(date, now())) {
         return {
-          className: style.today,
           style: {
             backgroundColor: dayIsCycleDay ? " #340411" : "#1b1614",
           },
@@ -224,7 +223,6 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
       }
 
       return {
-        className: style.day,
         style: {
           background: dayIsFutureCycleDay
             ? "repeating-linear-gradient(45deg, #340411, #340411 5px, transparent 5px, transparent 10px)"
@@ -233,14 +231,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
         },
       };
     },
-    [cycleData],
-  );
-
-  const customGroupGetter = useCallback(
-    () => ({
-      className: style.group,
-    }),
-    [],
+    [cycleData, view],
   );
 
   const { views } = useMemo(
@@ -266,7 +257,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
   };
 
   const customDate = (props: any) => {
-    return <div className={style.event}>{props.label}</div>;
+    return <div>{props.label}</div>;
   };
 
   const moveEvent = ({
@@ -345,7 +336,6 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
         components={{
           event: customEvent,
           agenda: {
-            date: customDate,
             time: customDate,
           },
           timeSlotWrapper: CalendarSlot as any,
@@ -357,9 +347,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
           "hours",
         )}
         views={views}
-        slotPropGetter={customSlotPropGetter}
         dayPropGetter={customDayPropGetter}
-        slotGroupPropGetter={customGroupGetter}
       />
     </>
   );

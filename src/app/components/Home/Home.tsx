@@ -26,7 +26,7 @@ export const Home = (): JSX.Element => {
           <ResizablePanel style={{ overflow: "auto" }}>
             <CommandTool />
             <div className="p-6">
-              <Calendar view={"agenda"} />
+              <Calendar view={"day"} />
             </div>
           </ResizablePanel>
           <ResizableHandle />

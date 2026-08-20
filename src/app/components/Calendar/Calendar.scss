@@ -2,18 +2,48 @@
 @import 'react-big-calendar/lib/addons/dragAndDrop/styles';
 
 
+/* ****************************************************
+   ***************** all views  ***********************
+   **************************************************** */
+
+// outer border
 .rbc-time-view {
-  border: 1px solid hsl(var(--border));
-}
-  
-.rbc-header {
-  border: none;
+  border:none;
 }
 
+// border between time and the events container
 .rbc-time-content {
   border: none
 }
 
+.rbc-row {
+  background: transparent !important;
+}
+
+.rbc-timeslot-group {
+  border-bottom: none;
+  border-top: none;
+  & > div {
+    border-bottom: none;
+    border-top: none;
+  }
+}
+
+.rbc-time-slot {
+  border: none !important;
+}
+  
+
+/* ****************************************************
+   **************** week views  ***********************
+   **************************************************** */
+
+// border under the date on the top
+.rbc-header {
+  border: none;
+}
+
+// border between days and events container
 .rbc-header {
   border: 1px solid hsl(var(--border));
 }
@@ -21,31 +51,61 @@
   border-left: 1px solid hsl(var(--border));
 }
 
+// borders between "all day" event slots
 .rbc-day-bg + .rbc-day-bg {
   border: 1px solid hsl(var(--border));
 }
 
+// border between top headers and the square on the left
 .rbc-time-header-content {
   border-left: 1px solid hsl(var(--border));
 }
 
+// font in the day label
 .rbc-button-link {
   font-weight: normal;
 }
 
+
+/* ****************************************************
+   ***************** day views  ***********************
+   **************************************************** */
+
+
+// time view
 .rbc-label {
   font-size: 14px;
 }
 
+// push events so they would not be on the line
+:not(.rbc-day-slot) + .rbc-day-slot {
+  .rbc-events-container {
+    margin-left: 10px;
+  }
+}
+
+:not(.rbc-day-bg) + .rbc-day-bg {
+  .rbc-today {
+    background-color: transparent !important;
+  }
+}
+
+/* ****************************************************
+   **************** month views  **********************
+   **************************************************** */
+
+// makes sure that the month view is not collapsed
 .rbc-month-view {
   min-height: 60vh;
   border: 1px solid hsl(var(--border));
 }
 
+// borders between days
 .rbc-month-row + .rbc-month-row {
   border-top: 1px solid hsl(var(--border));
 }
 
+// show more button
 .rbc-show-more {
   color: hsl(var(--primary));
   background: transparent;
@@ -59,22 +119,18 @@
   }
 }
 
-.rbc-overlay {
-  font-style: italic;
-  background: hsl(var(--card));
-  border: 1px solid hsl(var(--border));
-  border-radius: 5px;
+// previous and following month
+.rbc-off-range-bg {
+  background-color: hsl(var(--card));
 }
 
-.rbc-overlay-header {
-  border-bottom: 1px solid hsl(var(--border));
-}
 
-.rbc-event-content {
-  border: none;
-  background: transparent;
-}
+/* ****************************************************
+   ****************** events  *************************
+   **************************************************** */
 
+
+// event styles
 .rbc-event {
   border: none !important;
   padding: 0;
@@ -90,24 +146,8 @@
   }
 }
 
+// fixed drag handlers
 .rbc-addons-dnd-resizable {
   margin-top: 1px
 }
 
-.rbc-background-event {
-  z-index: 1;
-  right: 0% !important;
-  left: unset !important;
-  width: 50px !important;
-
-  &:focus {
-    border: none;
-    outline: none !important;
-  }
-  &:focus-visible {
-    border: none;
-  }
-}
-.rbc-off-range-bg {
-  background-color: hsl(var(--card));
-}
