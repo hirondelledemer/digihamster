@@ -256,10 +256,6 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
     }
   };
 
-  const customDate = (props: any) => {
-    return <div>{props.label}</div>;
-  };
-
   const moveEvent = ({
     event,
     start,
@@ -335,11 +331,8 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
         formats={{ eventTimeRangeFormat: () => "" }}
         components={{
           event: customEvent,
-          agenda: {
-            time: customDate,
-          },
-          timeSlotWrapper: CalendarSlot as any,
-          toolbar: CalendarToolbar as any,
+          timeSlotWrapper: CalendarSlot, // TODO: this time slot is special because it is allow events to be dragged in.
+          toolbar: CalendarToolbar,
         }}
         min={dates.add(
           dates.startOf(new Date(2015, 17, 1), "day"),
@@ -347,7 +340,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
           "hours",
         )}
         views={views}
-        dayPropGetter={customDayPropGetter}
+        dayPropGetter={customDayPropGetter} // TODO: this is special because it colors days depending on the cycle and wheather day is today or not.
       />
     </>
   );

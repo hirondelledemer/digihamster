@@ -1,6 +1,7 @@
 import React, { FC, ReactNode } from "react";
 import { useDroppable } from "@dnd-kit/core";
 import { cn } from "../utils";
+import { getHours } from "date-fns";
 
 export interface CalendarSlotProps {
   children: ReactNode;
@@ -10,17 +11,19 @@ export interface CalendarSlotProps {
 
 const CalendarSlot: FC<CalendarSlotProps> = ({
   children,
-  value,
+  value: date,
   resource,
   ...props
 }): JSX.Element => {
   const { isOver, setNodeRef } = useDroppable({
-    id: value.getTime(),
+    id: date.getTime(),
     data: {
       containerType: "calendar",
-      date: value,
+      date: date,
     },
   });
+
+  const isEvenHour = getHours(date) % 2 === 0 && resource === undefined;
   return (
     <div {...props}>
       {resource === null && (
@@ -29,7 +32,8 @@ const CalendarSlot: FC<CalendarSlotProps> = ({
           className={cn(isOver && "border border-primary", "h-4")}
         />
       )}
-      {children}
+
+      {isEvenHour ? children : null}
     </div>
   );
 };
