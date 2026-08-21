@@ -1,6 +1,6 @@
 "use client";
 
-import React, { FC, useMemo } from "react";
+import React, { FC, useMemo, useRef } from "react";
 
 import {
   CalendarEventType,
@@ -20,6 +20,24 @@ export interface CalendarEventProps {
 const CalendarEvent: FC<CalendarEventProps> = ({
   event,
 }): JSX.Element | null => {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const handleMouseEnter = () => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    el.style.minHeight = `${el.offsetHeight}px`;
+    el.style.height = "fit-content";
+  };
+
+  const handleMouseLeave = () => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    el.style.minHeight = "";
+    el.style.height = "";
+  };
+
   const { getProjectById } = useProjectsState();
 
   const content = useMemo(() => {
@@ -41,6 +59,9 @@ const CalendarEvent: FC<CalendarEventProps> = ({
 
     return (
       <div
+        ref={containerRef}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
         style={{
           backgroundColor: projectColor || "#29221f",
           border: `2px solid ${projectColor || "hsl(var(--primary)/0.5)"}`,
