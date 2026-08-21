@@ -248,7 +248,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
   );
 
   const customEvent = ({ event }: { event: CalendarEventType }) => {
-    if (isCalendarEventEntry(event) || isCalendarDeadlineEntry(event)) {
+    if (isCalendarEventEntry(event)) {
       return <CalendarEvent event={event} />;
     }
     if (isCalendarWeatherEntry(event)) {

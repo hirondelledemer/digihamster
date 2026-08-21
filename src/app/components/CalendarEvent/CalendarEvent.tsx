@@ -3,11 +3,8 @@
 import React, { FC, useMemo, useRef } from "react";
 
 import {
-  CalendarEventType,
-  isCalendarDeadlineEntry,
+  CalendarEventEntry,
   isCalendarEventEntry,
-  isCalendarJournalEntry,
-  isCalendarWeatherEntry,
 } from "./CalendarEvent.types";
 
 import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
@@ -15,7 +12,7 @@ import { EventActions } from "../EventActions";
 import { format } from "date-fns";
 
 export interface CalendarEventProps {
-  event: CalendarEventType;
+  event: CalendarEventEntry;
 }
 
 const CalendarEvent: FC<CalendarEventProps> = ({
@@ -44,14 +41,6 @@ const CalendarEvent: FC<CalendarEventProps> = ({
   const { getProjectById } = useProjectsState();
 
   const content = useMemo(() => {
-    if (
-      event.resource.type === "journal" ||
-      event.resource.type === "weather" ||
-      event.resource.type === "deadline"
-    ) {
-      return null;
-    }
-
     return (
       <div className="pb-5 h-fit">
         <div className="italic">
@@ -73,14 +62,6 @@ const CalendarEvent: FC<CalendarEventProps> = ({
       </div>
     );
   }, [event]);
-
-  if (
-    isCalendarJournalEntry(event) ||
-    isCalendarWeatherEntry(event) ||
-    isCalendarDeadlineEntry(event)
-  ) {
-    return null;
-  }
 
   const project =
     event.resource.event.project_id &&
