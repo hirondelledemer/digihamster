@@ -147,6 +147,10 @@
   }
 }
 
+.rbc-event.rbc-selected {
+  background: hsl(var(--background)) !important;
+}
+
 // fixed drag handlers
 .rbc-addons-dnd-resizable {
   margin-top: 1px
