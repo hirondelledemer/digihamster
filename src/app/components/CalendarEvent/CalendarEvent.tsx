@@ -9,58 +9,48 @@ import {
   isCalendarJournalEntry,
   isCalendarWeatherEntry,
 } from "./CalendarEvent.types";
-import { cn } from "../utils";
 
 import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
-import { TaskActions } from "../TaskActions";
 import { EventActions } from "../EventActions";
-import { EventStatus } from "@/app/utils/types/event";
 
 export interface CalendarEventProps {
-  testId?: string;
   event: CalendarEventType;
 }
 
-export const taskFormTestId = "CalendarEvent-task-form-test-id";
-
 const CalendarEvent: FC<CalendarEventProps> = ({
-  testId,
   event,
 }): JSX.Element | null => {
   const { getProjectById } = useProjectsState();
 
-  const eventIsCompleted = isCalendarDeadlineEntry(event)
-    ? event.resource.completed
-    : isCalendarEventEntry(event)
-      ? event.resource.event.status === EventStatus.Completed
-      : false;
-
   const content = useMemo(() => {
     if (
       event.resource.type === "journal" ||
-      event.resource.type === "weather"
+      event.resource.type === "weather" ||
+      event.resource.type === "deadline"
     ) {
       return null;
     }
 
+    const project =
+      event.resource.event.project_id &&
+      getProjectById(event.resource.event.project_id);
+
+    const projectColor = project
+      ? `color-mix(in srgb, ${project.color} 20%, transparent)`
+      : "";
+
     return (
       <div
-        data-testid={testId}
         style={{
-          border: isCalendarDeadlineEntry(event)
-            ? `2px solid ${
-                getProjectById(event.resource.task.project_id?.toString() || "")
-                  ?.color ?? "#000"
-              }`
-            : "",
+          backgroundColor: projectColor || "#29221f",
+          border: `2px solid ${projectColor || "hsl(var(--primary)/0.5)"}`,
         }}
-        className={cn(
-          "h-full p-1 cursor-pointer bg-[#29221f] rounded-lg hover:border hover:border-primary mt-[-1px]",
-          eventIsCompleted && "text-muted-foreground line-through",
-        )}
+        className="h-full p-1 cursor-pointer rounded-lg"
       >
-        <div className={`italic`}>
-          {event.title}
+        <div className="italic">
+          <div>{event.title}</div>
+          <div className="text-xs">{event.resource.event.description}</div>
+
           <div>
             {isCalendarEventEntry(event) &&
               event.resource.tasks.map((t) => (
@@ -75,14 +65,16 @@ const CalendarEvent: FC<CalendarEventProps> = ({
         </div>
       </div>
     );
-  }, [event, testId, getProjectById, eventIsCompleted]);
+  }, [event, getProjectById]);
 
-  if (isCalendarJournalEntry(event) || isCalendarWeatherEntry(event)) {
+  if (
+    isCalendarJournalEntry(event) ||
+    isCalendarWeatherEntry(event) ||
+    isCalendarDeadlineEntry(event)
+  ) {
     return null;
   }
-  if (isCalendarDeadlineEntry(event)) {
-    return <TaskActions task={event.resource.task}>{content}</TaskActions>;
-  }
+
   return (
     <EventActions event={event.resource.event} triggerClassName="h-full">
       {content}

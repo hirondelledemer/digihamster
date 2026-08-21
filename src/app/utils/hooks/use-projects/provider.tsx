@@ -192,8 +192,8 @@ export const ProjectsContextProvider = ({
     }
   };
 
-  const getProjectById = (id: string) => {
-    return state.data.find((project) => project.id.toString() === id) || null;
+  const getProjectById = (id: number) => {
+    return state.data.find((project) => project.id === id) || null;
   };
 
   return (

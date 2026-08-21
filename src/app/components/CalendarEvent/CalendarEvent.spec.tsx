@@ -31,9 +31,9 @@ describe("CalendarEvent", () => {
     getCalendarEventTestkit(
       render(
         <EventsContextProvider>
-          <CalendarEvent testId="CalendarEvent-testId" {...props} />
-        </EventsContextProvider>
-      ).container
+          <CalendarEvent {...props} />
+        </EventsContextProvider>,
+      ).container,
     );
 
   describe("event is not completed", () => {
@@ -110,13 +110,13 @@ describe("CalendarEvent", () => {
       renderComponent(props);
       expect(
         screen.getByText(
-          `${(props.event as CalendarEventEntry).resource.tasks[0].title}`
-        )
+          `${(props.event as CalendarEventEntry).resource.tasks[0].title}`,
+        ),
       ).toBeInTheDocument();
       expect(
         screen.getByText(
-          `${(props.event as CalendarEventEntry).resource.tasks[1].title}`
-        )
+          `${(props.event as CalendarEventEntry).resource.tasks[1].title}`,
+        ),
       ).toBeInTheDocument();
     });
   });

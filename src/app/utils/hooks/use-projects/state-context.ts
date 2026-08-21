@@ -3,7 +3,7 @@ import { ProjectsState } from "./actions";
 import { IProject } from "../../types/project";
 
 type ProjectContextValue = ProjectsState & {
-  getProjectById: (id: string) => IProject | null;
+  getProjectById: (id: number) => IProject | null;
 };
 
 const DEFAULT_PROJECTS_STATE: ProjectsState = {
@@ -15,7 +15,7 @@ const DEFAULT_PROJECTS_STATE: ProjectsState = {
 
 export const ProjectsStateContext = createContext<ProjectContextValue>({
   ...DEFAULT_PROJECTS_STATE,
-  getProjectById: (_id: string) => null,
+  getProjectById: (_id: number) => null,
 });
 
 export const useProjectsState = () => useContext(ProjectsStateContext);
