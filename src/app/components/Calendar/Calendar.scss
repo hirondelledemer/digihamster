@@ -150,6 +150,10 @@
   }
 }
 
+.rbc-background-event {
+  z-index: 10;
+}
+
 .rbc-event.rbc-selected {
   background: hsl(var(--background)) !important;
 }

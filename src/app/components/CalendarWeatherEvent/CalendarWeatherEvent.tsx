@@ -25,7 +25,7 @@ export interface CalendarWeatherEventProps {
 const getWeatherIcon = (
   weather: {
     main: string;
-  }[]
+  }[],
 ) => {
   return weather.map((w, index) => {
     switch (w.main) {
@@ -57,7 +57,7 @@ const CalendarWeatherEvent: FC<CalendarWeatherEventProps> = ({
       data-testid={testId}
       className={cn(
         "flex text-xs items-center justify-end relative z-10",
-        className
+        className,
       )}
     >
       <div>{Math.floor(event.resource.temp || 0)}</div>
