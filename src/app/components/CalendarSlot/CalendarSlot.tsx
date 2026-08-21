@@ -1,7 +1,7 @@
 import React, { FC, ReactNode } from "react";
 import { useDroppable } from "@dnd-kit/core";
 import { cn } from "../utils";
-import { getHours } from "date-fns";
+import { getHours, getMinutes } from "date-fns";
 
 export interface CalendarSlotProps {
   children: ReactNode;
@@ -23,7 +23,10 @@ const CalendarSlot: FC<CalendarSlotProps> = ({
     },
   });
 
-  const isEvenHour = getHours(date) % 2 === 0 && resource === undefined;
+  const isTimeLabelSlot = resource === undefined;
+  const isEvenHour = getHours(date) % 2 === 0;
+  const minutesAreZero = getMinutes(date) === 0;
+
   return (
     <div {...props}>
       {resource === null && (
@@ -33,7 +36,21 @@ const CalendarSlot: FC<CalendarSlotProps> = ({
         />
       )}
 
-      {isEvenHour ? children : null}
+      {isEvenHour && minutesAreZero && isTimeLabelSlot ? (
+        <div className="mt-[-15px] flex items-center">
+          <div className="mr-2 z-100">{children}</div>
+
+          <div className="h-3 w-3 bg bg-primary absolute ml-1 left-[70px] rounded-xl z-10" />
+        </div>
+      ) : null}
+
+      {!isEvenHour && !minutesAreZero && isTimeLabelSlot ? (
+        <div className="mt-[-15px] flex items-bottom">
+          <div className="mr-2">{children}</div>
+
+          <div className="h-2 w-2 bg bg-primary absolute ml-1 mt-[10px] left-[72px] rounded-xl z-10" />
+        </div>
+      ) : null}
     </div>
   );
 };

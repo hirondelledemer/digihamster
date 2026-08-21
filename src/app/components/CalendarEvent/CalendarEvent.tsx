@@ -29,6 +29,7 @@ const CalendarEvent: FC<CalendarEventProps> = ({
 
     el.style.minHeight = `${el.offsetHeight}px`;
     el.style.height = "fit-content";
+    el.style.overflow = "visible";
   };
 
   const handleMouseLeave = () => {
@@ -37,6 +38,7 @@ const CalendarEvent: FC<CalendarEventProps> = ({
 
     el.style.minHeight = "";
     el.style.height = "";
+    el.style.overflow = "hidden";
   };
 
   const { getProjectById } = useProjectsState();
@@ -51,7 +53,7 @@ const CalendarEvent: FC<CalendarEventProps> = ({
     }
 
     return (
-      <div>
+      <div className="pb-5 h-fit">
         <div className="italic">
           <div>{event.title}</div>
           <div className="text-xs">{event.resource.event.description}</div>
@@ -97,14 +99,17 @@ const CalendarEvent: FC<CalendarEventProps> = ({
         backgroundColor: projectColor || "#29221f",
         border: `2px solid ${projectColor || "hsl(var(--primary)/0.5)"}`,
       }}
-      className="h-full p-1 cursor-pointer rounded-lg"
+      className="h-full p-1 cursor-pointer rounded-lg relative "
     >
-      <div className="text-xs absolute top-[-15px]">
+      <div className="text-xs absolute top-[-20px]">
         {format(event.start, "HH:mm")}
       </div>
       <EventActions event={event.resource.event} triggerClassName="h-full">
         {content}
       </EventActions>
+      <div className="text-xs absolute bottom-[-20px]">
+        {event.end && format(event.end, "HH:mm")}
+      </div>
     </div>
   );
 };

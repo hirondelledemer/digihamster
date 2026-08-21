@@ -8,12 +8,15 @@
 
 // outer border
 .rbc-time-view {
-  border:none;
+  border: none;
 }
 
 // border between time and the events container
 .rbc-time-content {
-  border: none
+  border: none;
+  // we setting the whole container down because we made hour-labels ON the line
+  margin-top: -20px;
+  padding-top: 20px;
 }
 
 .rbc-row {
