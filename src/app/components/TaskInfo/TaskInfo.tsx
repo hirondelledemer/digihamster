@@ -26,7 +26,7 @@ const TaskInfo: FC<TaskInfoProps> = (): JSX.Element | null => {
   const { getProjectById, isLoading } = useProjectsState();
 
   const selectedProject =
-    projectId && !isLoading ? getProjectById(projectId) : null;
+    projectId && !isLoading ? getProjectById(Number(projectId)) : null;
 
   if (!selectedProject) {
     return null;
