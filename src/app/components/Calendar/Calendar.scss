@@ -155,8 +155,14 @@
   }
 }
 
+// weather events are drawn over the regular events, but rbc gives them a
+// min-height of 20px and the full column width, so they would swallow clicks
+// meant for the event underneath. they carry no .rbc-event class either, so the
+// calendar treats such a click as an empty slot selection and opens the create
+// event form. only the tooltip trigger opts back in to pointer events.
 .rbc-background-event {
   z-index: 10;
+  pointer-events: none;
 }
 
 .rbc-event.rbc-selected {

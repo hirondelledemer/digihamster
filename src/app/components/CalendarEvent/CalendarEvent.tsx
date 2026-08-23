@@ -1,6 +1,6 @@
 "use client";
 
-import React, { FC, useMemo, useRef } from "react";
+import React, { FC, useCallback, useMemo, useRef } from "react";
 
 import {
   CalendarEventEntry,
@@ -11,6 +11,11 @@ import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
 import { EventActions } from "../EventActions";
 import { format } from "date-fns";
 import { EventStatus } from "@/app/utils/types/event";
+import { cn } from "../utils";
+import { TaskStatus } from "@/app/utils/types/task";
+import { Checkbox } from "../ui/checkbox";
+import { useTasksNewActions } from "@/app/utils/hooks/use-tasks-new/actions-context";
+import { CheckedState } from "@radix-ui/react-checkbox";
 
 export interface CalendarEventProps {
   event: CalendarEventEntry;
@@ -41,6 +46,17 @@ const CalendarEvent: FC<CalendarEventProps> = ({
 
   const { getProjectById } = useProjectsState();
 
+  const { updateTask } = useTasksNewActions();
+
+  const handleTaskCompleteClick = useCallback(
+    (taskId: number) => (value: CheckedState) => {
+      updateTask(taskId, {
+        status: value ? TaskStatus.Done : TaskStatus.Doing,
+      });
+    },
+    [updateTask],
+  );
+
   const content = useMemo(() => {
     return (
       <div className="pb-5 h-fit">
@@ -53,8 +69,22 @@ const CalendarEvent: FC<CalendarEventProps> = ({
               event.resource.tasks.map((t) => (
                 <div
                   key={t.id}
-                  className="text-sm mt-1 border bg-card rounded-md p-1"
+                  className={cn(
+                    "text-sm mt-1 border bg-card rounded-md p-1 flex items-center gap-2",
+                  )}
                 >
+                  <Checkbox
+                    checked={t.status === TaskStatus.Done}
+                    onCheckedChange={handleTaskCompleteClick(t.id)}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                    }}
+                    onMouseDownCapture={(event) => {
+                      // the calendar listens for mousedown natively to start a
+                      // slot selection, so it has to be stopped in the capture phase
+                      event.stopPropagation();
+                    }}
+                  />
                   {t.title}
                 </div>
               ))}
@@ -62,7 +92,7 @@ const CalendarEvent: FC<CalendarEventProps> = ({
         </div>
       </div>
     );
-  }, [event]);
+  }, [event, handleTaskCompleteClick]);
 
   const project =
     event.resource.event.project_id &&
@@ -94,19 +124,19 @@ const CalendarEvent: FC<CalendarEventProps> = ({
         onMouseLeave={handleMouseLeave}
         style={{
           backgroundColor: projectColor || "#29221f",
-          // backgroundColor: getEventStatusColor(),
-
           border: `2px solid ${projectColor || "hsl(var(--primary)/0.5)"}`,
         }}
         className="h-full p-1 cursor-pointer rounded-lg relative "
       >
         <EventActions event={event.resource.event}>
-          <div
-            className="h-full absolute top-0 bottom-0 left-0 right-0 rounded-md m-[1px]"
-            style={{
-              background: getEventStatusColor(),
-            }}
-          />
+          {event.resource.event.status !== EventStatus.Pending && (
+            <div
+              className="h-full absolute top-0 bottom-0 left-0 right-0 rounded-md m-[1px]"
+              style={{
+                background: getEventStatusColor(),
+              }}
+            />
+          )}
         </EventActions>
         <div className="text-xs absolute top-[-20px]">
           {format(event.start, "HH:mm")}

@@ -64,7 +64,13 @@ const CalendarWeatherEvent: FC<CalendarWeatherEventProps> = ({
 
       <TooltipProvider>
         <Tooltip delayDuration={0}>
-          <TooltipTrigger>
+          <TooltipTrigger
+            className="pointer-events-auto"
+            onMouseDownCapture={(e) => {
+              // the calendar starts a slot selection on a native mousedown
+              e.stopPropagation();
+            }}
+          >
             <div>{getWeatherIcon(event.resource.weather || [])}</div>
           </TooltipTrigger>
           <TooltipContent>

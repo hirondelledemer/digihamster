@@ -315,7 +315,9 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
       <DnDropCalendar
         date={selectedDate}
         onNavigate={setSelectedDate}
-        selectable
+        // "ignoreEvents" prevents a mousedown on an event (e.g. a task checkbox)
+        // from starting a slot selection and opening the create event form
+        selectable="ignoreEvents"
         localizer={localizer}
         resizableAccessor={isCalendarEventEntry}
         events={events}
