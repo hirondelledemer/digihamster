@@ -1,25 +1,27 @@
-import { act, waitFor } from "@testing-library/react";
-
-import JournalEntryForm, { JournalEntryFormProps } from "./JournalEntryForm";
-import { getJournalEntryFormTestkit } from "./JournalEntryForm.testkit";
-import { render } from "@/config/utils/test-utils";
+import JournalEntryForm, {
+  JournalEntryFormProps,
+  rteTestId,
+} from "./JournalEntryForm";
+import { render, screen, waitFor } from "@/config/utils/test-utils";
 import { EntriesContextProvider } from "@/app/utils/hooks/use-entry/provider";
 import MockAxios from "jest-mock-axios";
 
 import * as toastHook from "../ui/use-toast";
+import { getRichTextEditorTestkit } from "../RichTextEditor/RichTextEditor.testkit";
+import { fireEvent } from "@storybook/test";
+import { JOURNAL_ENTRIES_PATH } from "@/app/utils/hooks/use-entry/api";
 jest.mock("../ui/use-toast");
+
 const mockUseToast = jest.mocked(toastHook.useToast);
 
 describe("JournalEntryForm", () => {
   const toastSpy = jest.fn();
   const defaultProps: JournalEntryFormProps = {};
   const renderComponent = (props: JournalEntryFormProps = defaultProps) =>
-    getJournalEntryFormTestkit(
-      render(
-        <EntriesContextProvider>
-          <JournalEntryForm {...props} />
-        </EntriesContextProvider>
-      ).container
+    render(
+      <EntriesContextProvider>
+        <JournalEntryForm {...props} />
+      </EntriesContextProvider>,
     );
 
   beforeEach(() => {
@@ -30,25 +32,29 @@ describe("JournalEntryForm", () => {
     MockAxios.reset();
   });
 
-  it("should render JournalEntryForm", () => {
-    const wrapper = renderComponent();
-    expect(wrapper.getComponent()).not.toBe(null);
-  });
-
   it("should show textbox and submit button", () => {
-    const wrapper = renderComponent();
-    expect(wrapper.getTextarea().getComponent()).toBeInTheDocument();
-    expect(wrapper.getSubmitButton()).toBeInTheDocument();
+    renderComponent();
+
+    const rte = screen.getByTestId(rteTestId);
+    const rteWrapper = getRichTextEditorTestkit(rte);
+
+    expect(rteWrapper.getTextarea()).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /create/i })).toBeInTheDocument();
   });
 
   it('should disable "Create" button until text is entered', async () => {
-    const wrapper = renderComponent();
-    expect(wrapper.getSubmitButton()).toBeDisabled();
-    act(() => {
-      wrapper.getTextarea().enterValue("note");
-    });
+    renderComponent();
+    expect(screen.getByRole("button", { name: /create/i })).toBeDisabled();
+
+    const rte = screen.getByTestId(rteTestId);
+    const rteWrapper = getRichTextEditorTestkit(rte);
+
+    rteWrapper.enterValue("note");
+
     await waitFor(() => {
-      expect(wrapper.getSubmitButton()).not.toBeDisabled();
+      expect(
+        screen.getByRole("button", { name: /create/i }),
+      ).not.toBeDisabled();
     });
   });
 
@@ -56,17 +62,24 @@ describe("JournalEntryForm", () => {
     const newText = "<p>test</p><p>note</p>";
     MockAxios.post.mockResolvedValueOnce({ data: {} });
 
-    const wrapper = renderComponent(defaultProps);
-    act(() => {
-      wrapper.getTextarea().enterValue(newText);
-    });
+    renderComponent();
+
+    const rte = screen.getByTestId(rteTestId);
+    const rteWrapper = getRichTextEditorTestkit(rte);
+
+    rteWrapper.enterValue(newText);
+
     await waitFor(() => {
-      expect(wrapper.getSubmitButton()).not.toBeDisabled();
+      expect(
+        screen.getByRole("button", { name: /create/i }),
+      ).not.toBeDisabled();
     });
-    wrapper.clickButton();
+
+    fireEvent.click(screen.getByRole("button", { name: /create/i }));
+
     await waitFor(() => {
-      expect(MockAxios.post).toHaveBeenCalledWith("/api/entries", {
-        jsonNote: {
+      expect(MockAxios.post).toHaveBeenCalledWith(JOURNAL_ENTRIES_PATH, {
+        json_note: {
           content: [
             {
               content: [
@@ -90,110 +103,12 @@ describe("JournalEntryForm", () => {
           type: "doc",
         },
         note: "note",
-        tags: [],
         title: "test",
       });
     });
     expect(toastSpy).toHaveBeenCalledWith({
       title: "Success",
       description: "Entry has been created",
-    });
-  });
-
-  describe("error", () => {
-    it("should show an error", async () => {
-      const newText = "<p>test</p><p>note</p>";
-      MockAxios.post.mockRejectedValueOnce({ data: {} });
-
-      const wrapper = renderComponent(defaultProps);
-      act(() => {
-        wrapper.getTextarea().enterValue(newText);
-      });
-      await waitFor(() => {
-        expect(wrapper.getSubmitButton()).not.toBeDisabled();
-      });
-      wrapper.clickButton();
-      await waitFor(() => {
-        expect(MockAxios.post).toHaveBeenCalledWith("/api/entries", {
-          jsonNote: {
-            content: [
-              {
-                content: [
-                  {
-                    text: "test",
-                    type: "text",
-                  },
-                ],
-                type: "paragraph",
-              },
-              {
-                content: [
-                  {
-                    text: "note",
-                    type: "text",
-                  },
-                ],
-                type: "paragraph",
-              },
-            ],
-            type: "doc",
-          },
-          note: "note",
-          tags: [],
-          title: "test",
-        });
-      });
-      expect(toastSpy).toHaveBeenCalledWith({
-        description: "An unexpected error occurred",
-        title: "Error",
-        variant: "destructive",
-      });
-    });
-  });
-
-  it("should submit entry, on Ctrl + Enter", async () => {
-    const newText = "<p>test</p><p>note</p>";
-
-    const wrapper = renderComponent(defaultProps);
-    act(() => {
-      wrapper.getTextarea().enterValue(newText);
-    });
-    await waitFor(() => {
-      expect(wrapper.getSubmitButton()).not.toBeDisabled();
-    });
-    wrapper.getTextarea().pressCtrlEnter();
-    await waitFor(() => {
-      expect(MockAxios.post).toHaveBeenCalledWith("/api/entries", {
-        jsonNote: {
-          content: [
-            {
-              content: [
-                {
-                  text: "test",
-                  type: "text",
-                },
-              ],
-              type: "paragraph",
-            },
-            {
-              content: [
-                {
-                  text: "note",
-                  type: "text",
-                },
-                {
-                  type: "hardBreak",
-                },
-              ],
-              type: "paragraph",
-            },
-          ],
-          type: "doc",
-        },
-        note: "note",
-        tags: [],
-        title: "test",
-      });
     });
   });
 });

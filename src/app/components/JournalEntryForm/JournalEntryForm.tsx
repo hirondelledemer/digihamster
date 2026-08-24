@@ -32,7 +32,6 @@ const JournalEntryForm: FC<JournalEntryFormProps> = ({
         title: title,
         note: textContent || "(no content)",
         json_note: contentJSON,
-        // tags: tags,
       },
       () => editor?.commands.setContent(""),
     );
