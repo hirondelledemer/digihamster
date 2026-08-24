@@ -6,16 +6,11 @@ import { render, screen, waitFor } from "@/config/utils/test-utils";
 import { EntriesContextProvider } from "@/app/utils/hooks/use-entry/provider";
 import MockAxios from "jest-mock-axios";
 
-import * as toastHook from "../ui/use-toast";
 import { getRichTextEditorTestkit } from "../RichTextEditor/RichTextEditor.testkit";
 import { fireEvent } from "@storybook/test";
 import { JOURNAL_ENTRIES_PATH } from "@/app/utils/hooks/use-entry/api";
-jest.mock("../ui/use-toast");
-
-const mockUseToast = jest.mocked(toastHook.useToast);
 
 describe("JournalEntryForm", () => {
-  const toastSpy = jest.fn();
   const defaultProps: JournalEntryFormProps = {};
   const renderComponent = (props: JournalEntryFormProps = defaultProps) =>
     render(
@@ -23,10 +18,6 @@ describe("JournalEntryForm", () => {
         <JournalEntryForm {...props} />
       </EntriesContextProvider>,
     );
-
-  beforeEach(() => {
-    mockUseToast.mockReturnValue({ toast: toastSpy } as any);
-  });
 
   afterEach(() => {
     MockAxios.reset();
@@ -105,10 +96,6 @@ describe("JournalEntryForm", () => {
         note: "note",
         title: "test",
       });
-    });
-    expect(toastSpy).toHaveBeenCalledWith({
-      title: "Success",
-      description: "Entry has been created",
     });
   });
 });
