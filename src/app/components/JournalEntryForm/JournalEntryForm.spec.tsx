@@ -1,7 +1,4 @@
-import JournalEntryForm, {
-  JournalEntryFormProps,
-  rteTestId,
-} from "./JournalEntryForm";
+import JournalEntryForm, { rteTestId } from "./JournalEntryForm";
 import { render, screen, waitFor } from "@/config/utils/test-utils";
 import { EntriesContextProvider } from "@/app/utils/hooks/use-entry/provider";
 import MockAxios from "jest-mock-axios";
@@ -11,11 +8,10 @@ import { fireEvent } from "@storybook/test";
 import { JOURNAL_ENTRIES_PATH } from "@/app/utils/hooks/use-entry/api";
 
 describe("JournalEntryForm", () => {
-  const defaultProps: JournalEntryFormProps = {};
-  const renderComponent = (props: JournalEntryFormProps = defaultProps) =>
+  const renderComponent = () =>
     render(
       <EntriesContextProvider>
-        <JournalEntryForm {...props} />
+        <JournalEntryForm />
       </EntriesContextProvider>,
     );
 

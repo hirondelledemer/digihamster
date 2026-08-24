@@ -5,15 +5,9 @@ import { useRte } from "@/app/utils/rte/rte-hook";
 import { useEntriesActions } from "@/app/utils/hooks/use-entry/actions-context";
 import { Button } from "../ui/button";
 
-export interface JournalEntryFormProps {
-  testId?: string;
-}
-
 export const rteTestId = "JournalEntryForm-rte-testId";
 
-const JournalEntryForm: FC<JournalEntryFormProps> = ({
-  testId,
-}): JSX.Element | null => {
+const JournalEntryForm: FC = (): JSX.Element | null => {
   const { editor, getRteValue } = useRte({
     value: "",
     editable: true,
@@ -47,7 +41,7 @@ const JournalEntryForm: FC<JournalEntryFormProps> = ({
     !editor?.getHTML().length || editor?.getHTML() === "<p></p>";
 
   return (
-    <div data-testid={testId}>
+    <div>
       <RichTextEditor
         testId={rteTestId}
         editor={editor}
