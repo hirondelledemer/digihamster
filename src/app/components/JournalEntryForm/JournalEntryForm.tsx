@@ -26,13 +26,13 @@ const JournalEntryForm: FC<JournalEntryFormProps> = ({
   }
 
   const handleSubmit = () => {
-    const { title, textContent, tags, contentJSON } = getRteValue();
+    const { title, textContent, contentJSON } = getRteValue();
     create(
       {
         title: title,
         note: textContent || "(no content)",
         json_note: contentJSON,
-        tags: tags,
+        // tags: tags,
       },
       () => editor?.commands.setContent(""),
     );
