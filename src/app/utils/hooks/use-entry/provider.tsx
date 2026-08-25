@@ -97,7 +97,6 @@ export const EntriesContextProvider = ({
 
       try {
         const response = await api.createEntry(data);
-        console.log("response", response);
 
         dispatch({
           type: EntriesStateActionType.UpdateEntry,
@@ -108,6 +107,8 @@ export const EntriesContextProvider = ({
         });
 
         handleSuccessToast(toast, "Entry has been created");
+        // callers need the saved entry to hang related records off its real id
+        return response.data;
       } catch (e: unknown) {
         dispatch({
           type: EntriesStateActionType.DeleteEntry,
@@ -117,6 +118,7 @@ export const EntriesContextProvider = ({
         });
 
         handleApiError(getApiErrorMessage(e), toast);
+        return null;
       }
     },
     [toast],

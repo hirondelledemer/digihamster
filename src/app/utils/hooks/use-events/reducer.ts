@@ -9,9 +9,11 @@ import {
 export function reducer(state: EventsState, action: EventsStateAction) {
   switch (action.type) {
     case EventsStateActionType.StartLoading: {
+      // the events already in state stay put. Wiping them means every consumer
+      // flashes an empty list for the length of the refetch
       return {
+        ...state,
         isLoading: true,
-        data: [],
       };
     }
     case EventsStateActionType.FinishLoading: {
@@ -28,8 +30,10 @@ export function reducer(state: EventsState, action: EventsStateAction) {
       };
     }
     case EventsStateActionType.CreateEvent: {
+      // the event is added optimistically, so there is nothing to wait for —
+      // saying "loading" here makes consumers hide data that is already usable
       return {
-        isLoading: true,
+        isLoading: false,
         data: [...state.data, action.payload.event],
       };
     }
