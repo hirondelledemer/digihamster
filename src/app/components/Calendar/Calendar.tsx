@@ -194,6 +194,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
           .filter((i) => {
             return isWithinInterval(date, interval(i.start_date, i.end_date));
           }).length;
+
       const dayIsFutureCycleDay =
         cycleData &&
         !!cycleData
@@ -206,18 +207,10 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
         isWithinInterval(date, interval(i.start_date, i.end_date)),
       );
 
-      if (view === "day") {
-        return {
-          style: {
-            backgroundColor: "transparent",
-          },
-        };
-      }
-
       if (isSameDay(date, now())) {
         return {
           style: {
-            backgroundColor: dayIsCycleDay ? " #340411" : "#1b1614",
+            backgroundColor: dayIsCycleDay ? " #340411" : "transparent",
           },
         };
       }
@@ -231,7 +224,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
         },
       };
     },
-    [cycleData, view],
+    [cycleData],
   );
 
   const { views } = useMemo(
