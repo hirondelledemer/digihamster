@@ -25,7 +25,19 @@ describe("EventsContext reducer", () => {
     expect(newState).toStrictEqual({
       isLoading: true,
       data: [],
+      errorMessage: undefined,
     });
+  });
+
+  it("should keep the events it already has while reloading", () => {
+    const data = generateListOfEvents(3);
+    const initialState = { isLoading: false, data, errorMessage: undefined };
+    const action: EventsLoadAction = {
+      type: EventsStateActionType.StartLoading,
+    };
+    const newState = reducer(initialState, action);
+
+    expect(newState.data).toEqual(data);
   });
 
   it("should handle FINISH_LOADING action", () => {
@@ -69,8 +81,9 @@ describe("EventsContext reducer", () => {
     };
     const newState = reducer(initialState, action);
 
+    // the event is added optimistically, so the state is not loading anything
     expect(newState).toStrictEqual({
-      isLoading: true,
+      isLoading: false,
       data: [event],
     });
   });
