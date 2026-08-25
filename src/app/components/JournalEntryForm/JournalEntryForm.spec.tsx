@@ -94,4 +94,20 @@ describe("JournalEntryForm", () => {
       });
     });
   });
+
+  // describe("calendar event selection", () => {
+  //   describe("today events do not exists", () => {
+  //     it("should not show any events");
+  //   });
+  //   describe("today events exists, but there is not current event", () => {
+  //     it("should render the today events");
+  //     it("should preselect last event");
+  //     it("should submit journal and a new relationship to the event");
+  //   });
+
+  //   describe("current event exists", () => {
+  //     it("should preselect current event");
+  //     it("should submit journal and a new relationship to the event");
+  //   });
+  // });
 });

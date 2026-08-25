@@ -42,7 +42,11 @@ export const useEventsForDay = (date: Date): IEvent[] => {
  * so its identity is stable as long as the event itself does not change.
  */
 export const useCurrentEvent = (): IEvent | undefined => {
-  const { data } = useEventsState();
+  const { data, isLoading } = useEventsState();
+
+  if (isLoading || !data) {
+    return undefined;
+  }
 
   return data.find(
     (event) =>
