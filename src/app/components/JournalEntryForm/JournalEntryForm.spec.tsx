@@ -3,41 +3,67 @@ import JournalEntryForm, {
   noEventBadgeTestId,
   rteTestId,
 } from "./JournalEntryForm";
-import { render, screen, waitFor } from "@/config/utils/test-utils";
+import { act, render, screen, waitFor } from "@/config/utils/test-utils";
 import { EntriesContextProvider } from "@/app/utils/hooks/use-entry/provider";
-import MockAxios from "jest-mock-axios";
+import { EventsContextProvider } from "@/app/utils/hooks/use-events/provider";
+import mockAxios from "jest-mock-axios";
 
 import { getRichTextEditorTestkit } from "../RichTextEditor/RichTextEditor.testkit";
 import { fireEvent } from "@storybook/test";
 import { JOURNAL_ENTRIES_PATH } from "@/app/utils/hooks/use-entry/api";
-import {
-  useCurrentEvent,
-  useEventsForDay,
-} from "../../utils/hooks/use-events/selectors";
-import { generateEvent } from "@/app/utils/mocks/event";
+import { EVENTS_PATH } from "@/app/utils/hooks/use-events/api";
 import { RELATIONSHIPS_PATH } from "@/app/utils/hooks/use-relationships/api";
 import { RelationshipEntityType } from "@/app/utils/types/relationship";
+import { generateEvent } from "@/app/utils/mocks/event";
+import { IEvent } from "@/app/utils/types/event";
+import { DEFAULT_TEST_DATE } from "@/app/utils/mocks/date";
+import { toBackendDateTime } from "#utils/date";
+import { addMinutes, subMinutes } from "date-fns";
 
-// the selectors have their own spec — here they are the knobs that decide what
-// the form is given, so the form's own behaviour can be checked in isolation
-jest.mock("../../utils/hooks/use-events/selectors", () => ({
-  useEventsForDay: jest.fn(),
-  useCurrentEvent: jest.fn(),
-}));
+jest.mock("../../utils/date/now");
 
-const mockedUseEventsForDay = useEventsForDay as jest.Mock;
-const mockedUseCurrentEvent = useCurrentEvent as jest.Mock;
+// now() is mocked to DEFAULT_TEST_DATE, so the events are placed around it.
+// They stay within an hour of it on purpose: that keeps them on the same
+// calendar day as "now" in whichever timezone the suite runs in
+const NOW = new Date(DEFAULT_TEST_DATE);
+
+const STANDUP = generateEvent(1, {
+  title: "Standup",
+  start_at: toBackendDateTime(subMinutes(NOW, 60)),
+  end_at: toBackendDateTime(subMinutes(NOW, 45)),
+});
+const REVIEW = generateEvent(2, {
+  title: "Design review",
+  start_at: toBackendDateTime(subMinutes(NOW, 15)),
+  end_at: toBackendDateTime(addMinutes(NOW, 15)),
+});
+const RETRO = generateEvent(3, {
+  title: "Retro",
+  start_at: toBackendDateTime(addMinutes(NOW, 45)),
+  end_at: toBackendDateTime(addMinutes(NOW, 60)),
+});
+
+const CREATED_ENTRY = { id: 55, title: "note", note: "note" };
 
 describe("JournalEntryForm", () => {
   const renderComponent = () =>
     render(
-      <EntriesContextProvider>
-        <JournalEntryForm />
-      </EntriesContextProvider>,
+      <EventsContextProvider>
+        <EntriesContextProvider>
+          <JournalEntryForm />
+        </EntriesContextProvider>
+      </EventsContextProvider>,
     );
 
-  const getCreateButton = () =>
-    screen.getByRole("button", { name: /create/i });
+  const assertLoaded = async (events: IEvent[] = []) => {
+    await waitFor(() => expect(mockAxios.queue()).toHaveLength(2));
+    await act(async () => {
+      mockAxios.mockResponseFor({ url: EVENTS_PATH }, { data: events });
+      mockAxios.mockResponseFor({ url: JOURNAL_ENTRIES_PATH }, { data: [] });
+    });
+  };
+
+  const getCreateButton = () => screen.getByRole("button", { name: /create/i });
 
   const enterNote = async (text: string) => {
     const rteWrapper = getRichTextEditorTestkit(screen.getByTestId(rteTestId));
@@ -48,17 +74,25 @@ describe("JournalEntryForm", () => {
     });
   };
 
-  beforeEach(() => {
-    mockedUseEventsForDay.mockReturnValue([]);
-    mockedUseCurrentEvent.mockReturnValue(undefined);
-  });
+  const submitEntry = async () => {
+    fireEvent.click(getCreateButton());
+
+    await waitFor(() => expect(mockAxios.queue()).toHaveLength(1));
+    await act(async () => {
+      mockAxios.mockResponseFor(
+        { url: JOURNAL_ENTRIES_PATH },
+        { data: CREATED_ENTRY },
+      );
+    });
+  };
 
   afterEach(() => {
-    MockAxios.reset();
+    mockAxios.reset();
   });
 
-  it("should show textbox and submit button", () => {
+  it("should show textbox and submit button", async () => {
     renderComponent();
+    await assertLoaded();
 
     const rte = screen.getByTestId(rteTestId);
     const rteWrapper = getRichTextEditorTestkit(rte);
@@ -69,67 +103,56 @@ describe("JournalEntryForm", () => {
 
   it('should disable "Create" button until text is entered', async () => {
     renderComponent();
+    await assertLoaded();
+
     expect(getCreateButton()).toBeDisabled();
 
-    const rte = screen.getByTestId(rteTestId);
-    const rteWrapper = getRichTextEditorTestkit(rte);
+    await enterNote("note");
 
-    rteWrapper.enterValue("note");
-
-    await waitFor(() => {
-      expect(getCreateButton()).not.toBeDisabled();
-    });
+    expect(getCreateButton()).not.toBeDisabled();
   });
 
   it("should submit entry", async () => {
-    const newText = "<p>test</p><p>note</p>";
-    MockAxios.post.mockResolvedValueOnce({ data: {} });
-
     renderComponent();
+    await assertLoaded();
 
-    await enterNote(newText);
+    await enterNote("<p>test</p><p>note</p>");
+    await submitEntry();
 
-    fireEvent.click(getCreateButton());
-
-    await waitFor(() => {
-      expect(MockAxios.post).toHaveBeenCalledWith(JOURNAL_ENTRIES_PATH, {
-        json_note: {
-          content: [
-            {
-              content: [
-                {
-                  text: "test",
-                  type: "text",
-                },
-              ],
-              type: "paragraph",
-            },
-            {
-              content: [
-                {
-                  text: "note",
-                  type: "text",
-                },
-              ],
-              type: "paragraph",
-            },
-          ],
-          type: "doc",
-        },
-        note: "note",
-        title: "test",
-      });
+    expect(mockAxios.post).toHaveBeenCalledWith(JOURNAL_ENTRIES_PATH, {
+      json_note: {
+        content: [
+          {
+            content: [
+              {
+                text: "test",
+                type: "text",
+              },
+            ],
+            type: "paragraph",
+          },
+          {
+            content: [
+              {
+                text: "note",
+                type: "text",
+              },
+            ],
+            type: "paragraph",
+          },
+        ],
+        type: "doc",
+      },
+      note: "note",
+      title: "test",
     });
   });
 
   describe("calendar event selection", () => {
-    const standup = generateEvent(1, { title: "Standup" });
-    const review = generateEvent(2, { title: "Design review" });
-    const createdEntry = { id: 55, title: "note", note: "note" };
-
     describe("today events do not exists", () => {
-      it("should not show any events, only 'no event' option", () => {
+      it("should not show any events, only 'no event' option", async () => {
         renderComponent();
+        await assertLoaded([]);
 
         expect(screen.getByTestId(noEventBadgeTestId)).toBeInTheDocument();
         expect(screen.queryAllByTestId(eventBadgeTestId)).toHaveLength(0);
@@ -137,22 +160,23 @@ describe("JournalEntryForm", () => {
     });
 
     describe("today events exists, but there is not current event", () => {
-      beforeEach(() => {
-        mockedUseEventsForDay.mockReturnValue([standup, review]);
-      });
+      // neither event is running at the mocked now()
+      const events = [STANDUP, RETRO];
 
-      it("should render the today events", () => {
+      it("should render the today events", async () => {
         renderComponent();
+        await assertLoaded(events);
 
         expect(
           screen
             .getAllByTestId(eventBadgeTestId)
             .map((badge) => badge.textContent),
-        ).toEqual([standup.title, review.title]);
+        ).toEqual([STANDUP.title, RETRO.title]);
       });
 
-      it('should preselect "no event" option', () => {
+      it('should preselect "no event" option', async () => {
         renderComponent();
+        await assertLoaded(events);
 
         expect(screen.getByTestId(noEventBadgeTestId)).toHaveAttribute(
           "data-selected",
@@ -164,31 +188,27 @@ describe("JournalEntryForm", () => {
       });
 
       it("should submit journal with no relationship", async () => {
-        MockAxios.post.mockResolvedValueOnce({ data: createdEntry });
-
         renderComponent();
+        await assertLoaded(events);
 
         await enterNote("<p>note</p>");
-        fireEvent.click(getCreateButton());
+        await submitEntry();
 
-        await waitFor(() => {
-          expect(MockAxios.post).toHaveBeenCalledWith(
-            JOURNAL_ENTRIES_PATH,
-            expect.anything(),
-          );
-        });
-        expect(MockAxios.post).toHaveBeenCalledTimes(1);
+        expect(mockAxios.post).toHaveBeenCalledTimes(1);
+        expect(mockAxios.post).toHaveBeenCalledWith(
+          JOURNAL_ENTRIES_PATH,
+          expect.anything(),
+        );
       });
     });
 
     describe("current event exists", () => {
-      beforeEach(() => {
-        mockedUseEventsForDay.mockReturnValue([standup, review]);
-        mockedUseCurrentEvent.mockReturnValue(review);
-      });
+      // REVIEW runs from 15 minutes before now() to 15 minutes after
+      const events = [STANDUP, REVIEW];
 
-      it("should preselect current event", () => {
+      it("should preselect current event", async () => {
         renderComponent();
+        await assertLoaded(events);
 
         expect(screen.getByTestId(noEventBadgeTestId)).toHaveAttribute(
           "data-selected",
@@ -202,20 +222,17 @@ describe("JournalEntryForm", () => {
       });
 
       it("should submit journal and a new relationship to the event", async () => {
-        MockAxios.post
-          .mockResolvedValueOnce({ data: createdEntry })
-          .mockResolvedValueOnce({ data: { id: 1 } });
-
         renderComponent();
+        await assertLoaded(events);
 
         await enterNote("<p>note</p>");
-        fireEvent.click(getCreateButton());
+        await submitEntry();
 
         await waitFor(() => {
-          expect(MockAxios.post).toHaveBeenCalledWith(RELATIONSHIPS_PATH, {
-            source_id: review.id,
+          expect(mockAxios.post).toHaveBeenCalledWith(RELATIONSHIPS_PATH, {
+            source_id: REVIEW.id,
             source_type: RelationshipEntityType.Event,
-            target_id: createdEntry.id,
+            target_id: CREATED_ENTRY.id,
             target_type: RelationshipEntityType.Journal,
           });
         });
