@@ -105,10 +105,6 @@ const CalendarEvent: FC<CalendarEventProps> = ({
 
   return (
     <div
-      ref={setNodeRef}
-      className={cn(isOver ? "border-2 border-primary rounded-lg" : "")}
-    >
-      <div
         ref={containerRef}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
@@ -116,8 +112,12 @@ const CalendarEvent: FC<CalendarEventProps> = ({
           backgroundColor: projectColor || "#29221f",
           border: `2px solid ${projectColor || "hsl(var(--primary)/0.5)"}`,
         }}
-        className="h-full p-1 cursor-pointer rounded-lg relative "
+        className={cn("h-full cursor-pointer rounded-lg relative", isOver ? '': 'p-1')}
       >
+        <div
+          ref={setNodeRef}
+          className={cn(isOver ? "border-2 border-primary rounded-lg h-full w-full p-1" : "")}
+        >
         <EventActions event={event.resource.event}>
           {event.resource.event.status !== EventStatus.Pending && (
             <div
