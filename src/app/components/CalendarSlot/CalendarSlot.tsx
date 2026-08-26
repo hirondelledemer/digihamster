@@ -38,7 +38,7 @@ const CalendarSlot: FC<CalendarSlotProps> = ({
 
       {isEvenHour && minutesAreZero && isTimeLabelSlot ? (
         <div className="mt-[-15px] flex items-center">
-          <div className="mr-2 z-100">{children}</div>
+          <div className="mr-2 z-10">{children}</div>
 
           <div className="h-3 w-3 bg bg-primary absolute ml-1 left-[70px] rounded-xl z-10" />
         </div>

@@ -29,7 +29,6 @@ const meta: Meta<typeof Projects> = {
           isLoading: false,
           data: PROJECTS,
           defaultProject: PROJECTS[0],
-          getProjectById: (id) => PROJECTS.find((p) => p._id === id) || null,
         }}
       >
         <TasksContext.Provider

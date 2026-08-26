@@ -7,7 +7,7 @@ import { IconCalendar, IconProgressCheck } from "@tabler/icons-react";
 import { useCalendarDate } from "../../utils/hooks/use-calendar-date";
 import { Tooltip, TooltipContent, TooltipProvider } from "../ui/tooltip";
 import { TooltipTrigger } from "@radix-ui/react-tooltip";
-import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
+import { useTaskProject } from "@/app/utils/hooks/use-projects/selectors";
 import { ITask } from "@/app/utils/types/task";
 import { TaskActions } from "../TaskActions";
 import { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
@@ -36,10 +36,9 @@ const TaskCard: FC<TaskCardProps> = ({
   attributes,
   style,
 }): JSX.Element => {
-  const { data: projects } = useProjectsState();
   const { setSelectedDate } = useCalendarDate();
 
-  const project = projects.find((p) => p.id === task.project_id);
+  const project = useTaskProject(task);
 
   const baseStyle: CSSProperties = {
     ...style,

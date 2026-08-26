@@ -4,7 +4,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "../ui/sheet";
 import { cn } from "../utils";
 import CreateTaskForm from "../CreateTaskForm";
 import { ScrollArea } from "../ui/scroll-area";
-import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
+import { useProjectById } from "@/app/utils/hooks/use-projects/selectors";
 import MinimalNote from "../MinimalNote";
 import { useRouter, useSearchParams } from "#lib/navigation";
 import { useTasksNewState } from "@/app/utils/hooks/use-tasks-new/state-context";
@@ -23,26 +23,13 @@ const TaskInfo: FC<TaskInfoProps> = (): JSX.Element | null => {
 
   const { data: tasks } = useTasksNewState();
 
-  const { getProjectById, isLoading } = useProjectsState();
-
-  const selectedProject =
-    projectId && !isLoading ? getProjectById(Number(projectId)) : null;
+  const selectedProject = useProjectById(projectId ? Number(projectId) : null);
 
   if (!selectedProject) {
     return null;
   }
 
   const title = selectedProject?.title;
-
-  // const tasksToShow = tasks
-  //   .filter((t) => t.project_id && t.project_id.toString() === projectId)
-  //   .sort(
-  //     (taskA, taskB) =>
-  //       new Date(taskA.created_at).valueOf() -
-  //       new Date(taskB.created_at).valueOf(),
-  //   )
-  //   .sort((taskA) => (taskA.status === "doing" || !!taskA.event_id ? 0 : 1))
-  //   .sort((taskA) => (taskA.status === "done" ? 1 : 0));
 
   const tasksToShow = tasks
     .filter((t) => t.project_id && t.project_id.toString() === projectId)
@@ -69,15 +56,13 @@ const TaskInfo: FC<TaskInfoProps> = (): JSX.Element | null => {
       );
     });
 
-  console.log(tasksToShow);
-
   return (
     <Sheet open>
       <SheetContent
         side="right"
         aria-describedby="Task info"
         onCloseClick={() => router.replace("/", undefined)}
-        showOverlay={false}
+        // showOverlay={false}
         onEscapeKeyDown={() => router.replace("/", undefined)}
       >
         <SheetHeader>

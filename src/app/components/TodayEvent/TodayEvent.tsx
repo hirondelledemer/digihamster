@@ -1,7 +1,7 @@
 "use client";
 
 import { lightFormat, format } from "date-fns";
-import React, { FC, useEffect, useMemo, useRef } from "react";
+import React, { FC, useEffect, useRef } from "react";
 import { cn } from "../utils";
 import styles from "./TodayEvent.module.scss";
 import {
@@ -13,7 +13,7 @@ import {
 } from "../CalendarEvent/CalendarEvent.types";
 import { useDroppable } from "@dnd-kit/core";
 import CalendarWeatherEvent from "../CalendarWeatherEvent";
-import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
+import { useTaskProject } from "@/app/utils/hooks/use-projects/selectors";
 import { TaskActions } from "../TaskActions";
 import { EventActions } from "../EventActions";
 import { DraggableTaskCard } from "../TaskCard/DraggableTaskCard";
@@ -40,7 +40,6 @@ const TodayEvent: FC<TodayEventProps> = ({
   weatherEvent,
   isFocused,
 }): JSX.Element => {
-  const { getProjectById } = useProjectsState();
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -54,12 +53,8 @@ const TodayEvent: FC<TodayEventProps> = ({
     disabled: isCalendarDeadlineEntry(event),
   });
 
-  const project = useMemo(
-    () =>
-      isCalendarDeadlineEntry(event)
-        ? getProjectById(event.resource.task.project_id?.toString() || "")
-        : null,
-    [getProjectById, event],
+  const project = useTaskProject(
+    isCalendarDeadlineEntry(event) ? event.resource.task : null,
   );
 
   const eventIsCompleted = isCalendarDeadlineEntry(event)

@@ -7,17 +7,17 @@ import {
   isCalendarEventEntry,
 } from "./CalendarEvent.types";
 
-import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
+import { useProjectById } from "@/app/utils/hooks/use-projects/selectors";
 import { EventActions } from "../EventActions";
 import { format } from "date-fns";
 import { EventStatus } from "@/app/utils/types/event";
 import { cn } from "../utils";
 import { TaskStatus } from "@/app/utils/types/task";
-import { Checkbox } from "../ui/checkbox";
 import { useTasksNewActions } from "@/app/utils/hooks/use-tasks-new/actions-context";
 import { CheckedState } from "@radix-ui/react-checkbox";
 import { useDroppable } from "@dnd-kit/core";
 import { sortInTheEvent } from "@/app/utils/tasks/sort";
+import { EventTask } from "./components/EventTask";
 
 export interface CalendarEventProps {
   event: CalendarEventEntry;
@@ -46,7 +46,7 @@ const CalendarEvent: FC<CalendarEventProps> = ({
     el.style.overflow = "hidden";
   };
 
-  const { getProjectById } = useProjectsState();
+  const project = useProjectById(event.resource.event.project_id);
 
   const { updateTask } = useTasksNewActions();
 
@@ -73,36 +73,17 @@ const CalendarEvent: FC<CalendarEventProps> = ({
           <div>
             {isCalendarEventEntry(event) &&
               sortInTheEvent(event.resource.tasks).map((t) => (
-                <div
+                <EventTask
                   key={t.id}
-                  className={cn(
-                    "text-sm mt-1 border bg-card rounded-md p-1 flex items-center gap-2",
-                  )}
-                >
-                  <Checkbox
-                    checked={t.status === TaskStatus.Done}
-                    onCheckedChange={handleTaskCompleteClick(t.id)}
-                    onClick={(event) => {
-                      event.stopPropagation();
-                    }}
-                    onMouseDownCapture={(event) => {
-                      // the calendar listens for mousedown natively to start a
-                      // slot selection, so it has to be stopped in the capture phase
-                      event.stopPropagation();
-                    }}
-                  />
-                  {t.title}
-                </div>
+                  task={t}
+                  onCompletedChange={handleTaskCompleteClick(t.id)}
+                />
               ))}
           </div>
         </div>
       </div>
     );
   }, [event, handleTaskCompleteClick]);
-
-  const project =
-    event.resource.event.project_id &&
-    getProjectById(event.resource.event.project_id);
 
   const projectColor = project
     ? `color-mix(in srgb, ${project.color} 20%, transparent)`

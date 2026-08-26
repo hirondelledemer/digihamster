@@ -192,12 +192,8 @@ export const ProjectsContextProvider = ({
     }
   };
 
-  const getProjectById = (id: number) => {
-    return state.data.find((project) => project.id === id) || null;
-  };
-
   return (
-    <ProjectsStateContext.Provider value={{ ...state, getProjectById }}>
+    <ProjectsStateContext.Provider value={state}>
       <ProjectsActionsContext.Provider
         value={{
           create: createProject,
