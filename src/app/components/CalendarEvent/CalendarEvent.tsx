@@ -16,6 +16,7 @@ import { TaskStatus } from "@/app/utils/types/task";
 import { Checkbox } from "../ui/checkbox";
 import { useTasksNewActions } from "@/app/utils/hooks/use-tasks-new/actions-context";
 import { CheckedState } from "@radix-ui/react-checkbox";
+import { useDroppable } from "@dnd-kit/core";
 
 export interface CalendarEventProps {
   event: CalendarEventEntry;
@@ -47,6 +48,10 @@ const CalendarEvent: FC<CalendarEventProps> = ({
   const { getProjectById } = useProjectsState();
 
   const { updateTask } = useTasksNewActions();
+
+  const { isOver, setNodeRef } = useDroppable({
+    id: event.resource.id,
+  });
 
   const handleTaskCompleteClick = useCallback(
     (taskId: number) => (value: CheckedState) => {
@@ -117,7 +122,10 @@ const CalendarEvent: FC<CalendarEventProps> = ({
   };
 
   return (
-    <>
+    <div
+      ref={setNodeRef}
+      className={cn(isOver ? "border-2 border-primary rounded-lg" : "")}
+    >
       <div
         ref={containerRef}
         onMouseEnter={handleMouseEnter}
@@ -148,7 +156,7 @@ const CalendarEvent: FC<CalendarEventProps> = ({
           {event.end && format(event.end, "HH:mm")}
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
