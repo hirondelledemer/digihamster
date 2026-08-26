@@ -17,6 +17,7 @@ import { Checkbox } from "../ui/checkbox";
 import { useTasksNewActions } from "@/app/utils/hooks/use-tasks-new/actions-context";
 import { CheckedState } from "@radix-ui/react-checkbox";
 import { useDroppable } from "@dnd-kit/core";
+import { sortInTheEvent } from "@/app/utils/tasks/sort";
 
 export interface CalendarEventProps {
   event: CalendarEventEntry;
@@ -71,7 +72,7 @@ const CalendarEvent: FC<CalendarEventProps> = ({
 
           <div>
             {isCalendarEventEntry(event) &&
-              event.resource.tasks.map((t) => (
+              sortInTheEvent(event.resource.tasks).map((t) => (
                 <div
                   key={t.id}
                   className={cn(

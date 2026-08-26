@@ -18,6 +18,7 @@ import { TaskActions } from "../TaskActions";
 import { EventActions } from "../EventActions";
 import { DraggableTaskCard } from "../TaskCard/DraggableTaskCard";
 import { EventStatus } from "@/app/utils/types/event";
+import { sortInTheEvent } from "@/app/utils/tasks/sort";
 
 export interface TodayEventProps {
   showDate?: boolean;
@@ -136,15 +137,9 @@ const TodayEvent: FC<TodayEventProps> = ({
             )}
             {isCalendarEventEntry(event) && (
               <div className="grid gap-2">
-                {event.resource.tasks
-                  .sort(
-                    (taskA, taskB) =>
-                      (taskA.event_sort_order || 0) -
-                      (taskB.event_sort_order || 0),
-                  )
-                  .map((t) => (
-                    <DraggableTaskCard key={t.id} task={t} dragId={t.id} />
-                  ))}
+                {sortInTheEvent(event.resource.tasks).map((t) => (
+                  <DraggableTaskCard key={t.id} task={t} dragId={t.id} />
+                ))}
               </div>
             )}
           </div>
