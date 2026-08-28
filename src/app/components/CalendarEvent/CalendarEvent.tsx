@@ -18,6 +18,9 @@ import { CheckedState } from "@radix-ui/react-checkbox";
 import { useDroppable } from "@dnd-kit/core";
 import { sortInTheEvent } from "@/app/utils/tasks/sort";
 import { EventTask } from "./components/EventTask";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
+import { IconBubbleText } from "@tabler/icons-react";
+import MinimalNote from "../MinimalNote";
 
 export interface CalendarEventProps {
   event: CalendarEventEntry;
@@ -70,15 +73,37 @@ const CalendarEvent: FC<CalendarEventProps> = ({
           <div>{event.title}</div>
           <div className="text-xs">{event.resource.event.description}</div>
 
-          <div>
-            {isCalendarEventEntry(event) &&
-              sortInTheEvent(event.resource.tasks).map((t) => (
-                <EventTask
-                  key={t.id}
-                  task={t}
-                  onCompletedChange={handleTaskCompleteClick(t.id)}
-                />
+          <div className="flex space-between gap-4">
+            <div className="grow">
+              {isCalendarEventEntry(event) &&
+                sortInTheEvent(event.resource.tasks).map((t) => (
+                  <EventTask
+                    key={t.id}
+                    task={t}
+                    onCompletedChange={handleTaskCompleteClick(t.id)}
+                  />
+                ))}
+            </div>
+            <div className="flex-none flex-col">
+              {event.resource.journalEntries.map((entry) => (
+                <div key={entry.id}>
+                  <Tooltip delayDuration={0}>
+                    <TooltipTrigger
+                      className="pointer-events-auto"
+                      onMouseDownCapture={(e) => {
+                        // the calendar starts a slot selection on a native mousedown
+                        e.stopPropagation();
+                      }}
+                    >
+                      <IconBubbleText size={20} />
+                    </TooltipTrigger>
+                    <TooltipContent className="w-[200px]" side="right">
+                      <MinimalNote note={entry.json_note || entry.note} />
+                    </TooltipContent>
+                  </Tooltip>
+                </div>
               ))}
+            </div>
           </div>
         </div>
       </div>
@@ -97,7 +122,7 @@ const CalendarEvent: FC<CalendarEventProps> = ({
       return "repeating-linear-gradient(45deg, hsl(var(--scale-color-1)/0.4), hsl(var(--scale-color-1)/0.5) 3px, hsl(var(--scale-color-1)/0.1) 5px, hsl(var(--scale-color-1)/0.1) 20px)";
     }
     if (event.resource.event.status === EventStatus.Moved) {
-      return "repeating-linear-gradient(45deg, hsl(var(--scale-color-5)/0.4), hsl(var(--scale-color-5)/0.5) 3px, hsl(var(--scale-color-5)/0.1) 5px, hsl(var(--scale-color-5)/0.1) 20px)";
+      return "repeating-linear-gradient(45deg, hsl(var(--scale-color-5)/0.1), hsl(var(--scale-color-5)/0.2) 3px, hsl(var(--scale-color-5)/0.1) 5px, hsl(var(--scale-color-5)/0.1) 20px)";
     }
 
     return "";
@@ -105,19 +130,24 @@ const CalendarEvent: FC<CalendarEventProps> = ({
 
   return (
     <div
-        ref={containerRef}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-        style={{
-          backgroundColor: projectColor || "#29221f",
-          border: `2px solid ${projectColor || "hsl(var(--primary)/0.5)"}`,
-        }}
-        className={cn("h-full cursor-pointer rounded-lg relative", isOver ? '': 'p-1')}
+      ref={containerRef}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      style={{
+        backgroundColor: projectColor || "#29221f",
+        border: `2px solid ${projectColor || "hsl(var(--primary)/0.5)"}`,
+      }}
+      className={cn(
+        "h-full cursor-pointer rounded-lg relative",
+        isOver ? "" : "p-1",
+      )}
+    >
+      <div
+        ref={setNodeRef}
+        className={cn(
+          isOver ? "border-2 border-primary rounded-lg h-full w-full p-1" : "",
+        )}
       >
-        <div
-          ref={setNodeRef}
-          className={cn(isOver ? "border-2 border-primary rounded-lg h-full w-full p-1" : "")}
-        >
         <EventActions event={event.resource.event}>
           {event.resource.event.status !== EventStatus.Pending && (
             <div

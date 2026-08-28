@@ -7,12 +7,7 @@ import { FC } from "react";
 import { cn } from "../../utils";
 import { Checkbox } from "../../ui/checkbox";
 import { CheckedState } from "@radix-ui/react-checkbox";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "../../ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../../ui/tooltip";
 import { useRouter } from "next/navigation";
 
 interface EventTaskProps {
@@ -47,28 +42,26 @@ export const EventTask: FC<EventTaskProps> = ({ task, onCompletedChange }) => {
         }}
       />
       {project && (
-        <TooltipProvider>
-          <Tooltip delayDuration={0}>
-            <TooltipTrigger
-              className="pointer-events-auto"
-              onMouseDownCapture={(e) => {
-                // the calendar starts a slot selection on a native mousedown
-                e.stopPropagation();
+        <Tooltip delayDuration={0}>
+          <TooltipTrigger
+            className="pointer-events-auto"
+            onMouseDownCapture={(e) => {
+              // the calendar starts a slot selection on a native mousedown
+              e.stopPropagation();
+            }}
+          >
+            <div
+              style={{
+                background: projectColor?.main,
               }}
-            >
-              <div
-                style={{
-                  background: projectColor?.main,
-                }}
-                className="h-4 w-4 cursor"
-                onClick={() =>
-                  router.push(`/?projectId=${project.id}`, undefined)
-                }
-              />
-            </TooltipTrigger>
-            <TooltipContent>{project.title}</TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+              className="h-4 w-4 cursor"
+              onClick={() =>
+                router.push(`/?projectId=${project.id}`, undefined)
+              }
+            />
+          </TooltipTrigger>
+          <TooltipContent>{project.title}</TooltipContent>
+        </Tooltip>
       )}
       {task.title}
     </div>

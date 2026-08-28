@@ -9,12 +9,7 @@ import {
 } from "@tabler/icons-react";
 import { CalendarWeatherEntry } from "../CalendarEvent/CalendarEvent.types";
 import { cn } from "../utils";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "../ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 
 export interface CalendarWeatherEventProps {
   testId?: string;
@@ -62,22 +57,18 @@ const CalendarWeatherEvent: FC<CalendarWeatherEventProps> = ({
     >
       <div>{Math.floor(event.resource.temp || 0)}</div>
 
-      <TooltipProvider>
-        <Tooltip delayDuration={0}>
-          <TooltipTrigger
-            className="pointer-events-auto"
-            onMouseDownCapture={(e) => {
-              // the calendar starts a slot selection on a native mousedown
-              e.stopPropagation();
-            }}
-          >
-            <div>{getWeatherIcon(event.resource.weather || [])}</div>
-          </TooltipTrigger>
-          <TooltipContent>
-            {event.resource.weather[0].description}
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+      <Tooltip delayDuration={0}>
+        <TooltipTrigger
+          className="pointer-events-auto"
+          onMouseDownCapture={(e) => {
+            // the calendar starts a slot selection on a native mousedown
+            e.stopPropagation();
+          }}
+        >
+          <div>{getWeatherIcon(event.resource.weather || [])}</div>
+        </TooltipTrigger>
+        <TooltipContent>{event.resource.weather[0].description}</TooltipContent>
+      </Tooltip>
     </div>
   );
 };

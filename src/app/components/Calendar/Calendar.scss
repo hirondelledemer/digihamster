@@ -163,6 +163,7 @@
 .rbc-background-event {
   z-index: 10;
   pointer-events: none;
+  opacity: 1 !important;
 }
 
 .rbc-event.rbc-selected {

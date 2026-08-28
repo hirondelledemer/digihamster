@@ -38,7 +38,6 @@ import {
 } from "date-fns";
 
 import CalendarEvent, { CalendarEventType } from "../CalendarEvent";
-import { useEntriesState } from "@/app/utils/hooks/use-entry/state-context";
 
 import {
   CalendarDeadlineEntry,
@@ -47,6 +46,7 @@ import {
   CalendarWeatherEntry,
   isCalendarDeadlineEntry,
   isCalendarEventEntry,
+  isCalendarJournalEntry,
   isCalendarWeatherEntry,
   WeatherData,
 } from "../CalendarEvent/CalendarEvent.types";
@@ -63,6 +63,8 @@ import { parseBackendDate, toBackendDateTime } from "#utils/date";
 import { useTasksNewState } from "@/app/utils/hooks/use-tasks-new/state-context";
 import { useTasksNewActions } from "@/app/utils/hooks/use-tasks-new/actions-context";
 import axios from "axios";
+import { useJournalEntriesGroupedByEvents } from "@/app/utils/hooks/use-entry/selectors";
+import { CalendarJournalEvent } from "../CalendarJournalEvent";
 
 export const now = () => new Date();
 
@@ -107,7 +109,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
     })();
   }, []);
 
-  const { data: journalEntriesData } = useEntriesState();
+  const journalEntriesData = useJournalEntriesGroupedByEvents();
   const { data: eventsData } = useEventsState();
   const { update: updateEvent } = useEventsActions();
   const { data: cycleData } = useCycle();
@@ -128,6 +130,9 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
         type: "event",
         event,
         tasks: tasksData.filter((t) => t.event_id === event.id),
+        journalEntries: journalEntriesData
+          ? journalEntriesData[event.id] || []
+          : [],
       },
     };
   });
@@ -147,18 +152,19 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
       },
     }));
 
-  const entriesResolved = journalEntriesData.map<CalendarJournalEntry>(
-    (entry) => ({
-      start: new Date(entry.created_at || 0),
-      title: entry.title,
-      allDay: false,
-      resource: {
-        type: "journal",
-        note: entry,
-        id: entry.id?.toString(),
-      },
-    }),
-  );
+  const entriesResolved = (
+    journalEntriesData?.loose || []
+  ).map<CalendarJournalEntry>((entry) => ({
+    start: new Date(entry.created_at),
+    end: addMinutes(new Date(entry.created_at), 1),
+    title: entry.title,
+    allDay: false,
+    resource: {
+      type: "journal",
+      note: entry,
+      id: entry.id,
+    },
+  }));
 
   const weatherResolved = (weatherData?.list || [])
     .filter(
@@ -183,7 +189,8 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
       },
     }));
 
-  const events = [...eventsResolved, ...entriesResolved, ...tasksResolved];
+  console.log("entriesResolved", entriesResolved);
+  const events = [...eventsResolved, ...tasksResolved];
 
   const customDayPropGetter = useCallback(
     (date: Date) => {
@@ -246,6 +253,9 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
     }
     if (isCalendarWeatherEntry(event)) {
       return <CalendarWeatherEvent event={event} className="mt-1" />;
+    }
+    if (isCalendarJournalEntry(event)) {
+      return <CalendarJournalEvent event={event} className="mt-1" />;
     }
   };
 
@@ -314,7 +324,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
         localizer={localizer}
         resizableAccessor={isCalendarEventEntry}
         events={events}
-        backgroundEvents={weatherResolved}
+        backgroundEvents={[...weatherResolved, ...entriesResolved]}
         onEventDrop={moveEvent}
         resizable
         showMultiDayTimes

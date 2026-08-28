@@ -1,6 +1,6 @@
 import { IEvent } from "@/app/utils/types/event";
+import { IJournalEntry } from "@/app/utils/types/journal-entry";
 import { ITask } from "@/app/utils/types/task";
-import { JournalEntry } from "@/models/entry";
 import { Event } from "react-big-calendar";
 
 export interface WeatherData {
@@ -20,10 +20,11 @@ export interface WeatherData {
 
 export interface CalendarJournalEntry extends Event {
   title: string;
+  start: Date;
   resource: {
-    id: string;
+    id: number;
     type: "journal";
-    note: JournalEntry;
+    note: IJournalEntry;
   };
 }
 
@@ -57,6 +58,7 @@ export interface CalendarEventEntry extends Event {
     type: "event";
     event: IEvent;
     tasks: ITask[];
+    journalEntries: IJournalEntry[];
   };
 }
 
