@@ -1,4 +1,5 @@
 import Timeline from "../components/Timeline";
+import { TooltipProvider } from "../components/ui/tooltip";
 import { EntriesContextProvider } from "../utils/hooks/use-entry/provider";
 import { EventsContextProvider } from "../utils/hooks/use-events/provider";
 import { ProjectsContextProvider } from "../utils/hooks/use-projects/provider";
@@ -13,9 +14,11 @@ export default function LogsPage() {
       <EventsContextProvider>
         <ProjectsContextProvider>
           <TagsContextProvider>
-            {/* <TasksContextProvider> */}
-            <Timeline />
-            {/* </TasksContextProvider> */}
+            <TooltipProvider>
+              {/* <TasksContextProvider> */}
+              <Timeline />
+              {/* </TasksContextProvider> */}
+            </TooltipProvider>
           </TagsContextProvider>
         </ProjectsContextProvider>
       </EventsContextProvider>
