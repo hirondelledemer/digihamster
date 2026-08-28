@@ -95,7 +95,7 @@ const CalendarEvent: FC<CalendarEventProps> = ({
                         e.stopPropagation();
                       }}
                     >
-                      <IconBubbleText />
+                      <IconBubbleText size={20} />
                     </TooltipTrigger>
                     <TooltipContent className="w-[200px]" side="right">
                       <MinimalNote note={entry.json_note || entry.note} />

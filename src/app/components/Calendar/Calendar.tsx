@@ -46,6 +46,7 @@ import {
   CalendarWeatherEntry,
   isCalendarDeadlineEntry,
   isCalendarEventEntry,
+  isCalendarJournalEntry,
   isCalendarWeatherEntry,
   WeatherData,
 } from "../CalendarEvent/CalendarEvent.types";
@@ -63,6 +64,7 @@ import { useTasksNewState } from "@/app/utils/hooks/use-tasks-new/state-context"
 import { useTasksNewActions } from "@/app/utils/hooks/use-tasks-new/actions-context";
 import axios from "axios";
 import { useJournalEntriesGroupedByEvents } from "@/app/utils/hooks/use-entry/selectors";
+import { CalendarJournalEvent } from "../CalendarJournalEvent";
 
 export const now = () => new Date();
 
@@ -153,7 +155,8 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
   const entriesResolved = (
     journalEntriesData?.loose || []
   ).map<CalendarJournalEntry>((entry) => ({
-    start: new Date(entry.created_at || 0),
+    start: new Date(entry.created_at),
+    end: addMinutes(new Date(entry.created_at), 1),
     title: entry.title,
     allDay: false,
     resource: {
@@ -186,7 +189,8 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
       },
     }));
 
-  const events = [...eventsResolved, ...entriesResolved, ...tasksResolved];
+  console.log("entriesResolved", entriesResolved);
+  const events = [...eventsResolved, ...tasksResolved];
 
   const customDayPropGetter = useCallback(
     (date: Date) => {
@@ -249,6 +253,9 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
     }
     if (isCalendarWeatherEntry(event)) {
       return <CalendarWeatherEvent event={event} className="mt-1" />;
+    }
+    if (isCalendarJournalEntry(event)) {
+      return <CalendarJournalEvent event={event} className="mt-1" />;
     }
   };
 
@@ -317,7 +324,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
         localizer={localizer}
         resizableAccessor={isCalendarEventEntry}
         events={events}
-        backgroundEvents={weatherResolved}
+        backgroundEvents={[...weatherResolved, ...entriesResolved]}
         onEventDrop={moveEvent}
         resizable
         showMultiDayTimes

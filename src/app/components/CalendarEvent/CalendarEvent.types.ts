@@ -20,6 +20,7 @@ export interface WeatherData {
 
 export interface CalendarJournalEntry extends Event {
   title: string;
+  start: Date;
   resource: {
     id: number;
     type: "journal";
