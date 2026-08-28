@@ -10,7 +10,7 @@ import {
 } from "@/app/utils/hooks/use-events/selectors";
 import { now } from "@/app/utils/date/now";
 import { Badge } from "../ui/badge";
-import { useRelationships } from "@/app/utils/hooks/use-relationships/use-relationships";
+import { useRelationshipsActions } from "@/app/utils/hooks/use-relationships/actions-context";
 import { RelationshipEntityType } from "@/app/utils/types/relationship";
 
 export const rteTestId = "JournalEntryForm-rte-testId";
@@ -23,7 +23,7 @@ const JournalEntryForm: FC = (): JSX.Element | null => {
     editable: true,
   });
 
-  const { create: createRelationship } = useRelationships();
+  const { create: createRelationship } = useRelationshipsActions();
 
   const { create: createEntry } = useEntriesActions();
   const todayEvents = useEventsForDay(now());

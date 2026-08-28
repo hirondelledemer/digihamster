@@ -13,6 +13,7 @@ import { fireEvent } from "@storybook/test";
 import { JOURNAL_ENTRIES_PATH } from "@/app/utils/hooks/use-entry/api";
 import { EVENTS_PATH } from "@/app/utils/hooks/use-events/api";
 import { RELATIONSHIPS_PATH } from "@/app/utils/hooks/use-relationships/api";
+import { RelationshipsContextProvider } from "@/app/utils/hooks/use-relationships/provider";
 import { RelationshipEntityType } from "@/app/utils/types/relationship";
 import { generateEvent } from "@/app/utils/mocks/event";
 import { IEvent } from "@/app/utils/types/event";
@@ -50,16 +51,19 @@ describe("JournalEntryForm", () => {
     render(
       <EventsContextProvider>
         <EntriesContextProvider>
-          <JournalEntryForm />
+          <RelationshipsContextProvider>
+            <JournalEntryForm />
+          </RelationshipsContextProvider>
         </EntriesContextProvider>
       </EventsContextProvider>,
     );
 
   const assertLoaded = async (events: IEvent[] = []) => {
-    await waitFor(() => expect(mockAxios.queue()).toHaveLength(2));
+    await waitFor(() => expect(mockAxios.queue()).toHaveLength(3));
     await act(async () => {
       mockAxios.mockResponseFor({ url: EVENTS_PATH }, { data: events });
       mockAxios.mockResponseFor({ url: JOURNAL_ENTRIES_PATH }, { data: [] });
+      mockAxios.mockResponseFor({ url: RELATIONSHIPS_PATH }, { data: [] });
     });
   };
 
