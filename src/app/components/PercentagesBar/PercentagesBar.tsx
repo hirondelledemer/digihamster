@@ -1,10 +1,5 @@
 import React, { FC } from "react";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "../ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 
 export interface PercentagesData {
   [key: string]: {
@@ -26,25 +21,23 @@ const PercentagesBar: FC<PercentagesBarProps> = ({
   return (
     <div data-testid={testId} className="h-5 flex">
       {Object.keys(data).map((key) => (
-        <TooltipProvider key={key}>
-          <Tooltip>
-            <TooltipTrigger
+        <Tooltip key={key}>
+          <TooltipTrigger
+            style={{
+              width: `${data[key].percentage}%`,
+            }}
+            className="hover:border-color-transparent hover:border-2"
+          >
+            <div
               style={{
-                width: `${data[key].percentage}%`,
+                height: "100%",
+                width: "100%",
+                backgroundColor: `${data[key].color}`,
               }}
-              className="hover:border-color-transparent hover:border-2"
-            >
-              <div
-                style={{
-                  height: "100%",
-                  width: "100%",
-                  backgroundColor: `${data[key].color}`,
-                }}
-              />
-            </TooltipTrigger>
-            <TooltipContent>{data[key].label}</TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+            />
+          </TooltipTrigger>
+          <TooltipContent>{data[key].label}</TooltipContent>
+        </Tooltip>
       ))}
     </div>
   );

@@ -5,7 +5,7 @@ import StaleIndicator from "../StaleIndicator";
 import { DraggableAttributes } from "@dnd-kit/core";
 import { IconCalendar, IconProgressCheck } from "@tabler/icons-react";
 import { useCalendarDate } from "../../utils/hooks/use-calendar-date";
-import { Tooltip, TooltipContent, TooltipProvider } from "../ui/tooltip";
+import { Tooltip, TooltipContent } from "../ui/tooltip";
 import { TooltipTrigger } from "@radix-ui/react-tooltip";
 import { useTaskProject } from "@/app/utils/hooks/use-projects/selectors";
 import { ITask } from "@/app/utils/types/task";
@@ -75,21 +75,19 @@ const TaskCard: FC<TaskCardProps> = ({
                   />
                 )}
                 {!!task.deadline && (
-                  <TooltipProvider>
-                    <Tooltip delayDuration={0}>
-                      <TooltipTrigger>
-                        <IconCalendar
-                          size={18}
-                          onClick={() => {
-                            setSelectedDate(new Date(task.deadline!));
-                          }}
-                        />
-                        <TooltipContent>
-                          {format(task.deadline, "MM-dd")}
-                        </TooltipContent>
-                      </TooltipTrigger>
-                    </Tooltip>
-                  </TooltipProvider>
+                  <Tooltip delayDuration={0}>
+                    <TooltipTrigger>
+                      <IconCalendar
+                        size={18}
+                        onClick={() => {
+                          setSelectedDate(new Date(task.deadline!));
+                        }}
+                      />
+                      <TooltipContent>
+                        {format(task.deadline, "MM-dd")}
+                      </TooltipContent>
+                    </TooltipTrigger>
+                  </Tooltip>
                 )}
               </div>
             </div>

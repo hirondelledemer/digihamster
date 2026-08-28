@@ -5,7 +5,6 @@ import { cn } from "../utils";
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from "@/app/components/ui/tooltip";
 import { now } from "@/app/utils/date/now";
@@ -40,14 +39,12 @@ const StaleIndicator: FC<StaleIndicatorProps> = ({
   }
 
   return (
-    <TooltipProvider>
-      <Tooltip delayDuration={0}>
-        <TooltipTrigger>
-          {<DinosaurIcon className={cn("h-4 w-4", color, className)} />}
-        </TooltipTrigger>
-        <TooltipContent>{staleDays}</TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <Tooltip delayDuration={0}>
+      <TooltipTrigger>
+        {<DinosaurIcon className={cn("h-4 w-4", color, className)} />}
+      </TooltipTrigger>
+      <TooltipContent>{staleDays}</TooltipContent>
+    </Tooltip>
   );
 };
 

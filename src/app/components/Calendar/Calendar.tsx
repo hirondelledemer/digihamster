@@ -38,7 +38,6 @@ import {
 } from "date-fns";
 
 import CalendarEvent, { CalendarEventType } from "../CalendarEvent";
-import { useEntriesState } from "@/app/utils/hooks/use-entry/state-context";
 
 import {
   CalendarDeadlineEntry,
@@ -63,6 +62,7 @@ import { parseBackendDate, toBackendDateTime } from "#utils/date";
 import { useTasksNewState } from "@/app/utils/hooks/use-tasks-new/state-context";
 import { useTasksNewActions } from "@/app/utils/hooks/use-tasks-new/actions-context";
 import axios from "axios";
+import { useJournalEntriesGroupedByEvents } from "@/app/utils/hooks/use-entry/selectors";
 
 export const now = () => new Date();
 
@@ -107,7 +107,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
     })();
   }, []);
 
-  const { data: journalEntriesData } = useEntriesState();
+  const journalEntriesData = useJournalEntriesGroupedByEvents();
   const { data: eventsData } = useEventsState();
   const { update: updateEvent } = useEventsActions();
   const { data: cycleData } = useCycle();
@@ -128,6 +128,9 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
         type: "event",
         event,
         tasks: tasksData.filter((t) => t.event_id === event.id),
+        journalEntries: journalEntriesData
+          ? journalEntriesData[event.id] || []
+          : [],
       },
     };
   });
@@ -147,18 +150,18 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
       },
     }));
 
-  const entriesResolved = journalEntriesData.map<CalendarJournalEntry>(
-    (entry) => ({
-      start: new Date(entry.created_at || 0),
-      title: entry.title,
-      allDay: false,
-      resource: {
-        type: "journal",
-        note: entry,
-        id: entry.id?.toString(),
-      },
-    }),
-  );
+  const entriesResolved = (
+    journalEntriesData?.loose || []
+  ).map<CalendarJournalEntry>((entry) => ({
+    start: new Date(entry.created_at || 0),
+    title: entry.title,
+    allDay: false,
+    resource: {
+      type: "journal",
+      note: entry,
+      id: entry.id,
+    },
+  }));
 
   const weatherResolved = (weatherData?.list || [])
     .filter(

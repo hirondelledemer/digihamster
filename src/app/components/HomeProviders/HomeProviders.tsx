@@ -12,6 +12,7 @@ import { CalendarDateContextProvider } from "@/app/utils/hooks/use-calendar-date
 import { LifeAspectsContextProvider } from "@/app/utils/hooks/use-life-aspects/provider";
 import { HabitsNewContextProvider } from "@/app/utils/hooks/use-habits-new/provider";
 import { RelationshipsContextProvider } from "@/app/utils/hooks/use-relationships/provider";
+import { TooltipProvider } from "../ui/tooltip";
 
 /**
  * The providers the home page needs, outermost first — the same order the
@@ -35,6 +36,7 @@ const PROVIDERS: ComponentType<{ children: ReactNode }>[] = [
   LifeAspectsContextProvider,
   HabitsNewContextProvider,
   RelationshipsContextProvider,
+  TooltipProvider,
 ];
 
 export const HomeProviders = ({ children }: { children: ReactNode }) => {
