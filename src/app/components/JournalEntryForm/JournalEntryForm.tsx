@@ -35,22 +35,27 @@ const JournalEntryForm: FC = (): JSX.Element | null => {
   // right now stands in; `null` means "no event" was picked on purpose
   const [chosenEventId, setChosenEventId] = useState<number | null>();
   const selectedEventId =
-    chosenEventId === undefined ? (currentEvent?.id ?? null) : chosenEventId;
+    chosenEventId === undefined ? currentEvent?.id ?? null : chosenEventId;
 
   if (!editor) {
     return null;
   }
 
   const handleSubmit = async () => {
-    const { title, textContent, contentJSON } = getRteValue();
+    const { title, textContent, contentJSON, tags } = getRteValue();
     const createdEntry = await createEntry(
       {
         title: title,
         note: textContent || "(no content)",
         json_note: contentJSON,
+        mentioned_people_ids: tags.map((tag) => Number(tag)),
       },
-      () => editor?.commands.setContent(""),
+      () => editor?.commands.setContent("")
     );
+
+    if (!createdEntry) {
+      return null;
+    }
 
     if (!createdEntry || !selectedEventId) {
       return null;

@@ -39,9 +39,8 @@ const JournalEntriesManager: FC<JournalEntriesManagerProps> = ({ testId }) => {
               create({
                 title,
                 note: textContent || "(no content)",
-                tags,
+                mentioned_people_ids: tags.map((tag) => Number(tag)),
                 json_note: contentJSON,
-                jsonNote: contentJSON,
               })
             }
           />
@@ -69,14 +68,14 @@ const JournalEntriesManager: FC<JournalEntriesManagerProps> = ({ testId }) => {
                     onCancel={() => setEditingId(null)}
                     onSubmit={({ title, textContent, tags, contentJSON }) =>
                       update(
-                        id,
+                        item.id,
                         {
                           title,
                           note: textContent || "(no content)",
-                          tags,
+                          mentioned_people_ids: tags.map((tag) => Number(tag)),
                           json_note: contentJSON,
                         },
-                        () => setEditingId(null),
+                        () => setEditingId(null)
                       )
                     }
                   />
@@ -95,7 +94,10 @@ const JournalEntriesManager: FC<JournalEntriesManagerProps> = ({ testId }) => {
                     <Button variant="outline" onClick={() => setEditingId(id)}>
                       Edit
                     </Button>
-                    <Button variant="destructive" onClick={() => remove(id)}>
+                    <Button
+                      variant="destructive"
+                      onClick={() => remove(item.id)}
+                    >
                       Delete
                     </Button>
                   </CardFooter>

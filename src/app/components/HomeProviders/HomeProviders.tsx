@@ -13,6 +13,7 @@ import { LifeAspectsContextProvider } from "@/app/utils/hooks/use-life-aspects/p
 import { HabitsNewContextProvider } from "@/app/utils/hooks/use-habits-new/provider";
 import { RelationshipsContextProvider } from "@/app/utils/hooks/use-relationships/provider";
 import { TooltipProvider } from "../ui/tooltip";
+import { PeopleContextProvider } from "@/app/utils/hooks/use-people/provider";
 
 /**
  * The providers the home page needs, outermost first — the same order the
@@ -36,6 +37,7 @@ const PROVIDERS: ComponentType<{ children: ReactNode }>[] = [
   LifeAspectsContextProvider,
   HabitsNewContextProvider,
   RelationshipsContextProvider,
+  PeopleContextProvider,
   TooltipProvider,
 ];
 
@@ -46,7 +48,7 @@ export const HomeProviders = ({ children }: { children: ReactNode }) => {
         (tree, Provider) => (
           <Provider>{tree}</Provider>
         ),
-        children,
+        children
       )}
     </>
   );

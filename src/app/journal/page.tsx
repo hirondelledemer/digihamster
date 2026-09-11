@@ -1,13 +1,13 @@
 import JournalEntriesManager from "../components/JournalEntriesManager";
 import { EntriesContextProvider } from "../utils/hooks/use-entry/provider";
-import { TagsContextProvider } from "../utils/hooks/use-tags/provider";
+import { PeopleContextProvider } from "../utils/hooks/use-people/provider";
 
 export default function JournalPage() {
   return (
-    <TagsContextProvider>
+    <PeopleContextProvider>
       <EntriesContextProvider>
         <JournalEntriesManager />
       </EntriesContextProvider>
-    </TagsContextProvider>
+    </PeopleContextProvider>
   );
 }
