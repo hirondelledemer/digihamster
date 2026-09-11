@@ -5,7 +5,7 @@ import { useToast } from "@/app/components/ui/use-toast";
 import { reducer } from "./reducer";
 
 import { EntriesStateAction, EntriesStateActionType } from "./actions";
-import { api, CreateEntryParams } from "./api";
+import { api, CreateEntryRequestParams } from "./api";
 import { EntriesStateContext } from "./state-context";
 import { EntriesActionsContext } from "./actions-context";
 import { IJournalEntry } from "../../types/journal-entry";
@@ -15,7 +15,7 @@ import { getApiErrorMessage } from "../../axios";
 
 const handleApiError = (
   error: unknown,
-  toast: ReturnType<typeof useToast>["toast"],
+  toast: ReturnType<typeof useToast>["toast"]
 ) => {
   toast({
     title: "Error",
@@ -26,7 +26,7 @@ const handleApiError = (
 
 const handleSuccessToast = (
   toast: ReturnType<typeof useToast>["toast"],
-  message: string,
+  message: string
 ) => {
   toast({
     title: "Success",
@@ -36,7 +36,7 @@ const handleSuccessToast = (
 
 const fetchEntries = async (
   dispatch: React.Dispatch<EntriesStateAction>,
-  toast: ReturnType<typeof useToast>["toast"],
+  toast: ReturnType<typeof useToast>["toast"]
 ) => {
   try {
     dispatch({ type: EntriesStateActionType.StartLoading });
@@ -76,7 +76,7 @@ export const EntriesContextProvider = ({
   }, [fetchDataMemoized]);
 
   const createEntry = useCallback(
-    async (data: CreateEntryParams, onDone?: () => void) => {
+    async (data: CreateEntryRequestParams, onDone?: () => void) => {
       const nowDate = now();
       const tempId = -nowDate.valueOf();
 
@@ -121,7 +121,7 @@ export const EntriesContextProvider = ({
         return null;
       }
     },
-    [toast],
+    [toast]
   );
 
   const updateEntry = useCallback(
@@ -145,7 +145,7 @@ export const EntriesContextProvider = ({
         handleApiError(getApiErrorMessage(e), toast);
       }
     },
-    [toast],
+    [toast]
   );
 
   const deleteEntry = useCallback(
@@ -168,7 +168,7 @@ export const EntriesContextProvider = ({
         handleApiError(getApiErrorMessage(e), toast);
       }
     },
-    [toast],
+    [toast]
   );
 
   return (

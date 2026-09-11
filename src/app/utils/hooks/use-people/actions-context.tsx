@@ -9,14 +9,13 @@ type PersonActionsContextValue = ActionsContextValue<
 >;
 
 const DEFAULT_PEOPLE_ACTIONS: PersonActionsContextValue = {
-  // nothing was created without a provider, so there is nothing to hand back
   create: async () => null,
   update: () => {},
   delete: () => {},
 } as const;
 
 export const PeopleActionsContext = createContext<PersonActionsContextValue>(
-  DEFAULT_PEOPLE_ACTIONS,
+  DEFAULT_PEOPLE_ACTIONS
 );
 
 export const usePeopleActions = () => useContext(PeopleActionsContext);

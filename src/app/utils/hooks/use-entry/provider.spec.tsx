@@ -9,7 +9,7 @@ import { useEntriesState } from "./state-context";
 import { EntriesContextProvider } from "./provider";
 import { useEntriesActions } from "./actions-context";
 import { generateListOfJournalEntries } from "../../mocks/journal-entry";
-import { CreateEntryParams, JOURNAL_ENTRIES_PATH } from "./api";
+import { CreateEntryRequestParams, JOURNAL_ENTRIES_PATH } from "./api";
 
 describe("EntriesContextProvider", () => {
   afterEach(() => {
@@ -34,13 +34,13 @@ describe("EntriesContextProvider", () => {
     render(
       <EntriesContextProvider>
         <TestComponent />
-      </EntriesContextProvider>,
+      </EntriesContextProvider>
     );
 
     expect(screen.getByText("Loading...")).toBeInTheDocument();
 
     await waitFor(() =>
-      expect(screen.findByText("Entry 0")).resolves.toBeInTheDocument(),
+      expect(screen.findByText("Entry 0")).resolves.toBeInTheDocument()
     );
     expect(screen.getByText("Entry 1")).toBeInTheDocument();
     expect(screen.getByText("Entry 2")).toBeInTheDocument();
@@ -65,18 +65,18 @@ describe("EntriesContextProvider", () => {
     render(
       <EntriesContextProvider>
         <TestComponent />
-      </EntriesContextProvider>,
+      </EntriesContextProvider>
     );
 
     expect(screen.getByText("Loading...")).toBeInTheDocument();
 
     await waitFor(() =>
-      expect(screen.findByText(/Error:/)).resolves.toBeInTheDocument(),
+      expect(screen.findByText(/Error:/)).resolves.toBeInTheDocument()
     );
   });
 
   it("should create an entry and update the state", async () => {
-    const mockEntry: CreateEntryParams = {
+    const mockEntry: CreateEntryRequestParams = {
       title: "new entry",
       note: "",
       json_note: {},
@@ -104,18 +104,18 @@ describe("EntriesContextProvider", () => {
         <EntriesContextProvider>
           <TestComponent />
         </EntriesContextProvider>
-      </ToastProvider>,
+      </ToastProvider>
     );
 
     expect(screen.queryByText("new entry")).not.toBeInTheDocument();
     await userEvent.click(screen.getByRole("button"));
 
     await waitFor(() =>
-      expect(screen.findByText("new entry")).resolves.toBeInTheDocument(),
+      expect(screen.findByText("new entry")).resolves.toBeInTheDocument()
     );
     expect(mockAxios.post).toHaveBeenCalledWith(
       JOURNAL_ENTRIES_PATH,
-      mockEntry,
+      mockEntry
     );
   });
 });

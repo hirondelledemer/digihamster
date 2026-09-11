@@ -2,11 +2,11 @@ import { IPerson } from "../types/person";
 
 export const generatePerson: (
   i?: number,
-  properties?: Partial<IPerson>,
+  properties?: Partial<IPerson>
 ) => IPerson = (i = 1, properties) => {
   return {
     id: i,
-    title: `Person ${i}`,
+    name: `Person ${i}`,
     color: `person-color-${i}`,
     deleted: false,
 
@@ -19,7 +19,7 @@ export const generateListOfPeople: (count: number) => IPerson[] = (count) => {
 };
 
 export const generateCustomPeopleList: (
-  personInfo: Partial<IPerson>[],
+  personInfo: Partial<IPerson>[]
 ) => IPerson[] = (personInfo) => {
   return personInfo.map((personProperties, i) => ({
     ...generatePerson(i, personProperties),

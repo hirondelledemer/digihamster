@@ -15,15 +15,6 @@ import { RelationshipsContextProvider } from "@/app/utils/hooks/use-relationship
 import { TooltipProvider } from "../ui/tooltip";
 import { PeopleContextProvider } from "@/app/utils/hooks/use-people/provider";
 
-/**
- * The providers the home page needs, outermost first — the same order the
- * nested version had. A provider that reads another one's context has to come
- * after it in this list.
- *
- * Composition only: nothing here waits for data. Components read what they
- * need and render whatever is there, so a slow fetch shows an empty list for a
- * moment instead of holding up the whole page.
- */
 const PROVIDERS: ComponentType<{ children: ReactNode }>[] = [
   EntriesContextProvider,
   NotesContextProvider,
