@@ -6,16 +6,14 @@ import React, {
 } from "react";
 import { COLORS_V2, colorMapper } from "../consts/colors";
 import { getRandomInt } from "../common/random-int";
-// import axios from "axios";
-import { ITag, Tag } from "@/models/tag";
 import { Card, CardContent } from "@/app/components/ui/card";
 import { Button } from "@/app/components/ui/button";
 import { Badge } from "@/app/components/ui/badge";
-import { useTagsState } from "../hooks/use-tags/state-context";
 import { MentionsConfigProps } from "./types";
 import { SuggestionKeyDownProps } from "@tiptap/suggestion";
-// import { useTagsActions } from "../hooks/use-tags/actions-context";
 import apiClient from "../api-client";
+import { usePeopleState } from "../hooks/use-people/state-context";
+import { IPerson } from "../types/person";
 
 export type MentionListProps = MentionsConfigProps;
 
@@ -23,26 +21,29 @@ export const MentionList = forwardRef(
   ({ command, query }: MentionListProps, ref) => {
     const [selectedIndex, setSelectedIndex] = useState(0);
 
-    const { data: tags } = useTagsState();
+    const { data: people } = usePeopleState();
 
     useEffect(() => {
       setSelectedIndex(0);
-    }, [tags]);
+    }, [people]);
 
-    const handleAddTag = async (title: string) => {
+    const handleAddPerson = async (name: string) => {
       // todo: handle error
       // TODO: use hook
-      const response = await apiClient.post<unknown, { data: ITag }>("/tags", {
-        title,
-        color:
-          tags.length < COLORS_V2.length
-            ? COLORS_V2[tags.length]
-            : COLORS_V2[getRandomInt(COLORS_V2.length)],
-      });
+      const response = await apiClient.post<unknown, { data: IPerson }>(
+        "/people",
+        {
+          name,
+          color:
+            people.length < COLORS_V2.length
+              ? COLORS_V2[people.length]
+              : COLORS_V2[getRandomInt(COLORS_V2.length)],
+        }
+      );
 
       command({
         id: `${response.data.id}:${response.data.color}`,
-        label: response.data.title,
+        label: response.data.name,
       });
     };
 
@@ -67,8 +68,10 @@ export const MentionList = forwardRef(
       },
     }));
 
-    const items = tags
-      .filter((tag) => tag.title.toLowerCase().startsWith(query.toLowerCase()))
+    const items = people
+      .filter((person) =>
+        person.name.toLowerCase().startsWith(query.toLowerCase())
+      )
       .slice(0, 5);
 
     const selectItem = (index: number) => {
@@ -77,10 +80,10 @@ export const MentionList = forwardRef(
       if (item) {
         command({
           id: `${item.id}:${item.color}`,
-          label: item.title,
+          label: item.name,
         });
       } else {
-        handleAddTag(query);
+        handleAddPerson(query);
       }
     };
 
@@ -100,14 +103,14 @@ export const MentionList = forwardRef(
       <Card>
         <CardContent className="py-2 px-4">
           {items.length ? (
-            items.map((tag: Tag, index: number) => (
-              <div key={tag.id}>
+            items.map((person: IPerson, index: number) => (
+              <div key={person.id}>
                 <Badge
                   variant={selectedIndex === index ? "default" : "outline"}
                   onClick={() => selectItem(index)}
-                  color={colorMapper[tag.color]}
+                  color={colorMapper[person.color]}
                 >
-                  {tag.title}
+                  {person.name}
                 </Badge>
               </div>
             ))
@@ -117,7 +120,7 @@ export const MentionList = forwardRef(
         </CardContent>
       </Card>
     );
-  },
+  }
 );
 
 MentionList.displayName = "MentionList";

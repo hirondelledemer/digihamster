@@ -1,12 +1,14 @@
 import apiClient from "../../api-client";
 import { IJournalEntry } from "../../types/journal-entry";
 
-export type FieldsRequired = Pick<
+export type JournalRequestParams = Pick<
   IJournalEntry,
   "title" | "note" | "json_note"
->;
+> & {
+  mentioned_people_ids: number[];
+};
 
-export type CreateEntryParams = FieldsRequired;
+export type UpdateEntryRequestParams = Partial<JournalRequestParams>;
 
 export const JOURNAL_ENTRIES_PATH = "/journal-entries";
 
@@ -15,9 +17,9 @@ export const getJournalEntriesPath = (id: number) =>
 
 export const api = {
   getEntries: () => apiClient.get<IJournalEntry[]>(JOURNAL_ENTRIES_PATH),
-  createEntry: (data: CreateEntryParams) =>
+  createEntry: (data: JournalRequestParams) =>
     apiClient.post<IJournalEntry>(JOURNAL_ENTRIES_PATH, data),
-  updateEntry: (id: number, props: Partial<IJournalEntry>) =>
+  updateEntry: (id: number, props: UpdateEntryRequestParams) =>
     apiClient.patch(getJournalEntriesPath(id), props),
   deleteEntry: (id: number) => apiClient.delete(getJournalEntriesPath(id)),
 } as const;

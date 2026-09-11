@@ -12,7 +12,7 @@ const DEFAULT_EVENTS_ACTIONS: EventActionsContextValue = {
 } as const;
 
 export const EventsActionsContext = createContext<EventActionsContextValue>(
-  DEFAULT_EVENTS_ACTIONS,
+  DEFAULT_EVENTS_ACTIONS
 );
 
 export const useEventsActions = () => useContext(EventsActionsContext);

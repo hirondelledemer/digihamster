@@ -1,15 +1,15 @@
 import { createContext, useContext } from "react";
-import { CreateEntryParams } from "./api";
-import { JournalEntry } from "@/models/entry";
+import { JournalRequestParams } from "./api";
+import { IJournalEntry } from "../../types/journal-entry";
 import { ActionsContextValue } from "../use-crud/actions-context";
 
 type EntryActionsContextValue = ActionsContextValue<
-  CreateEntryParams,
-  JournalEntry
+  JournalRequestParams,
+  IJournalEntry
 >;
 
 const DEFAULT_ENTRIES_ACTIONS: EntryActionsContextValue = {
-  create: () => {},
+  create: async () => null,
   update: () => {},
   delete: () => {},
 } as const;
