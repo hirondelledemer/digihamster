@@ -31,28 +31,38 @@ import CreateTaskForm from "../CreateTaskForm";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "../ui/sheet";
 import { ITask } from "@/app/utils/types/task";
 import { Card, CardHeader, CardTitle } from "../ui/card";
+import { ProjectStatus } from "@/app/utils/types/project";
 
 const Projects: FC = (): JSX.Element => {
   const { data: projects, isLoading } = useProjectsState();
   const { updateOrder } = useProjectsActions();
   const { data: tasks } = useTasksNewState();
 
-  const sortedProjects = projects.sort(
-    (projectA, projectB) =>
-      (projectA.sort_order || 0) - (projectB.sort_order || 0),
-  );
-
   const [selectedProjectId, setSelectedProjectId] = useState<number | null>(
-    null,
+    null
   );
 
   const [enableSorting, setEnableSorting] = useState<boolean>(false);
+  const [hideDone, setHideDone] = useState<boolean>(true);
+
+  const filteredProjects = hideDone
+    ? projects.filter(
+        (project) =>
+          project.status === ProjectStatus.Todo ||
+          project.status === ProjectStatus.Doing
+      )
+    : projects;
+
+  const sortedProjects = filteredProjects.sort(
+    (projectA, projectB) =>
+      (projectA.sort_order || 0) - (projectB.sort_order || 0)
+  );
 
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
-    }),
+    })
   );
   const [openTaskForm, setOpenTaskForm] = useState<{
     open: boolean;
@@ -130,11 +140,15 @@ const Projects: FC = (): JSX.Element => {
             >
               Create Task
             </Button>
+          </div>
+          <div className="space-x-2 flex items-center">
             <Label>Sort:</Label>
             <Switch
               checked={enableSorting}
               onCheckedChange={setEnableSorting}
             />
+            <Label>Hide Done:</Label>
+            <Switch checked={hideDone} onCheckedChange={setHideDone} />
           </div>
           <DndContext
             sensors={sensors}
@@ -152,7 +166,9 @@ const Projects: FC = (): JSX.Element => {
                 }}
               >
                 <Card
-                  className={`w-[350px] p-0 rounded-md hover:border hover:border-primary ${selectedProjectId === null && "border border-[#791027]"}`}
+                  className={`w-[350px] p-0 rounded-md hover:border hover:border-primary ${
+                    selectedProjectId === null && "border border-[#791027]"
+                  }`}
                 >
                   <CardHeader className="p-4">
                     <CardTitle className="font-normal flex items-center justify-between">

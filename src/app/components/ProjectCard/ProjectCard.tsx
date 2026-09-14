@@ -7,7 +7,11 @@ import {
   ContextMenuTrigger,
 } from "../ui/context-menu";
 import ProjectModalForm from "../ProjectModalForm";
-import { IconCircleCheck, IconXboxX } from "@tabler/icons-react";
+import {
+  IconArrowRightCircleFilled,
+  IconCircleCheck,
+  IconXboxX,
+} from "@tabler/icons-react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { IProject, ProjectStatus } from "@/app/utils/types/project";
@@ -39,23 +43,15 @@ const ProjectCard: FC<ProjectCardProps> = ({
 
   const taskCount = useMemo(
     () => tasks.filter((t) => t.project_id === project.id).length,
-    [tasks, project],
+    [tasks, project]
   );
 
   const completedTasksCount = useMemo(
     () =>
       tasks.filter(
-        (t) => t.project_id === project.id && t.status === TaskStatus.Done,
+        (t) => t.project_id === project.id && t.status === TaskStatus.Done
       ).length,
-    [tasks, project.id],
-  );
-
-  const completed = useMemo(
-    () =>
-      tasks.filter(
-        (t) => t.project_id === project.id && t.status !== TaskStatus.Done,
-      ).length === 0,
-    [tasks, project],
+    [tasks, project.id]
   );
 
   const closeProjectForm = () => setProjectModalOpen(false);
@@ -85,7 +81,7 @@ const ProjectCard: FC<ProjectCardProps> = ({
               <CardTitle className="font-normal flex items-center justify-between">
                 <div>{project.title}</div>
                 <div className="flex">
-                  {completed && (
+                  {project.status === ProjectStatus.Done && (
                     <IconCircleCheck
                       data-testid="completed-icon"
                       size={19}
@@ -94,13 +90,22 @@ const ProjectCard: FC<ProjectCardProps> = ({
                       className="mr-1"
                     />
                   )}
-                  {!completed && project.status !== ProjectStatus.Cancelled && (
+                  {project.status === ProjectStatus.Doing && (
                     <div className="flex items-center text-xs">
                       {completedTasksCount}/{taskCount}
                     </div>
                   )}
                   {project.status === ProjectStatus.Cancelled && (
                     <IconXboxX
+                      data-testid="disabled-icon"
+                      size={19}
+                      color="black"
+                      fill={project.color}
+                      className="mr-1"
+                    />
+                  )}
+                  {project.status === ProjectStatus.Todo && (
+                    <IconArrowRightCircleFilled
                       data-testid="disabled-icon"
                       size={19}
                       color="black"
