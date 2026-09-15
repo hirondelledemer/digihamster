@@ -60,9 +60,9 @@ describe("ProjectProgress", () => {
     render(
       <TasksNewContextProvider>
         <ProjectsContextProvider>
-          <ProjectProgress project={PROJECT} />
+          <ProjectProgress />
         </ProjectsContextProvider>
-      </TasksNewContextProvider>,
+      </TasksNewContextProvider>
     );
 
   afterEach(() => {

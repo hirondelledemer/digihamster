@@ -5,8 +5,9 @@ export type LifeAspectAsset =
   | "animals"
   | "river"
   | "mountains"
-  | "pumpkinGarden"
-  | "defaultScore";
+  | "pumpkinGarden";
+
+export type LifeAspectScore = LifeAspectAsset | "defaultScore";
 
 export interface LifeAspectBoost {
   id: number;

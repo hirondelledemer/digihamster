@@ -4,7 +4,7 @@ import { ITask } from "../../types/task";
 import { useProjectsState } from "./state-context";
 
 export const useProjectById = (
-  id: number | null | undefined,
+  id: number | null | undefined
 ): IProject | null => {
   const { data } = useProjectsState();
 
@@ -19,7 +19,7 @@ export const useTaskProject = (task: ITask | null): IProject | null =>
   useProjectById(task?.project_id);
 
 export const useTaskProjectColor = (
-  task: ITask | null,
+  task: ITask | null
 ): { main: string; dimmed: string } | undefined => {
   const color = useTaskProject(task)?.color;
 

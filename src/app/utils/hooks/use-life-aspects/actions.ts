@@ -1,7 +1,7 @@
-import { LifeAspect } from "@/models/life-aspect";
+import { ILifeAspect } from "../../types/life-aspect";
 
 export interface LifeAspectsState {
-  data: LifeAspect[];
+  data: ILifeAspect[];
   isLoading: boolean;
   errorMessage?: unknown;
 }
@@ -18,7 +18,7 @@ export interface LifeAspectLoadAction {
 export interface LifeAspectFinishLoadingAction {
   type: LifeAspectStateActionType.FinishLoading;
   payload: {
-    data: LifeAspect[];
+    data: ILifeAspect[];
   };
 }
 

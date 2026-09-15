@@ -18,19 +18,24 @@ import { IProject, ProjectStatus } from "@/app/utils/types/project";
 import { useTasksNewState } from "@/app/utils/hooks/use-tasks-new/state-context";
 import { TaskStatus } from "@/app/utils/types/task";
 import { ProjectProgressBar } from "../ProjectProgressBar";
+import { useProjectLifeAspectAssetIcon } from "@/app/utils/hooks/use-life-aspects/selectors";
 
 export interface ProjectCardProps {
   testId?: string;
   project: IProject;
-  selected: boolean;
+  selected?: boolean;
+  onClick?(): void;
 }
 
 const ProjectCard: FC<ProjectCardProps> = ({
   testId,
   project,
   selected,
+  onClick,
 }): JSX.Element => {
   const { data: tasks } = useTasksNewState();
+
+  const assetIcon = useProjectLifeAspectAssetIcon(project);
 
   const [projectModalOpen, setProjectModalOpen] = useState<boolean>(false);
   const { attributes, listeners, setNodeRef, transform, transition } =
@@ -77,9 +82,14 @@ const ProjectCard: FC<ProjectCardProps> = ({
             {...attributes}
             {...listeners}
           >
-            <CardHeader className="p-4">
+            <CardHeader className="pb-1 pt-3 px-3" onClick={onClick}>
               <CardTitle className="font-normal flex items-center justify-between">
-                <div>{project.title}</div>
+                <div
+                  style={{ color: project?.color }}
+                  className="text-xs uppercase flex items-center justify-between"
+                >
+                  {assetIcon} {project.title}
+                </div>
                 <div className="flex">
                   {project.status === ProjectStatus.Done && (
                     <IconCircleCheck
@@ -118,7 +128,7 @@ const ProjectCard: FC<ProjectCardProps> = ({
             </CardHeader>
 
             {project.status === ProjectStatus.Doing && (
-              <CardContent>
+              <CardContent className="pb-3 px-3">
                 <ProjectProgressBar project={project} />
               </CardContent>
             )}
