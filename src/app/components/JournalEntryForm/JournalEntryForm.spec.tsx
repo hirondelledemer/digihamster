@@ -55,7 +55,7 @@ describe("JournalEntryForm", () => {
             <JournalEntryForm />
           </RelationshipsContextProvider>
         </EntriesContextProvider>
-      </EventsContextProvider>,
+      </EventsContextProvider>
     );
 
   const assertLoaded = async (events: IEvent[] = []) => {
@@ -85,7 +85,7 @@ describe("JournalEntryForm", () => {
     await act(async () => {
       mockAxios.mockResponseFor(
         { url: JOURNAL_ENTRIES_PATH },
-        { data: CREATED_ENTRY },
+        { data: CREATED_ENTRY }
       );
     });
   };
@@ -147,6 +147,7 @@ describe("JournalEntryForm", () => {
         ],
         type: "doc",
       },
+      mentioned_people_ids: [],
       note: "note",
       title: "test",
     });
@@ -174,7 +175,7 @@ describe("JournalEntryForm", () => {
         expect(
           screen
             .getAllByTestId(eventBadgeTestId)
-            .map((badge) => badge.textContent),
+            .map((badge) => badge.textContent)
         ).toEqual([STANDUP.title, RETRO.title]);
       });
 
@@ -184,7 +185,7 @@ describe("JournalEntryForm", () => {
 
         expect(screen.getByTestId(noEventBadgeTestId)).toHaveAttribute(
           "data-selected",
-          "true",
+          "true"
         );
         screen.getAllByTestId(eventBadgeTestId).forEach((badge) => {
           expect(badge).toHaveAttribute("data-selected", "false");
@@ -201,7 +202,7 @@ describe("JournalEntryForm", () => {
         expect(mockAxios.post).toHaveBeenCalledTimes(1);
         expect(mockAxios.post).toHaveBeenCalledWith(
           JOURNAL_ENTRIES_PATH,
-          expect.anything(),
+          expect.anything()
         );
       });
     });
@@ -216,7 +217,7 @@ describe("JournalEntryForm", () => {
 
         expect(screen.getByTestId(noEventBadgeTestId)).toHaveAttribute(
           "data-selected",
-          "false",
+          "false"
         );
 
         const [standupBadge, reviewBadge] =

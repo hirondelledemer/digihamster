@@ -12,6 +12,7 @@ import { now } from "@/app/utils/date/now";
 import { Badge } from "../ui/badge";
 import { useRelationshipsActions } from "@/app/utils/hooks/use-relationships/actions-context";
 import { RelationshipEntityType } from "@/app/utils/types/relationship";
+import { subDays } from "date-fns";
 
 export const rteTestId = "JournalEntryForm-rte-testId";
 export const noEventBadgeTestId = "JournalEntryForm-no-event-badge";
@@ -26,6 +27,7 @@ const JournalEntryForm: FC = (): JSX.Element | null => {
   const { create: createRelationship } = useRelationshipsActions();
 
   const { create: createEntry } = useEntriesActions();
+  const yesterdaysEvents = useEventsForDay(subDays(now(), 1));
   const todayEvents = useEventsForDay(now());
   const currentEvent = useCurrentEvent();
 
@@ -90,6 +92,19 @@ const JournalEntryForm: FC = (): JSX.Element | null => {
         >
           no event
         </Badge>
+        {yesterdaysEvents.map((event) => (
+          <Badge
+            className="max-w-[100px] truncate cursor"
+            key={event.id}
+            data-testid={eventBadgeTestId}
+            data-selected={selectedEventId === event.id}
+            variant={selectedEventId === event.id ? "default" : "outline"}
+            onClick={() => setChosenEventId(event.id)}
+            color="#f97316"
+          >
+            {event.title}
+          </Badge>
+        ))}
         {todayEvents.map((event) => (
           <Badge
             className="max-w-[100px] truncate cursor"
