@@ -10,6 +10,8 @@ import { toBackendDateTime } from "@/app/utils/date/date";
 import { useEventsActions } from "@/app/utils/hooks/use-events/actions-context";
 import { FieldsRequired } from "@/app/utils/hooks/use-events/api";
 import { useTasksNewActions } from "@/app/utils/hooks/use-tasks-new/actions-context";
+import { RelationshipEntityType } from "@/app/utils/types/relationship";
+import { useRelationshipsActions } from "@/app/utils/hooks/use-relationships/actions-context";
 
 export interface CreateEventFormProps {
   testId?: string;
@@ -26,6 +28,7 @@ const FormSchema = z.object({
     title: z.string().min(1, { message: "required" }),
     content: z.any(),
     tasks: z.array(z.string()),
+    tags: z.array(z.string()),
     textContent: z.string(),
     contentJSON: z.any(),
     projectId: z.string().optional(),
@@ -43,6 +46,7 @@ export const CreateEventForm: FC<CreateEventFormProps> = ({
 }): JSX.Element => {
   const { create: createEvent } = useEventsActions();
   const { updateTask } = useTasksNewActions();
+  const { create: createRelationship } = useRelationshipsActions();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(FormSchema),
@@ -75,6 +79,15 @@ export const CreateEventForm: FC<CreateEventFormProps> = ({
     if (event) {
       values.description.tasks.forEach((taskId) => {
         updateTask(Number(taskId), { event_id: event.id });
+      });
+
+      values.description.tags.forEach((personId) => {
+        createRelationship({
+          source_id: event.id,
+          source_type: RelationshipEntityType.Event,
+          target_id: Number(personId),
+          target_type: RelationshipEntityType.Person,
+        });
       });
     }
   };

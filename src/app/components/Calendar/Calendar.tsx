@@ -63,7 +63,10 @@ import { parseBackendDate, toBackendDateTime } from "#utils/date";
 import { useTasksNewState } from "@/app/utils/hooks/use-tasks-new/state-context";
 import { useTasksNewActions } from "@/app/utils/hooks/use-tasks-new/actions-context";
 import axios from "axios";
-import { useJournalEntriesGroupedByEvents } from "@/app/utils/hooks/use-entry/selectors";
+import {
+  useJournalEntriesGroupedByEvents,
+  usePeopleGroupedByEvents,
+} from "@/app/utils/hooks/use-entry/selectors";
 import { CalendarJournalEvent } from "../CalendarJournalEvent";
 
 export const now = () => new Date();
@@ -110,6 +113,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
   }, []);
 
   const journalEntriesData = useJournalEntriesGroupedByEvents();
+  const peopleData = usePeopleGroupedByEvents();
   const { data: eventsData } = useEventsState();
   const { update: updateEvent } = useEventsActions();
   const { data: cycleData } = useCycle();
@@ -133,6 +137,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
         journalEntries: journalEntriesData
           ? journalEntriesData[event.id] || []
           : [],
+        people: peopleData ? peopleData[event.id] || [] : [],
       },
     };
   });
@@ -171,7 +176,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
       (entry) =>
         !entry.dt_txt.includes("03:00:00") &&
         !entry.dt_txt.includes("00:00:00") &&
-        !entry.dt_txt.includes("06:00:00"),
+        !entry.dt_txt.includes("06:00:00")
     )
     .map<CalendarWeatherEntry>((entry) => ({
       start: new Date(entry.dt_txt),
@@ -211,7 +216,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
           }).length;
 
       cycleData?.filter((i) =>
-        isWithinInterval(date, interval(i.start_date, i.end_date)),
+        isWithinInterval(date, interval(i.start_date, i.end_date))
       );
 
       if (isSameDay(date, now())) {
@@ -231,7 +236,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
         },
       };
     },
-    [cycleData],
+    [cycleData]
   );
 
   const { views } = useMemo(
@@ -244,7 +249,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
         day: true,
       },
     }),
-    [],
+    []
   );
 
   const customEvent = ({ event }: { event: CalendarEventType }) => {
@@ -342,7 +347,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
         min={dates.add(
           dates.startOf(new Date(2015, 17, 1), "day"),
           +8,
-          "hours",
+          "hours"
         )}
         views={views}
         dayPropGetter={customDayPropGetter} // TODO: this is special because it colors days depending on the cycle and wheather day is today or not.

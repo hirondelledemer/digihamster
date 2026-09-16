@@ -19,7 +19,7 @@ import { useDroppable } from "@dnd-kit/core";
 import { sortInTheEvent } from "@/app/utils/tasks/sort";
 import { EventTask } from "./components/EventTask";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
-import { IconBubbleText } from "@tabler/icons-react";
+import { IconBubbleText, IconManFilled } from "@tabler/icons-react";
 import MinimalNote from "../MinimalNote";
 
 export interface CalendarEventProps {
@@ -63,7 +63,7 @@ const CalendarEvent: FC<CalendarEventProps> = ({
         status: value ? TaskStatus.Done : TaskStatus.Doing,
       });
     },
-    [updateTask],
+    [updateTask]
   );
 
   const content = useMemo(() => {
@@ -99,6 +99,24 @@ const CalendarEvent: FC<CalendarEventProps> = ({
                     </TooltipTrigger>
                     <TooltipContent className="w-[200px]" side="right">
                       <MinimalNote note={entry.json_note || entry.note} />
+                    </TooltipContent>
+                  </Tooltip>
+                </div>
+              ))}
+              {event.resource.people.map((person) => (
+                <div key={person.id}>
+                  <Tooltip delayDuration={0}>
+                    <TooltipTrigger
+                      className="pointer-events-auto"
+                      onMouseDownCapture={(e) => {
+                        // the calendar starts a slot selection on a native mousedown
+                        e.stopPropagation();
+                      }}
+                    >
+                      <IconManFilled size={20} color={person.color} />
+                    </TooltipTrigger>
+                    <TooltipContent className="w-[200px]" side="right">
+                      {person.name}
                     </TooltipContent>
                   </Tooltip>
                 </div>
@@ -139,13 +157,13 @@ const CalendarEvent: FC<CalendarEventProps> = ({
       }}
       className={cn(
         "h-full cursor-pointer rounded-lg relative",
-        isOver ? "" : "p-1",
+        isOver ? "" : "p-1"
       )}
     >
       <div
         ref={setNodeRef}
         className={cn(
-          isOver ? "border-2 border-primary rounded-lg h-full w-full p-1" : "",
+          isOver ? "border-2 border-primary rounded-lg h-full w-full p-1" : ""
         )}
       >
         <EventActions event={event.resource.event}>

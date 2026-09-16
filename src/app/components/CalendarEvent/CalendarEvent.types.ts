@@ -1,5 +1,6 @@
 import { IEvent } from "@/app/utils/types/event";
 import { IJournalEntry } from "@/app/utils/types/journal-entry";
+import { IPerson } from "@/app/utils/types/person";
 import { ITask } from "@/app/utils/types/task";
 import { Event } from "react-big-calendar";
 
@@ -59,29 +60,30 @@ export interface CalendarEventEntry extends Event {
     event: IEvent;
     tasks: ITask[];
     journalEntries: IJournalEntry[];
+    people: IPerson[];
   };
 }
 
 export function isCalendarEventEntry(
-  event: CalendarEventType,
+  event: CalendarEventType
 ): event is CalendarEventEntry {
   return (event as CalendarEventType).resource.type === "event";
 }
 
 export function isCalendarDeadlineEntry(
-  event: CalendarEventType,
+  event: CalendarEventType
 ): event is CalendarDeadlineEntry {
   return (event as CalendarDeadlineEntry).resource.type === "deadline";
 }
 
 export function isCalendarWeatherEntry(
-  event: CalendarEventType,
+  event: CalendarEventType
 ): event is CalendarWeatherEntry {
   return (event as CalendarWeatherEntry).resource.type === "weather";
 }
 
 export function isCalendarJournalEntry(
-  event: CalendarEventType,
+  event: CalendarEventType
 ): event is CalendarJournalEntry {
   return (event as CalendarJournalEntry).resource.type === "journal";
 }
