@@ -13,7 +13,7 @@ import { getApiErrorMessage } from "../../axios";
 
 const handleApiError = (
   error: unknown,
-  toast: ReturnType<typeof useToast>["toast"],
+  toast: ReturnType<typeof useToast>["toast"]
 ) => {
   toast({
     title: "Error",
@@ -24,7 +24,7 @@ const handleApiError = (
 
 const fetchTasks = async (
   dispatch: React.Dispatch<TasksNewAction>,
-  toast: ReturnType<typeof useToast>["toast"],
+  toast: ReturnType<typeof useToast>["toast"]
 ) => {
   try {
     dispatch({ type: TasksNewActionType.StartLoading });
@@ -71,6 +71,8 @@ export const TasksNewContextProvider = ({
         title: data.title,
         project_id: data.project_id || null,
         event_id: null,
+        project_sort_order: null,
+        event_sort_order: null,
         description: null,
         status: TaskStatus.Todo,
         deadline: null,
@@ -104,7 +106,7 @@ export const TasksNewContextProvider = ({
         return null;
       }
     },
-    [toast],
+    [toast]
   );
 
   const updateTask = useCallback(
@@ -121,7 +123,7 @@ export const TasksNewContextProvider = ({
         handleApiError(e, toast);
       }
     },
-    [toast],
+    [toast]
   );
 
   const reorderTasksInTheEvent = useCallback(
@@ -142,7 +144,28 @@ export const TasksNewContextProvider = ({
         handleApiError(e, toast);
       }
     },
-    [toast],
+    [toast]
+  );
+
+  const reorderTasksInTheProject = useCallback(
+    async (projectId: number, sortedTaskIds: number[]) => {
+      sortedTaskIds.forEach((id, index) => {
+        dispatch({
+          type: TasksNewActionType.UpdateTask,
+          payload: { id, task: { project_sort_order: index + 1 } },
+        });
+      });
+      try {
+        await api.reorderTasksInTheProject(projectId, sortedTaskIds);
+        toast({
+          title: "Success",
+          description: "Tasks have been reordered successfully",
+        });
+      } catch (e: unknown) {
+        handleApiError(e, toast);
+      }
+    },
+    [toast]
   );
 
   const deleteTask = useCallback(
@@ -156,13 +179,19 @@ export const TasksNewContextProvider = ({
         handleApiError(e, toast);
       }
     },
-    [toast],
+    [toast]
   );
 
   return (
     <TasksNewStateContext.Provider value={state}>
       <TasksNewActionsContext.Provider
-        value={{ createTask, updateTask, deleteTask, reorderTasksInTheEvent }}
+        value={{
+          createTask,
+          updateTask,
+          deleteTask,
+          reorderTasksInTheEvent,
+          reorderTasksInTheProject,
+        }}
       >
         {children}
       </TasksNewActionsContext.Provider>

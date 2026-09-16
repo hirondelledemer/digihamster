@@ -1,5 +1,5 @@
 "use client";
-import React, { FC } from "react";
+import React, { FC, useState } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "../ui/sheet";
 import { cn } from "../utils";
 import CreateTaskForm from "../CreateTaskForm";
@@ -8,8 +8,27 @@ import { useProjectById } from "@/app/utils/hooks/use-projects/selectors";
 import MinimalNote from "../MinimalNote";
 import { useRouter, useSearchParams } from "#lib/navigation";
 import { useTasksNewState } from "@/app/utils/hooks/use-tasks-new/state-context";
-import { ITask } from "@/app/utils/types/task";
 import { DraggableTaskCard } from "../TaskCard/DraggableTaskCard";
+import {
+  closestCenter,
+  DndContext,
+  DragEndEvent,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { SortableTaskCard } from "../TaskCard/SortableTaskCard";
+import { Switch } from "../ui/switch";
+import { Label } from "../ui/label";
+import { useTasksNewActions } from "@/app/utils/hooks/use-tasks-new/actions-context";
+import { TaskStatus } from "@/app/utils/types/task";
 
 export interface TaskInfoProps {
   testId?: string;
@@ -18,6 +37,8 @@ export interface TaskInfoProps {
 const TaskInfo: FC<TaskInfoProps> = (): JSX.Element | null => {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const [allowSorting, setAllowSorting] = useState<boolean>(false);
+  const { reorderTasksInTheProject } = useTasksNewActions();
 
   const projectId = searchParams.get("projectId"); // TODO: convert to number
 
@@ -25,36 +46,44 @@ const TaskInfo: FC<TaskInfoProps> = (): JSX.Element | null => {
 
   const selectedProject = useProjectById(projectId ? Number(projectId) : null);
 
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
   if (!selectedProject) {
     return null;
   }
 
-  const title = selectedProject?.title;
+  const handleDragEnd = (e: DragEndEvent) => {
+    const { active, over } = e;
 
-  const tasksToShow = tasks
+    if (!over || active.id === over.id) {
+      return;
+    }
+
+    const oldIndex = tasksToSort.findIndex((task) => task.id === active.id);
+    const newIndex = tasksToSort.findIndex((task) => task.id === over.id);
+    const reordered = arrayMove(tasksToSort, oldIndex, newIndex);
+
+    reorderTasksInTheProject(
+      Number(projectId),
+      reordered.map((task) => task.id)
+    );
+  };
+
+  const tasksToSort = tasks
     .filter((t) => t.project_id && t.project_id.toString() === projectId)
-    .sort((taskA, taskB) => {
-      // Helper helpers to identify priority tiers
-      const isPriority = (t: ITask) =>
-        t.status === "doing" || !!t.event_id || !!t.deadline;
-      const isDone = (t: ITask) => t.status === "done";
+    .sort(
+      (taskA, taskB) =>
+        (taskA.project_sort_order || 0) - (taskB.project_sort_order || 0)
+    );
 
-      // 1. Check "done" status (Done tasks always go to the bottom)
-      if (isDone(taskA) !== isDone(taskB)) {
-        return isDone(taskA) ? 1 : -1;
-      }
-
-      // 2. Check priority status (Active/scheduled tasks go above regular Todo tasks)
-      if (isPriority(taskA) !== isPriority(taskB)) {
-        return isPriority(taskA) ? -1 : 1;
-      }
-
-      // 3. Fallback: If they are in the same priority group, sort by date (Oldest first)
-      return (
-        new Date(taskA.created_at).valueOf() -
-        new Date(taskB.created_at).valueOf()
-      );
-    });
+  const tasksToShow = tasksToSort.filter(
+    (t) => t.status === TaskStatus.Todo || t.status === TaskStatus.Doing
+  );
 
   return (
     <Sheet open>
@@ -62,11 +91,10 @@ const TaskInfo: FC<TaskInfoProps> = (): JSX.Element | null => {
         side="right"
         aria-describedby="Task info"
         onCloseClick={() => router.replace("/", undefined)}
-        // showOverlay={false}
         onEscapeKeyDown={() => router.replace("/", undefined)}
       >
         <SheetHeader>
-          <SheetTitle>{title}</SheetTitle>
+          <SheetTitle>{selectedProject?.title}</SheetTitle>
         </SheetHeader>
         <ScrollArea className="h-3/4 mb-2 mt-4">
           <div className={cn(["flex flex-col gap-2"])}>
@@ -75,15 +103,41 @@ const TaskInfo: FC<TaskInfoProps> = (): JSX.Element | null => {
                 <MinimalNote note={selectedProject.description} />
               </div>
             )}
-
-            {tasksToShow.map((rTask) => (
-              <DraggableTaskCard
-                task={rTask}
-                key={rTask.id}
-                dragId={rTask.id}
-                indicateActive
+            <div className="space-x-2 flex items-center">
+              <Label>Sort:</Label>
+              <Switch
+                checked={allowSorting}
+                onCheckedChange={setAllowSorting}
               />
-            ))}
+            </div>
+
+            {allowSorting ? (
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
+              >
+                <SortableContext
+                  items={tasksToSort}
+                  strategy={verticalListSortingStrategy}
+                >
+                  <div className="flex flex-col gap-2 mt-2">
+                    {tasksToSort.map((task) => (
+                      <SortableTaskCard key={task.id} task={task} />
+                    ))}
+                  </div>
+                </SortableContext>
+              </DndContext>
+            ) : (
+              tasksToShow.map((rTask) => (
+                <DraggableTaskCard
+                  task={rTask}
+                  key={rTask.id}
+                  dragId={rTask.id}
+                  indicateActive
+                />
+              ))
+            )}
           </div>
         </ScrollArea>
 

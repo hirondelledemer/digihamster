@@ -15,6 +15,8 @@ export const REORDER_TASKS_IN_THE_EVENT_PATH = "/tasks";
 export const getTasksPath = (id: number) => `${TASKS_PATH}/${id}`;
 export const getReorderTasksInTheEventPath = (eventId: number) =>
   `/events/${eventId}${TASKS_PATH}/order`;
+export const getReorderTasksInTheProjectPath = (projectId: number) =>
+  `/projects/${projectId}${TASKS_PATH}/order`;
 
 export const api = {
   getTasks: () => apiClient.get<ITask[]>("/tasks"),
@@ -25,6 +27,10 @@ export const api = {
   deleteTask: (id: number) => apiClient.delete(getTasksPath(id)),
   reorderTasksInTheEvent: (eventId: number, taskIds: number[]) =>
     apiClient.patch(getReorderTasksInTheEventPath(eventId), {
+      task_ids: taskIds,
+    }),
+  reorderTasksInTheProject: (projectId: number, taskIds: number[]) =>
+    apiClient.patch(getReorderTasksInTheProjectPath(projectId), {
       task_ids: taskIds,
     }),
 } as const;

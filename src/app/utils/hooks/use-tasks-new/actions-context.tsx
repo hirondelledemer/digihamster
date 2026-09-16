@@ -5,11 +5,12 @@ import { ITask } from "../../types/task";
 export interface TasksNewActionsContextValue {
   createTask(
     data: CreateTaskParams,
-    onDone?: () => void,
+    onDone?: () => void
   ): Promise<ITask | null>;
   updateTask(id: number, data: Partial<ITask>, onDone?: () => void): void;
   deleteTask(id: number, onDone?: () => void): void;
   reorderTasksInTheEvent(eventId: number, taskIds: number[]): void;
+  reorderTasksInTheProject(projectId: number, taskIds: number[]): void;
 }
 
 const DEFAULT_ACTIONS: TasksNewActionsContextValue = {
@@ -17,6 +18,7 @@ const DEFAULT_ACTIONS: TasksNewActionsContextValue = {
   updateTask: () => {},
   deleteTask: () => {},
   reorderTasksInTheEvent: () => {},
+  reorderTasksInTheProject: () => {},
 };
 
 export const TasksNewActionsContext =
