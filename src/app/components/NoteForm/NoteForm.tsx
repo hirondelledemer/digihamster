@@ -8,7 +8,7 @@ import { useNotesActions } from "@/app/utils/hooks/use-notes/actions-context";
 export interface NoteFormProps {
   testId?: string;
   onDone(): void;
-  parentTaskId?: string;
+  parentTaskId?: number;
 }
 
 export const rteTestId = "rte-testId";

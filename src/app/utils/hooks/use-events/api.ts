@@ -3,7 +3,13 @@ import { IEvent } from "../../types/event";
 
 export type FieldsRequired = Pick<
   IEvent,
-  "title" | "description" | "project_id" | "all_day" | "start_at" | "end_at"
+  | "title"
+  | "description"
+  | "project_id"
+  | "all_day"
+  | "start_at"
+  | "end_at"
+  | "status"
 >;
 
 export const EVENTS_PATH = "/events";

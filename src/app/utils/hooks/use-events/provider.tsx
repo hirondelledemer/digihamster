@@ -8,14 +8,14 @@ import { EventsStateAction, EventsStateActionType } from "./actions";
 import { api, FieldsRequired } from "./api";
 import { EventsStateContext } from "./state-context";
 import { EventsActionsContext } from "./actions-context";
-import { EventStatus, IEvent } from "../../types/event";
 import { now } from "../../date/now";
 import { toBackendDateTime } from "#utils/date";
 import { getApiErrorMessage } from "../../axios";
+import { IEvent } from "../../types/event";
 
 const handleApiError = (
   error: unknown,
-  toast: ReturnType<typeof useToast>["toast"],
+  toast: ReturnType<typeof useToast>["toast"]
 ) => {
   toast({
     title: "Error",
@@ -26,7 +26,7 @@ const handleApiError = (
 
 const handleSuccessToast = (
   toast: ReturnType<typeof useToast>["toast"],
-  message: string,
+  message: string
 ) => {
   toast({
     title: "Success",
@@ -36,7 +36,7 @@ const handleSuccessToast = (
 
 const fetchEvents = async (
   dispatch: React.Dispatch<EventsStateAction>,
-  toast: ReturnType<typeof useToast>["toast"],
+  toast: ReturnType<typeof useToast>["toast"]
 ) => {
   try {
     dispatch({ type: EventsStateActionType.StartLoading });
@@ -82,7 +82,6 @@ export const EventsContextProvider = ({
 
       const tempEvent: IEvent = {
         id: tempId,
-        status: EventStatus.Pending,
         created_at: toBackendDateTime(nowDate),
         ...data,
       };
@@ -121,7 +120,7 @@ export const EventsContextProvider = ({
         return null;
       }
     },
-    [toast],
+    [toast]
   );
 
   const updateEvent = useCallback(
@@ -145,7 +144,7 @@ export const EventsContextProvider = ({
         handleApiError(e, toast);
       }
     },
-    [toast],
+    [toast]
   );
 
   const deleteEvent = useCallback(
@@ -168,7 +167,7 @@ export const EventsContextProvider = ({
         handleApiError(e, toast);
       }
     },
-    [toast],
+    [toast]
   );
 
   return (
