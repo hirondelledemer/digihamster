@@ -1,5 +1,8 @@
 import { ReactNode } from "react";
-import { generateListOfJournalEntries } from "../../mocks/journal-entry";
+import {
+  generateJournalEntry,
+  generateListOfJournalEntries,
+} from "../../mocks/journal-entry";
 import { IJournalEntry } from "../../types/journal-entry";
 import {
   IRelationship,
@@ -10,7 +13,7 @@ import { useJournalEntriesGroupedByEvents } from "./selectors";
 import { renderHook } from "@/config/utils/test-utils";
 import { RelationshipsStateContext } from "../use-relationships/state-context";
 
-describe("selecotrs", () => {
+describe("selectors", () => {
   describe("useJournalEntriesGroupedByEvents", () => {
     const wrapper = (
       entries: IJournalEntry[],
@@ -110,6 +113,28 @@ describe("selecotrs", () => {
             title: "Entry 4",
           },
         ],
+      });
+    });
+
+    it("should ignore relationships with non-Journal target_type", () => {
+      const entry = generateJournalEntry(1);
+      const relationships: IRelationship[] = [
+        {
+          id: 1,
+          source_id: 10,
+          source_type: RelationshipEntityType.Event,
+          target_id: entry.id,
+          target_type: RelationshipEntityType.Person,
+          relationship_type: "related",
+        },
+      ];
+
+      const { result } = renderHook(() => useJournalEntriesGroupedByEvents(), {
+        wrapper: wrapper([entry], relationships),
+      });
+
+      expect(result.current).toStrictEqual({
+        loose: [expect.objectContaining({ id: entry.id, event_id: undefined })],
       });
     });
   });

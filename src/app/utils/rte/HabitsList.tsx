@@ -94,20 +94,6 @@ export const HabitsList = forwardRef(
       <Card>
         <CardContent className="py-2 px-4">
           {items.map((habit: IHabitWithLogs, index: number) => {
-            // if (habit.id === -1 && !query) return null;
-            // if (habit.id === -1) {
-            //   return (
-            //     <div key={habit.id}>
-            //       Create:
-            //       <Badge
-            //         variant={selectedIndex === index ? "default" : "outline"}
-            //         onClick={() => selectItem(index)}
-            //       >
-            //         {habit.title}
-            //       </Badge>
-            //     </div>
-            //   );
-            // }
             return (
               <HabitListItem
                 key={habit.id}

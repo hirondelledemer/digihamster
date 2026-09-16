@@ -1,24 +1,36 @@
-import { render, screen } from "@/config/utils/test-utils";
-import { CalendarEventProps } from "./CalendarEvent";
-import CalendarEvent from "./CalendarEvent";
-import { getCalendarEventTestkit } from "./CalendarEvent.testkit";
+import { render, screen, fireEvent } from "@/config/utils/test-utils";
+import CalendarEvent, { CalendarEventProps } from "./CalendarEvent";
 import mockAxios from "jest-mock-axios";
+import { generateEvent } from "@/app/utils/mocks/event";
 import { generateListOfTasks } from "@/app/utils/mocks/task";
-import { CalendarEventEntry } from "./CalendarEvent.types";
-import { HOUR } from "@/app/utils/consts/dates";
+import { generateHabit } from "@/app/utils/mocks/habit";
+import { DEFAULT_TEST_DATE } from "@/app/utils/mocks/date";
 import { EventsContextProvider } from "@/app/utils/hooks/use-events/provider";
+import { ProjectsContextProvider } from "@/app/utils/hooks/use-projects/provider";
+import { TasksNewContextProvider } from "@/app/utils/hooks/use-tasks-new/provider";
+import { getEventsPath } from "@/app/utils/hooks/use-events/api";
+import { EventStatus } from "@/app/utils/types/event";
+import { addHours } from "date-fns";
+import { DndContext } from "@dnd-kit/core";
+
+jest.mock("next/navigation");
 
 describe("CalendarEvent", () => {
+  const EVENT = generateEvent();
+
   const defaultProps: CalendarEventProps = {
     event: {
-      title: "Event",
-      start: new Date(0),
-      end: new Date(HOUR),
+      title: EVENT.title,
+      start: new Date(DEFAULT_TEST_DATE),
+      end: addHours(new Date(DEFAULT_TEST_DATE), 1),
       resource: {
-        completed: false,
-        id: "event1",
+        id: EVENT.id,
         type: "event",
+        event: EVENT,
         tasks: [],
+        journalEntries: [],
+        habits: [],
+        people: [],
       },
     },
   };
@@ -28,96 +40,122 @@ describe("CalendarEvent", () => {
   });
 
   const renderComponent = (props = defaultProps) =>
-    getCalendarEventTestkit(
-      render(
-        <EventsContextProvider>
-          <CalendarEvent {...props} />
-        </EventsContextProvider>,
-      ).container,
+    render(
+      <ProjectsContextProvider>
+        <TasksNewContextProvider>
+          <EventsContextProvider>
+            <DndContext>
+              <CalendarEvent {...props} />
+            </DndContext>
+          </EventsContextProvider>
+        </TasksNewContextProvider>
+      </ProjectsContextProvider>,
     );
 
-  describe("event is not completed", () => {
-    it('should  show "complete" and "delete" buttons', () => {
-      const wrapper = renderComponent();
-      expect(wrapper.completeButtonExists()).toBe(true);
-      expect(wrapper.deleteButtonExists()).toBe(true);
-    });
+  it("should show event title", () => {
+    renderComponent();
+    expect(screen.getByText(EVENT.title)).toBeInTheDocument();
+  });
 
-    it('should send "complete" request', () => {
-      const wrapper = renderComponent();
-      expect(wrapper.getEventTextIsStriked()).toBe(false);
-      wrapper.clickCompleteButton();
-      expect(mockAxios.patch).toHaveBeenCalledWith("/api/events", {
-        completed: true,
-        eventId: "event1",
+  it("should show context menu options for a pending event", async () => {
+    renderComponent();
+    fireEvent.contextMenu(screen.getByText(EVENT.title));
+
+    const options = (await screen.findAllByRole("menuitem")).map(
+      (option) => option.textContent,
+    );
+
+    expect(options).toStrictEqual(["Complete", "Move", "Cancel", "Edit", "Delete"]);
+  });
+
+  describe("complete", () => {
+    it("should send complete request", async () => {
+      renderComponent();
+      fireEvent.contextMenu(screen.getByText(EVENT.title));
+
+      const completeButton = await screen.findByRole("menuitem", {
+        name: "Complete",
+      });
+      fireEvent.click(completeButton);
+
+      expect(mockAxios.patch).toHaveBeenCalledWith(getEventsPath(EVENT.id), {
+        status: EventStatus.Completed,
       });
     });
+  });
 
-    it('should send "delete" request', async () => {
-      mockAxios.patch.mockResolvedValueOnce({ data: {} });
-      const props: CalendarEventProps = {
-        ...defaultProps,
-      };
+  describe("delete", () => {
+    it("should send delete request", async () => {
+      renderComponent();
+      fireEvent.contextMenu(screen.getByText(EVENT.title));
 
-      const wrapper = renderComponent(props);
-
-      wrapper.clickDeleteButton();
-
-      expect(mockAxios.patch).toHaveBeenCalledWith("/api/events", {
-        deleted: true,
-        eventId: "event1",
+      const deleteButton = await screen.findByRole("menuitem", {
+        name: "Delete",
       });
+      fireEvent.click(deleteButton);
+
+      expect(mockAxios.delete).toHaveBeenCalledWith(getEventsPath(EVENT.id));
     });
   });
 
   describe("event is completed", () => {
-    const props: CalendarEventProps = {
-      event: {
-        title: "Event",
-        start: new Date(0),
-        end: new Date(HOUR),
-        resource: {
-          completed: true,
-          id: "event1",
-          type: "event",
-          tasks: [],
+    it('should not show "Complete" option', async () => {
+      const completedEvent = generateEvent(1, { status: EventStatus.Completed });
+      const props: CalendarEventProps = {
+        ...defaultProps,
+        event: {
+          ...defaultProps.event,
+          resource: {
+            ...defaultProps.event.resource,
+            event: completedEvent,
+          },
         },
-      },
-    };
+      };
 
-    it('should not show "complete" button', () => {
-      const wrapper = renderComponent(props);
-      expect(wrapper.completeButtonExists()).toBe(false);
+      renderComponent(props);
+      fireEvent.contextMenu(screen.getByText(completedEvent.title));
+
+      const options = (await screen.findAllByRole("menuitem")).map(
+        (option) => option.textContent,
+      );
+
+      expect(options).not.toContain("Complete");
     });
   });
 
   describe("event has tasks", () => {
-    const props: CalendarEventProps = {
-      event: {
-        title: "Event",
-        start: new Date(0),
-        end: new Date(HOUR),
-        resource: {
-          completed: false,
-          id: "event1",
-          type: "event",
-          tasks: [...generateListOfTasks(2)],
+    it("should show task titles", () => {
+      const tasks = generateListOfTasks(2);
+      const props: CalendarEventProps = {
+        ...defaultProps,
+        event: {
+          ...defaultProps.event,
+          resource: { ...defaultProps.event.resource, tasks },
         },
-      },
-    };
+      };
 
-    it("should show tasks", () => {
       renderComponent(props);
-      expect(
-        screen.getByText(
-          `${(props.event as CalendarEventEntry).resource.tasks[0].title}`,
-        ),
-      ).toBeInTheDocument();
-      expect(
-        screen.getByText(
-          `${(props.event as CalendarEventEntry).resource.tasks[1].title}`,
-        ),
-      ).toBeInTheDocument();
+
+      expect(screen.getByText(tasks[0].title)).toBeInTheDocument();
+      expect(screen.getByText(tasks[1].title)).toBeInTheDocument();
+    });
+  });
+
+  describe("event has habits", () => {
+    it("should show habit titles", () => {
+      const habits = [generateHabit(1), generateHabit(2)];
+      const props: CalendarEventProps = {
+        ...defaultProps,
+        event: {
+          ...defaultProps.event,
+          resource: { ...defaultProps.event.resource, habits },
+        },
+      };
+
+      renderComponent(props);
+
+      expect(screen.getByText(habits[0].title)).toBeInTheDocument();
+      expect(screen.getByText(habits[1].title)).toBeInTheDocument();
     });
   });
 });
