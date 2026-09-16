@@ -16,33 +16,31 @@ export const usePeopleGroupedByEvents = (): GroupedPeople | undefined => {
     return undefined;
   }
 
-  const expandedJournalEntries = people.map((person) => ({
+  const expandedPeople = people.map((person) => ({
     ...person,
     event_id: relationships.find(
       (r) =>
         r.target_id === person.id &&
+        r.target_type === RelationshipEntityType.Person &&
         r.source_type === RelationshipEntityType.Event
     )?.source_id,
   }));
 
-  const groupedPeople = expandedJournalEntries.reduce<GroupedPeople>(
-    (acc, current) => {
-      if (current.event_id !== undefined) {
-        return {
-          ...acc,
-          [current.event_id]: [
-            ...(acc[current.event_id] ? acc[current.event_id] : []),
-            current,
-          ],
-        };
-      }
-
+  const groupedPeople = expandedPeople.reduce<GroupedPeople>((acc, current) => {
+    if (current.event_id !== undefined) {
       return {
         ...acc,
+        [current.event_id]: [
+          ...(acc[current.event_id] ? acc[current.event_id] : []),
+          current,
+        ],
       };
-    },
-    {}
-  );
+    }
+
+    return {
+      ...acc,
+    };
+  }, {});
 
   return groupedPeople;
 };

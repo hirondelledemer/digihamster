@@ -2,7 +2,7 @@
 import React, { FC, useState } from "react";
 import "./style.css";
 
-import { getHabitProgressForLifeAspect } from "@/app/utils/habits/getHabitProgress";
+import { getHabitProgressForLifeAspect } from "@/app/utils/habits/habit-progress";
 import { Button } from "../ui/button";
 
 import { IconMinus, IconPlus } from "@tabler/icons-react";
@@ -24,36 +24,36 @@ export const GardenContainer: FC<{
   const animalsLifeAspect = lifeAspects.find((la) => la.asset === "animals");
   const riverLifeAspect = lifeAspects.find((la) => la.asset === "river");
   const mountainsLifeAspect = lifeAspects.find(
-    (la) => la.asset === "mountains",
+    (la) => la.asset === "mountains"
   );
   const pumpkinsLifeAspect = lifeAspects.find(
-    (la) => la.asset === "pumpkinGarden",
+    (la) => la.asset === "pumpkinGarden"
   );
 
   const treeScore = Math.floor(
-    getHabitProgressForLifeAspect(habits, treeLifeAspect || [], true) / 10,
+    getHabitProgressForLifeAspect(habits, treeLifeAspect || [], true) / 10
   );
   const houseScore = Math.floor(
-    getHabitProgressForLifeAspect(habits, houseLifeAspect || [], true) / 10,
+    getHabitProgressForLifeAspect(habits, houseLifeAspect || [], true) / 10
   );
   const shedScore = Math.floor(
-    getHabitProgressForLifeAspect(habits, shedLifeAspect || [], true) / 10,
+    getHabitProgressForLifeAspect(habits, shedLifeAspect || [], true) / 10
   );
 
   console.log("shedScore", shedScore);
   const animalsScore = Math.floor(
-    getHabitProgressForLifeAspect(habits, animalsLifeAspect || [], true) / 10,
+    getHabitProgressForLifeAspect(habits, animalsLifeAspect || [], true) / 10
   );
   const riverScore = Math.floor(
-    getHabitProgressForLifeAspect(habits, riverLifeAspect || [], true) / 10,
+    getHabitProgressForLifeAspect(habits, riverLifeAspect || [], true) / 10
   );
 
   const mountainsScore = Math.floor(
-    getHabitProgressForLifeAspect(habits, mountainsLifeAspect || [], true) / 10,
+    getHabitProgressForLifeAspect(habits, mountainsLifeAspect || [], true) / 10
   );
 
   const pumpkinGardenScore = Math.floor(
-    getHabitProgressForLifeAspect(habits, pumpkinsLifeAspect || [], true) / 10,
+    getHabitProgressForLifeAspect(habits, pumpkinsLifeAspect || [], true) / 10
   );
 
   const config: GardenConfig = {

@@ -28,6 +28,7 @@ export const useJournalEntriesGroupedByEvents = ():
     event_id: relationships.find(
       (r) =>
         r.target_id === entry.id &&
+        r.target_type === RelationshipEntityType.Journal &&
         r.source_type === RelationshipEntityType.Event
     )?.source_id,
   }));

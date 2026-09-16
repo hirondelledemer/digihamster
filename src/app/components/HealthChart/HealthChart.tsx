@@ -13,7 +13,7 @@ import { RadarChart } from "../../charts/RadarChart";
 import {
   getHabitProgress,
   getHabitProgressForLifeAspect,
-} from "@/app/utils/habits/getHabitProgress";
+} from "@/app/utils/habits/habit-progress";
 
 import { GardenContainer } from "../Garden/GardenContainer";
 import { useLifeAspectsState } from "@/app/utils/hooks/use-life-aspects/state-context";
@@ -49,8 +49,7 @@ const HealthChart: FC<HealthChartProps> = (): JSX.Element => {
           .map((timestamp) => ({
             log: habit.logs.find(
               (log) =>
-                log.log_date.slice(0, 10) ===
-                toBackendDate(new Date(timestamp)),
+                log.log_date.slice(0, 10) === toBackendDate(new Date(timestamp))
             ),
             timestamp,
           }))
@@ -76,7 +75,7 @@ const HealthChart: FC<HealthChartProps> = (): JSX.Element => {
         };
       });
     },
-    [addLog],
+    [addLog]
   );
 
   const chartData = useMemo(
@@ -87,18 +86,18 @@ const HealthChart: FC<HealthChartProps> = (): JSX.Element => {
         .reduce(
           (prev: RadarChartDataItem<HealthChartValueKey>[], curr: number) => {
             const habitsForCategory = habits.filter(
-              (h) => h.life_aspect_id === curr,
+              (h) => h.life_aspect_id === curr
             );
             const lifeAspect = lifeAspects.find((la) => la.id === curr);
 
             const progressPercentage = getHabitProgressForLifeAspect(
               habits,
-              lifeAspect || [],
+              lifeAspect || []
             );
             const boostedProgressPercentage = getHabitProgressForLifeAspect(
               habits,
               lifeAspect || [],
-              true,
+              true
             );
 
             const allTheProgress = habitsForCategory.map((habit) => ({
@@ -134,9 +133,9 @@ const HealthChart: FC<HealthChartProps> = (): JSX.Element => {
               },
             ];
           },
-          [],
+          []
         ),
-    [habits, lifeAspects],
+    [habits, lifeAspects]
   );
 
   const component = () => {
@@ -205,8 +204,8 @@ const HealthChart: FC<HealthChartProps> = (): JSX.Element => {
           data={getHabitsData(
             habits.filter(
               (h) =>
-                h.life_aspect_id.toString() === selectedCategory?.toString(),
-            ),
+                h.life_aspect_id.toString() === selectedCategory?.toString()
+            )
           )}
           config={{} as ChartConfig}
         />

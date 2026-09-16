@@ -3,8 +3,11 @@ import { cn } from "../../utils";
 import { Checkbox } from "../../ui/checkbox";
 import { CheckedState } from "@radix-ui/react-checkbox";
 import { IHabitWithLogs } from "@/app/utils/types/habit";
-import { toBackendDate } from "#utils/date";
 import { useHabitsNewActions } from "@/app/utils/hooks/use-habits-new/actions-context";
+import {
+  getHabitLogDate,
+  getHabitLogForADay,
+} from "@/app/utils/habits/habit-log";
 
 interface EventHabitProps {
   habit: IHabitWithLogs;
@@ -15,16 +18,13 @@ interface EventHabitProps {
 export const EventHabit: FC<EventHabitProps> = ({ habit, date }) => {
   const { addLog } = useHabitsNewActions();
 
-  date.setHours(0, 0, 0, 0);
-  const log = habit.logs.find(
-    (log) => log.log_date.slice(0, 10) === toBackendDate(new Date(date))
-  );
+  const log = getHabitLogForADay(habit, date);
   const isCompleted = log?.completed;
 
   const onCompletedChange = (val: CheckedState) => {
     addLog(habit.id, {
       completed: val ? true : false,
-      at: date.valueOf(),
+      at: getHabitLogDate(date),
     });
   };
 
@@ -35,7 +35,7 @@ export const EventHabit: FC<EventHabitProps> = ({ habit, date }) => {
       )}
     >
       <Checkbox
-        checked={isCompleted} // TODO
+        checked={isCompleted}
         onCheckedChange={onCompletedChange}
         onClick={(event) => {
           event.stopPropagation();

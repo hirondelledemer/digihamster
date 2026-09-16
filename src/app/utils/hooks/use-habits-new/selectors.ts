@@ -21,6 +21,7 @@ export const useHabitsGroupedByEvents = (): GroupedHabits | undefined => {
     event_id: relationships.find(
       (r) =>
         r.target_id === habit.id &&
+        r.target_type === RelationshipEntityType.Habit &&
         r.source_type === RelationshipEntityType.Event
     )?.source_id,
   }));
