@@ -1,4 +1,5 @@
 import React, {
+  FC,
   forwardRef,
   useEffect,
   useImperativeHandle,
@@ -8,17 +9,44 @@ import { Card, CardContent } from "@/app/components/ui/card";
 import { Badge } from "@/app/components/ui/badge";
 import { MentionsConfigProps } from "./types";
 import { SuggestionKeyDownProps } from "@tiptap/suggestion";
-import { useTasksNewState } from "../hooks/use-tasks-new/state-context";
-import { ITask } from "../types/task";
+import { ITask, TaskStatus } from "../types/task";
 import { useTasksNewActions } from "../hooks/use-tasks-new/actions-context";
+import { useActiveTasks } from "../hooks/use-tasks-new/selectors";
+import { useTaskProjectColor } from "../hooks/use-projects/selectors";
+import { IconCalendar, IconProgressCheck } from "@tabler/icons-react";
 
 export type TasksListProps = MentionsConfigProps;
+
+const TaskListItem: FC<{
+  task: ITask;
+  selected?: boolean;
+  onSelect(): void;
+}> = ({ task, selected, onSelect }) => {
+  const color = useTaskProjectColor(task);
+
+  return (
+    <div key={task.id}>
+      <Badge
+        variant={selected ? "default" : "outline"}
+        onClick={onSelect}
+        color={color?.main || "#fff"}
+        className={selected ? "font-extrabold" : "font-normal"}
+      >
+        {task.title}
+        {task.event_id && <IconCalendar size={12} className="ml-2" />}
+        {task.status === TaskStatus.Doing && (
+          <IconProgressCheck size={12} className="ml-2" />
+        )}
+      </Badge>
+    </div>
+  );
+};
 
 export const TasksList = forwardRef(
   ({ command, query }: TasksListProps, ref) => {
     const [selectedIndex, setSelectedIndex] = useState(0);
 
-    const { data: tasks } = useTasksNewState();
+    const tasks = useActiveTasks();
     const { createTask } = useTasksNewActions();
 
     useEffect(() => {
@@ -58,7 +86,7 @@ export const TasksList = forwardRef(
 
     const filteredItems = tasks
       .filter((task) =>
-        task.title.toLowerCase().startsWith(query.toLowerCase()),
+        task.title.toLowerCase().startsWith(query.toLowerCase())
       )
       .slice(0, 5);
 
@@ -109,21 +137,19 @@ export const TasksList = forwardRef(
                 );
               }
               return (
-                <div key={task.id}>
-                  <Badge
-                    variant={selectedIndex === index ? "default" : "outline"}
-                    onClick={() => selectItem(index)}
-                  >
-                    {task.title}
-                  </Badge>
-                </div>
+                <TaskListItem
+                  key={task.id}
+                  selected={selectedIndex === index}
+                  onSelect={() => selectItem(index)}
+                  task={task as ITask}
+                />
               );
-            },
+            }
           )}
         </CardContent>
       </Card>
     );
-  },
+  }
 );
 
 TasksList.displayName = "TaskList";
