@@ -10,6 +10,9 @@ import { getRichTextEditorTestkit } from "../RichTextEditor/RichTextEditor.testk
 import mockAxios from "@/__mocks__/axios";
 import { getTasksPath } from "@/app/utils/hooks/use-tasks-new/api";
 import { EVENTS_PATH } from "@/app/utils/hooks/use-events/api";
+import { RELATIONSHIPS_PATH } from "@/app/utils/hooks/use-relationships/api";
+import { RelationshipsContextProvider } from "@/app/utils/hooks/use-relationships/provider";
+import { RelationshipEntityType } from "@/app/utils/types/relationship";
 
 describe("CreateEventForm", () => {
   const DEFAULT_PROPS = {
@@ -32,7 +35,7 @@ describe("CreateEventForm", () => {
         <TasksNewContextProvider>
           <CreateEventForm {...DEFAULT_PROPS} />
         </TasksNewContextProvider>
-      </EventsContextProvider>,
+      </EventsContextProvider>
     );
 
     const rte = screen.getByTestId(rteTestId);
@@ -62,7 +65,7 @@ describe("CreateEventForm", () => {
         <TasksNewContextProvider>
           <CreateEventForm {...DEFAULT_PROPS} />
         </TasksNewContextProvider>
-      </EventsContextProvider>,
+      </EventsContextProvider>
     );
 
     const rte = screen.getByTestId(rteTestId);
@@ -114,6 +117,75 @@ describe("CreateEventForm", () => {
     await waitFor(() => {
       expect(mockAxios.patch).toHaveBeenCalledWith(getTasksPath(2), {
         event_id: 3,
+      });
+    });
+  });
+
+  it("should create an event with habits", async () => {
+    mockAxios.post.mockResolvedValueOnce({ data: { id: 3 } });
+
+    render(
+      <EventsContextProvider>
+        <TasksNewContextProvider>
+          <RelationshipsContextProvider>
+            <CreateEventForm {...DEFAULT_PROPS} />
+          </RelationshipsContextProvider>
+        </TasksNewContextProvider>
+      </EventsContextProvider>
+    );
+
+    const rte = screen.getByTestId(rteTestId);
+    const rteWrapper = getRichTextEditorTestkit(rte);
+
+    rteWrapper.enterValue({
+      type: "doc",
+      content: [
+        {
+          type: "paragraph",
+          content: [{ type: "text", text: "feed the cat" }],
+        },
+        {
+          type: "paragraph",
+          content: [
+            {
+              type: "projectMention",
+              attrs: { id: "1:#3b82f6", label: "perfect cat" },
+            },
+          ],
+        },
+        {
+          type: "paragraph",
+          content: [
+            {
+              type: "habitMention",
+              attrs: { id: "2", label: "buy cat food" },
+            },
+          ],
+        },
+      ],
+    });
+
+    rteWrapper.blur();
+
+    await userEvent.click(screen.getByRole("button", { name: /create/i }));
+
+    await waitFor(() => {
+      expect(mockAxios.post).toHaveBeenCalledWith(EVENTS_PATH, {
+        all_day: false,
+        description: "",
+        end_at: "2025-01-01T00:00:00.000Z",
+        project_id: 1,
+        start_at: "2025-01-01T00:00:00.000Z",
+        title: "feed the cat",
+      });
+    });
+
+    await waitFor(() => {
+      expect(mockAxios.post).toHaveBeenCalledWith(RELATIONSHIPS_PATH, {
+        source_id: 3,
+        source_type: RelationshipEntityType.Event,
+        target_id: 2,
+        target_type: RelationshipEntityType.Habit,
       });
     });
   });

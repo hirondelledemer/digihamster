@@ -10,8 +10,6 @@ import {
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Habit } from "@/models/habit";
-import useHabits from "@/app/utils/hooks/use-habits";
 import { Input } from "../ui/input";
 import {
   Select,
@@ -23,6 +21,8 @@ import {
 import { TIMES_PER_MONTH } from "./HabitForm.consts";
 import { Button } from "../ui/button";
 import { useLifeAspectsState } from "@/app/utils/hooks/use-life-aspects/state-context";
+import { useHabitsNewActions } from "@/app/utils/hooks/use-habits-new/actions-context";
+import { IHabitWithLogs } from "@/app/utils/types/habit";
 
 const FormSchema = z.object({
   title: z.string().min(1, { message: "This field has to be filled." }),
@@ -42,17 +42,18 @@ export interface HabitFormRegularProps extends CommonProps {
   initialValues?: Partial<FormValues>;
 }
 export interface HabitFormEditModeProps extends CommonProps {
-  habit: Habit;
+  habit: IHabitWithLogs;
   editMode: true;
 }
 export type HabitFormProps = HabitFormRegularProps | HabitFormEditModeProps;
 
+// TODO: use this
 const HabitForm: FC<HabitFormProps> = ({
   testId,
   onDone,
   ...restProps
 }): JSX.Element => {
-  const { updateHabit, createHabit, deleteHabit } = useHabits();
+  const { updateHabit, createHabit, deleteHabit } = useHabitsNewActions();
   const { data: lifeAspects } = useLifeAspectsState();
 
   const getInitialValues = useCallback(() => {
@@ -84,7 +85,7 @@ const HabitForm: FC<HabitFormProps> = ({
         onDone();
       }
     },
-    [deleteHabit, restProps, onDone],
+    [deleteHabit, restProps, onDone]
   );
 
   const handleSubmit = (values: FormValues) => {
@@ -99,6 +100,7 @@ const HabitForm: FC<HabitFormProps> = ({
         title: values.title,
         life_aspect_id: values.category,
         times_per_month: values.timesPerMonth,
+        description: "",
       };
       createHabit(habitData);
     }

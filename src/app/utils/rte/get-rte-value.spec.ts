@@ -8,6 +8,7 @@ describe("getRteValue", () => {
       params: [],
       projectId: undefined,
       tags: [],
+      habits: [],
       tasks: [],
       textContent: "",
       title: "",
@@ -35,6 +36,7 @@ describe("getRteValue", () => {
       params: [],
       projectId: undefined,
       tags: [],
+      habits: [],
       tasks: [],
       textContent: "",
       title: "title",
@@ -74,6 +76,7 @@ describe("getRteValue", () => {
       params: [],
       projectId: undefined,
       tags: [],
+      habits: [],
       tasks: [],
       textContent: "description",
       title: "title",
@@ -146,7 +149,81 @@ describe("getRteValue", () => {
       params: [],
       projectId: undefined,
       tags: [],
+      habits: [],
       tasks: ["1", "2"],
+      textContent: "description\n \n ",
+      title: "title",
+    });
+  });
+
+  it("should return title, description and habits", () => {
+    const JSON = {
+      type: "doc",
+      content: [
+        {
+          type: "paragraph",
+          content: [
+            {
+              type: "text",
+              text: "title",
+            },
+          ],
+        },
+        {
+          type: "paragraph",
+        },
+        {
+          type: "paragraph",
+          content: [
+            {
+              type: "text",
+              text: "description",
+            },
+          ],
+        },
+
+        {
+          type: "paragraph",
+          content: [
+            {
+              type: "habitMention",
+              attrs: {
+                id: "1",
+                label: "habit 1",
+              },
+            },
+            {
+              type: "text",
+              text: " ",
+            },
+          ],
+        },
+        {
+          type: "paragraph",
+          content: [
+            {
+              type: "habitMention",
+              attrs: {
+                id: "2",
+                label: "habit 2",
+              },
+            },
+            {
+              type: "text",
+              text: " ",
+            },
+          ],
+        },
+      ],
+    };
+
+    expect(getRteValue(JSON)).toStrictEqual({
+      contentJSON: JSON,
+      params: [],
+      projectId: undefined,
+      tags: [],
+      tasks: [],
+      habits: ["1", "2"],
       textContent: "description\n \n ",
       title: "title",
     });
@@ -209,6 +286,7 @@ describe("getRteValue", () => {
       params: ["active", "today"],
       projectId: undefined,
       tags: [],
+      habits: [],
       tasks: [],
       textContent: " \n \ndescription",
       title: "title",
@@ -261,6 +339,7 @@ describe("getRteValue", () => {
       params: [],
       projectId: "65b035101ef79da0a5430d9e",
       tags: [],
+      habits: [],
       tasks: [],
       textContent: " \n \ndescription",
       title: "title",
@@ -322,6 +401,7 @@ describe("getRteValue", () => {
     expect(getRteValue(JSON)).toStrictEqual({
       contentJSON: JSON,
       params: [],
+      habits: [],
       projectId: undefined,
       tags: ["65c6a3d738a23c2c6627d071", "65c6a43d38a23c2c6627d07c"],
       tasks: [],

@@ -4,7 +4,6 @@ import React, { useMemo, useState } from "react";
 import { Navigate, View } from "react-big-calendar";
 import * as dates from "date-arithmetic";
 import TodayEvent from "../TodayEvent";
-import { IconChevronDown } from "@tabler/icons-react";
 import MinimalNote from "../MinimalNote";
 import {
   Collapsible,
@@ -12,7 +11,7 @@ import {
   CollapsibleTrigger,
 } from "../ui/collapsible";
 import { cn } from "../utils";
-import { closestIndexTo, differenceInDays, lightFormat } from "date-fns";
+import { closestIndexTo, lightFormat } from "date-fns";
 import { CalendarEventType } from "../CalendarEvent";
 import {
   isCalendarDeadlineEntry,
@@ -20,9 +19,6 @@ import {
   isCalendarJournalEntry,
   isCalendarWeatherEntry,
 } from "../CalendarEvent/CalendarEvent.types";
-import useHabits from "@/app/utils/hooks/use-habits";
-import TodayHabit from "../TodayHabit";
-import { Habit } from "@/models/habit";
 import useHotKeys from "@/app/utils/hooks/use-hotkeys";
 
 export interface TodayProps {
@@ -42,8 +38,6 @@ function Today({ localizer, events, date, backgroundEvents }: TodayProps) {
 
   const [currentFocused, setCurrentFocused] = useState(-1);
 
-  const { data: habits } = useHabits();
-
   const sortByTime = (event1: CalendarEventType, event2: CalendarEventType) =>
     (event1.start?.getTime() || 0) - (event2.start?.getTime() || 0);
 
@@ -52,9 +46,9 @@ function Today({ localizer, events, date, backgroundEvents }: TodayProps) {
       events.filter((event: CalendarEventType) =>
         event.allDay && event.start
           ? dates.inRange(event.start, min, max, "day")
-          : false,
+          : false
       ),
-    [events, max, min],
+    [events, max, min]
   );
 
   const regularEvents = useMemo(
@@ -62,9 +56,9 @@ function Today({ localizer, events, date, backgroundEvents }: TodayProps) {
       events.filter((event: CalendarEventType) =>
         !event.allDay && event.start
           ? dates.inRange(event.start, min, max, "day")
-          : false,
+          : false
       ),
-    [events, max, min],
+    [events, max, min]
   );
 
   useHotKeys([
@@ -123,7 +117,7 @@ function Today({ localizer, events, date, backgroundEvents }: TodayProps) {
 
         const closestWeatherEventIndex = closestIndexTo(
           event.start,
-          weatherEventDates,
+          weatherEventDates
         );
 
         return (
@@ -141,35 +135,6 @@ function Today({ localizer, events, date, backgroundEvents }: TodayProps) {
       }
     };
 
-  const filteredHabits = useMemo(
-    () =>
-      habits.filter((habit) => {
-        const todayTimestamp = min.getTime();
-
-        const todayHabit = habit.logs.find(
-          (log) => new Date(log.log_date).valueOf() === todayTimestamp,
-        );
-
-        return !todayHabit;
-      }),
-    [habits, min],
-  );
-
-  const readyHabits = useMemo(
-    () =>
-      filteredHabits
-        .filter(getHabitIsDue(date))
-        .sort(byLastCompletedDate(date)),
-    [filteredHabits, date],
-  );
-
-  const restHabits = useMemo(
-    () =>
-      filteredHabits
-        .filter((h) => !getHabitIsDue(date)(h))
-        .sort(byLastCompletedDate(date)),
-    [filteredHabits, date],
-  );
   return (
     <>
       <div className="flex flex-col">
@@ -180,38 +145,6 @@ function Today({ localizer, events, date, backgroundEvents }: TodayProps) {
         {regularEvents
           .sort(sortByTime)
           .map(getTodayEventComp(allDayEvents.length))}
-
-        {!!readyHabits.length && (
-          <Collapsible>
-            <CollapsibleTrigger>
-              <div className="flex mt-6">
-                Ready for today ({readyHabits.length})
-                <IconChevronDown />
-              </div>
-            </CollapsibleTrigger>
-            <CollapsibleContent>
-              {readyHabits.map((habit) => (
-                <TodayHabit key={habit.id} habit={habit} date={min} />
-              ))}
-            </CollapsibleContent>
-          </Collapsible>
-        )}
-
-        {!!restHabits.length && (
-          <Collapsible>
-            <CollapsibleTrigger>
-              <div className="flex mt-6">
-                Other tasks
-                <IconChevronDown />
-              </div>
-            </CollapsibleTrigger>
-            <CollapsibleContent>
-              {restHabits.map((habit) => (
-                <TodayHabit key={habit.id} habit={habit} date={min} />
-              ))}
-            </CollapsibleContent>
-          </Collapsible>
-        )}
       </div>
     </>
   );
@@ -250,43 +183,3 @@ Today.title = (date: Date) => {
 };
 
 export default Today;
-
-function byLastCompletedDate(
-  date: Date,
-): ((a: Habit, b: Habit) => number) | undefined {
-  return (h1, h2) => {
-    const lastLog1 = h1.logs.findLast(
-      (log) =>
-        new Date(log.log_date).valueOf() < date.getTime() && log.completed,
-    );
-    const lastLog2 = h2.logs.findLast(
-      (log) =>
-        new Date(log.log_date).valueOf() < date.getTime() && log.completed,
-    );
-
-    const diff1 = lastLog1 ? differenceInDays(date, lastLog1.log_date) : 29;
-    const diff2 = lastLog2 ? differenceInDays(date, lastLog2.log_date) : 29;
-
-    const averageAcceptableDiff1 = 28 / h1.times_per_month;
-    const averageAcceptableDiff2 = 28 / h2.times_per_month;
-
-    return diff2 - averageAcceptableDiff2 - (diff1 - averageAcceptableDiff1);
-  };
-}
-
-function getHabitIsDue(date: Date): (value: Habit) => boolean {
-  return (habit) => {
-    const lastLog = habit.logs.findLast(
-      (log) =>
-        new Date(log.log_date).valueOf() < date.getTime() && log.completed,
-    );
-
-    const diff = lastLog ? differenceInDays(date, lastLog.log_date) : 29;
-
-    const averageAcceptableDiff = 28 / habit.times_per_month;
-
-    const readyIn = Math.floor(averageAcceptableDiff - diff);
-
-    return readyIn <= 0;
-  };
-}
