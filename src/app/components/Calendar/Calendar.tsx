@@ -63,11 +63,10 @@ import { parseBackendDate, toBackendDateTime } from "#utils/date";
 import { useTasksNewState } from "@/app/utils/hooks/use-tasks-new/state-context";
 import { useTasksNewActions } from "@/app/utils/hooks/use-tasks-new/actions-context";
 import axios from "axios";
-import {
-  useJournalEntriesGroupedByEvents,
-  usePeopleGroupedByEvents,
-} from "@/app/utils/hooks/use-entry/selectors";
+import { useJournalEntriesGroupedByEvents } from "@/app/utils/hooks/use-entry/selectors";
 import { CalendarJournalEvent } from "../CalendarJournalEvent";
+import { usePeopleGroupedByEvents } from "@/app/utils/hooks/use-people/selectors";
+import { useHabitsGroupedByEvents } from "@/app/utils/hooks/use-habits-new/selectors";
 
 export const now = () => new Date();
 
@@ -114,6 +113,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
 
   const journalEntriesData = useJournalEntriesGroupedByEvents();
   const peopleData = usePeopleGroupedByEvents();
+  const habitData = useHabitsGroupedByEvents();
   const { data: eventsData } = useEventsState();
   const { update: updateEvent } = useEventsActions();
   const { data: cycleData } = useCycle();
@@ -138,6 +138,7 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
           ? journalEntriesData[event.id] || []
           : [],
         people: peopleData ? peopleData[event.id] || [] : [],
+        habits: habitData ? habitData[event.id] || [] : [],
       },
     };
   });

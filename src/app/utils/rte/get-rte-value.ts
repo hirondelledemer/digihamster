@@ -11,6 +11,7 @@ export const getRteValue: (json: JSONContent) => RteValue = (json) => {
     title: "",
     tags: [],
     tasks: [],
+    habits: [],
     textContent: "",
     contentJSON: [],
     projectId: undefined,
@@ -22,38 +23,45 @@ export const getRteValue: (json: JSONContent) => RteValue = (json) => {
   }
 
   const getMentionEntity =
-    (type: string) => (acc: MentionEntity[], curr: JSONContent) => [
-      ...acc,
-      ...(curr.content?.filter((val) => val.type === type) || []).map(
-        (mention) => ({
-          id: mention!.attrs!.id,
-          label: mention!.attrs!.label,
-        }),
-      ),
-    ];
+    (type: string) => (acc: MentionEntity[], curr: JSONContent) =>
+      [
+        ...acc,
+        ...(curr.content?.filter((val) => val.type === type) || []).map(
+          (mention) => ({
+            id: mention!.attrs!.id,
+            label: mention!.attrs!.label,
+          })
+        ),
+      ];
 
   const tags: MentionEntity[] = reduce(
     json.content,
     getMentionEntity("mention"),
-    [],
+    []
   );
 
   const projects: MentionEntity[] = reduce(
     json.content,
     getMentionEntity("projectMention"),
-    [],
+    []
   );
 
   const tasks: MentionEntity[] = reduce(
     json.content,
     getMentionEntity("taskMention"),
-    [],
+    []
+  );
+
+  const habits: MentionEntity[] = reduce(
+    json.content,
+    getMentionEntity("habitMention"),
+    []
   );
 
   const params: MentionEntity[] = reduce(
     json.content,
     getMentionEntity("paramsMention"),
-    [],
+    []
   );
 
   const regularTags = tags.map((tag) => tag.id.split(":")[0]);
@@ -72,21 +80,21 @@ export const getRteValue: (json: JSONContent) => RteValue = (json) => {
             (val) =>
               val.type !== "projectMention" &&
               val.type !== "paramsMention" &&
-              val.type !== "taskMention",
+              val.type !== "taskMention"
           ) || []
         ).map((content) => content.text || ""),
       ];
     },
-    [],
+    []
   )
     .filter((text) => !!text)
     .join("\n");
 
-  console.log("projects", projects, tasks);
   return {
     title: titleTextContent || "",
     tags: regularTags,
     tasks: tasks.map((param) => param.id),
+    habits: habits.map((param) => param.id),
     textContent,
     contentJSON: json,
     projectId: projects[0] ? projects[0].id.split(":")[0] : undefined,

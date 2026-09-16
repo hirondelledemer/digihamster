@@ -21,6 +21,7 @@ import { EventTask } from "./components/EventTask";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { IconBubbleText, IconManFilled } from "@tabler/icons-react";
 import MinimalNote from "../MinimalNote";
+import { EventHabit } from "./components/EventHabit";
 
 export interface CalendarEventProps {
   event: CalendarEventEntry;
@@ -81,6 +82,15 @@ const CalendarEvent: FC<CalendarEventProps> = ({
                     key={t.id}
                     task={t}
                     onCompletedChange={handleTaskCompleteClick(t.id)}
+                  />
+                ))}
+              {isCalendarEventEntry(event) &&
+                event.resource.habits.map((h) => (
+                  <EventHabit
+                    key={h.id}
+                    habit={h}
+                    date={event.start}
+                    onCompletedChange={handleTaskCompleteClick(h.id)}
                   />
                 ))}
             </div>

@@ -27,7 +27,7 @@ export interface HabitsContextValue {
   addLog(
     id: string,
     props: { completed: boolean; at: number; existingLog?: HabitLog },
-    onDone?: () => void,
+    onDone?: () => void
   ): void;
   createHabit(data: Pick<Habit, FieldsRequired>): void;
 }
@@ -54,8 +54,9 @@ export const HabitsContextProvider = ({ children }: any) => {
     (async function () {
       try {
         setLoading(true);
-        const habitsResponse =
-          await apiClient.get<Habit[]>("/habits/with-logs");
+        const habitsResponse = await apiClient.get<Habit[]>(
+          "/habits/with-logs"
+        );
         setData(habitsResponse.data);
       } catch (err) {
         setError(err);
@@ -104,7 +105,7 @@ export const HabitsContextProvider = ({ children }: any) => {
   const deleteHabit = async (
     // todo: maybe rename
     habitId: string,
-    onDone?: () => void,
+    onDone?: () => void
   ) => {
     try {
       setData((habits) => habits.filter((h) => h.id !== habitId));
@@ -128,13 +129,13 @@ export const HabitsContextProvider = ({ children }: any) => {
   const updateHabit = async (
     habitId: string,
     props: Partial<Habit>,
-    onDone?: () => void,
+    onDone?: () => void
   ) => {
     try {
       setData((p) =>
         updateObjById<Habit>(p, habitId, {
           ...props,
-        }),
+        })
       );
       if (onDone) {
         onDone();
@@ -156,13 +157,13 @@ export const HabitsContextProvider = ({ children }: any) => {
   const addLog = async (
     habitId: string,
     props: { at: number; completed: boolean; existingLog?: HabitLog },
-    onDone?: () => void,
+    onDone?: () => void
   ) => {
     try {
       setData((p) =>
         updateObjById<Habit>(p, habitId, {
           logs: [props],
-        }),
+        })
       );
       if (onDone) {
         onDone();

@@ -1,4 +1,5 @@
 import { IEvent } from "@/app/utils/types/event";
+import { IHabitWithLogs } from "@/app/utils/types/habit";
 import { IJournalEntry } from "@/app/utils/types/journal-entry";
 import { IPerson } from "@/app/utils/types/person";
 import { ITask } from "@/app/utils/types/task";
@@ -60,6 +61,7 @@ export interface CalendarEventEntry extends Event {
     event: IEvent;
     tasks: ITask[];
     journalEntries: IJournalEntry[];
+    habits: IHabitWithLogs[];
     people: IPerson[];
   };
 }
