@@ -1,4 +1,4 @@
-import { render, screen } from "@/config/utils/test-utils";
+import { fireEvent, render, screen } from "@/config/utils/test-utils";
 import { ActiveContext } from "./ActiveContext";
 import { EventsStateContext } from "@/app/utils/hooks/use-events/state-context";
 import { EventsState } from "@/app/utils/hooks/use-events/actions";
@@ -10,12 +10,13 @@ import { useSearchParams } from "next/navigation";
 jest.mock("../../utils/date/now");
 
 const routerPushSpy = jest.fn();
+const routerReplaceSpy = jest.fn();
 
 jest.mock("next/navigation", () => ({
   ...jest.requireActual("next/navigation"),
   useSearchParams: jest.fn(),
   useRouter: () => ({
-    replace: jest.fn(),
+    replace: routerReplaceSpy,
     push: routerPushSpy,
   }),
 }));
@@ -40,26 +41,24 @@ describe("ActiveContext", () => {
           </EventsStateContext.Provider>
         );
 
-        expect(
-          screen.getByText(`active event: ${EVENT.title}`)
-        ).toBeInTheDocument();
+        expect(screen.getByText(EVENT.title)).toBeInTheDocument();
       });
 
-      // it('pressing x would remove the selected sevent from query params', () => {
-      //   (useSearchParams as jest.Mock).mockReturnValue({
-      //     get: () => String(EVENT.id),
-      //   });
+      it("pressing x would remove the selected sevent from query params", async () => {
+        (useSearchParams as jest.Mock).mockReturnValue({
+          get: () => String(EVENT.id),
+        });
 
-      //   render(
-      //     <EventsStateContext.Provider value={contextValue}>
-      //       <ActiveContext />
-      //     </EventsStateContext.Provider>
-      //   );
+        render(
+          <EventsStateContext.Provider value={contextValue}>
+            <ActiveContext />
+          </EventsStateContext.Provider>
+        );
 
-      //   expect(
-      //     screen.getByText(`active event: ${EVENT.title}`)
-      //   ).toBeInTheDocument();
-      // })
+        fireEvent.click(screen.getByRole("button", { name: /back/i }));
+
+        expect(routerReplaceSpy).toHaveBeenCalledWith("/", undefined);
+      });
     });
 
     describe("current event is present", () => {
@@ -82,9 +81,24 @@ describe("ActiveContext", () => {
           </EventsStateContext.Provider>
         );
 
-        expect(
-          screen.getByText(`active event: ${CURRENT_EVENT.title}`)
-        ).toBeInTheDocument();
+        expect(screen.getByText(CURRENT_EVENT.title)).toBeInTheDocument();
+      });
+
+      it("pressing x should show active tasks list", async () => {
+        // (useSearchParams as jest.Mock).mockReturnValue({
+        //   get: () => String(EVENT.id),
+        // });
+
+        render(
+          <EventsStateContext.Provider value={contextValue}>
+            <ActiveContext />
+          </EventsStateContext.Provider>
+        );
+
+        fireEvent.click(screen.getByRole("button", { name: /back/i }));
+
+        expect(routerReplaceSpy).not.toHaveBeenCalled();
+        expect(screen.queryByText(CURRENT_EVENT.title)).not.toBeInTheDocument();
       });
     });
 
@@ -110,9 +124,7 @@ describe("ActiveContext", () => {
           </EventsStateContext.Provider>
         );
 
-        expect(
-          screen.queryByText(`active event: ${CURRENT_EVENT.title}`)
-        ).not.toBeInTheDocument();
+        expect(screen.queryByText(CURRENT_EVENT.title)).not.toBeInTheDocument();
       });
     });
   });
