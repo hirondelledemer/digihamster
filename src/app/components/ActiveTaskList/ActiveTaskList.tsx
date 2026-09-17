@@ -15,22 +15,22 @@ const ActiveTaskList: FC = (): JSX.Element | null => {
     () =>
       tasks
         .filter(
-          (task) => task.status === "doing" && !task.deadline && !task.event_id,
+          (task) => task.status === "doing" && !task.deadline && !task.event_id
         )
         .sort((a, b) =>
-          a.status === b.status ? 0 : a.status === "done" ? 1 : -1,
+          a.status === b.status ? 0 : a.status === "done" ? 1 : -1
         ),
-    [tasks],
+    [tasks]
   );
 
   const pendingTasksCount = useMemo(
     () => tasksToShow.filter((t) => !(t.status === "done")).length,
-    [tasksToShow],
+    [tasksToShow]
   );
 
   const completedTasksCount = useMemo(
     () => tasksToShow.filter((t) => t.status === "done").length,
-    [tasksToShow],
+    [tasksToShow]
   );
 
   return (

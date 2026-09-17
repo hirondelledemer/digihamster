@@ -22,6 +22,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { IconBubbleText, IconManFilled } from "@tabler/icons-react";
 import MinimalNote from "../MinimalNote";
 import { EventHabit } from "./components/EventHabit";
+import { useRouter } from "next/navigation";
 
 export interface CalendarEventProps {
   event: CalendarEventEntry;
@@ -31,6 +32,7 @@ const CalendarEvent: FC<CalendarEventProps> = ({
   event,
 }): JSX.Element | null => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
 
   const handleMouseEnter = () => {
     const el = containerRef.current;
@@ -169,6 +171,9 @@ const CalendarEvent: FC<CalendarEventProps> = ({
         "h-full cursor-pointer rounded-lg relative",
         isOver ? "" : "p-1"
       )}
+      onClick={() =>
+        router.push(`/?eventId=${event.resource.event.id}`, undefined)
+      }
     >
       <div
         ref={setNodeRef}
