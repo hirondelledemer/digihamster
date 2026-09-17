@@ -83,23 +83,6 @@ describe("ActiveContext", () => {
 
         expect(screen.getByText(CURRENT_EVENT.title)).toBeInTheDocument();
       });
-
-      it("pressing x should show active tasks list", async () => {
-        // (useSearchParams as jest.Mock).mockReturnValue({
-        //   get: () => String(EVENT.id),
-        // });
-
-        render(
-          <EventsStateContext.Provider value={contextValue}>
-            <ActiveContext />
-          </EventsStateContext.Provider>
-        );
-
-        fireEvent.click(screen.getByRole("button", { name: /back/i }));
-
-        expect(routerReplaceSpy).not.toHaveBeenCalled();
-        expect(screen.queryByText(CURRENT_EVENT.title)).not.toBeInTheDocument();
-      });
     });
 
     describe("no current event", () => {

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { FC } from "react";
+import React, { FC, useEffect } from "react";
 
 import {
   useCurrentEvent,
@@ -18,12 +18,18 @@ export const ActiveContext: FC = (): JSX.Element | null => {
 
   const selectedEventId = searchParams.get("eventId"); // TODO: convert to number
 
+  useEffect(() => {
+    if (!selectedEventId && currentEvent) {
+      router.replace(`/?eventId=${currentEvent.id}`, undefined);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [router, currentEvent]);
+
   const selectedEvent = useEventById(
     selectedEventId ? Number(selectedEventId) : null
   );
-  const eventToShow = selectedEvent || currentEvent;
 
-  if (!eventToShow) {
+  if (!selectedEvent) {
     return <ActiveTaskList />;
   }
 
@@ -44,7 +50,7 @@ export const ActiveContext: FC = (): JSX.Element | null => {
         >
           <IconArrowLeft />
         </Button>
-        <div className="text-xl">{eventToShow.title}</div>
+        <div className="text-xl">{selectedEvent.title}</div>
       </div>
       {/* <ScrollArea className="h-full pb-[60px]">
         <div className="flex flex-col gap-4">
