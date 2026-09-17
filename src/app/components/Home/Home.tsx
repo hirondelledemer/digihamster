@@ -40,7 +40,9 @@ export const Home = (): JSX.Element => {
       <ResizablePanel>
         <div className="flex h-screen gap-4">
           <div className="flex flex-col p-6 pb-12 w-[400px]">
-            <ActiveContext />
+            <Suspense>
+              <ActiveContext />
+            </Suspense>
           </div>
 
           <div className="flex p-6 pl-0 pb-12 flex-col grow gap-4">
