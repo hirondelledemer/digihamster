@@ -12,6 +12,8 @@ import { useJournalEntriesForEvent } from "@/app/utils/hooks/use-entry/selectors
 import MinimalNote from "@/app/components/MinimalNote";
 import { useHabitsForEvent } from "@/app/utils/hooks/use-habits-new/selectors";
 import { HabitCard } from "@/app/components/HabitCard/HabitCard";
+import { format, isSameDay } from "date-fns";
+import { now } from "@/app/utils/date/now";
 
 interface ActiveEventInfoProps {
   event: IEvent;
@@ -23,8 +25,18 @@ export const ActiveEventInfo: FC<ActiveEventInfoProps> = ({
   const entries = useJournalEntriesForEvent(event.id);
   const habits = useHabitsForEvent(event.id);
 
+  const isEventToday = isSameDay(event.start_at, now());
+
   return (
     <div className="w-full h-full">
+      <div className="py-4 flex">
+        {!isEventToday && (
+          <div className="mr-5">{format(event.start_at, "MMM d")}</div>
+        )}
+        <div>
+          {format(event.start_at, "HH:mm")} - {format(event.end_at, "HH:mm")}
+        </div>
+      </div>
       <ScrollArea className="h-[50%] pb-[60px]">
         <div className="flex flex-col gap-4">
           {tasks.map((task) => (
