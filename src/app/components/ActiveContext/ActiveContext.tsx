@@ -10,6 +10,7 @@ import ActiveTaskList from "../ActiveTaskList";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "../ui/button";
 import { IconArrowLeft } from "@tabler/icons-react";
+import { ActiveEventInfo } from "./components/ActiveEventInfo";
 
 export const ActiveContext: FC = (): JSX.Element | null => {
   const currentEvent = useCurrentEvent();
@@ -52,13 +53,7 @@ export const ActiveContext: FC = (): JSX.Element | null => {
         </Button>
         <div className="text-xl">{selectedEvent.title}</div>
       </div>
-      {/* <ScrollArea className="h-full pb-[60px]">
-        <div className="flex flex-col gap-4">
-          {tasksToShow.map((task) => (
-            <DraggableTaskCard dragId={task.id} key={task.id} task={task} />
-          ))}
-        </div>
-      </ScrollArea> */}
+      <ActiveEventInfo event={selectedEvent} />
     </div>
   );
 };
