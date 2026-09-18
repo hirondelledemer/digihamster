@@ -13,7 +13,14 @@ import { EventStatus } from "@/app/utils/types/event";
 import { addHours } from "date-fns";
 import { DndContext } from "@dnd-kit/core";
 
-jest.mock("next/navigation");
+const routerPushSpy = jest.fn();
+jest.mock("next/navigation", () => ({
+  ...jest.requireActual("next/navigation"),
+  useRouter: () => ({
+    replace: jest.fn(),
+    push: routerPushSpy,
+  }),
+}));
 
 describe("CalendarEvent", () => {
   const EVENT = generateEvent();
@@ -49,7 +56,7 @@ describe("CalendarEvent", () => {
             </DndContext>
           </EventsContextProvider>
         </TasksNewContextProvider>
-      </ProjectsContextProvider>,
+      </ProjectsContextProvider>
     );
 
   it("should show event title", () => {
@@ -62,10 +69,16 @@ describe("CalendarEvent", () => {
     fireEvent.contextMenu(screen.getByText(EVENT.title));
 
     const options = (await screen.findAllByRole("menuitem")).map(
-      (option) => option.textContent,
+      (option) => option.textContent
     );
 
-    expect(options).toStrictEqual(["Complete", "Move", "Cancel", "Edit", "Delete"]);
+    expect(options).toStrictEqual([
+      "Complete",
+      "Move",
+      "Cancel",
+      "Edit",
+      "Delete",
+    ]);
   });
 
   describe("complete", () => {
@@ -100,7 +113,9 @@ describe("CalendarEvent", () => {
 
   describe("event is completed", () => {
     it('should not show "Complete" option', async () => {
-      const completedEvent = generateEvent(1, { status: EventStatus.Completed });
+      const completedEvent = generateEvent(1, {
+        status: EventStatus.Completed,
+      });
       const props: CalendarEventProps = {
         ...defaultProps,
         event: {
@@ -116,7 +131,7 @@ describe("CalendarEvent", () => {
       fireEvent.contextMenu(screen.getByText(completedEvent.title));
 
       const options = (await screen.findAllByRole("menuitem")).map(
-        (option) => option.textContent,
+        (option) => option.textContent
       );
 
       expect(options).not.toContain("Complete");

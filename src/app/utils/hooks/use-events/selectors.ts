@@ -26,10 +26,10 @@ export const useEventsForDay = (date: Date): IEvent[] => {
         .filter(
           (event) =>
             !!event.start_at &&
-            isSameDay(parseBackendDateTime(event.start_at), day),
+            isSameDay(parseBackendDateTime(event.start_at), day)
         )
         .sort(byStart),
-    [data, day],
+    [data, day]
   );
 };
 
@@ -56,6 +56,16 @@ export const useCurrentEvent = (): IEvent | undefined => {
       isWithinInterval(now(), {
         start: parseBackendDateTime(event.start_at),
         end: parseBackendDateTime(event.end_at),
-      }),
+      })
   );
+};
+
+export const useEventById = (id: number | null | undefined): IEvent | null => {
+  const { data } = useEventsState();
+
+  if (id === null || id === undefined) {
+    return null;
+  }
+
+  return data.find((event) => event.id === id) ?? null;
 };
