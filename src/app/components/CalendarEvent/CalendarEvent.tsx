@@ -1,27 +1,21 @@
 "use client";
 
-import React, { FC, useCallback, useMemo, useRef } from "react";
+import React, { FC, useMemo, useRef } from "react";
 
-import {
-  CalendarEventEntry,
-  isCalendarEventEntry,
-} from "./CalendarEvent.types";
+import { CalendarEventEntry } from "./CalendarEvent.types";
 
 import { useProjectById } from "@/app/utils/hooks/use-projects/selectors";
 import { EventActions } from "../EventActions";
 import { format } from "date-fns";
 import { EventStatus } from "@/app/utils/types/event";
 import { cn } from "../utils";
-import { TaskStatus } from "@/app/utils/types/task";
-import { useTasksNewActions } from "@/app/utils/hooks/use-tasks-new/actions-context";
-import { CheckedState } from "@radix-ui/react-checkbox";
 import { useDroppable } from "@dnd-kit/core";
-import { sortInTheEvent } from "@/app/utils/tasks/sort";
-import { EventTask } from "./components/EventTask";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
-import { IconBubbleText, IconManFilled } from "@tabler/icons-react";
-import MinimalNote from "../MinimalNote";
-import { EventHabit } from "./components/EventHabit";
+import {
+  IconBubbleFilled,
+  IconCheckbox,
+  IconManFilled,
+} from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
 
 export interface CalendarEventProps {
@@ -54,20 +48,9 @@ const CalendarEvent: FC<CalendarEventProps> = ({
 
   const project = useProjectById(event.resource.event.project_id);
 
-  const { updateTask } = useTasksNewActions();
-
   const { isOver, setNodeRef } = useDroppable({
     id: event.resource.id,
   });
-
-  const handleTaskCompleteClick = useCallback(
-    (taskId: number) => (value: CheckedState) => {
-      updateTask(taskId, {
-        status: value ? TaskStatus.Done : TaskStatus.Doing,
-      });
-    },
-    [updateTask]
-  );
 
   const content = useMemo(() => {
     return (
@@ -76,45 +59,20 @@ const CalendarEvent: FC<CalendarEventProps> = ({
           <div>{event.title}</div>
           <div className="text-xs">{event.resource.event.description}</div>
 
-          <div className="flex space-between gap-4">
-            <div className="grow">
-              {isCalendarEventEntry(event) &&
-                sortInTheEvent(event.resource.tasks).map((t) => (
-                  <EventTask
-                    key={t.id}
-                    task={t}
-                    onCompletedChange={handleTaskCompleteClick(t.id)}
-                  />
-                ))}
-              {isCalendarEventEntry(event) &&
-                event.resource.habits.map((h) => (
-                  <EventHabit
-                    key={h.id}
-                    habit={h}
-                    date={event.start}
-                    onCompletedChange={handleTaskCompleteClick(h.id)}
-                  />
-                ))}
-            </div>
-            <div className="flex-none flex-col">
-              {event.resource.journalEntries.map((entry) => (
-                <div key={entry.id}>
-                  <Tooltip delayDuration={0}>
-                    <TooltipTrigger
-                      className="pointer-events-auto"
-                      onMouseDownCapture={(e) => {
-                        // the calendar starts a slot selection on a native mousedown
-                        e.stopPropagation();
-                      }}
-                    >
-                      <IconBubbleText size={20} />
-                    </TooltipTrigger>
-                    <TooltipContent className="w-[200px]" side="right">
-                      <MinimalNote note={entry.json_note || entry.note} />
-                    </TooltipContent>
-                  </Tooltip>
-                </div>
-              ))}
+          <div className="flex space-between pt-2 gap-4">
+            {event.resource.tasks.length + event.resource.habits.length > 0 && (
+              <div className="flex gap-1">
+                <IconCheckbox size={16} />
+                {event.resource.tasks.length + event.resource.habits.length}
+              </div>
+            )}
+            {event.resource.journalEntries.length > 0 && (
+              <div className="flex gap-1">
+                <IconBubbleFilled size={16} />
+                {event.resource.journalEntries.length}
+              </div>
+            )}
+            <div className="flex gap-1">
               {event.resource.people.map((person) => (
                 <div key={person.id}>
                   <Tooltip delayDuration={0}>
@@ -125,7 +83,7 @@ const CalendarEvent: FC<CalendarEventProps> = ({
                         e.stopPropagation();
                       }}
                     >
-                      <IconManFilled size={20} color={person.color} />
+                      <IconManFilled size={16} color={person.color} />
                     </TooltipTrigger>
                     <TooltipContent className="w-[200px]" side="right">
                       {person.name}
@@ -138,7 +96,7 @@ const CalendarEvent: FC<CalendarEventProps> = ({
         </div>
       </div>
     );
-  }, [event, handleTaskCompleteClick]);
+  }, [event]);
 
   const projectColor = project
     ? `color-mix(in srgb, ${project.color} 20%, transparent)`

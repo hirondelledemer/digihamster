@@ -139,7 +139,7 @@ describe("CalendarEvent", () => {
   });
 
   describe("event has tasks", () => {
-    it("should show task titles", () => {
+    it("should number of tasks", () => {
       const tasks = generateListOfTasks(2);
       const props: CalendarEventProps = {
         ...defaultProps,
@@ -151,8 +151,7 @@ describe("CalendarEvent", () => {
 
       renderComponent(props);
 
-      expect(screen.getByText(tasks[0].title)).toBeInTheDocument();
-      expect(screen.getByText(tasks[1].title)).toBeInTheDocument();
+      expect(screen.getByText(tasks.length)).toBeInTheDocument();
     });
   });
 
@@ -169,8 +168,7 @@ describe("CalendarEvent", () => {
 
       renderComponent(props);
 
-      expect(screen.getByText(habits[0].title)).toBeInTheDocument();
-      expect(screen.getByText(habits[1].title)).toBeInTheDocument();
+      expect(screen.getByText(habits.length)).toBeInTheDocument();
     });
   });
 });
