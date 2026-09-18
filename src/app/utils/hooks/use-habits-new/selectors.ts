@@ -47,3 +47,29 @@ export const useHabitsGroupedByEvents = (): GroupedHabits | undefined => {
 
   return groupedHabits;
 };
+
+export const useHabitsForEvent = (eventId: number): IHabitWithLogs[] => {
+  const { data: habits, isLoading: isHabitsLoading } = useHabitsNewState();
+  const { data: relationships, isLoading: isRelationshipsLoading } =
+    useRelationshipsState();
+
+  if (isHabitsLoading || isRelationshipsLoading || !habits || !relationships) {
+    return [];
+  }
+
+  const expandedHabits = habits.map((h) => ({
+    ...h,
+    event_id: relationships.find(
+      (r) =>
+        r.target_id === h.id &&
+        r.target_type === RelationshipEntityType.Habit &&
+        r.source_type === RelationshipEntityType.Event
+    )?.source_id,
+  }));
+
+  const filteredHabits = expandedHabits.filter(
+    (entry) => entry.event_id === eventId
+  );
+
+  return filteredHabits;
+};

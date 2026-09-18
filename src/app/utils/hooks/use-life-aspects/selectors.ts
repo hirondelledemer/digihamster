@@ -1,4 +1,5 @@
 "use client";
+import { IHabitWithLogs } from "../../types/habit";
 import { ILifeAspect, LifeAspectAsset } from "../../types/life-aspect";
 import { IProject } from "../../types/project";
 import { useLifeAspectsState } from "./state-context";
@@ -19,6 +20,10 @@ export const useProjectLifeAspect = (
   project: IProject | null
 ): ILifeAspect | null => useLifeAspectById(project?.life_aspect_id);
 
+export const useHabitLifeAspect = (
+  habit: IHabitWithLogs | null
+): ILifeAspect | null => useLifeAspectById(habit?.life_aspect_id);
+
 export const useProjectLifeAspectAsset = (
   project: IProject | null
 ): LifeAspectAsset | undefined => useProjectLifeAspect(project)?.asset;
@@ -37,6 +42,16 @@ export const useProjectLifeAspectAssetIcon = (
   project: IProject | null
 ): string | undefined => {
   const asset = useProjectLifeAspect(project)?.asset;
+  if (!asset) {
+    return undefined;
+  }
+  return mapAssetToAnimal[asset];
+};
+
+export const useHabitLifeAspectAssetIcon = (
+  habit: IHabitWithLogs | null
+): string | undefined => {
+  const asset = useHabitLifeAspect(habit)?.asset;
   if (!asset) {
     return undefined;
   }
