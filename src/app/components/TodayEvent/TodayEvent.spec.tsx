@@ -30,6 +30,9 @@ describe("TodayEvent", () => {
         type: "event",
         event: EVENT,
         tasks: [],
+        journalEntries: [],
+        habits: [],
+        people: [],
       },
     },
   };
@@ -42,7 +45,7 @@ describe("TodayEvent", () => {
             <TodayEvent {...props} />
           </EventsContextProvider>
         </TasksNewContextProvider>
-      </ProjectsContextProvider>,
+      </ProjectsContextProvider>
     );
 
   it("should move event", async () => {
@@ -66,12 +69,12 @@ describe("TodayEvent", () => {
     expect(mockAxios.post).toHaveBeenCalledWith(EVENTS_PATH, {
       all_day: false,
       created_at: "1970-01-11T10:10:10Z",
-      description: "event description 1",
+      description: "(Moved from the 01-11)\nevent description 1",
       end_at: "1970-01-12T10:10:10.000Z",
       project_id: null,
       start_at: "1970-01-12T10:10:10.000Z",
       status: "pending",
-      title: "(Moved) Event 1",
+      title: "Event 1",
     });
   });
 
@@ -109,32 +112,32 @@ describe("TodayEvent", () => {
       {
         status: "moved",
         description: "(Moved to the 01-12)\nevent description 1",
-      },
+      }
     );
     expect(mockAxios.patch).toHaveBeenNthCalledWith(
       2,
       getTasksPath(tasks[0].id),
       {
         event_id: EVENT.id,
-      },
+      }
     );
     expect(mockAxios.patch).toHaveBeenNthCalledWith(
       3,
       getTasksPath(tasks[2].id),
       {
         event_id: EVENT.id,
-      },
+      }
     );
 
     expect(mockAxios.post).toHaveBeenCalledWith(EVENTS_PATH, {
       all_day: false,
       created_at: "1970-01-11T10:10:10Z",
-      description: "event description 1",
+      description: "(Moved from the 01-11)\nevent description 1",
       end_at: "1970-01-12T10:10:10.000Z",
       project_id: null,
       start_at: "1970-01-12T10:10:10.000Z",
       status: "pending",
-      title: "(Moved) Event 1",
+      title: "Event 1",
     });
   });
 
@@ -160,15 +163,15 @@ describe("TodayEvent", () => {
       fireEvent.contextMenu(screen.getByText(TASK.title));
 
       const options = (await screen.findAllByRole("menuitem")).map(
-        (option) => option.textContent,
+        (option) => option.textContent
       );
 
       expect(options).toStrictEqual([
-        "Add note",
         "Complete",
         "Activate",
         "Edit",
         "Move to the list",
+        "Delete",
       ]);
     });
 
@@ -208,7 +211,7 @@ describe("TodayEvent", () => {
       fireEvent.contextMenu(screen.getByText(DEFAULT_PROPS.event.title));
 
       const options = (await screen.findAllByRole("menuitem")).map(
-        (option) => option.textContent,
+        (option) => option.textContent
       );
 
       expect(options).toStrictEqual([

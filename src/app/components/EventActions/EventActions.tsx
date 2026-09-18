@@ -80,7 +80,9 @@ export const EventActions: React.FC<EventActionsProps> = ({
 
     const eventToCreate = {
       ...restOfEvent,
-      title: `(Moved) ${restOfEvent.title}`,
+      description:
+        `(Moved from the ${format(restOfEvent.start_at, "MM-dd")})\n` +
+        restOfEvent.description,
       start_at: toBackendDateTime(newStartDate),
       end_at: toBackendDateTime(newEndDate),
     };
