@@ -14,6 +14,7 @@ import { useHabitsForEvent } from "@/app/utils/hooks/use-habits-new/selectors";
 import { HabitCard } from "@/app/components/HabitCard/HabitCard";
 import { format, isSameDay } from "date-fns";
 import { now } from "@/app/utils/date/now";
+import ActiveTaskList from "@/app/components/ActiveTaskList";
 
 interface ActiveEventInfoProps {
   event: IEvent;
@@ -45,6 +46,13 @@ export const ActiveEventInfo: FC<ActiveEventInfoProps> = ({
           {habits.map((habit) => (
             <HabitCard key={habit.id} habit={habit} event={event} />
           ))}
+
+          {tasks.length + habits.length === 0 && (
+            <div>
+              <div>There are no tasks here. Pick something?</div>
+              <ActiveTaskList />
+            </div>
+          )}
         </div>
       </ScrollArea>
       <ScrollArea className="h-[50%] pb-[60px]">
