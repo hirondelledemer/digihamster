@@ -15,6 +15,7 @@ import {
   IconBubbleFilled,
   IconCheckbox,
   IconManFilled,
+  IconMapPin,
 } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
 
@@ -87,6 +88,24 @@ const CalendarEvent: FC<CalendarEventProps> = ({
                     </TooltipTrigger>
                     <TooltipContent className="w-[200px]" side="right">
                       {person.name}
+                    </TooltipContent>
+                  </Tooltip>
+                </div>
+              ))}
+              {event.resource.locations.map((location) => (
+                <div key={location.id}>
+                  <Tooltip delayDuration={0}>
+                    <TooltipTrigger
+                      className="pointer-events-auto"
+                      onMouseDownCapture={(e) => {
+                        // the calendar starts a slot selection on a native mousedown
+                        e.stopPropagation();
+                      }}
+                    >
+                      <IconMapPin size={16} color={location.color} />
+                    </TooltipTrigger>
+                    <TooltipContent className="w-[200px]" side="right">
+                      {location.title}
                     </TooltipContent>
                   </Tooltip>
                 </div>

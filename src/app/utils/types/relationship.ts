@@ -6,6 +6,7 @@ export enum RelationshipEntityType {
   Journal = "journal",
   Habit = "habit",
   Person = "person",
+  Location = "location",
 }
 
 export interface IRelationship {
