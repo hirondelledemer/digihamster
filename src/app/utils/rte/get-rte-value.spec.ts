@@ -12,6 +12,7 @@ describe("getRteValue", () => {
       tasks: [],
       textContent: "",
       title: "",
+      locations: [],
     });
   });
 
@@ -40,6 +41,7 @@ describe("getRteValue", () => {
       tasks: [],
       textContent: "",
       title: "title",
+      locations: [],
     });
   });
 
@@ -80,6 +82,7 @@ describe("getRteValue", () => {
       tasks: [],
       textContent: "description",
       title: "title",
+      locations: [],
     });
   });
 
@@ -153,6 +156,7 @@ describe("getRteValue", () => {
       tasks: ["1", "2"],
       textContent: "description\n \n ",
       title: "title",
+      locations: [],
     });
   });
 
@@ -226,6 +230,7 @@ describe("getRteValue", () => {
       habits: ["1", "2"],
       textContent: "description\n \n ",
       title: "title",
+      locations: [],
     });
   });
 
@@ -290,6 +295,7 @@ describe("getRteValue", () => {
       tasks: [],
       textContent: " \n \ndescription",
       title: "title",
+      locations: [],
     });
   });
 
@@ -343,6 +349,7 @@ describe("getRteValue", () => {
       tasks: [],
       textContent: " \n \ndescription",
       title: "title",
+      locations: [],
     });
   });
 
@@ -407,6 +414,7 @@ describe("getRteValue", () => {
       tasks: [],
       textContent: " \n \ndescription",
       title: "title",
+      locations: [],
     });
   });
 });
