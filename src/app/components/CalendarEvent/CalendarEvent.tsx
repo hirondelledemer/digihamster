@@ -102,7 +102,11 @@ const CalendarEvent: FC<CalendarEventProps> = ({
                         e.stopPropagation();
                       }}
                     >
-                      <IconMapPin size={16} color={location.color} />
+                      <IconMapPin
+                        size={16}
+                        color={location.color}
+                        aria-label="location"
+                      />
                     </TooltipTrigger>
                     <TooltipContent className="w-[200px]" side="right">
                       {location.title}
