@@ -189,4 +189,73 @@ describe("CreateEventForm", () => {
       });
     });
   });
+
+  it("should create an event with locations", async () => {
+    mockAxios.post.mockResolvedValueOnce({ data: { id: 3 } });
+
+    render(
+      <EventsContextProvider>
+        <TasksNewContextProvider>
+          <RelationshipsContextProvider>
+            <CreateEventForm {...DEFAULT_PROPS} />
+          </RelationshipsContextProvider>
+        </TasksNewContextProvider>
+      </EventsContextProvider>
+    );
+
+    const rte = screen.getByTestId(rteTestId);
+    const rteWrapper = getRichTextEditorTestkit(rte);
+
+    rteWrapper.enterValue({
+      type: "doc",
+      content: [
+        {
+          type: "paragraph",
+          content: [{ type: "text", text: "feed the cat" }],
+        },
+        {
+          type: "paragraph",
+          content: [
+            {
+              type: "projectMention",
+              attrs: { id: "1:#3b82f6", label: "perfect cat" },
+            },
+          ],
+        },
+        {
+          type: "paragraph",
+          content: [
+            {
+              type: "locationMention",
+              attrs: { id: "2", label: "store" },
+            },
+          ],
+        },
+      ],
+    });
+
+    rteWrapper.blur();
+
+    await userEvent.click(screen.getByRole("button", { name: /create/i }));
+
+    await waitFor(() => {
+      expect(mockAxios.post).toHaveBeenCalledWith(EVENTS_PATH, {
+        all_day: false,
+        description: "",
+        end_at: "2025-01-01T00:00:00.000Z",
+        project_id: 1,
+        start_at: "2025-01-01T00:00:00.000Z",
+        title: "feed the cat",
+      });
+    });
+
+    await waitFor(() => {
+      expect(mockAxios.post).toHaveBeenCalledWith(RELATIONSHIPS_PATH, {
+        source_id: 3,
+        source_type: RelationshipEntityType.Event,
+        target_id: 2,
+        target_type: RelationshipEntityType.Location,
+      });
+    });
+  });
 });

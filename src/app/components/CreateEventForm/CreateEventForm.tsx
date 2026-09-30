@@ -28,6 +28,7 @@ const FormSchema = z.object({
     title: z.string().min(1, { message: "required" }),
     content: z.any(),
     tasks: z.array(z.string()),
+    locations: z.array(z.string()),
     habits: z.array(z.string()),
     tags: z.array(z.string()),
     textContent: z.string(),
@@ -88,6 +89,15 @@ export const CreateEventForm: FC<CreateEventFormProps> = ({
           source_type: RelationshipEntityType.Event,
           target_id: Number(personId),
           target_type: RelationshipEntityType.Person,
+        });
+      });
+
+      values.description.locations.forEach((locationId) => {
+        createRelationship({
+          source_id: event.id,
+          source_type: RelationshipEntityType.Event,
+          target_id: Number(locationId),
+          target_type: RelationshipEntityType.Location,
         });
       });
 

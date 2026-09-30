@@ -12,6 +12,8 @@ import { getEventsPath } from "@/app/utils/hooks/use-events/api";
 import { EventStatus } from "@/app/utils/types/event";
 import { addHours } from "date-fns";
 import { DndContext } from "@dnd-kit/core";
+import { generateLocation } from "@/app/utils/mocks/location";
+import { TooltipProvider } from "../ui/tooltip";
 
 const routerPushSpy = jest.fn();
 jest.mock("next/navigation", () => ({
@@ -38,6 +40,7 @@ describe("CalendarEvent", () => {
         journalEntries: [],
         habits: [],
         people: [],
+        locations: [],
       },
     },
   };
@@ -48,15 +51,17 @@ describe("CalendarEvent", () => {
 
   const renderComponent = (props = defaultProps) =>
     render(
-      <ProjectsContextProvider>
-        <TasksNewContextProvider>
-          <EventsContextProvider>
-            <DndContext>
-              <CalendarEvent {...props} />
-            </DndContext>
-          </EventsContextProvider>
-        </TasksNewContextProvider>
-      </ProjectsContextProvider>
+      <TooltipProvider>
+        <ProjectsContextProvider>
+          <TasksNewContextProvider>
+            <EventsContextProvider>
+              <DndContext>
+                <CalendarEvent {...props} />
+              </DndContext>
+            </EventsContextProvider>
+          </TasksNewContextProvider>
+        </ProjectsContextProvider>
+      </TooltipProvider>
     );
 
   it("should show event title", () => {
@@ -169,6 +174,25 @@ describe("CalendarEvent", () => {
       renderComponent(props);
 
       expect(screen.getByText(habits.length)).toBeInTheDocument();
+    });
+  });
+
+  describe("event has locations", () => {
+    it("should show habit titles", () => {
+      const locations = [generateLocation(1), generateLocation(2)];
+      const props: CalendarEventProps = {
+        ...defaultProps,
+        event: {
+          ...defaultProps.event,
+          resource: { ...defaultProps.event.resource, locations },
+        },
+      };
+
+      renderComponent(props);
+
+      expect(screen.getAllByRole("button", { name: /location/i })).toHaveLength(
+        2
+      );
     });
   });
 });

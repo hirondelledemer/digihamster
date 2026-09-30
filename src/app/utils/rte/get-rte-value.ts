@@ -10,6 +10,7 @@ export const getRteValue: (json: JSONContent) => RteValue = (json) => {
   const defaultValue = {
     title: "",
     tags: [],
+    locations: [],
     tasks: [],
     habits: [],
     textContent: "",
@@ -40,6 +41,12 @@ export const getRteValue: (json: JSONContent) => RteValue = (json) => {
     []
   );
 
+  const locations: MentionEntity[] = reduce(
+    json.content,
+    getMentionEntity("locationMention"),
+    []
+  );
+
   const projects: MentionEntity[] = reduce(
     json.content,
     getMentionEntity("projectMention"),
@@ -65,6 +72,8 @@ export const getRteValue: (json: JSONContent) => RteValue = (json) => {
   );
 
   const regularTags = tags.map((tag) => tag.id.split(":")[0]);
+
+  const locationTags = locations.map((location) => location.id.split(":")[0]);
 
   const titleTextContent = !!json.content[0].content
     ? json.content[0].content![0].text
@@ -94,6 +103,7 @@ export const getRteValue: (json: JSONContent) => RteValue = (json) => {
     title: titleTextContent || "",
     tags: regularTags,
     tasks: tasks.map((param) => param.id),
+    locations: locationTags, // todo: this might be not needed
     habits: habits.map((param) => param.id),
     textContent,
     contentJSON: json,

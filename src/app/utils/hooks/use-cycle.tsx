@@ -4,10 +4,10 @@ import { createContext, useContext, useEffect, useState } from "react";
 
 import { useToast } from "@/app/components/ui/use-toast";
 
-import { Cycle } from "@/models/cycle";
 // import { DAY } from "../consts/dates";
 import apiClient from "../api-client";
 import { toBackendDate } from "#utils/date";
+import { Cycle } from "../types/cycle";
 
 export interface CycleContextValue {
   data: Cycle[] | null;

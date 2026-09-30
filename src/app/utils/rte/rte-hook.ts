@@ -11,6 +11,7 @@ import { ParamsList } from "./ParamList";
 import { getRteValue } from "./get-rte-value";
 import { TasksList } from "./TasksList";
 import { HabitsList } from "./HabitsList";
+import { LocationList } from "./LocationList";
 
 export interface RteValue {
   title: string;
@@ -68,6 +69,16 @@ const TaskMention = Mention.extend({
   },
 });
 
+const LocationMention = Mention.extend({
+  name: "locationMention",
+}).configure({
+  suggestion: {
+    char: "/at ",
+    pluginKey: new PluginKey("locationSuggestion"),
+    allowSpaces: true,
+  },
+});
+
 const HabitMention = Mention.extend({
   name: "habitMention",
 }).configure({
@@ -115,6 +126,12 @@ export function useRte({
         },
         suggestion: getMentionsConfig(HabitsList),
       }),
+      LocationMention.configure({
+        HTMLAttributes: {
+          class: styles.project,
+        },
+        suggestion: getMentionsConfig(LocationList),
+      }),
       ProjectMention.configure({
         HTMLAttributes: {
           class: styles.project,
@@ -138,5 +155,8 @@ export function useRte({
     editable,
   });
 
-  return { editor, getRteValue: () => getRteValue(editor!.getJSON()) };
+  return {
+    editor,
+    getRteValue: () => getRteValue(editor!.getJSON()),
+  };
 }

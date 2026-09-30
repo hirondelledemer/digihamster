@@ -55,6 +55,8 @@ const defaultTasksValue: TasksContextValues = {
   setData: jest.fn(),
   loading: false,
 };
+
+/** @deprecated delete */
 export const wrapWithTasksProvider = (
   component: JSX.Element,
   value?: Partial<TasksContextValues>
