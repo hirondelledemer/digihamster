@@ -17,15 +17,18 @@ import {
   PROJECTS_PATH,
 } from "@/app/utils/hooks/use-projects/api";
 import { generateProject } from "@/app/utils/mocks/project";
+import { LocationsContextProvider } from "@/app/utils/hooks/use-location/provider";
+import { LOCATIONS_PATH } from "@/app/utils/hooks/use-location/api";
 
 const LIFE_ASPECTS = generateListOfLifeAspects(3);
 const assertLoaded = async () => {
-  await waitFor(() => expect(mockAxios.queue()).toHaveLength(2));
+  await waitFor(() => expect(mockAxios.queue()).toHaveLength(3));
   await act(async () => {
     mockAxios.mockResponseFor(
       { url: LIFE_ASPECTS_WITH_BOOSTS_PATH },
-      { data: LIFE_ASPECTS },
+      { data: LIFE_ASPECTS }
     );
+    mockAxios.mockResponseFor({ url: LOCATIONS_PATH }, { data: [] });
   });
 };
 
@@ -38,11 +41,13 @@ const DEFAULT_PROPS = {
 describe("ProjectForm", () => {
   const renderComponent = (props: ProjectFormProps = DEFAULT_PROPS) =>
     render(
-      <ProjectsContextProvider>
-        <LifeAspectsContextProvider>
-          <ProjectForm {...props} />
-        </LifeAspectsContextProvider>
-      </ProjectsContextProvider>,
+      <LocationsContextProvider>
+        <ProjectsContextProvider>
+          <LifeAspectsContextProvider>
+            <ProjectForm {...props} />
+          </LifeAspectsContextProvider>
+        </ProjectsContextProvider>
+      </LocationsContextProvider>
     );
 
   afterEach(() => {
@@ -57,13 +62,13 @@ describe("ProjectForm", () => {
       screen.getByRole("textbox", {
         name: /title/i,
       }),
-      "Title",
+      "Title"
     );
     await userEvent.type(
       screen.getByRole("textbox", {
         name: /goal/i,
       }),
-      "description",
+      "description"
     );
 
     await userEvent.click(screen.getByRole("button", { name: /create/i }));
@@ -94,13 +99,13 @@ describe("ProjectForm", () => {
       screen.getByRole("textbox", {
         name: /title/i,
       }),
-      "edited",
+      "edited"
     );
     await userEvent.type(
       screen.getByRole("textbox", {
         name: /goal/i,
       }),
-      "edited",
+      "edited"
     );
 
     await userEvent.click(screen.getByRole("button", { name: /save/i }));
@@ -114,7 +119,7 @@ describe("ProjectForm", () => {
           life_aspect_id: 1,
           status: "todo",
           title: "Project 1edited",
-        },
+        }
       );
     });
   });
