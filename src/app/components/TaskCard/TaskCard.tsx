@@ -8,7 +8,7 @@ import { useCalendarDate } from "../../utils/hooks/use-calendar-date";
 import { Tooltip, TooltipContent } from "../ui/tooltip";
 import { TooltipTrigger } from "@radix-ui/react-tooltip";
 import { useTaskProject } from "@/app/utils/hooks/use-projects/selectors";
-import { ITask } from "@/app/utils/types/task";
+import { ITask, TaskStatus } from "@/app/utils/types/task";
 import { TaskActions } from "../TaskActions";
 import { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
 
@@ -66,7 +66,7 @@ const TaskCard: FC<TaskCardProps> = ({
               {project?.title}
 
               <div className="flex items-center gap-1">
-                {indicateActive && task.status === "doing" && (
+                {indicateActive && task.status === TaskStatus.Doing && (
                   <IconProgressCheck size={18} color="green" />
                 )}
                 {task.status === "doing" && (
