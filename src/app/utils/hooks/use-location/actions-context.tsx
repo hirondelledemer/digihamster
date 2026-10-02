@@ -1,6 +1,9 @@
 import { createContext, useContext } from "react";
 import { CreateLocationParams } from "./api";
-import { ActionsContextValue } from "../use-crud/actions-context";
+import {
+  ActionsContextValue,
+  GENERIC_ACTIONS,
+} from "../use-crud/actions-context";
 import { ILocation } from "../../types/location";
 
 type LocationActionsContextValue = ActionsContextValue<
@@ -8,11 +11,9 @@ type LocationActionsContextValue = ActionsContextValue<
   ILocation
 >;
 
-const DEFAULT_LOCATIONS_ACTIONS: LocationActionsContextValue = {
-  create: async () => null,
-  update: () => {},
-  delete: () => {},
-} as const;
+const DEFAULT_LOCATIONS_ACTIONS = {
+  ...GENERIC_ACTIONS,
+} as const satisfies LocationActionsContextValue;
 
 export const LocationsActionsContext =
   createContext<LocationActionsContextValue>(DEFAULT_LOCATIONS_ACTIONS);

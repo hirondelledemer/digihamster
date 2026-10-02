@@ -7,3 +7,9 @@ export interface ActionsContextValue<FieldsRequired, Entity> {
   ): void;
   delete(id: number, onDone?: () => void): void;
 }
+
+export const GENERIC_ACTIONS = {
+  create: async () => null,
+  update: () => {},
+  delete: () => {},
+};

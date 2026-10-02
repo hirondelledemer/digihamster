@@ -324,7 +324,6 @@ export default function ProjectsNewPage() {
           <LocationsContextProvider>
             <RelationshipsContextProvider>
               <CommandTool />
-              {/* <ProjectsNewTable /> */}
               <Projects />
             </RelationshipsContextProvider>
           </LocationsContextProvider>

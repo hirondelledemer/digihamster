@@ -113,8 +113,6 @@ const ProjectForm: FC<ProjectFormProps> = ({
         life_aspect_id: Number(values.lifeAspectId),
       });
 
-
-      console.log(values.locations, 'submitting')
       values.locations.forEach((locationId) => {
         createRelationship({
           source_id: restProps.project.id,
