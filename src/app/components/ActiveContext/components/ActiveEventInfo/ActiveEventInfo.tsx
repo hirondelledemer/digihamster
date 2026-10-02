@@ -55,7 +55,7 @@ export const ActiveEventInfo: FC<ActiveEventInfoProps> = ({
             <>
               <div>There are no tasks here. Pick something?</div>
               {suggestedTasks.map((task) => (
-                <TaskCard key={task.id} task={task} />
+                <TaskCard key={task.id} task={task} indicateActive />
               ))}
             </>
           )}
