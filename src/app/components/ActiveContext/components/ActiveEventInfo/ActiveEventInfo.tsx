@@ -3,7 +3,10 @@
 
 import React, { FC } from "react";
 
-import { useTasksForEvent } from "@/app/utils/hooks/use-tasks-new/selectors";
+import {
+  useFirstTaskForTheProjects,
+  useTasksForEvent,
+} from "@/app/utils/hooks/use-tasks-new/selectors";
 import { IEvent } from "@/app/utils/types/event";
 
 import TaskCard from "@/app/components/TaskCard";
@@ -14,7 +17,7 @@ import { useHabitsForEvent } from "@/app/utils/hooks/use-habits-new/selectors";
 import { HabitCard } from "@/app/components/HabitCard/HabitCard";
 import { format, isSameDay } from "date-fns";
 import { now } from "@/app/utils/date/now";
-import ActiveTaskList from "@/app/components/ActiveTaskList";
+import { useProjectsForTheEventByLocation } from "@/app/utils/hooks/use-projects/selectors";
 
 interface ActiveEventInfoProps {
   event: IEvent;
@@ -25,6 +28,8 @@ export const ActiveEventInfo: FC<ActiveEventInfoProps> = ({
   const tasks = useTasksForEvent(event.id);
   const entries = useJournalEntriesForEvent(event.id);
   const habits = useHabitsForEvent(event.id);
+  const projects = useProjectsForTheEventByLocation(event.id);
+  const suggestedTasks = useFirstTaskForTheProjects(projects.map((p) => p.id));
 
   const isEventToday = isSameDay(event.start_at, now());
 
@@ -46,12 +51,13 @@ export const ActiveEventInfo: FC<ActiveEventInfoProps> = ({
           {habits.map((habit) => (
             <HabitCard key={habit.id} habit={habit} event={event} />
           ))}
-
           {tasks.length + habits.length === 0 && (
-            <div>
+            <>
               <div>There are no tasks here. Pick something?</div>
-              <ActiveTaskList />
-            </div>
+              {suggestedTasks.map((task) => (
+                <TaskCard key={task.id} task={task} indicateActive />
+              ))}
+            </>
           )}
         </div>
       </ScrollArea>

@@ -25,6 +25,10 @@ import { useLifeAspectsState } from "@/app/utils/hooks/use-life-aspects/state-co
 import { IProject, ProjectStatus } from "@/app/utils/types/project";
 import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
 import { Textarea } from "../ui/textarea";
+import { useLocationsState } from "@/app/utils/hooks/use-location/state-context";
+import Filter from "../Filter";
+import { useRelationshipsActions } from "@/app/utils/hooks/use-relationships/actions-context";
+import { RelationshipEntityType } from "@/app/utils/types/relationship";
 
 interface CommonProps {
   testId?: string;
@@ -56,6 +60,7 @@ const FormSchema = z.object({
     ProjectStatus.Todo,
   ]),
   lifeAspectId: z.union([z.number(), z.undefined()]),
+  locations: z.array(z.string()),
   description: z.union([z.string(), z.undefined()]),
 });
 
@@ -68,6 +73,10 @@ const ProjectForm: FC<ProjectFormProps> = ({
 }): JSX.Element => {
   const { update: updateProject, create: createProject } = useProjectsActions();
   const { data: lifeAspects } = useLifeAspectsState();
+  const { data: locations } = useLocationsState();
+  const { create: createRelationship } = useRelationshipsActions();
+
+  console.log(locations);
 
   const getInitialValues = useCallback(() => {
     if (restProps.editMode) {
@@ -89,11 +98,12 @@ const ProjectForm: FC<ProjectFormProps> = ({
       color: "#e11d48",
       status: ProjectStatus.Todo,
       lifeAspectId: lifeAspects[0]?.id,
+      locations: [],
       ...getInitialValues(),
     },
   });
 
-  const handleSubmit = (values: FormValues) => {
+  const handleSubmit = async (values: FormValues) => {
     if (restProps.editMode) {
       updateProject(restProps.project.id, {
         title: values.title,
@@ -102,14 +112,34 @@ const ProjectForm: FC<ProjectFormProps> = ({
         status: values.status || ProjectStatus.Todo,
         life_aspect_id: Number(values.lifeAspectId),
       });
+
+      values.locations.forEach((locationId) => {
+        createRelationship({
+          source_id: restProps.project.id,
+          source_type: RelationshipEntityType.Project,
+          target_id: Number(locationId),
+          target_type: RelationshipEntityType.Location,
+        });
+      });
     } else {
-      createProject({
+      const project = await createProject({
         title: values.title,
         color: values.color,
         description: values.description || "",
         status: values.status,
         life_aspect_id: Number(values.lifeAspectId),
       });
+
+      if (project) {
+        values.locations.forEach((locationId) => {
+          createRelationship({
+            source_id: project.id,
+            source_type: RelationshipEntityType.Project,
+            target_id: Number(locationId),
+            target_type: RelationshipEntityType.Location,
+          });
+        });
+      }
     }
     onDone();
   };
@@ -140,6 +170,26 @@ const ProjectForm: FC<ProjectFormProps> = ({
               <FormControl>
                 <Textarea placeholder="description" {...field} />
               </FormControl>
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="locations"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Locations</FormLabel>
+              <Filter
+                onChange={field.onChange}
+                value={field.value}
+                maxLengthToShow={10}
+                options={locations.map((location) => ({
+                  value: location.id.toString(),
+                  label: location.title,
+                }))}
+              />
+              <FormMessage />
             </FormItem>
           )}
         />

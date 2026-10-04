@@ -33,6 +33,8 @@ import { ProjectRow } from "../modules/projects/components/ProjectRow";
 import { ITask, TaskStatus } from "../utils/types/task";
 import CommandTool from "../components/CommandTool";
 import Projects from "../components/Projects";
+import { LocationsContextProvider } from "../utils/hooks/use-location/provider";
+import { RelationshipsContextProvider } from "../utils/hooks/use-relationships/provider";
 
 // ─── Task components ──────────────────────────────────────────────────────────
 
@@ -94,7 +96,7 @@ const TaskRow: FC<TaskRowProps> = ({ task }) => {
     <TableRow
       className={cn(
         task.status === "done" && "opacity-50",
-        task.status === "cancelled" && "opacity-30 line-through",
+        task.status === "cancelled" && "opacity-30 line-through"
       )}
     >
       <TableCell className="py-1">
@@ -270,7 +272,7 @@ const NewProjectForm: FC = () => {
 const ProjectsNewTable: FC = () => {
   const { data = [], isLoading } = useProjectsState();
   const [selectedProjectId, setSelectedProjectId] = useState<number | null>(
-    null,
+    null
   );
 
   const selectedProject = data.find((p) => p.id === selectedProjectId) ?? null;
@@ -319,9 +321,12 @@ export default function ProjectsNewPage() {
     <ProjectsContextProvider>
       <LifeAspectsContextProvider>
         <TasksNewContextProvider>
-          <CommandTool />
-          {/* <ProjectsNewTable /> */}
-          <Projects />
+          <LocationsContextProvider>
+            <RelationshipsContextProvider>
+              <CommandTool />
+              <Projects />
+            </RelationshipsContextProvider>
+          </LocationsContextProvider>
         </TasksNewContextProvider>
       </LifeAspectsContextProvider>
     </ProjectsContextProvider>
