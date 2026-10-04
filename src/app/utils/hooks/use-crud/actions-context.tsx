@@ -1,15 +1,12 @@
-export interface ActionsContextValue<FieldsRequired, Entity> {
-  create(note: FieldsRequired, onDone?: () => void): Promise<Entity | null>;
-  update(
-    id: number,
-    entity: Partial<FieldsRequired>,
-    onDone?: () => void
-  ): void;
-  delete(id: number, onDone?: () => void): void;
-}
+import type { CrudActions } from "./create-crud-store";
 
-export const GENERIC_ACTIONS = {
-  create: async () => null,
-  update: () => {},
-  delete: () => {},
-};
+/**
+ * Shape of the actions context for a plain CRUD entity.
+ *
+ * Entities built with `createCrudStore` get this for free; the alias stays for
+ * the ones still wiring their provider by hand.
+ */
+export type ActionsContextValue<FieldsRequired, Entity> = CrudActions<
+  Entity,
+  FieldsRequired
+>;

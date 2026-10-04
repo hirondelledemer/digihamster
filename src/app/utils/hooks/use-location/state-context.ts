@@ -1,16 +1,5 @@
-import { createContext, useContext } from "react";
-import { LocationsState } from "./actions";
+import { locationsStore } from "./store";
 
-type LocationsContextValue = LocationsState;
+export const LocationsStateContext = locationsStore.StateContext;
 
-const DEFAULT_LOCATIONS_STATE: LocationsState = {
-  data: [],
-  isLoading: false,
-  errorMessage: undefined,
-} as const;
-
-export const LocationsStateContext = createContext<LocationsContextValue>(
-  DEFAULT_LOCATIONS_STATE
-);
-
-export const useLocationsState = () => useContext(LocationsStateContext);
+export const useLocationsState = locationsStore.useEntityState;
