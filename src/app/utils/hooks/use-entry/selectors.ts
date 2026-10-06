@@ -87,3 +87,15 @@ export const useJournalEntriesForEvent = (eventId: number): IJournalEntry[] => {
 
   return filteredEntries;
 };
+
+export const useJournalEntryById = (
+  id: number | null | undefined
+): IJournalEntry | null => {
+  const { data } = useEntriesState();
+
+  if (id === null || id === undefined) {
+    return null;
+  }
+
+  return data.find((entry) => entry.id === id) ?? null;
+};

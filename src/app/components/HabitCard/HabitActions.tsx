@@ -13,7 +13,7 @@ import {
   getHabitLogDate,
   getHabitLogForADay,
 } from "@/app/utils/habits/habit-log";
-import { useRelatioshipBetweenEntities } from "@/app/utils/hooks/use-relationships/selectors";
+import { useRelationshipIdBetweenEntities } from "@/app/utils/hooks/use-relationships/selectors";
 import { IEvent } from "@/app/utils/types/event";
 import { RelationshipEntityType } from "@/app/utils/types/relationship";
 import { useRelationshipsActions } from "@/app/utils/hooks/use-relationships/actions-context";
@@ -31,7 +31,7 @@ export const HabitActions: React.FC<TaskActionProps> = ({
 }) => {
   const { addLog } = useHabitsNewActions();
   const { delete: deleteRelationship } = useRelationshipsActions();
-  const relationshipId = useRelatioshipBetweenEntities({
+  const relationshipId = useRelationshipIdBetweenEntities({
     sourceId: event.id,
     sourceType: RelationshipEntityType.Event,
     targetId: habit.id,

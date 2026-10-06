@@ -73,3 +73,15 @@ export const useHabitsForEvent = (eventId: number): IHabitWithLogs[] => {
 
   return filteredHabits;
 };
+
+export const useHabitById = (
+  id: number | null | undefined
+): IHabitWithLogs | null => {
+  const { data } = useHabitsNewState();
+
+  if (id === null || id === undefined) {
+    return null;
+  }
+
+  return data.find((habit) => habit.id === id) ?? null;
+};

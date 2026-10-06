@@ -47,3 +47,13 @@ export const useFirstTaskForTheProjects = (projectIds: number[]): ITask[] => {
       )[0];
   });
 };
+
+export const useTaskById = (id: number | null | undefined): ITask | null => {
+  const { data } = useTasksNewState();
+
+  if (id === null || id === undefined) {
+    return null;
+  }
+
+  return data.find((task) => task.id === id) ?? null;
+};

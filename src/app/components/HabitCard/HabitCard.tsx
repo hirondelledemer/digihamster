@@ -42,7 +42,6 @@ export const HabitCard: FC<HabitCardProps> = ({
                 {icon} {habit.title}
               </div>
             </CardTitle>
-            {/* <CardContent /> */}
           </CardHeader>
         </Card>
       </HabitActions>

@@ -18,6 +18,7 @@ import { HabitCard } from "@/app/components/HabitCard/HabitCard";
 import { format, isSameDay } from "date-fns";
 import { now } from "@/app/utils/date/now";
 import { useProjectsForTheEventByLocation } from "@/app/utils/hooks/use-projects/selectors";
+import { EventRelationships } from "@/app/components/EventRelationships/EventRealtionships";
 
 interface ActiveEventInfoProps {
   event: IEvent;
@@ -63,9 +64,10 @@ export const ActiveEventInfo: FC<ActiveEventInfoProps> = ({
       </ScrollArea>
       <ScrollArea className="h-[50%] pb-[60px]">
         <div className="flex flex-col gap-4">
-          {entries.map((entry) => (
+          {/* {entries.map((entry) => (
             <MinimalNote key={entry.id} note={entry.json_note || entry.note} />
-          ))}
+          ))} */}
+          <EventRelationships event={event} />
         </div>
       </ScrollArea>
     </div>
