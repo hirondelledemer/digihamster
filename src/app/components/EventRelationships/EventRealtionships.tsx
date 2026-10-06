@@ -3,9 +3,8 @@ import {
   EntityRelationship,
   useAllRelationshipsForEntity,
 } from "@/app/utils/hooks/use-relationships/selectors";
-import { IEvent } from "@/app/utils/types/event";
 import { RelationshipEntityType } from "@/app/utils/types/relationship";
-import { FC } from "react";
+import { createContext, FC, useState } from "react";
 import { EventActions } from "../EventActions";
 import { Card, CardHeader, CardTitle } from "../ui/card";
 import { useHabitById } from "@/app/utils/hooks/use-habits-new/selectors";
@@ -27,6 +26,7 @@ import {
   IconNote,
   IconProgress,
 } from "@tabler/icons-react";
+import { CreateRelationshipsForm } from "./components/RelationshipForm";
 
 // TODO: in relat. selectors create that so both target and source relationships can be returned.
 //////////
@@ -273,18 +273,44 @@ export const RelatedEntityIcon: FC<RelatedEntityIconProps> = ({
   }
 };
 
-//////////
+//////
 
-export interface EventRelationshipsProps {
-  event: IEvent;
+// const RelationshipNavigatorContextProvider = createContext([]);
+
+// export function RelationshipNavigatorContextProvider({ children }) {
+//   const [entities, setEntitites] = useState("light");
+
+//   return (
+//     <ThemeContext.Provider value={{ theme, setTheme }}>
+//       {children}
+//     </ThemeContext.Provider>
+//   );
+// }
+
+//////////
+// TODO: rename file
+export interface RelationshipNavigatorProps {
+  entityId: number;
+  entityType: RelationshipEntityType;
 }
-export const EventRelationships: FC<EventRelationshipsProps> = ({ event }) => {
+export const RelationshipNavigator: FC<RelationshipNavigatorProps> = ({
+  entityId,
+  entityType,
+}) => {
   const relationships = useAllRelationshipsForEntity({
-    entityId: event.id,
-    entityType: RelationshipEntityType.Event,
+    entityId,
+    entityType,
   });
 
-  return relationships.map((e) => (
-    <RelatedEntity key={e.entity_id} relationship={e} />
-  ));
+  return (
+    <>
+      {relationships.map((e) => (
+        <RelatedEntity key={e.entity_id} relationship={e} />
+      ))}
+      <CreateRelationshipsForm
+        entityId={entityId}
+        entityType={RelationshipEntityType.Event}
+      />
+    </>
+  );
 };

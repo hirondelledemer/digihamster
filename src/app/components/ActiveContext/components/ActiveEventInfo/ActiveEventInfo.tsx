@@ -11,14 +11,16 @@ import { IEvent } from "@/app/utils/types/event";
 
 import TaskCard from "@/app/components/TaskCard";
 import { ScrollArea } from "@/app/components/ui/scroll-area";
-import { useJournalEntriesForEvent } from "@/app/utils/hooks/use-entry/selectors";
-import MinimalNote from "@/app/components/MinimalNote";
+// import { useJournalEntriesForEvent } from "@/app/utils/hooks/use-entry/selectors";
+// import MinimalNote from "@/app/components/MinimalNote";
 import { useHabitsForEvent } from "@/app/utils/hooks/use-habits-new/selectors";
 import { HabitCard } from "@/app/components/HabitCard/HabitCard";
 import { format, isSameDay } from "date-fns";
 import { now } from "@/app/utils/date/now";
 import { useProjectsForTheEventByLocation } from "@/app/utils/hooks/use-projects/selectors";
-import { EventRelationships } from "@/app/components/EventRelationships/EventRealtionships";
+import { RelationshipNavigator } from "@/app/components/EventRelationships/EventRealtionships";
+import { RelationshipEntityType } from "@/app/utils/types/relationship";
+// import { EventRelationships } from "@/app/components/EventRelationships/EventRealtionships";
 
 interface ActiveEventInfoProps {
   event: IEvent;
@@ -27,7 +29,7 @@ export const ActiveEventInfo: FC<ActiveEventInfoProps> = ({
   event,
 }): JSX.Element | null => {
   const tasks = useTasksForEvent(event.id);
-  const entries = useJournalEntriesForEvent(event.id);
+  // const entries = useJournalEntriesForEvent(event.id);
   const habits = useHabitsForEvent(event.id);
   const projects = useProjectsForTheEventByLocation(event.id);
   const suggestedTasks = useFirstTaskForTheProjects(projects.map((p) => p.id));
@@ -67,7 +69,10 @@ export const ActiveEventInfo: FC<ActiveEventInfoProps> = ({
           {/* {entries.map((entry) => (
             <MinimalNote key={entry.id} note={entry.json_note || entry.note} />
           ))} */}
-          <EventRelationships event={event} />
+          <RelationshipNavigator
+            entityId={event.id}
+            entityType={RelationshipEntityType.Event}
+          />
         </div>
       </ScrollArea>
     </div>
