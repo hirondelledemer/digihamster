@@ -4,9 +4,9 @@ import {
   useAllRelationshipsForEntity,
 } from "@/app/utils/hooks/use-relationships/selectors";
 import { RelationshipEntityType } from "@/app/utils/types/relationship";
-import { createContext, FC, useState } from "react";
+import { createContext, FC, ReactNode, useContext, useState } from "react";
 import { EventActions } from "../EventActions";
-import { Card, CardHeader, CardTitle } from "../ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { useHabitById } from "@/app/utils/hooks/use-habits-new/selectors";
 import { useJournalEntryById } from "@/app/utils/hooks/use-entry/selectors";
 import MinimalNote from "../MinimalNote";
@@ -18,6 +18,7 @@ import { useTaskById } from "@/app/utils/hooks/use-tasks-new/selectors";
 import TaskCard from "../TaskCard";
 import {
   Icon24Hours,
+  IconArrowForward,
   IconCalendar,
   IconFeather,
   IconFolder,
@@ -28,7 +29,68 @@ import {
 } from "@tabler/icons-react";
 import { CreateRelationshipsForm } from "./components/RelationshipForm";
 
-// TODO: in relat. selectors create that so both target and source relationships can be returned.
+type NavigatorItem = {
+  id: number;
+  type: RelationshipEntityType;
+};
+type RelationshipNavigatorValue = {
+  entities: NavigatorItem[];
+  setEntities: any;
+  activeEntity: any;
+  setActiveEntity({
+    id,
+    type,
+  }: {
+    id: number;
+    type: RelationshipEntityType;
+  }): void;
+};
+const RelationshipNavigatorContext = createContext<RelationshipNavigatorValue>({
+  entities: [] as NavigatorItem[],
+  setEntities: () => {},
+  activeEntity: null,
+  setActiveEntity: () => {},
+});
+
+export function RelationshipNavigatorContextProvider({
+  initialItem,
+  children,
+}: {
+  initialItem: { id: number; type: RelationshipEntityType };
+  children: ReactNode;
+}) {
+  const [entities, setEntities] = useState<NavigatorItem[]>([initialItem]);
+  // const [activeEntityIndex, setActiveEntityIndex] = useState(null);
+
+  const setActiveEntity = ({ id, type }) => {
+    const entityIndex = entities.findIndex(
+      (e) => e.id === id && e.type === type
+    );
+    if (entityIndex !== -1) {
+      setEntities((e) => e.slice(0, entityIndex));
+    } else {
+      setEntities((e) => [...e, { id, type }]);
+    }
+  };
+
+  console.log("context", entities);
+
+  return (
+    <RelationshipNavigatorContext.Provider
+      value={{
+        entities,
+        // setEntities,
+        setActiveEntity,
+        // setActiveEntity: setActive,
+      }}
+    >
+      {children}
+    </RelationshipNavigatorContext.Provider>
+  );
+}
+
+//////////
+
 //////////
 export interface RelatedEventProps {
   eventId: number;
@@ -58,7 +120,7 @@ export const RelatedEvent: FC<RelatedEventProps> = ({ eventId: id }) => {
       </EventActions>
       <div>
         {relationships.map((r) => (
-          <RelatedEntityIcon key={r.id} relationship={r} />
+          <RelatedEntityIcon key={Math.random()} relationship={r} />
         ))}
       </div>
     </>
@@ -85,7 +147,7 @@ export const RelatedHabit: FC<{ id: number }> = ({ id }) => {
       </Card>
       <div>
         {relationships.map((r) => (
-          <RelatedEntityIcon key={r.id} relationship={r} />
+          <RelatedEntityIcon key={Math.random()} relationship={r} />
         ))}
       </div>
     </>
@@ -96,7 +158,7 @@ export const RelatedLocation: FC<{ id: number }> = ({ id }) => {
   const location = useLocationById(id);
   const relationships = useAllRelationshipsForEntity({
     entityId: id,
-    entityType: RelationshipEntityType.Habit,
+    entityType: RelationshipEntityType.Location,
   });
 
   if (!location) {
@@ -104,20 +166,19 @@ export const RelatedLocation: FC<{ id: number }> = ({ id }) => {
   }
 
   return (
-    <div>
-      <Card className="p-0 rounded-md">
-        <CardHeader className="p-4 pt-2">
-          <CardTitle className="font-normal flex items-center justify-between">
-            <div>{location.title}</div>
-          </CardTitle>
-        </CardHeader>
-      </Card>
-      <div>
+    <Card className="p-0 rounded-md">
+      <CardHeader className="p-4 pt-2">
+        <CardTitle className="font-normal flex items-center gap-2">
+          <IconMapPin size={16} color={location.color} aria-label="location" />
+          <div style={{ color: location.color }}>{location.title}</div>
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="flex">
         {relationships.map((r) => (
-          <RelatedEntityIcon key={r.id} relationship={r} />
+          <RelatedEntityIcon key={Math.random()} relationship={r} />
         ))}
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 };
 
@@ -142,7 +203,7 @@ export const RelatedPerson: FC<{ id: number }> = ({ id }) => {
       </Card>
       <div>
         {relationships.map((r) => (
-          <RelatedEntityIcon key={r.id} relationship={r} />
+          <RelatedEntityIcon key={Math.random()} relationship={r} />
         ))}
       </div>
     </div>
@@ -166,7 +227,7 @@ export const RelatedJournal: FC<{ id: number }> = ({ id }) => {
       </Card>
       <div>
         {relationships.map((r) => (
-          <RelatedEntityIcon key={r.id} relationship={r} />
+          <RelatedEntityIcon key={Math.random()} relationship={r} />
         ))}
       </div>
     </div>
@@ -186,10 +247,10 @@ export const RelatedProject: FC<{ id: number }> = ({ id }) => {
 
   return (
     <div>
-      <ProjectCard project={project} />;
+      <ProjectCard project={project} />
       <div>
         {relationships.map((r) => (
-          <RelatedEntityIcon key={r.id} relationship={r} />
+          <RelatedEntityIcon key={Math.random()} relationship={r} />
         ))}
       </div>
     </div>
@@ -211,7 +272,7 @@ export const RelatedTask: FC<{ id: number }> = ({ id }) => {
       <TaskCard task={task} />
       <div>
         {relationships.map((r) => (
-          <RelatedEntityIcon key={r.id} relationship={r} />
+          <RelatedEntityIcon key={Math.random()} relationship={r} />
         ))}
       </div>
     </div>
@@ -221,28 +282,116 @@ export const RelatedTask: FC<{ id: number }> = ({ id }) => {
 //////////
 export interface RelatedEntityProps {
   relationship: EntityRelationship;
+  compact: boolean;
 }
-export const RelatedEntity: FC<RelatedEntityProps> = ({ relationship }) => {
-  switch (relationship.target_type) {
-    case RelationshipEntityType.Event:
-      return <RelatedEvent eventId={relationship.target_id} />;
-    case RelationshipEntityType.Habit:
-      return <RelatedHabit id={relationship.target_id} />;
-    case RelationshipEntityType.Journal:
-      return <RelatedJournal id={relationship.target_id} />;
-    case RelationshipEntityType.Location:
-      return <RelatedLocation id={relationship.target_id} />;
-    case RelationshipEntityType.Note:
-      return <div>note</div>;
-    case RelationshipEntityType.Person:
-      return <RelatedPerson id={relationship.target_id} />;
-    case RelationshipEntityType.Project:
-      return <RelatedProject id={relationship.target_id} />;
-    case RelationshipEntityType.Task:
-      return <RelatedTask id={relationship.target_id} />;
-    default:
-      return <div>error</div>;
-  }
+export const RelatedEntity: FC<RelatedEntityProps> = ({
+  relationship,
+  compact,
+}) => {
+  const { setActiveEntity } = useContext(RelationshipNavigatorContext);
+
+  const selectEntity = (type: RelationshipEntityType) =>
+    setActiveEntity({
+      id: relationship.target_id,
+      type,
+    });
+
+  const getComponent = () => {
+    switch (relationship.target_type) {
+      case RelationshipEntityType.Event:
+        return compact ? (
+          <div>E</div>
+        ) : (
+          <div className="flex gap-2 items-center">
+            <RelatedEvent eventId={relationship.target_id} />
+            <IconArrowForward
+              onClick={() => selectEntity(RelationshipEntityType.Event)}
+            />
+          </div>
+        );
+      case RelationshipEntityType.Habit:
+        return compact ? (
+          <div>H</div>
+        ) : (
+          <div className="flex gap-2 items-center">
+            <RelatedHabit id={relationship.target_id} />{" "}
+            <IconArrowForward
+              onClick={() => selectEntity(RelationshipEntityType.Habit)}
+            />
+          </div>
+        );
+      case RelationshipEntityType.Journal:
+        return compact ? (
+          <div>J</div>
+        ) : (
+          <div className="flex gap-2 items-center">
+            <RelatedJournal id={relationship.target_id} />
+            <IconArrowForward
+              onClick={() => selectEntity(RelationshipEntityType.Journal)}
+            />
+          </div>
+        );
+      case RelationshipEntityType.Location:
+        return compact ? (
+          <div>L</div>
+        ) : (
+          <div className="w-full flex gap-2 items-center">
+            <div className="grow">
+              <RelatedLocation id={relationship.target_id} />
+            </div>
+            <IconArrowForward
+              onClick={() => selectEntity(RelationshipEntityType.Location)}
+            />
+          </div>
+        );
+      case RelationshipEntityType.Note:
+        return compact ? (
+          <div>N</div>
+        ) : (
+          <div className="flex gap-2 items-center">
+            <div>note</div>
+            <IconArrowForward
+              onClick={() => selectEntity(RelationshipEntityType.Note)}
+            />
+          </div>
+        );
+      case compact ? <div>P</div> : RelationshipEntityType.Person:
+        return (
+          <div className="flex gap-2 items-center">
+            <RelatedPerson id={relationship.target_id} />
+            <IconArrowForward
+              onClick={() => selectEntity(RelationshipEntityType.Person)}
+            />
+          </div>
+        );
+      case RelationshipEntityType.Project:
+        return compact ? (
+          <div>PP</div>
+        ) : (
+          <div className="flex gap-2 items-center">
+            <RelatedProject id={relationship.target_id} />
+            <IconArrowForward
+              onClick={() => selectEntity(RelationshipEntityType.Project)}
+            />
+          </div>
+        );
+      case RelationshipEntityType.Task:
+        return compact ? (
+          <div>T</div>
+        ) : (
+          <div className="flex gap-2 items-center">
+            <RelatedTask id={relationship.target_id} />
+            <IconArrowForward
+              onClick={() => selectEntity(RelationshipEntityType.Task)}
+            />
+          </div>
+        );
+      default:
+        return <div>error</div>;
+    }
+  };
+
+  return getComponent();
 };
 
 export interface RelatedEntityIconProps {
@@ -251,23 +400,71 @@ export interface RelatedEntityIconProps {
 export const RelatedEntityIcon: FC<RelatedEntityIconProps> = ({
   relationship,
 }) => {
+  const { setActiveEntity } = useContext(RelationshipNavigatorContext);
+
+  const selectEntity = (type: RelationshipEntityType) =>
+    setActiveEntity({
+      id: relationship.target_id,
+      type,
+    });
+
   switch (relationship.target_type) {
     case RelationshipEntityType.Event:
-      return <IconCalendar />;
+      return (
+        <IconCalendar
+          size={16}
+          // onClick={() => selectEntity(RelationshipEntityType.Event)}
+        />
+      );
     case RelationshipEntityType.Habit:
-      return <Icon24Hours />;
+      return (
+        <Icon24Hours
+          size={16}
+          // onClick={() => selectEntity(RelationshipEntityType.Habit)}
+        />
+      );
     case RelationshipEntityType.Journal:
-      return <IconFeather />;
+      return (
+        <IconFeather
+          size={16}
+          // onClick={() => selectEntity(RelationshipEntityType.Journal)}
+        />
+      );
     case RelationshipEntityType.Location:
-      return <IconMapPin />;
+      return (
+        <IconMapPin
+          size={16}
+          // onClick={() => selectEntity(RelationshipEntityType.Location)}
+        />
+      );
     case RelationshipEntityType.Note:
-      return <IconNote />;
+      return (
+        <IconNote
+          size={16}
+          // onClick={() => selectEntity(RelationshipEntityType.Note)}
+        />
+      );
     case RelationshipEntityType.Person:
-      return <IconManFilled />;
+      return (
+        <IconManFilled
+          size={16}
+          // onClick={() => selectEntity(RelationshipEntityType.Person)}
+        />
+      );
     case RelationshipEntityType.Project:
-      return <IconFolder />;
+      return (
+        <IconFolder
+          size={16}
+          // onClick={() => selectEntity(RelationshipEntityType.Project)}
+        />
+      );
     case RelationshipEntityType.Task:
-      return <IconProgress />;
+      return (
+        <IconProgress
+          size={16}
+          // onClick={() => selectEntity(RelationshipEntityType.Task)}
+        />
+      );
     default:
       return <div>error</div>;
   }
@@ -275,19 +472,53 @@ export const RelatedEntityIcon: FC<RelatedEntityIconProps> = ({
 
 //////
 
-// const RelationshipNavigatorContextProvider = createContext([]);
+// TODO: rename file
+export interface RelationshipPanelProps {
+  entityId: number;
+  entityType: RelationshipEntityType;
+  compact: boolean;
+}
+export const EntityWithRelationships: FC<RelationshipPanelProps> = ({
+  entityId,
+  entityType,
+  compact,
+}) => {
+  const relationships = useAllRelationshipsForEntity({
+    entityId,
+    entityType,
+  });
 
-// export function RelationshipNavigatorContextProvider({ children }) {
-//   const [entities, setEntitites] = useState("light");
+  return (
+    <div className="w-full flex flex-col">
+      {relationships.map((r) => (
+        <RelatedEntity key={Math.random()} relationship={r} compact={compact} />
+      ))}
+    </div>
+  );
+};
 
-//   return (
-//     <ThemeContext.Provider value={{ theme, setTheme }}>
-//       {children}
-//     </ThemeContext.Provider>
-//   );
-// }
+export const RelationshipPanel: FC = () => {
+  // const relationships = useAllRelationshipsForEntity({
+  //   entityId,
+  //   entityType,
+  // });
 
-//////////
+  const { entities } = useContext(RelationshipNavigatorContext);
+
+  return (
+    <div className="flex">
+      {entities.map((e, idx) => (
+        <EntityWithRelationships
+          key={Math.random()}
+          entityId={e.id}
+          entityType={e.type}
+          compact={idx !== entities.length - 1}
+        />
+      ))}
+    </div>
+  );
+};
+
 // TODO: rename file
 export interface RelationshipNavigatorProps {
   entityId: number;
@@ -297,20 +528,22 @@ export const RelationshipNavigator: FC<RelationshipNavigatorProps> = ({
   entityId,
   entityType,
 }) => {
-  const relationships = useAllRelationshipsForEntity({
-    entityId,
-    entityType,
-  });
+  // const relationships = useAllRelationshipsForEntity({
+  //   entityId,
+  //   entityType,
+  // });
+
+  console.log("navigator", entityId, entityType);
 
   return (
     <>
-      {relationships.map((e) => (
-        <RelatedEntity key={e.entity_id} relationship={e} />
-      ))}
-      <CreateRelationshipsForm
-        entityId={entityId}
-        entityType={RelationshipEntityType.Event}
-      />
+      <RelationshipNavigatorContextProvider
+        key={Math.random()}
+        initialItem={{ id: entityId, type: entityType }}
+      >
+        <RelationshipPanel />
+      </RelationshipNavigatorContextProvider>
+      <CreateRelationshipsForm entityId={entityId} entityType={entityType} />
     </>
   );
 };
