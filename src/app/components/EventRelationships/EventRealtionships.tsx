@@ -154,7 +154,10 @@ export const RelatedHabit: FC<{ id: number }> = ({ id }) => {
   );
 };
 
-export const RelatedLocation: FC<{ id: number }> = ({ id }) => {
+export const RelatedLocation: FC<{ id: number; compact: boolean }> = ({
+  id,
+  compact,
+}) => {
   const location = useLocationById(id);
   const relationships = useAllRelationshipsForEntity({
     entityId: id,
@@ -163,6 +166,17 @@ export const RelatedLocation: FC<{ id: number }> = ({ id }) => {
 
   if (!location) {
     return null;
+  }
+
+  if (compact) {
+    return (
+      <div className="flex flex-col items-center gap-1">
+        <IconMapPin size={24} color={location.color} aria-label="location" />
+        {relationships.map((r) => (
+          <RelatedEntityIcon key={Math.random()} relationship={r} />
+        ))}
+      </div>
+    );
   }
 
   return (
@@ -333,11 +347,11 @@ export const RelatedEntity: FC<RelatedEntityProps> = ({
         );
       case RelationshipEntityType.Location:
         return compact ? (
-          <div>L</div>
+          <RelatedLocation id={relationship.target_id} compact={compact} />
         ) : (
           <div className="w-full flex gap-2 items-center">
             <div className="grow">
-              <RelatedLocation id={relationship.target_id} />
+              <RelatedLocation id={relationship.target_id} compact={compact} />
             </div>
             <IconArrowForward
               onClick={() => selectEntity(RelationshipEntityType.Location)}
@@ -506,7 +520,7 @@ export const RelationshipPanel: FC = () => {
   const { entities } = useContext(RelationshipNavigatorContext);
 
   return (
-    <div className="flex">
+    <div className="flex gap-2">
       {entities.map((e, idx) => (
         <EntityWithRelationships
           key={Math.random()}
