@@ -147,6 +147,7 @@ export const CreateRelationshipsForm: FC<CreateEventFormProps> = ({
                   testId={rteTestId}
                   value={field.value.content}
                   onChange={field.onChange}
+                  placeholder={`Attach items to the for this ${entityType}`}
                 />
               </FormControl>
               <RteMessage />

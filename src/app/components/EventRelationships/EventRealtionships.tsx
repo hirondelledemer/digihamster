@@ -94,9 +94,13 @@ export function RelationshipNavigatorContextProvider({
 //////////
 export interface RelatedEventProps {
   eventId: number;
+  compact: boolean;
 }
 
-export const RelatedEvent: FC<RelatedEventProps> = ({ eventId: id }) => {
+export const RelatedEvent: FC<RelatedEventProps> = ({
+  eventId: id,
+  compact,
+}) => {
   const event = useEventById(id);
 
   const relationships = useAllRelationshipsForEntity({
@@ -105,6 +109,17 @@ export const RelatedEvent: FC<RelatedEventProps> = ({ eventId: id }) => {
   });
   if (!event) {
     return null;
+  }
+
+  if (compact) {
+    return (
+      <div className="flex flex-col items-center gap-1">
+        <IconCalendar size={24} aria-label="location" />
+        {relationships.map((r) => (
+          <RelatedEntityIcon key={Math.random()} relationship={r} />
+        ))}
+      </div>
+    );
   }
 
   return (
@@ -163,6 +178,13 @@ export const RelatedLocation: FC<{ id: number; compact: boolean }> = ({
     entityId: id,
     entityType: RelationshipEntityType.Location,
   });
+  const { setActiveEntity } = useContext(RelationshipNavigatorContext);
+
+  const selectEntity = () =>
+    setActiveEntity({
+      id,
+      type: RelationshipEntityType.Location,
+    });
 
   if (!location) {
     return null;
@@ -171,7 +193,13 @@ export const RelatedLocation: FC<{ id: number; compact: boolean }> = ({
   if (compact) {
     return (
       <div className="flex flex-col items-center gap-1">
-        <IconMapPin size={24} color={location.color} aria-label="location" />
+        <IconMapPin
+          size={24}
+          color={location.color}
+          aria-label="location"
+          className="cursor"
+          onClick={selectEntity}
+        />
         {relationships.map((r) => (
           <RelatedEntityIcon key={Math.random()} relationship={r} />
         ))}
@@ -314,13 +342,13 @@ export const RelatedEntity: FC<RelatedEntityProps> = ({
     switch (relationship.target_type) {
       case RelationshipEntityType.Event:
         return compact ? (
-          <div>E</div>
+          <RelatedEvent eventId={relationship.target_id} compact />
         ) : (
           <div className="flex gap-2 items-center">
-            <RelatedEvent eventId={relationship.target_id} />
-            <IconArrowForward
+            <RelatedEvent eventId={relationship.target_id} compact={false} />
+            {/* <IconArrowForward
               onClick={() => selectEntity(RelationshipEntityType.Event)}
-            />
+            /> */}
           </div>
         );
       case RelationshipEntityType.Habit:
@@ -329,9 +357,9 @@ export const RelatedEntity: FC<RelatedEntityProps> = ({
         ) : (
           <div className="flex gap-2 items-center">
             <RelatedHabit id={relationship.target_id} />{" "}
-            <IconArrowForward
+            {/* <IconArrowForward
               onClick={() => selectEntity(RelationshipEntityType.Habit)}
-            />
+            /> */}
           </div>
         );
       case RelationshipEntityType.Journal:
@@ -340,9 +368,11 @@ export const RelatedEntity: FC<RelatedEntityProps> = ({
         ) : (
           <div className="flex gap-2 items-center">
             <RelatedJournal id={relationship.target_id} />
-            <IconArrowForward
+            {/* <IconArrowForward
+              size={16}
+              className="min-w-[30px]"
               onClick={() => selectEntity(RelationshipEntityType.Journal)}
-            />
+            /> */}
           </div>
         );
       case RelationshipEntityType.Location:
@@ -353,9 +383,9 @@ export const RelatedEntity: FC<RelatedEntityProps> = ({
             <div className="grow">
               <RelatedLocation id={relationship.target_id} compact={compact} />
             </div>
-            <IconArrowForward
+            {/* <IconArrowForward
               onClick={() => selectEntity(RelationshipEntityType.Location)}
-            />
+            /> */}
           </div>
         );
       case RelationshipEntityType.Note:
@@ -364,18 +394,18 @@ export const RelatedEntity: FC<RelatedEntityProps> = ({
         ) : (
           <div className="flex gap-2 items-center">
             <div>note</div>
-            <IconArrowForward
+            {/* <IconArrowForward
               onClick={() => selectEntity(RelationshipEntityType.Note)}
-            />
+            /> */}
           </div>
         );
       case compact ? <div>P</div> : RelationshipEntityType.Person:
         return (
           <div className="flex gap-2 items-center">
             <RelatedPerson id={relationship.target_id} />
-            <IconArrowForward
+            {/* <IconArrowForward
               onClick={() => selectEntity(RelationshipEntityType.Person)}
-            />
+            /> */}
           </div>
         );
       case RelationshipEntityType.Project:
@@ -384,9 +414,9 @@ export const RelatedEntity: FC<RelatedEntityProps> = ({
         ) : (
           <div className="flex gap-2 items-center">
             <RelatedProject id={relationship.target_id} />
-            <IconArrowForward
+            {/* <IconArrowForward
               onClick={() => selectEntity(RelationshipEntityType.Project)}
-            />
+            /> */}
           </div>
         );
       case RelationshipEntityType.Task:
@@ -395,9 +425,9 @@ export const RelatedEntity: FC<RelatedEntityProps> = ({
         ) : (
           <div className="flex gap-2 items-center">
             <RelatedTask id={relationship.target_id} />
-            <IconArrowForward
+            {/* <IconArrowForward
               onClick={() => selectEntity(RelationshipEntityType.Task)}
-            />
+            /> */}
           </div>
         );
       default:
@@ -405,7 +435,16 @@ export const RelatedEntity: FC<RelatedEntityProps> = ({
     }
   };
 
-  return getComponent();
+  return (
+    <div className="flex gap-2 items-center">
+      <div className="w-[90%]">{getComponent()}</div>
+      <div className="w-[10%]">
+        <IconArrowForward
+          onClick={() => selectEntity(relationship.target_type)}
+        />
+      </div>
+    </div>
+  );
 };
 
 export interface RelatedEntityIconProps {
@@ -503,7 +542,7 @@ export const EntityWithRelationships: FC<RelationshipPanelProps> = ({
   });
 
   return (
-    <div className="w-full flex flex-col">
+    <div className="w-full flex flex-col gap-2">
       {relationships.map((r) => (
         <RelatedEntity key={Math.random()} relationship={r} compact={compact} />
       ))}
@@ -520,15 +559,21 @@ export const RelationshipPanel: FC = () => {
   const { entities } = useContext(RelationshipNavigatorContext);
 
   return (
-    <div className="flex gap-2">
-      {entities.map((e, idx) => (
-        <EntityWithRelationships
-          key={Math.random()}
-          entityId={e.id}
-          entityType={e.type}
-          compact={idx !== entities.length - 1}
-        />
-      ))}
+    <div>
+      <div className="flex gap-2 mb-4">
+        {entities.map((e, idx) => (
+          <EntityWithRelationships
+            key={Math.random()}
+            entityId={e.id}
+            entityType={e.type}
+            compact={idx !== entities.length - 1}
+          />
+        ))}
+      </div>
+      <CreateRelationshipsForm
+        entityId={entities[entities.length - 1].id}
+        entityType={entities[entities.length - 1].type}
+      />
     </div>
   );
 };
@@ -557,7 +602,6 @@ export const RelationshipNavigator: FC<RelationshipNavigatorProps> = ({
       >
         <RelationshipPanel />
       </RelationshipNavigatorContextProvider>
-      <CreateRelationshipsForm entityId={entityId} entityType={entityType} />
     </>
   );
 };
