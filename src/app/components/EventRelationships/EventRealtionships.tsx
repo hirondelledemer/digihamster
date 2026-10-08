@@ -180,6 +180,12 @@ export const RelatedLocation: FC<{ id: number; compact: boolean }> = ({
   });
   const { setActiveEntity } = useContext(RelationshipNavigatorContext);
 
+  const allowedTypes = [
+    RelationshipEntityType.Habit,
+    RelationshipEntityType.Task,
+    RelationshipEntityType.Project,
+  ];
+
   const selectEntity = () =>
     setActiveEntity({
       id,
@@ -201,26 +207,51 @@ export const RelatedLocation: FC<{ id: number; compact: boolean }> = ({
           onClick={selectEntity}
         />
         {relationships.map((r) => (
-          <RelatedEntityIcon key={Math.random()} relationship={r} />
+          <RelatedEntityIcon
+            key={Math.random()}
+            relationship={r}
+            allowedTypes={allowedTypes}
+          />
         ))}
       </div>
     );
   }
 
   return (
-    <Card className="p-0 rounded-md">
-      <CardHeader className="p-4 pt-2">
-        <CardTitle className="font-normal flex items-center gap-2">
-          <IconMapPin size={16} color={location.color} aria-label="location" />
-          <div style={{ color: location.color }}>{location.title}</div>
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="flex">
-        {relationships.map((r) => (
-          <RelatedEntityIcon key={Math.random()} relationship={r} />
-        ))}
-      </CardContent>
-    </Card>
+    <div className="flex gap-2 items-center">
+      <div className="w-[90%]">
+        <Card className="p-0 rounded-md">
+          <CardHeader className="p-4 pt-2">
+            <CardTitle className="font-normal flex items-center gap-2">
+              <IconMapPin
+                size={16}
+                color={location.color}
+                aria-label="location"
+              />
+              <div style={{ color: location.color }}>{location.title}</div>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="flex">
+            {relationships.map((r) => (
+              <RelatedEntityIcon
+                key={Math.random()}
+                relationship={r}
+                allowedTypes={allowedTypes}
+              />
+            ))}
+          </CardContent>
+        </Card>
+      </div>
+      <div className="w-[10%]">
+        <IconArrowForward onClick={selectEntity} />
+      </div>
+      {/* {!!relationships.filter((r) => allowedTypes.includes(r.target_type))
+        .length && (
+        <div className="w-[10%]">
+          <IconArrowForward onClick={() => selectEntity} />
+        </div>
+      )} */}
+    </div>
   );
 };
 
@@ -325,10 +356,12 @@ export const RelatedTask: FC<{ id: number }> = ({ id }) => {
 export interface RelatedEntityProps {
   relationship: EntityRelationship;
   compact: boolean;
+  allowedTypes: RelationshipEntityType[];
 }
 export const RelatedEntity: FC<RelatedEntityProps> = ({
   relationship,
   compact,
+  allowedTypes = [],
 }) => {
   const { setActiveEntity } = useContext(RelationshipNavigatorContext);
 
@@ -337,6 +370,10 @@ export const RelatedEntity: FC<RelatedEntityProps> = ({
       id: relationship.target_id,
       type,
     });
+
+  if (!allowedTypes.includes(relationship.target_type)) {
+    return null;
+  }
 
   const getComponent = () => {
     switch (relationship.target_type) {
@@ -435,31 +472,30 @@ export const RelatedEntity: FC<RelatedEntityProps> = ({
     }
   };
 
-  return (
-    <div className="flex gap-2 items-center">
-      <div className="w-[90%]">{getComponent()}</div>
-      <div className="w-[10%]">
-        <IconArrowForward
-          onClick={() => selectEntity(relationship.target_type)}
-        />
-      </div>
-    </div>
-  );
+  return <div className="w-full">{getComponent()}</div>;
+  // return (
+  //   <div className="flex gap-2 items-center">
+  //     <div className="w-[90%]">{getComponent()}</div>
+  //     <div className="w-[10%]">
+  //       <IconArrowForward
+  //         onClick={() => selectEntity(relationship.target_type)}
+  //       />
+  //     </div>
+  //   </div>
+  // );
 };
 
 export interface RelatedEntityIconProps {
   relationship: EntityRelationship;
+  allowedTypes?: RelationshipEntityType[];
 }
 export const RelatedEntityIcon: FC<RelatedEntityIconProps> = ({
   relationship,
+  allowedTypes = [],
 }) => {
-  const { setActiveEntity } = useContext(RelationshipNavigatorContext);
-
-  const selectEntity = (type: RelationshipEntityType) =>
-    setActiveEntity({
-      id: relationship.target_id,
-      type,
-    });
+  if (!allowedTypes.includes(relationship.target_type)) {
+    return null;
+  }
 
   switch (relationship.target_type) {
     case RelationshipEntityType.Event:
@@ -541,11 +577,37 @@ export const EntityWithRelationships: FC<RelationshipPanelProps> = ({
     entityType,
   });
 
+  const allowedTypes: {
+    [key: string]: RelationshipEntityType[]; // TODO: fix. also maybe extract
+  } = {
+    [RelationshipEntityType.Location]: [
+      RelationshipEntityType.Task,
+      RelationshipEntityType.Habit,
+      RelationshipEntityType.Project,
+    ],
+    [RelationshipEntityType.Event]: [
+      RelationshipEntityType.Location,
+      RelationshipEntityType.Habit,
+      RelationshipEntityType.Project,
+      RelationshipEntityType.Task,
+      RelationshipEntityType.Person,
+      RelationshipEntityType.Journal,
+    ],
+  };
+
   return (
     <div className="w-full flex flex-col gap-2">
       {relationships.map((r) => (
-        <RelatedEntity key={Math.random()} relationship={r} compact={compact} />
+        <RelatedEntity
+          key={Math.random()}
+          relationship={r}
+          compact={compact}
+          allowedTypes={allowedTypes[entityType]}
+        />
       ))}
+      {!relationships.filter((r) =>
+        (allowedTypes[entityType] || []).includes(r.target_type)
+      ).length && <div>no stuff here</div>}
     </div>
   );
 };
@@ -569,6 +631,7 @@ export const RelationshipPanel: FC = () => {
             compact={idx !== entities.length - 1}
           />
         ))}
+        {!entities.length && <div>no relationships </div>}
       </div>
       <CreateRelationshipsForm
         entityId={entities[entities.length - 1].id}

@@ -17,6 +17,7 @@ import {
   FormControl,
   FormField,
   FormItem,
+  FormLabel,
   RteMessage,
 } from "../../ui/form";
 import RteFormField from "../../RteFormField";
@@ -142,6 +143,7 @@ export const CreateRelationshipsForm: FC<CreateEventFormProps> = ({
           name="description"
           render={({ field }) => (
             <FormItem className="flex flex-col">
+              <FormLabel>{`Attach items to the for this ${entityType}`}</FormLabel>
               <FormControl>
                 <RteFormField
                   testId={rteTestId}
