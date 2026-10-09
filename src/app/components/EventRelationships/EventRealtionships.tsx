@@ -1,9 +1,9 @@
 import { useEventById } from "@/app/utils/hooks/use-events/selectors";
+import { useAllRelationshipsForEntity } from "@/app/utils/hooks/use-relationships/selectors";
 import {
-  EntityRelationship,
-  useAllRelationshipsForEntity,
-} from "@/app/utils/hooks/use-relationships/selectors";
-import { RelationshipEntityType } from "@/app/utils/types/relationship";
+  IRelationship,
+  RelationshipEntityType,
+} from "@/app/utils/types/relationship";
 import { createContext, FC, ReactNode, useContext, useState } from "react";
 import { EventActions } from "../EventActions";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
@@ -35,8 +35,6 @@ type NavigatorItem = {
 };
 type RelationshipNavigatorValue = {
   entities: NavigatorItem[];
-  setEntities: any;
-  activeEntity: any;
   setActiveEntity({
     id,
     type,
@@ -47,8 +45,6 @@ type RelationshipNavigatorValue = {
 };
 const RelationshipNavigatorContext = createContext<RelationshipNavigatorValue>({
   entities: [] as NavigatorItem[],
-  setEntities: () => {},
-  activeEntity: null,
   setActiveEntity: () => {},
 });
 
@@ -60,9 +56,14 @@ export function RelationshipNavigatorContextProvider({
   children: ReactNode;
 }) {
   const [entities, setEntities] = useState<NavigatorItem[]>([initialItem]);
-  // const [activeEntityIndex, setActiveEntityIndex] = useState(null);
 
-  const setActiveEntity = ({ id, type }) => {
+  const setActiveEntity = ({
+    id,
+    type,
+  }: {
+    id: number;
+    type: RelationshipEntityType;
+  }) => {
     const entityIndex = entities.findIndex(
       (e) => e.id === id && e.type === type
     );
@@ -73,15 +74,11 @@ export function RelationshipNavigatorContextProvider({
     }
   };
 
-  console.log("context", entities);
-
   return (
     <RelationshipNavigatorContext.Provider
       value={{
         entities,
-        // setEntities,
         setActiveEntity,
-        // setActiveEntity: setActive,
       }}
     >
       {children}
@@ -354,7 +351,7 @@ export const RelatedTask: FC<{ id: number }> = ({ id }) => {
 
 //////////
 export interface RelatedEntityProps {
-  relationship: EntityRelationship;
+  relationship: IRelationship;
   compact: boolean;
   allowedTypes: RelationshipEntityType[];
 }
@@ -478,7 +475,7 @@ export const RelatedEntity: FC<RelatedEntityProps> = ({
 };
 
 export interface RelatedEntityIconProps {
-  relationship: EntityRelationship;
+  relationship: IRelationship;
   allowedTypes?: RelationshipEntityType[];
 }
 export const RelatedEntityIcon: FC<RelatedEntityIconProps> = ({

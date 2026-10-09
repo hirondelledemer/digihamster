@@ -52,20 +52,14 @@ export const useTargetRelationshipsForEntity = ({
   );
 };
 
-export type EntityRelationship = {
-  id: number;
-  entity_id: number;
-  target_id: number;
-  target_type: RelationshipEntityType;
-};
-
+/** gets all source and target relationships for the provided entity */
 export const useAllRelationshipsForEntity = ({
   entityId,
   entityType,
 }: {
   entityId: number;
   entityType: RelationshipEntityType;
-}): EntityRelationship[] => {
+}): IRelationship[] => {
   const { data: relationships, isLoading: isRelationshipsLoading } =
     useRelationshipsState();
 
@@ -77,18 +71,22 @@ export const useAllRelationshipsForEntity = ({
     .filter((r) => r.source_id === entityId && r.source_type === entityType)
     .map((r) => ({
       id: r.id,
-      entity_id: r.source_id,
+      source_id: r.source_id,
+      source_type: r.source_type,
       target_id: r.target_id,
       target_type: r.target_type,
+      relationship_type: "related",
     }));
 
   const sources = relationships
     .filter((r) => r.target_id === entityId && r.target_type === entityType)
     .map((r) => ({
       id: r.id,
-      entity_id: r.target_id,
+      source_id: r.target_id,
+      source_type: r.target_type,
       target_id: r.source_id,
       target_type: r.source_type,
+      relationship_type: "related",
     }));
 
   return [...targets, ...sources];
