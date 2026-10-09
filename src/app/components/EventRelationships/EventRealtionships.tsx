@@ -31,6 +31,30 @@ import { CreateRelationshipsForm } from "./components/RelationshipForm";
 import { HabitCard } from "../HabitCard";
 import { useHabitLifeAspectAssetIcon } from "@/app/utils/hooks/use-life-aspects/selectors";
 
+const ALLOWED_TYPES: {
+  [key: string]: RelationshipEntityType[]; // TODO: fix. also maybe extract
+} = {
+  [RelationshipEntityType.Location]: [
+    RelationshipEntityType.Task,
+    RelationshipEntityType.Habit,
+    RelationshipEntityType.Project,
+  ],
+  [RelationshipEntityType.Event]: [
+    RelationshipEntityType.Location,
+    RelationshipEntityType.Habit,
+    RelationshipEntityType.Project,
+    RelationshipEntityType.Task,
+    RelationshipEntityType.Person,
+    RelationshipEntityType.Journal,
+  ],
+  [RelationshipEntityType.Person]: [
+    RelationshipEntityType.Task,
+    RelationshipEntityType.Journal,
+    RelationshipEntityType.Note,
+    RelationshipEntityType.Habit,
+  ],
+};
+
 type NavigatorItem = {
   id: number;
   type: RelationshipEntityType;
@@ -202,12 +226,6 @@ export const RelatedLocation: FC<{ id: number; compact: boolean }> = ({
   });
   const { setActiveEntity } = useContext(RelationshipNavigatorContext);
 
-  const allowedTypes = [
-    RelationshipEntityType.Habit,
-    RelationshipEntityType.Task,
-    RelationshipEntityType.Project,
-  ];
-
   const selectEntity = () =>
     setActiveEntity({
       id,
@@ -232,7 +250,7 @@ export const RelatedLocation: FC<{ id: number; compact: boolean }> = ({
           <RelatedEntityIcon
             key={Math.random()}
             relationship={r}
-            allowedTypes={allowedTypes}
+            allowedTypes={ALLOWED_TYPES[RelationshipEntityType.Location]}
           />
         ))}
       </div>
@@ -258,7 +276,7 @@ export const RelatedLocation: FC<{ id: number; compact: boolean }> = ({
               <RelatedEntityIcon
                 key={Math.random()}
                 relationship={r}
-                allowedTypes={allowedTypes}
+                allowedTypes={ALLOWED_TYPES[RelationshipEntityType.Location]}
               />
             ))}
           </CardContent>
@@ -267,39 +285,80 @@ export const RelatedLocation: FC<{ id: number; compact: boolean }> = ({
       <div className="w-[10%]">
         <IconArrowForward onClick={selectEntity} />
       </div>
-      {/* {!!relationships.filter((r) => allowedTypes.includes(r.target_type))
-        .length && (
-        <div className="w-[10%]">
-          <IconArrowForward onClick={() => selectEntity} />
-        </div>
-      )} */}
     </div>
   );
 };
 
-export const RelatedPerson: FC<{ id: number }> = ({ id }) => {
+export const RelatedPerson: FC<{ id: number; compact: boolean }> = ({
+  id,
+  compact,
+}) => {
   const person = usePersonById(id);
   const relationships = useAllRelationshipsForEntity({
     entityId: id,
-    entityType: RelationshipEntityType.Habit,
+    entityType: RelationshipEntityType.Person,
   });
+
+  const { setActiveEntity } = useContext(RelationshipNavigatorContext);
+
+  const selectEntity = () =>
+    setActiveEntity({
+      id,
+      type: RelationshipEntityType.Person,
+    });
 
   if (!person) {
     return null;
   }
-  return (
-    <div>
-      <Card className="p-0 rounded-md">
-        <CardHeader className="p-4 pt-2">
-          <CardTitle className="font-normal flex items-center justify-between">
-            <div>{person.name}</div>
-          </CardTitle>
-        </CardHeader>
-      </Card>
-      <div>
+
+  if (compact) {
+    return (
+      <div className="flex flex-col items-center gap-1">
+        <IconManFilled
+          size={24}
+          color={person.color}
+          aria-label={person.name}
+          className="cursor"
+          onClick={selectEntity}
+        />
         {relationships.map((r) => (
-          <RelatedEntityIcon key={Math.random()} relationship={r} />
+          <RelatedEntityIcon
+            key={Math.random()}
+            relationship={r}
+            allowedTypes={ALLOWED_TYPES[RelationshipEntityType.Person]}
+          />
         ))}
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex gap-2 items-center">
+      <div className="w-[90%]">
+        <Card className="p-0 rounded-md">
+          <CardHeader className="p-4 pt-2">
+            <CardTitle className="font-normal flex items-center gap-2">
+              <IconManFilled
+                size={16}
+                color={person.color}
+                aria-label="location"
+              />
+              <div style={{ color: person.color }}>{person.name}</div>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="flex">
+            {relationships.map((r) => (
+              <RelatedEntityIcon
+                key={Math.random()}
+                relationship={r}
+                allowedTypes={ALLOWED_TYPES[RelationshipEntityType.Person]}
+              />
+            ))}
+          </CardContent>
+        </Card>
+      </div>
+      <div className="w-[10%]">
+        <IconArrowForward onClick={selectEntity} />
       </div>
     </div>
   );
@@ -447,13 +506,10 @@ export const RelatedEntity: FC<RelatedEntityProps> = ({
             /> */}
           </div>
         );
-      case compact ? <div>P</div> : RelationshipEntityType.Person:
+      case RelationshipEntityType.Person:
         return (
           <div className="flex gap-2 items-center">
-            <RelatedPerson id={relationship.target_id} />
-            {/* <IconArrowForward
-              onClick={() => selectEntity(RelationshipEntityType.Person)}
-            /> */}
+            <RelatedPerson id={relationship.target_id} compact={compact} />
           </div>
         );
       case RelationshipEntityType.Project:
@@ -588,24 +644,6 @@ export const EntityWithRelationships: FC<RelationshipPanelProps> = ({
     entityType,
   });
 
-  const allowedTypes: {
-    [key: string]: RelationshipEntityType[]; // TODO: fix. also maybe extract
-  } = {
-    [RelationshipEntityType.Location]: [
-      RelationshipEntityType.Task,
-      RelationshipEntityType.Habit,
-      RelationshipEntityType.Project,
-    ],
-    [RelationshipEntityType.Event]: [
-      RelationshipEntityType.Location,
-      RelationshipEntityType.Habit,
-      RelationshipEntityType.Project,
-      RelationshipEntityType.Task,
-      RelationshipEntityType.Person,
-      RelationshipEntityType.Journal,
-    ],
-  };
-
   return (
     <div className="w-full flex flex-col gap-2 items-center">
       {relationships.map((r) => (
@@ -613,11 +651,11 @@ export const EntityWithRelationships: FC<RelationshipPanelProps> = ({
           key={Math.random()}
           relationship={r}
           compact={compact}
-          allowedTypes={allowedTypes[entityType]}
+          allowedTypes={ALLOWED_TYPES[entityType]}
         />
       ))}
       {!relationships.filter((r) =>
-        (allowedTypes[entityType] || []).includes(r.target_type)
+        (ALLOWED_TYPES[entityType] || []).includes(r.target_type)
       ).length && <div>no stuff here</div>}
     </div>
   );
