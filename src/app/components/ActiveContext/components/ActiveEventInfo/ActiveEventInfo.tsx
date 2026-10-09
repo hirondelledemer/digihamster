@@ -46,9 +46,13 @@ export const ActiveEventInfo: FC<ActiveEventInfoProps> = ({
           {format(event.start_at, "HH:mm")} - {format(event.end_at, "HH:mm")}
         </div>
       </div>
-      <ScrollArea className="h-[50%] pb-[60px]">
+      <ScrollArea className="pb-[60px]">
         <div className="flex flex-col gap-4">
-          {tasks.map((task) => (
+          <RelationshipNavigator
+            entityId={event.id}
+            entityType={RelationshipEntityType.Event}
+          />
+          {/* {tasks.map((task) => (
             <TaskCard key={task.id} task={task} />
           ))}
           {habits.map((habit) => (
@@ -61,20 +65,20 @@ export const ActiveEventInfo: FC<ActiveEventInfoProps> = ({
                 <TaskCard key={task.id} task={task} indicateActive />
               ))}
             </>
-          )}
+          )} */}
         </div>
       </ScrollArea>
-      <ScrollArea className="h-[50%] pb-[60px]">
-        <div className="flex flex-col gap-4">
-          {/* {entries.map((entry) => (
+      {/* <ScrollArea className="h-[50%] pb-[60px]">
+        <div className="flex flex-col gap-4"> */}
+      {/* {entries.map((entry) => (
             <MinimalNote key={entry.id} note={entry.json_note || entry.note} />
           ))} */}
-          <RelationshipNavigator
+      {/* <RelationshipNavigator
             entityId={event.id}
             entityType={RelationshipEntityType.Event}
           />
         </div>
-      </ScrollArea>
+      </ScrollArea> */}
     </div>
   );
 };

@@ -13,8 +13,10 @@ import MinimalNote from "../MinimalNote";
 import { useLocationById } from "@/app/utils/hooks/use-location/selectors";
 import { usePersonById } from "@/app/utils/hooks/use-people/selectors";
 import { useProjectById } from "@/app/utils/hooks/use-projects/selectors";
-import ProjectCard from "../ProjectCard";
-import { useTaskById } from "@/app/utils/hooks/use-tasks-new/selectors";
+import {
+  useFirstTaskForTheProject,
+  useTaskById,
+} from "@/app/utils/hooks/use-tasks-new/selectors";
 import TaskCard from "../TaskCard";
 import {
   Icon24Hours,
@@ -52,6 +54,17 @@ const ALLOWED_TYPES: {
     RelationshipEntityType.Journal,
     RelationshipEntityType.Note,
     RelationshipEntityType.Habit,
+    RelationshipEntityType.Event,
+  ],
+  [RelationshipEntityType.Project]: [
+    RelationshipEntityType.Task,
+    RelationshipEntityType.Note,
+  ],
+  [RelationshipEntityType.Task]: [
+    RelationshipEntityType.Task,
+    RelationshipEntityType.Note,
+    RelationshipEntityType.Person,
+    RelationshipEntityType.Location,
   ],
 };
 
@@ -271,12 +284,13 @@ export const RelatedLocation: FC<{ id: number; compact: boolean }> = ({
               <div style={{ color: location.color }}>{location.title}</div>
             </CardTitle>
           </CardHeader>
-          <CardContent className="flex">
+          <CardContent className="flex flex-col gap-2">
             {relationships.map((r) => (
-              <RelatedEntityIcon
+              <RelatedEntity
                 key={Math.random()}
                 relationship={r}
                 allowedTypes={ALLOWED_TYPES[RelationshipEntityType.Location]}
+                compact={false}
               />
             ))}
           </CardContent>
@@ -388,6 +402,7 @@ export const RelatedJournal: FC<{ id: number }> = ({ id }) => {
   );
 };
 
+// end leaf: shows tasks and habits
 export const RelatedProject: FC<{ id: number }> = ({ id }) => {
   const project = useProjectById(id);
   const relationships = useAllRelationshipsForEntity({
@@ -395,13 +410,15 @@ export const RelatedProject: FC<{ id: number }> = ({ id }) => {
     entityType: RelationshipEntityType.Habit,
   });
 
+  const task = useFirstTaskForTheProject(id);
+
   if (!project) {
     return null;
   }
 
   return (
     <div>
-      <ProjectCard project={project} />
+      <TaskCard task={task} />
       <div>
         {relationships.map((r) => (
           <RelatedEntityIcon key={Math.random()} relationship={r} />
@@ -450,6 +467,17 @@ export const RelatedEntity: FC<RelatedEntityProps> = ({
 
   const getComponent = () => {
     switch (relationship.target_type) {
+      case RelationshipEntityType.Task:
+        return compact ? (
+          <div>T</div>
+        ) : (
+          <div className="flex gap-2 items-center">
+            <RelatedTask id={relationship.target_id} />
+            {/* <IconArrowForward
+              onClick={() => selectEntity(RelationshipEntityType.Task)}
+            /> */}
+          </div>
+        );
       case RelationshipEntityType.Event:
         return compact ? (
           <RelatedEvent eventId={relationship.target_id} compact />
@@ -523,17 +551,7 @@ export const RelatedEntity: FC<RelatedEntityProps> = ({
             /> */}
           </div>
         );
-      case RelationshipEntityType.Task:
-        return compact ? (
-          <div>T</div>
-        ) : (
-          <div className="flex gap-2 items-center">
-            <RelatedTask id={relationship.target_id} />
-            {/* <IconArrowForward
-              onClick={() => selectEntity(RelationshipEntityType.Task)}
-            /> */}
-          </div>
-        );
+
       default:
         return <div>error</div>;
     }

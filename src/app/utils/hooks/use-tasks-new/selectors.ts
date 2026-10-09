@@ -22,7 +22,11 @@ export const useTasksForEvent = (eventId: number): ITask[] => {
 export const useFirstTaskForTheProject = (projectId: number): ITask => {
   const { data } = useTasksNewState(); // TODO: rename
   const sortedTasks = data
-    .filter((t) => t.project_id === projectId)
+    .filter(
+      (t) =>
+        t.project_id === projectId &&
+        (t.status === TaskStatus.Doing || t.status === TaskStatus.Todo)
+    )
     .sort(
       (taskA, taskB) =>
         (taskA.project_sort_order || 0) - (taskB.project_sort_order || 0)

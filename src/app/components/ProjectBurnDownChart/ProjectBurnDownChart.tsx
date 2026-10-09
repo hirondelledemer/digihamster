@@ -35,13 +35,13 @@ const ProjectBurnDownChart: FC<ProjectBurnDownChartProps> = ({
 
   const filteredTasks = useMemo(
     () => tasks.filter((task) => task.projectId === projectId),
-    [tasks, projectId],
+    [tasks, projectId]
   );
 
   const getData = useCallback(() => {
     const startDate = pipe(
       filteredTasks,
-      firstBy((task) => new Date(task.createdAt || 0).getTime()),
+      firstBy((task) => new Date(task.createdAt || 0).getTime())
     )?.createdAt;
 
     if (!startDate) {
@@ -52,14 +52,14 @@ const ProjectBurnDownChart: FC<ProjectBurnDownChartProps> = ({
     return eachDayOfInterval({ start: startDate, end: endDate }).map((date) => {
       const completedTasksCount = filteredTasks.filter(
         (t) =>
-          t.completedAt && new Date(t.completedAt).getTime() <= date.getTime(),
+          t.completedAt && new Date(t.completedAt).getTime() <= date.getTime()
       ).length;
       return {
         day: format(date, "MMM, d"),
         completedTasks: completedTasksCount,
         restTasks:
           filteredTasks.filter(
-            (t) => new Date(t.createdAt || 0).getTime() <= date.getTime(),
+            (t) => new Date(t.createdAt || 0).getTime() <= date.getTime()
           ).length - completedTasksCount,
       };
     });
