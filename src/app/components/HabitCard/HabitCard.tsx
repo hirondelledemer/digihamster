@@ -25,7 +25,7 @@ export const HabitCard: FC<HabitCardProps> = ({
   const icon = useHabitLifeAspectAssetIcon(habit);
 
   return (
-    <div>
+    <div className="w-full">
       <HabitActions habit={habit} event={event}>
         <Card
           data-testid={cardTestId}

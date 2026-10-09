@@ -50,7 +50,7 @@ const TaskCard: FC<TaskCardProps> = ({
       <TaskActions task={task}>
         <Card
           data-testid={cardTestId}
-          className={`p-0 rounded-md ${
+          className={`p-0 rounded-md w-full ${
             task.status === "done" ? "opacity-40 line-through" : ""
           }`}
           ref={setNodeRef}

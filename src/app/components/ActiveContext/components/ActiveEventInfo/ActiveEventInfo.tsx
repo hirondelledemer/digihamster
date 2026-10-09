@@ -46,7 +46,7 @@ export const ActiveEventInfo: FC<ActiveEventInfoProps> = ({
           {format(event.start_at, "HH:mm")} - {format(event.end_at, "HH:mm")}
         </div>
       </div>
-      <ScrollArea className="pb-[60px]">
+      <ScrollArea className="h-full pb-[60px]">
         <div className="flex flex-col gap-4">
           <RelationshipNavigator
             entityId={event.id}

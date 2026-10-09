@@ -22,11 +22,14 @@ export const useTaskProject = (task: ITask | null): IProject | null =>
 
 export const useTaskProjectColor = (
   task: ITask | null
-): { main: string; dimmed: string } | undefined => {
+): { main: string; dimmed: string } => {
   const color = useTaskProject(task)?.color;
 
   if (!color) {
-    return;
+    return {
+      main: "",
+      dimmed: "",
+    };
   }
 
   return {

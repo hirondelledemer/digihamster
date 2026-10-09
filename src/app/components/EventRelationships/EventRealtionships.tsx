@@ -24,6 +24,7 @@ import TaskCard from "../TaskCard";
 import {
   Icon24Hours,
   IconArrowForward,
+  IconArrowRampRight2,
   IconCalendar,
   IconCheckbox,
   IconFeather,
@@ -36,6 +37,9 @@ import {
 import { CreateRelationshipsForm } from "./components/RelationshipForm";
 import { HabitCard } from "../HabitCard";
 import { useHabitLifeAspectAssetIcon } from "@/app/utils/hooks/use-life-aspects/selectors";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
+import { Button } from "../ui/button";
+import { Trash } from "lucide-react";
 
 const ALLOWED_TYPES: {
   [key: string]: RelationshipEntityType[]; // TODO: fix. also maybe extract
@@ -184,18 +188,19 @@ export const RelatedEvent: FC<RelatedEventProps> = ({
 
 export const RelatedHabit: FC<{
   id: number;
-  relationship: IRelationship;
   compact: boolean;
-}> = ({ id, relationship, compact }) => {
+}> = ({ id, compact }) => {
   const habit = useHabitById(id);
 
   const icon = useHabitLifeAspectAssetIcon(habit);
 
-  const event = useEventById(
-    relationship.source_type === RelationshipEntityType.Event
-      ? relationship.source_id
-      : null
-  );
+  const { entities } = useContext(RelationshipNavigatorContext);
+
+  const eventId = entities.findLast(
+    (e) => e.type === RelationshipEntityType.Event
+  )?.id;
+
+  const event = useEventById(eventId);
 
   const relationships = useAllRelationshipsForEntity({
     entityId: id,
@@ -255,14 +260,21 @@ export const RelatedLocation: FC<{ id: number; compact: boolean }> = ({
 
   if (compact) {
     return (
-      <div className="flex flex-col items-center gap-1">
-        <IconMapPin
-          size={24}
-          color={location.color}
-          aria-label="location"
-          className="cursor"
-          onClick={selectEntity}
-        />
+      <div className="flex flex-col items-center gap-1 w-[20px]">
+        <Tooltip delayDuration={0}>
+          <TooltipTrigger>
+            <IconMapPin
+              size={24}
+              color={location.color}
+              aria-label="location"
+              className="cursor"
+              onClick={selectEntity}
+            />
+          </TooltipTrigger>
+          <TooltipContent className="w-[200px]" side="right">
+            {location.title}
+          </TooltipContent>
+        </Tooltip>
         {relationships.map((r) => (
           <RelatedEntityIcon
             key={Math.random()}
@@ -275,34 +287,45 @@ export const RelatedLocation: FC<{ id: number; compact: boolean }> = ({
   }
 
   return (
-    <div className="flex gap-2 items-center">
-      <div className="w-[90%]">
-        <Card className="p-0 rounded-md">
-          <CardHeader className="p-4 pt-2">
-            <CardTitle className="font-normal flex items-center gap-2">
+    // <div className="flex gap-2 items-center">
+    <div className="w-full">
+      <Card className="p-0 rounded-md">
+        <CardHeader className="p-4 pt-2">
+          <CardTitle className="flex justify-between items-center">
+            <div className="font-normal flex gap-2">
               <IconMapPin
                 size={16}
                 color={location.color}
                 aria-label="location"
               />
               <div style={{ color: location.color }}>{location.title}</div>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="flex flex-col gap-2">
-            {relationships.map((r) => (
-              <RelatedEntity
-                key={Math.random()}
-                relationship={r}
-                allowedTypes={ALLOWED_TYPES[RelationshipEntityType.Location]}
-                compact={false}
-              />
-            ))}
-          </CardContent>
-        </Card>
-      </div>
-      <div className="w-[10%]">
-        <IconArrowForward onClick={selectEntity} />
-      </div>
+            </div>
+            <div>
+              <Button variant="ghost" size="icon">
+                <IconArrowRampRight2 onClick={selectEntity} size={16} />
+              </Button>
+              <Button variant="ghost" size="icon" disabled>
+                <Trash
+                  size={16}
+                  onClick={() => {
+                    console.log("deleting");
+                  }}
+                />
+              </Button>
+            </div>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-2">
+          {relationships.map((r) => (
+            <RelatedEntity
+              key={Math.random()}
+              relationship={r}
+              allowedTypes={ALLOWED_TYPES[RelationshipEntityType.Location]}
+              compact={false}
+            />
+          ))}
+        </CardContent>
+      </Card>
     </div>
   );
 };
@@ -444,7 +467,7 @@ export const RelatedTask: FC<{ id: number; compact: boolean }> = ({
     entityId: id,
     entityType: RelationshipEntityType.Habit,
   });
-  const { main: color } = useTaskProjectColor(task) || "";
+  const { main: color } = useTaskProjectColor(task); // TODO: fix ts
   const { setActiveEntity } = useContext(RelationshipNavigatorContext);
 
   const selectEntity = () =>
@@ -511,14 +534,7 @@ export const RelatedEntity: FC<RelatedEntityProps> = ({
   const getComponent = () => {
     switch (relationship.target_type) {
       case RelationshipEntityType.Task:
-        return (
-          <div className="flex gap-2 items-center">
-            <RelatedTask id={relationship.target_id} compact={compact} />
-            {/* <IconArrowForward
-              onClick={() => selectEntity(RelationshipEntityType.Task)}
-            /> */}
-          </div>
-        );
+        return <RelatedTask id={relationship.target_id} compact={compact} />;
       case RelationshipEntityType.Event:
         return compact ? (
           <RelatedEvent eventId={relationship.target_id} compact />
@@ -531,13 +547,7 @@ export const RelatedEntity: FC<RelatedEntityProps> = ({
           </div>
         );
       case RelationshipEntityType.Habit:
-        return (
-          <RelatedHabit
-            id={relationship.target_id}
-            relationship={relationship}
-            compact={compact}
-          />
-        );
+        return <RelatedHabit id={relationship.target_id} compact={compact} />;
       case RelationshipEntityType.Journal:
         return compact ? (
           <div>J</div>
@@ -553,9 +563,9 @@ export const RelatedEntity: FC<RelatedEntityProps> = ({
         );
       case RelationshipEntityType.Location:
         return (
-          <div className="flex gap-2 items-center">
-            <RelatedLocation id={relationship.target_id} compact={compact} />
-          </div>
+          // <div className="flex gap-2 items-center">
+          <RelatedLocation id={relationship.target_id} compact={compact} />
+          // </div>
         );
       case RelationshipEntityType.Note:
         return compact ? (
@@ -591,7 +601,7 @@ export const RelatedEntity: FC<RelatedEntityProps> = ({
     }
   };
 
-  return <div className="w-full">{getComponent()}</div>;
+  return getComponent();
   // return (
   //   <div className="flex gap-2 items-center">
   //     <div className="w-[90%]">{getComponent()}</div>
@@ -697,7 +707,7 @@ export const EntityWithRelationships: FC<RelationshipPanelProps> = ({
   });
 
   return (
-    <div className="w-full flex flex-col gap-2 items-center">
+    <div className="flex flex-col gap-2 items-center">
       {relationships.map((r) => (
         <RelatedEntity
           key={Math.random()}
