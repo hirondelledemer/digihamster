@@ -363,14 +363,6 @@ export const RelatedEntity: FC<RelatedEntityProps> = ({
   compact,
   allowedTypes = [],
 }) => {
-  const { setActiveEntity } = useContext(RelationshipNavigatorContext);
-
-  const selectEntity = (type: RelationshipEntityType) =>
-    setActiveEntity({
-      id: relationship.target_id,
-      type,
-    });
-
   if (!allowedTypes.includes(relationship.target_type)) {
     return null;
   }
@@ -393,7 +385,7 @@ export const RelatedEntity: FC<RelatedEntityProps> = ({
           <div>H</div>
         ) : (
           <div className="flex gap-2 items-center">
-            <RelatedHabit id={relationship.target_id} />{" "}
+            <RelatedHabit id={relationship.target_id} />
             {/* <IconArrowForward
               onClick={() => selectEntity(RelationshipEntityType.Habit)}
             /> */}
@@ -650,21 +642,12 @@ export const RelationshipNavigator: FC<RelationshipNavigatorProps> = ({
   entityId,
   entityType,
 }) => {
-  // const relationships = useAllRelationshipsForEntity({
-  //   entityId,
-  //   entityType,
-  // });
-
-  console.log("navigator", entityId, entityType);
-
   return (
-    <>
-      <RelationshipNavigatorContextProvider
-        key={Math.random()}
-        initialItem={{ id: entityId, type: entityType }}
-      >
-        <RelationshipPanel />
-      </RelationshipNavigatorContextProvider>
-    </>
+    <RelationshipNavigatorContextProvider
+      key={Math.random()}
+      initialItem={{ id: entityId, type: entityType }}
+    >
+      <RelationshipPanel />
+    </RelationshipNavigatorContextProvider>
   );
 };
