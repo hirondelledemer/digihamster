@@ -12,7 +12,10 @@ import { useJournalEntryById } from "@/app/utils/hooks/use-entry/selectors";
 import MinimalNote from "../MinimalNote";
 import { useLocationById } from "@/app/utils/hooks/use-location/selectors";
 import { usePersonById } from "@/app/utils/hooks/use-people/selectors";
-import { useProjectById } from "@/app/utils/hooks/use-projects/selectors";
+import {
+  useProjectById,
+  useTaskProjectColor,
+} from "@/app/utils/hooks/use-projects/selectors";
 import {
   useFirstTaskForTheProject,
   useTaskById,
@@ -22,6 +25,7 @@ import {
   Icon24Hours,
   IconArrowForward,
   IconCalendar,
+  IconCheckbox,
   IconFeather,
   IconFolder,
   IconManFilled,
@@ -42,12 +46,12 @@ const ALLOWED_TYPES: {
     RelationshipEntityType.Project,
   ],
   [RelationshipEntityType.Event]: [
-    RelationshipEntityType.Location,
-    RelationshipEntityType.Habit,
-    RelationshipEntityType.Project,
     RelationshipEntityType.Task,
+    RelationshipEntityType.Habit,
     RelationshipEntityType.Person,
     RelationshipEntityType.Journal,
+    RelationshipEntityType.Location,
+    RelationshipEntityType.Project,
   ],
   [RelationshipEntityType.Person]: [
     RelationshipEntityType.Task,
@@ -327,7 +331,10 @@ export const RelatedPerson: FC<{ id: number; compact: boolean }> = ({
 
   if (compact) {
     return (
-      <div className="flex flex-col items-center gap-1">
+      <div
+        className="flex flex-col items-center gap-1"
+        style={{ border: `1px solid ${person.color}` }}
+      >
         <IconManFilled
           size={24}
           color={person.color}
@@ -428,16 +435,52 @@ export const RelatedProject: FC<{ id: number }> = ({ id }) => {
   );
 };
 
-export const RelatedTask: FC<{ id: number }> = ({ id }) => {
+export const RelatedTask: FC<{ id: number; compact: boolean }> = ({
+  id,
+  compact,
+}) => {
   const task = useTaskById(id);
   const relationships = useAllRelationshipsForEntity({
     entityId: id,
     entityType: RelationshipEntityType.Habit,
   });
+  const { main: color } = useTaskProjectColor(task) || "";
+  const { setActiveEntity } = useContext(RelationshipNavigatorContext);
+
+  const selectEntity = () =>
+    setActiveEntity({
+      id,
+      type: RelationshipEntityType.Task,
+    });
 
   if (!task) {
     return null;
   }
+
+  if (compact) {
+    return (
+      <div
+        className="flex flex-col items-center gap-1"
+        style={{ border: `1px solid ${color}` }}
+      >
+        <IconCheckbox
+          size={24}
+          color={color}
+          aria-label={task.title}
+          className="cursor"
+          onClick={selectEntity}
+        />
+        {relationships.map((r) => (
+          <RelatedEntityIcon
+            key={Math.random()}
+            relationship={r}
+            allowedTypes={ALLOWED_TYPES[RelationshipEntityType.Person]}
+          />
+        ))}
+      </div>
+    );
+  }
+
   return (
     <div>
       <TaskCard task={task} />
@@ -468,11 +511,9 @@ export const RelatedEntity: FC<RelatedEntityProps> = ({
   const getComponent = () => {
     switch (relationship.target_type) {
       case RelationshipEntityType.Task:
-        return compact ? (
-          <div>T</div>
-        ) : (
+        return (
           <div className="flex gap-2 items-center">
-            <RelatedTask id={relationship.target_id} />
+            <RelatedTask id={relationship.target_id} compact={compact} />
             {/* <IconArrowForward
               onClick={() => selectEntity(RelationshipEntityType.Task)}
             /> */}
@@ -511,16 +552,9 @@ export const RelatedEntity: FC<RelatedEntityProps> = ({
           </div>
         );
       case RelationshipEntityType.Location:
-        return compact ? (
-          <RelatedLocation id={relationship.target_id} compact={compact} />
-        ) : (
-          <div className="w-full flex gap-2 items-center">
-            <div className="grow">
-              <RelatedLocation id={relationship.target_id} compact={compact} />
-            </div>
-            {/* <IconArrowForward
-              onClick={() => selectEntity(RelationshipEntityType.Location)}
-            /> */}
+        return (
+          <div className="flex gap-2 items-center">
+            <RelatedLocation id={relationship.target_id} compact={compact} />
           </div>
         );
       case RelationshipEntityType.Note:
