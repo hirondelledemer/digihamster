@@ -28,6 +28,8 @@ import {
   IconProgress,
 } from "@tabler/icons-react";
 import { CreateRelationshipsForm } from "./components/RelationshipForm";
+import { HabitCard } from "../HabitCard";
+import { useHabitLifeAspectAssetIcon } from "@/app/utils/hooks/use-life-aspects/selectors";
 
 type NavigatorItem = {
   id: number;
@@ -139,31 +141,54 @@ export const RelatedEvent: FC<RelatedEventProps> = ({
   );
 };
 
-export const RelatedHabit: FC<{ id: number }> = ({ id }) => {
+export const RelatedHabit: FC<{
+  id: number;
+  relationship: IRelationship;
+  compact: boolean;
+}> = ({ id, relationship, compact }) => {
   const habit = useHabitById(id);
+
+  const icon = useHabitLifeAspectAssetIcon(habit);
+
+  const event = useEventById(
+    relationship.source_type === RelationshipEntityType.Event
+      ? relationship.source_id
+      : null
+  );
+
   const relationships = useAllRelationshipsForEntity({
     entityId: id,
     entityType: RelationshipEntityType.Habit,
   });
+
   if (!habit) {
     return null;
   }
-  return (
-    <>
-      <Card className="p-0 rounded-md">
-        <CardHeader className="p-4 pt-2">
-          <CardTitle className="font-normal flex items-center justify-between">
-            <div>{habit.title}</div>
-          </CardTitle>
-        </CardHeader>
-      </Card>
-      <div>
-        {relationships.map((r) => (
-          <RelatedEntityIcon key={Math.random()} relationship={r} />
-        ))}
-      </div>
-    </>
-  );
+
+  if (compact) {
+    return icon;
+  }
+
+  if (!event) {
+    return (
+      <>
+        <Card className="p-0 rounded-md">
+          <CardHeader className="p-4 pt-2">
+            <CardTitle className="font-normal flex items-center justify-between">
+              <div>{habit.title}</div>
+            </CardTitle>
+          </CardHeader>
+        </Card>
+        <div>
+          {relationships.map((r) => (
+            <RelatedEntityIcon key={Math.random()} relationship={r} />
+          ))}
+        </div>
+      </>
+    );
+  }
+
+  return <HabitCard habit={habit} event={event} />;
 };
 
 export const RelatedLocation: FC<{ id: number; compact: boolean }> = ({
@@ -378,15 +403,12 @@ export const RelatedEntity: FC<RelatedEntityProps> = ({
           </div>
         );
       case RelationshipEntityType.Habit:
-        return compact ? (
-          <div>H</div>
-        ) : (
-          <div className="flex gap-2 items-center">
-            <RelatedHabit id={relationship.target_id} />
-            {/* <IconArrowForward
-              onClick={() => selectEntity(RelationshipEntityType.Habit)}
-            /> */}
-          </div>
+        return (
+          <RelatedHabit
+            id={relationship.target_id}
+            relationship={relationship}
+            compact={compact}
+          />
         );
       case RelationshipEntityType.Journal:
         return compact ? (
@@ -585,7 +607,7 @@ export const EntityWithRelationships: FC<RelationshipPanelProps> = ({
   };
 
   return (
-    <div className="w-full flex flex-col gap-2">
+    <div className="w-full flex flex-col gap-2 items-center">
       {relationships.map((r) => (
         <RelatedEntity
           key={Math.random()}
