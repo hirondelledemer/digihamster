@@ -46,7 +46,8 @@ const TaskCard: FC<TaskCardProps> = ({
   };
 
   return (
-    <div data-testid={testId}>
+    // TODO: find out if this the outer layer needed at all
+    <div data-testid={testId} className="w-full">
       <TaskActions task={task}>
         <Card
           data-testid={cardTestId}

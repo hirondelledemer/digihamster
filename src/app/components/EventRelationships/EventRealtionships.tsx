@@ -74,6 +74,10 @@ const ALLOWED_TYPES: {
     RelationshipEntityType.Person,
     RelationshipEntityType.Location,
   ],
+  [RelationshipEntityType.Journal]: [
+    RelationshipEntityType.Person,
+    RelationshipEntityType.Event,
+  ],
 };
 
 type NavigatorItem = {
@@ -465,10 +469,12 @@ export const RelatedTask: FC<{ id: number; compact: boolean }> = ({
   const task = useTaskById(id);
   const relationships = useAllRelationshipsForEntity({
     entityId: id,
-    entityType: RelationshipEntityType.Habit,
+    entityType: RelationshipEntityType.Task, // probably i should use here ALLOWED TYPES
   });
-  const { main: color } = useTaskProjectColor(task); // TODO: fix ts
-  const { setActiveEntity } = useContext(RelationshipNavigatorContext);
+  const { main: color } = useTaskProjectColor(task);
+  const { setActiveEntity, entities } = useContext(
+    RelationshipNavigatorContext
+  );
 
   const selectEntity = () =>
     setActiveEntity({
@@ -484,7 +490,13 @@ export const RelatedTask: FC<{ id: number; compact: boolean }> = ({
     return (
       <div
         className="flex flex-col items-center gap-1"
-        style={{ border: `1px solid ${color}` }}
+        style={{
+          border: !!entities.find(
+            (e) => e.id === id && e.type === RelationshipEntityType.Task
+          )
+            ? `1px solid ${color}`
+            : "none",
+        }}
       >
         <IconCheckbox
           size={24}
@@ -497,7 +509,7 @@ export const RelatedTask: FC<{ id: number; compact: boolean }> = ({
           <RelatedEntityIcon
             key={Math.random()}
             relationship={r}
-            allowedTypes={ALLOWED_TYPES[RelationshipEntityType.Person]}
+            allowedTypes={ALLOWED_TYPES[RelationshipEntityType.Task]}
           />
         ))}
       </div>
@@ -505,13 +517,15 @@ export const RelatedTask: FC<{ id: number; compact: boolean }> = ({
   }
 
   return (
-    <div>
+    <div className="relative w-full">
+      <Button variant="ghost" size="icon" className="absolute right-0">
+        <IconArrowRampRight2
+          onClick={selectEntity}
+          size={16}
+          color={!!relationships.length ? "green" : "red"}
+        />
+      </Button>
       <TaskCard task={task} />
-      <div>
-        {relationships.map((r) => (
-          <RelatedEntityIcon key={Math.random()} relationship={r} />
-        ))}
-      </div>
     </div>
   );
 };
