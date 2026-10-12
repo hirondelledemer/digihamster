@@ -91,3 +91,56 @@ export const useAllRelationshipsForEntity = ({
 
   return [...targets, ...sources];
 };
+
+const ALLOWED_TYPES: {
+  [key: string]: RelationshipEntityType[]; // TODO: fix. also maybe extract
+} = {
+  [RelationshipEntityType.Location]: [
+    RelationshipEntityType.Task,
+    RelationshipEntityType.Habit,
+    RelationshipEntityType.Project,
+  ],
+  [RelationshipEntityType.Event]: [
+    RelationshipEntityType.Task,
+    RelationshipEntityType.Habit,
+    RelationshipEntityType.Person,
+    RelationshipEntityType.Journal,
+    RelationshipEntityType.Location,
+    RelationshipEntityType.Project,
+  ],
+  [RelationshipEntityType.Person]: [
+    RelationshipEntityType.Task,
+    RelationshipEntityType.Journal,
+    RelationshipEntityType.Note,
+    RelationshipEntityType.Habit,
+    RelationshipEntityType.Event,
+  ],
+  [RelationshipEntityType.Project]: [
+    RelationshipEntityType.Task,
+    RelationshipEntityType.Note,
+  ],
+  [RelationshipEntityType.Task]: [
+    RelationshipEntityType.Task,
+    RelationshipEntityType.Note,
+    RelationshipEntityType.Person,
+    RelationshipEntityType.Location,
+  ],
+  [RelationshipEntityType.Journal]: [
+    RelationshipEntityType.Person,
+    RelationshipEntityType.Event,
+  ],
+};
+
+export const useRelevantRelationshipsForEntity = ({
+  entityId,
+  entityType,
+}: {
+  entityId: number;
+  entityType: RelationshipEntityType;
+}): IRelationship[] => {
+  const relationships = useAllRelationshipsForEntity({ entityId, entityType });
+
+  return relationships.filter((r) =>
+    (ALLOWED_TYPES[entityType] || []).includes(r.target_type)
+  );
+};
