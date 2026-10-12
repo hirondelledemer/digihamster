@@ -92,6 +92,51 @@ const ALLOWED_TYPES: {
   ],
 };
 
+const RelatedEntityActions: FC<{
+  entityId: number;
+  entityType: RelationshipEntityType;
+  children: ReactNode;
+  relationshipId: number;
+}> = ({ entityId, entityType, children, relationshipId }) => {
+  const relationships = useRelevantRelationshipsForEntity({
+    entityId,
+    entityType,
+  });
+
+  const { setActiveEntity } = useContext(RelationshipNavigatorContext);
+
+  const { delete: remove } = useRelationshipsActions();
+
+  const selectEntity = () =>
+    setActiveEntity({
+      id: entityId,
+      type: entityType,
+    });
+
+  return (
+    <div className="relative w-full">
+      <div className="absolute right-0 z-10 flex flex-col">
+        <Button variant="ghost" size="icon" className="h-5 w-5">
+          <IconArrowRampRight2
+            onClick={selectEntity}
+            size={12}
+            color={!!relationships.length ? "grey" : "#e11d48"}
+          />
+        </Button>
+        <Button variant="ghost" size="icon" className="h-5 w-5">
+          <Trash
+            size={12}
+            onClick={() => {
+              remove(relationshipId);
+            }}
+          />
+        </Button>
+      </div>
+      <div className="w-[93%]">{children}</div>
+    </div>
+  );
+};
+
 type NavigatorItem = {
   id: number;
   type: RelationshipEntityType;
@@ -153,14 +198,11 @@ export function RelationshipNavigatorContextProvider({
 
 //////////
 export interface RelatedEventProps {
-  eventId: number;
+  id: number;
   compact: boolean;
 }
 
-export const RelatedEvent: FC<RelatedEventProps> = ({
-  eventId: id,
-  compact,
-}) => {
+export const RelatedEvent: FC<RelatedEventProps> = ({ id, compact }) => {
   const event = useEventById(id);
 
   const relationships = useAllRelationshipsForEntity({
@@ -205,13 +247,10 @@ export const RelatedEvent: FC<RelatedEventProps> = ({
 export const RelatedHabit: FC<{
   id: number;
   compact: boolean;
-  relationshipId: number;
-}> = ({ id, compact, relationshipId }) => {
+}> = ({ id, compact }) => {
   const habit = useHabitById(id);
 
   const icon = useHabitLifeAspectAssetIcon(habit);
-
-  const { delete: remove } = useRelationshipsActions();
 
   const { entities, setActiveEntity } = useContext(
     RelationshipNavigatorContext
@@ -288,45 +327,19 @@ export const RelatedHabit: FC<{
     );
   }
 
-  return (
-    <div className="relative w-full">
-      <div className="absolute right-0 z-10 flex flex-col">
-        <Button variant="ghost" size="icon" className="h-5 w-5">
-          <IconArrowRampRight2
-            onClick={selectEntity}
-            size={12}
-            color={!!relationships.length ? "green" : "red"}
-          />
-        </Button>
-        <Button variant="ghost" size="icon" className="h-5 w-5">
-          <Trash
-            size={12}
-            onClick={() => {
-              remove(relationshipId);
-            }}
-          />
-        </Button>
-      </div>
-      <div className="w-[93%]">
-        <HabitCard habit={habit} event={event} />
-      </div>
-    </div>
-  );
+  return <HabitCard habit={habit} event={event} />;
 };
 
 export const RelatedLocation: FC<{
   id: number;
   compact: boolean;
-  relationshipId: number;
-}> = ({ id, compact, relationshipId }) => {
+}> = ({ id, compact }) => {
   const location = useLocationById(id);
   const relationships = useAllRelationshipsForEntity({
     entityId: id,
     entityType: RelationshipEntityType.Location,
   });
   const { setActiveEntity } = useContext(RelationshipNavigatorContext);
-
-  const { delete: remove } = useRelationshipsActions();
 
   const selectEntity = () =>
     setActiveEntity({
@@ -367,32 +380,16 @@ export const RelatedLocation: FC<{
   }
 
   return (
-    // <div className="flex gap-2 items-center">
     <div className="w-full">
       <Card className="p-0 rounded-md">
         <CardHeader className="p-4 pt-2">
-          <CardTitle className="flex justify-between items-center">
-            <div className="font-normal flex gap-2">
-              <IconMapPin
-                size={16}
-                color={location.color}
-                aria-label="location"
-              />
-              <div style={{ color: location.color }}>{location.title}</div>
-            </div>
-            <div>
-              <Button variant="ghost" size="icon">
-                <IconArrowRampRight2 onClick={selectEntity} size={16} />
-              </Button>
-              <Button variant="ghost" size="icon">
-                <Trash
-                  size={16}
-                  onClick={() => {
-                    remove(relationshipId);
-                  }}
-                />
-              </Button>
-            </div>
+          <CardTitle className="flex gap-2">
+            <IconMapPin
+              size={16}
+              color={location.color}
+              aria-label="location"
+            />
+            <div style={{ color: location.color }}>{location.title}</div>
           </CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-2">
@@ -420,7 +417,9 @@ export const RelatedPerson: FC<{ id: number; compact: boolean }> = ({
     entityType: RelationshipEntityType.Person,
   });
 
-  const { setActiveEntity } = useContext(RelationshipNavigatorContext);
+  const { setActiveEntity, entities } = useContext(
+    RelationshipNavigatorContext
+  );
 
   const selectEntity = () =>
     setActiveEntity({
@@ -437,7 +436,13 @@ export const RelatedPerson: FC<{ id: number; compact: boolean }> = ({
     return (
       <div
         className="flex flex-col items-center gap-1"
-        style={{ border: `1px solid ${person.color}` }}
+        style={{
+          border: !!entities.find(
+            (e) => e.id === id && e.type === RelationshipEntityType.Person
+          )
+            ? `1px solid ${person.color}`
+            : "#fff",
+        }}
       >
         <IconManFilled
           size={24}
@@ -461,28 +466,9 @@ export const RelatedPerson: FC<{ id: number; compact: boolean }> = ({
   return (
     <Card className="p-0 rounded-md w-full">
       <CardHeader className="p-4 pt-2">
-        <CardTitle className="flex justify-between items-center">
-          <div className="font-normal flex gap-2">
-            <IconManFilled
-              size={16}
-              color={person.color}
-              aria-label="location"
-            />
-            <div style={{ color: person.color }}>{person.name}</div>
-          </div>
-          <div>
-            <Button variant="ghost" size="icon">
-              <IconArrowRampRight2 onClick={selectEntity} size={16} />
-            </Button>
-            <Button variant="ghost" size="icon" disabled>
-              <Trash
-                size={16}
-                onClick={() => {
-                  console.log("deleting");
-                }}
-              />
-            </Button>
-          </div>
+        <CardTitle className="font-normal flex gap-2">
+          <IconManFilled size={16} color={person.color} aria-label="location" />
+          <div style={{ color: person.color }}>{person.name}</div>
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -538,15 +524,58 @@ export const RelatedNote: FC<{ id: number }> = ({ id }) => {
   );
 };
 
-export const RelatedJournal: FC<{ id: number }> = ({ id }) => {
+export const RelatedJournal: FC<{ id: number; compact: boolean }> = ({
+  id,
+  compact,
+}) => {
   const journal = useJournalEntryById(id);
   const relationships = useAllRelationshipsForEntity({
     entityId: id,
     entityType: RelationshipEntityType.Habit,
   });
 
+  const { setActiveEntity, entities } = useContext(
+    RelationshipNavigatorContext
+  );
+
+  const selectEntity = () =>
+    setActiveEntity({
+      id,
+      type: RelationshipEntityType.Journal,
+    });
+
   if (!journal) {
     return null;
+  }
+
+  if (compact) {
+    return (
+      <div
+        className="flex flex-col items-center gap-1"
+        style={{
+          border: !!entities.find(
+            (e) => e.id === id && e.type === RelationshipEntityType.Journal
+          )
+            ? `1px solid #fff`
+            : "none",
+        }}
+      >
+        <IconFeather
+          size={24}
+          color={"#fff"}
+          aria-label={journal.title}
+          className="cursor"
+          onClick={selectEntity}
+        />
+        {relationships.map((r) => (
+          <RelatedEntityIcon
+            key={Math.random()}
+            relationship={r}
+            allowedTypes={ALLOWED_TYPES[RelationshipEntityType.Journal]}
+          />
+        ))}
+      </div>
+    );
   }
   return (
     <div>
@@ -563,7 +592,10 @@ export const RelatedJournal: FC<{ id: number }> = ({ id }) => {
 };
 
 // end leaf: shows tasks and habits
-export const RelatedProject: FC<{ id: number }> = ({ id }) => {
+export const RelatedProject: FC<{ id: number; compact: boolean }> = ({
+  id,
+  compact,
+}) => {
   const project = useProjectById(id);
   const relationships = useAllRelationshipsForEntity({
     entityId: id,
@@ -572,8 +604,48 @@ export const RelatedProject: FC<{ id: number }> = ({ id }) => {
 
   const task = useFirstTaskForTheProject(id);
 
+  const { entities, setActiveEntity } = useContext(
+    RelationshipNavigatorContext
+  );
+
+  const selectEntity = () =>
+    setActiveEntity({
+      id,
+      type: RelationshipEntityType.Project,
+    });
+
   if (!project) {
     return null;
+  }
+
+  if (compact) {
+    return (
+      <div
+        className="flex flex-col items-center gap-1"
+        style={{
+          border: !!entities.find(
+            (e) => e.id === id && e.type === RelationshipEntityType.Project
+          )
+            ? `1px solid ${project.color}`
+            : "#fff",
+        }}
+      >
+        <IconCheckbox
+          size={24}
+          color={project.color || "#fff"}
+          aria-label={project.title}
+          className="cursor"
+          onClick={selectEntity}
+        />
+        {relationships.map((r) => (
+          <RelatedEntityIcon
+            key={Math.random()}
+            relationship={r}
+            allowedTypes={ALLOWED_TYPES[RelationshipEntityType.Project]}
+          />
+        ))}
+      </div>
+    );
   }
 
   return (
@@ -642,18 +714,7 @@ export const RelatedTask: FC<{ id: number; compact: boolean }> = ({
     );
   }
 
-  return (
-    <div className="relative w-full">
-      <Button variant="ghost" size="icon" className="absolute right-0 z-10">
-        <IconArrowRampRight2
-          onClick={selectEntity}
-          size={16}
-          color={!!relationships.length ? "green" : "red"}
-        />
-      </Button>
-      <TaskCard task={task} />
-    </div>
-  );
+  return <TaskCard task={task} />;
 };
 
 //////////
@@ -672,87 +733,43 @@ export const RelatedEntity: FC<RelatedEntityProps> = ({
   }
 
   const getComponent = () => {
+    const props = { id: relationship.target_id, compact };
+
     switch (relationship.target_type) {
       case RelationshipEntityType.Task:
-        return <RelatedTask id={relationship.target_id} compact={compact} />;
+        return <RelatedTask {...props} />;
       case RelationshipEntityType.Event:
-        return compact ? (
-          <RelatedEvent eventId={relationship.target_id} compact />
-        ) : (
-          <div className="flex gap-2 items-center">
-            <RelatedEvent eventId={relationship.target_id} compact={false} />
-            {/* <IconArrowForward
-              onClick={() => selectEntity(RelationshipEntityType.Event)}
-            /> */}
-          </div>
-        );
+        return <RelatedEvent {...props} />;
       case RelationshipEntityType.Habit:
-        return (
-          <RelatedHabit
-            id={relationship.target_id}
-            compact={compact}
-            relationshipId={relationship.id}
-          />
-        );
+        return <RelatedHabit {...props} />;
       case RelationshipEntityType.Journal:
-        return compact ? (
-          <div>J</div>
-        ) : (
-          <div className="flex gap-2 items-center">
-            <RelatedJournal id={relationship.target_id} />
-            {/* <IconArrowForward
-              size={16}
-              className="min-w-[30px]"
-              onClick={() => selectEntity(RelationshipEntityType.Journal)}
-            /> */}
-          </div>
-        );
+        return <RelatedJournal {...props} />; // TODO: maybe extract these props
       case RelationshipEntityType.Location:
-        return (
-          // <div className="flex gap-2 items-center">
-          <RelatedLocation
-            id={relationship.target_id}
-            compact={compact}
-            relationshipId={relationship.id}
-          />
-          // </div>
-        );
+        return <RelatedLocation {...props} />;
       case RelationshipEntityType.Note:
-        return compact ? (
-          <IconNote size={24} aria-label="note" />
-        ) : (
-          <RelatedNote id={relationship.target_id} />
-        );
+        return <RelatedNote {...props} />;
       case RelationshipEntityType.Person:
-        return <RelatedPerson id={relationship.target_id} compact={compact} />;
+        return <RelatedPerson {...props} />;
       case RelationshipEntityType.Project:
-        return compact ? (
-          <div>PP</div>
-        ) : (
-          <div className="flex gap-2 items-center">
-            <RelatedProject id={relationship.target_id} />
-            {/* <IconArrowForward
-              onClick={() => selectEntity(RelationshipEntityType.Project)}
-            /> */}
-          </div>
-        );
-
+        return <RelatedProject {...props} />;
       default:
         return <div>error</div>;
     }
   };
 
-  return getComponent();
-  // return (
-  //   <div className="flex gap-2 items-center">
-  //     <div className="w-[90%]">{getComponent()}</div>
-  //     <div className="w-[10%]">
-  //       <IconArrowForward
-  //         onClick={() => selectEntity(relationship.target_type)}
-  //       />
-  //     </div>
-  //   </div>
-  // );
+  if (compact) {
+    return getComponent();
+  }
+
+  return (
+    <RelatedEntityActions
+      entityId={relationship.target_id}
+      entityType={relationship.target_type}
+      relationshipId={relationship.id}
+    >
+      {getComponent()}
+    </RelatedEntityActions>
+  );
 };
 
 export interface RelatedEntityIconProps {
