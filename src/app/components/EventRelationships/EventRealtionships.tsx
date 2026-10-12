@@ -205,12 +205,17 @@ export const RelatedEvent: FC<RelatedEventProps> = ({
 export const RelatedHabit: FC<{
   id: number;
   compact: boolean;
-}> = ({ id, compact }) => {
+  relationshipId: number;
+}> = ({ id, compact, relationshipId }) => {
   const habit = useHabitById(id);
 
   const icon = useHabitLifeAspectAssetIcon(habit);
 
-  const { entities } = useContext(RelationshipNavigatorContext);
+  const { delete: remove } = useRelationshipsActions();
+
+  const { entities, setActiveEntity } = useContext(
+    RelationshipNavigatorContext
+  );
 
   const eventId = entities.findLast(
     (e) => e.type === RelationshipEntityType.Event
@@ -218,7 +223,7 @@ export const RelatedHabit: FC<{
 
   const event = useEventById(eventId);
 
-  const relationships = useAllRelationshipsForEntity({
+  const relationships = useRelevantRelationshipsForEntity({
     entityId: id,
     entityType: RelationshipEntityType.Habit,
   });
@@ -227,8 +232,41 @@ export const RelatedHabit: FC<{
     return null;
   }
 
+  const selectEntity = () =>
+    setActiveEntity({
+      id,
+      type: RelationshipEntityType.Habit,
+    });
+
   if (compact) {
-    return icon;
+    return (
+      <div
+        className="flex flex-col items-center gap-1 w-[20px]"
+        style={{
+          border: !!entities.find(
+            (e) => e.id === id && e.type === RelationshipEntityType.Habit
+          )
+            ? `1px solid #fff`
+            : "",
+        }}
+      >
+        <Tooltip delayDuration={0}>
+          <TooltipTrigger>
+            <div onClick={selectEntity}>{icon}</div>
+          </TooltipTrigger>
+          <TooltipContent className="w-[200px]" side="right">
+            {habit.title}
+          </TooltipContent>
+        </Tooltip>
+        {relationships.map((r) => (
+          <RelatedEntityIcon
+            key={Math.random()}
+            relationship={r}
+            allowedTypes={ALLOWED_TYPES[RelationshipEntityType.Habit]}
+          />
+        ))}
+      </div>
+    );
   }
 
   if (!event) {
@@ -250,7 +288,28 @@ export const RelatedHabit: FC<{
     );
   }
 
-  return <HabitCard habit={habit} event={event} />;
+  return (
+    <div className="relative w-full">
+      <div className="absolute right-0 z-10">
+        <Button variant="ghost" size="icon">
+          <IconArrowRampRight2
+            onClick={selectEntity}
+            size={16}
+            color={!!relationships.length ? "green" : "red"}
+          />
+        </Button>
+        <Button variant="ghost" size="icon">
+          <Trash
+            size={16}
+            onClick={() => {
+              remove(relationshipId);
+            }}
+          />
+        </Button>
+      </div>
+      <HabitCard habit={habit} event={event} />
+    </div>
+  );
 };
 
 export const RelatedLocation: FC<{
@@ -626,7 +685,13 @@ export const RelatedEntity: FC<RelatedEntityProps> = ({
           </div>
         );
       case RelationshipEntityType.Habit:
-        return <RelatedHabit id={relationship.target_id} compact={compact} />;
+        return (
+          <RelatedHabit
+            id={relationship.target_id}
+            compact={compact}
+            relationshipId={relationship.id}
+          />
+        );
       case RelationshipEntityType.Journal:
         return compact ? (
           <div>J</div>
