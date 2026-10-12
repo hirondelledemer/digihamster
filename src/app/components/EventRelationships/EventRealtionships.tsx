@@ -44,6 +44,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { Button } from "../ui/button";
 import { Trash } from "lucide-react";
 import { useRelationshipsActions } from "@/app/utils/hooks/use-relationships/actions-context";
+import { TaskStatus } from "@/app/utils/types/task";
 
 const ALLOWED_TYPES: {
   [key: string]: RelationshipEntityType[]; // TODO: fix. also maybe extract
@@ -112,6 +113,11 @@ const RelatedEntityActions: FC<{
       id: entityId,
       type: entityType,
     });
+
+  console.log("children", children);
+  if (!children) {
+    return null;
+  }
 
   return (
     <div className="relative w-full">
@@ -298,11 +304,7 @@ export const RelatedHabit: FC<{
           </TooltipContent>
         </Tooltip>
         {relationships.map((r) => (
-          <RelatedEntityIcon
-            key={Math.random()}
-            relationship={r}
-            allowedTypes={ALLOWED_TYPES[RelationshipEntityType.Habit]}
-          />
+          <RelatedEntityIcon key={Math.random()} relationship={r} />
         ))}
       </div>
     );
@@ -335,7 +337,7 @@ export const RelatedLocation: FC<{
   compact: boolean;
 }> = ({ id, compact }) => {
   const location = useLocationById(id);
-  const relationships = useAllRelationshipsForEntity({
+  const relationships = useRelevantRelationshipsForEntity({
     entityId: id,
     entityType: RelationshipEntityType.Location,
   });
@@ -369,11 +371,7 @@ export const RelatedLocation: FC<{
           </TooltipContent>
         </Tooltip>
         {relationships.map((r) => (
-          <RelatedEntityIcon
-            key={Math.random()}
-            relationship={r}
-            allowedTypes={ALLOWED_TYPES[RelationshipEntityType.Location]}
-          />
+          <RelatedEntityIcon key={Math.random()} relationship={r} />
         ))}
       </div>
     );
@@ -397,7 +395,6 @@ export const RelatedLocation: FC<{
             <RelatedEntity
               key={Math.random()}
               relationship={r}
-              allowedTypes={ALLOWED_TYPES[RelationshipEntityType.Location]}
               compact={false}
             />
           ))}
@@ -412,7 +409,7 @@ export const RelatedPerson: FC<{ id: number; compact: boolean }> = ({
   compact,
 }) => {
   const person = usePersonById(id);
-  const relationships = useAllRelationshipsForEntity({
+  const relationships = useRelevantRelationshipsForEntity({
     entityId: id,
     entityType: RelationshipEntityType.Person,
   });
@@ -452,11 +449,7 @@ export const RelatedPerson: FC<{ id: number; compact: boolean }> = ({
           onClick={selectEntity}
         />
         {relationships.slice(0, 3).map((r) => (
-          <RelatedEntityIcon
-            key={Math.random()}
-            relationship={r}
-            allowedTypes={ALLOWED_TYPES[RelationshipEntityType.Person]}
-          />
+          <RelatedEntityIcon key={Math.random()} relationship={r} />
         ))}
         {relationships.length - relationshipNumber}
       </div>
@@ -477,11 +470,7 @@ export const RelatedPerson: FC<{ id: number; compact: boolean }> = ({
             (
               r // todo: maybe show somehow differently
             ) => (
-              <RelatedEntityIcon
-                key={Math.random()}
-                relationship={r}
-                allowedTypes={ALLOWED_TYPES[RelationshipEntityType.Person]}
-              />
+              <RelatedEntityIcon key={Math.random()} relationship={r} />
             )
           )}
         </div>
@@ -492,7 +481,7 @@ export const RelatedPerson: FC<{ id: number; compact: boolean }> = ({
 
 export const RelatedNote: FC<{ id: number }> = ({ id }) => {
   const note = useNoteById(id);
-  const relationships = useAllRelationshipsForEntity({
+  const relationships = useRelevantRelationshipsForEntity({
     entityId: id,
     entityType: RelationshipEntityType.Note,
   });
@@ -513,11 +502,7 @@ export const RelatedNote: FC<{ id: number }> = ({ id }) => {
       </Card>
       <div className="flex">
         {relationships.map((r) => (
-          <RelatedEntityIcon
-            key={Math.random()}
-            relationship={r}
-            allowedTypes={ALLOWED_TYPES[RelationshipEntityType.Note]}
-          />
+          <RelatedEntityIcon key={Math.random()} relationship={r} />
         ))}
       </div>
     </div>
@@ -529,7 +514,7 @@ export const RelatedJournal: FC<{ id: number; compact: boolean }> = ({
   compact,
 }) => {
   const journal = useJournalEntryById(id);
-  const relationships = useAllRelationshipsForEntity({
+  const relationships = useRelevantRelationshipsForEntity({
     entityId: id,
     entityType: RelationshipEntityType.Habit,
   });
@@ -568,11 +553,7 @@ export const RelatedJournal: FC<{ id: number; compact: boolean }> = ({
           onClick={selectEntity}
         />
         {relationships.map((r) => (
-          <RelatedEntityIcon
-            key={Math.random()}
-            relationship={r}
-            allowedTypes={ALLOWED_TYPES[RelationshipEntityType.Journal]}
-          />
+          <RelatedEntityIcon key={Math.random()} relationship={r} />
         ))}
       </div>
     );
@@ -597,7 +578,7 @@ export const RelatedProject: FC<{ id: number; compact: boolean }> = ({
   compact,
 }) => {
   const project = useProjectById(id);
-  const relationships = useAllRelationshipsForEntity({
+  const relationships = useRelevantRelationshipsForEntity({
     entityId: id,
     entityType: RelationshipEntityType.Habit,
   });
@@ -638,11 +619,7 @@ export const RelatedProject: FC<{ id: number; compact: boolean }> = ({
           onClick={selectEntity}
         />
         {relationships.map((r) => (
-          <RelatedEntityIcon
-            key={Math.random()}
-            relationship={r}
-            allowedTypes={ALLOWED_TYPES[RelationshipEntityType.Project]}
-          />
+          <RelatedEntityIcon key={Math.random()} relationship={r} />
         ))}
       </div>
     );
@@ -680,7 +657,11 @@ export const RelatedTask: FC<{ id: number; compact: boolean }> = ({
       type: RelationshipEntityType.Task,
     });
 
-  if (!task) {
+  if (
+    !task ||
+    task.status === TaskStatus.Cancelled ||
+    task.status === TaskStatus.Done
+  ) {
     return null;
   }
 
@@ -704,11 +685,7 @@ export const RelatedTask: FC<{ id: number; compact: boolean }> = ({
           onClick={selectEntity}
         />
         {relationships.map((r) => (
-          <RelatedEntityIcon
-            key={Math.random()}
-            relationship={r}
-            allowedTypes={ALLOWED_TYPES[RelationshipEntityType.Task]}
-          />
+          <RelatedEntityIcon key={Math.random()} relationship={r} />
         ))}
       </div>
     );
@@ -721,17 +698,11 @@ export const RelatedTask: FC<{ id: number; compact: boolean }> = ({
 export interface RelatedEntityProps {
   relationship: IRelationship;
   compact: boolean;
-  allowedTypes: RelationshipEntityType[];
 }
 export const RelatedEntity: FC<RelatedEntityProps> = ({
   relationship,
   compact,
-  allowedTypes = [],
 }) => {
-  if (!allowedTypes.includes(relationship.target_type)) {
-    return null;
-  }
-
   const getComponent = () => {
     const props = { id: relationship.target_id, compact };
 
@@ -774,16 +745,10 @@ export const RelatedEntity: FC<RelatedEntityProps> = ({
 
 export interface RelatedEntityIconProps {
   relationship: IRelationship;
-  allowedTypes?: RelationshipEntityType[];
 }
 export const RelatedEntityIcon: FC<RelatedEntityIconProps> = ({
   relationship,
-  allowedTypes = [],
 }) => {
-  if (!allowedTypes.includes(relationship.target_type)) {
-    return null;
-  }
-
   switch (relationship.target_type) {
     case RelationshipEntityType.Event:
       return (
