@@ -54,6 +54,15 @@ const fetchRelationships = async (
   }
 };
 
+/**
+ * One submit can create a whole batch of relationships at once, so the
+ * placeholder id cannot come from the clock alone — calls landing in the same
+ * millisecond would share an id and overwrite each other's optimistic row.
+ * Adding an ever growing offset keeps the ids strictly decreasing.
+ */
+let tempIdOffset = 0;
+const nextTempId = () => -(now().valueOf() + tempIdOffset++);
+
 export const RelationshipsContextProvider = ({
   children,
 }: {
@@ -76,7 +85,7 @@ export const RelationshipsContextProvider = ({
 
   const createRelationship = useCallback(
     async (data: CreateRelationshipParams, onDone?: () => void) => {
-      const tempId = -now().valueOf();
+      const tempId = nextTempId();
 
       const tempRelationship = {
         id: tempId,

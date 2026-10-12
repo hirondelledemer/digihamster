@@ -104,6 +104,8 @@ export const NotesContextProvider = ({ children }: { children: ReactNode }) => {
         });
 
         handleSuccessToast(toast, "Note has been created");
+        // callers need the saved note to hang related records off its real id
+        return response.data;
       } catch (e: unknown) {
         dispatch({
           type: NotesStateActionType.DeleteNote,
@@ -113,6 +115,7 @@ export const NotesContextProvider = ({ children }: { children: ReactNode }) => {
         });
 
         handleApiError(getApiErrorMessage(e), toast);
+        return null;
       }
     },
     [toast],

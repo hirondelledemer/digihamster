@@ -14,6 +14,7 @@ import { useHabitById } from "@/app/utils/hooks/use-habits-new/selectors";
 import { useJournalEntryById } from "@/app/utils/hooks/use-entry/selectors";
 import MinimalNote from "../MinimalNote";
 import { useLocationById } from "@/app/utils/hooks/use-location/selectors";
+import { useNoteById } from "@/app/utils/hooks/use-notes/selectors";
 import { usePersonById } from "@/app/utils/hooks/use-people/selectors";
 import {
   useProjectById,
@@ -57,6 +58,7 @@ const ALLOWED_TYPES: {
     RelationshipEntityType.Habit,
     RelationshipEntityType.Person,
     RelationshipEntityType.Journal,
+    RelationshipEntityType.Note,
     RelationshipEntityType.Location,
     RelationshipEntityType.Project,
   ],
@@ -80,6 +82,13 @@ const ALLOWED_TYPES: {
   [RelationshipEntityType.Journal]: [
     RelationshipEntityType.Person,
     RelationshipEntityType.Event,
+  ],
+  [RelationshipEntityType.Note]: [
+    RelationshipEntityType.Person,
+    RelationshipEntityType.Task,
+    RelationshipEntityType.Location,
+    RelationshipEntityType.Habit,
+    RelationshipEntityType.Project,
   ],
 };
 
@@ -434,6 +443,40 @@ export const RelatedPerson: FC<{ id: number; compact: boolean }> = ({
   );
 };
 
+export const RelatedNote: FC<{ id: number }> = ({ id }) => {
+  const note = useNoteById(id);
+  const relationships = useAllRelationshipsForEntity({
+    entityId: id,
+    entityType: RelationshipEntityType.Note,
+  });
+
+  if (!note) {
+    return null;
+  }
+
+  return (
+    <div className="w-full">
+      <Card className="p-0 rounded-md">
+        <CardHeader className="p-4 pt-2">
+          <CardTitle className="font-normal flex gap-2 items-center">
+            <IconNote size={16} aria-label="note" />
+            <div>{note.title}</div>
+          </CardTitle>
+        </CardHeader>
+      </Card>
+      <div className="flex">
+        {relationships.map((r) => (
+          <RelatedEntityIcon
+            key={Math.random()}
+            relationship={r}
+            allowedTypes={ALLOWED_TYPES[RelationshipEntityType.Note]}
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
+
 export const RelatedJournal: FC<{ id: number }> = ({ id }) => {
   const journal = useJournalEntryById(id);
   const relationships = useAllRelationshipsForEntity({
@@ -609,14 +652,9 @@ export const RelatedEntity: FC<RelatedEntityProps> = ({
         );
       case RelationshipEntityType.Note:
         return compact ? (
-          <div>N</div>
+          <IconNote size={24} aria-label="note" />
         ) : (
-          <div className="flex gap-2 items-center">
-            <div>note</div>
-            {/* <IconArrowForward
-              onClick={() => selectEntity(RelationshipEntityType.Note)}
-            /> */}
-          </div>
+          <RelatedNote id={relationship.target_id} />
         );
       case RelationshipEntityType.Person:
         return <RelatedPerson id={relationship.target_id} compact={compact} />;

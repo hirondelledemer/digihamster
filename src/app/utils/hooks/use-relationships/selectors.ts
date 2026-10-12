@@ -105,6 +105,7 @@ const ALLOWED_TYPES: {
     RelationshipEntityType.Habit,
     RelationshipEntityType.Person,
     RelationshipEntityType.Journal,
+    RelationshipEntityType.Note,
     RelationshipEntityType.Location,
     RelationshipEntityType.Project,
   ],
@@ -128,6 +129,13 @@ const ALLOWED_TYPES: {
   [RelationshipEntityType.Journal]: [
     RelationshipEntityType.Person,
     RelationshipEntityType.Event,
+  ],
+  [RelationshipEntityType.Note]: [
+    RelationshipEntityType.Person,
+    RelationshipEntityType.Task,
+    RelationshipEntityType.Location,
+    RelationshipEntityType.Habit,
+    RelationshipEntityType.Project,
   ],
 };
 

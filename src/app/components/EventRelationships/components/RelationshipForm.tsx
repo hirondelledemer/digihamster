@@ -1,166 +1,225 @@
-import React, { FC } from "react";
-import { useForm } from "react-hook-form";
+"use client";
+import React, { FC, useState } from "react";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-// import { Form, FormControl, FormField, FormItem, RteMessage } from "../ui/form";
-// import RteFormField from "../RteFormField";
-// import { Button } from "../ui/button";
-// import { toBackendDateTime } from "@/app/utils/date/date";
-// import { useEventsActions } from "@/app/utils/hooks/use-events/actions-context";
-// import { FieldsRequired } from "@/app/utils/hooks/use-events/api";
-// import { useTasksNewActions } from "@/app/utils/hooks/use-tasks-new/actions-context";
 import { RelationshipEntityType } from "@/app/utils/types/relationship";
 import { useRelationshipsActions } from "@/app/utils/hooks/use-relationships/actions-context";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  RteMessage,
-} from "../../ui/form";
-import RteFormField from "../../RteFormField";
+import { useNotesActions } from "@/app/utils/hooks/use-notes/actions-context";
+import { useEntriesActions } from "@/app/utils/hooks/use-entry/actions-context";
+import { useRte } from "@/app/utils/rte/rte-hook";
+import RichTextEditor from "../../RichTextEditor";
 import { Button } from "../../ui/button";
+import {
+  LineKind,
+  ParsedLine,
+  parseRelationshipInput,
+} from "./parse-relationship-input";
 
 export interface CreateEventFormProps {
-  //   testId?: string;
-  //   onDone(): void;
-  //   startAt: string;
-  //   endAt: string;
-  //   projectId?: number;
   entityId: number;
   entityType: RelationshipEntityType;
 }
 
 export const rteTestId = "CreateRelationshipsForm-rte-testId";
 
-const FormSchema = z.object({
-  description: z.object({
-    // title: z.string().min(1, { message: "required" }),
-    content: z.any(),
-    tasks: z.array(z.string()),
-    locations: z.array(z.string()),
-    habits: z.array(z.string()),
-    tags: z.array(z.string()),
-    textContent: z.string(),
-    contentJSON: z.any(),
-    projectId: z.string().optional(),
-  }),
+const TITLE_LENGTH = 60;
+
+/** notes and journal entries both want a short title and only have the line */
+const toTitle = (text: string) =>
+  text.length <= TITLE_LENGTH ? text : `${text.slice(0, TITLE_LENGTH)}…`;
+
+/** each line is stored as a document of its own */
+const toDocument = (line: ParsedLine) => ({
+  type: "doc",
+  content: line.paragraphs,
 });
 
-export type FormValues = z.infer<typeof FormSchema>;
+interface EntityRef {
+  id: number;
+  type: RelationshipEntityType;
+}
 
 export const CreateRelationshipsForm: FC<CreateEventFormProps> = ({
-  //   testId,
-  //   onDone,
-  //   startAt,
-  //   endAt,
-  //   projectId,
   entityId,
   entityType,
-}): JSX.Element => {
-  //   const { create: createEvent } = useEventsActions();
-  //   const { updateTask } = useTasksNewActions();
-  const { create: createRelationship } = useRelationshipsActions();
+}): JSX.Element | null => {
+  const [submitting, setSubmitting] = useState(false);
 
-  const form = useForm<FormValues>({
-    resolver: zodResolver(FormSchema),
-    defaultValues: {
-      description: {
-        // title: "",
-        content: "",
-        tasks: [],
-        textContent: "",
-        contentJSON: {},
-        // projectId: projectId ? projectId.toString() : "",
-      },
-    },
+  const { create: createRelationship } = useRelationshipsActions();
+  const { create: createNote } = useNotesActions();
+  const { create: createEntry } = useEntriesActions();
+
+  const placeholder = `Attach items to this ${entityType}`;
+
+  const { editor } = useRte({
+    value: "",
+    editable: true,
+    placeholder,
   });
 
-  const handleSubmit = async (values: FormValues) => {
-    // const eventData: FieldsRequired = {
-    // //   title: values.description.title,
-    //   description: values.description.textContent,
-    //   all_day: false,
-    //   project_id: values.description.projectId
-    //     ? Number(values.description.projectId)
-    //     : undefined,
-    //   start_at: toBackendDateTime(new Date(startAt)),
-    //   end_at: toBackendDateTime(new Date(endAt)),
-    // };
+  if (!editor) {
+    return null;
+  }
 
-    // const event = await createEvent(eventData, onDone);
+  const self: EntityRef = { id: entityId, type: entityType };
 
-    // if (event) {
-    // values.description.tasks.forEach((taskId) => {
-    //   updateTask(Number(taskId), { event_id: event.id });
-    // });
-
-    values.description.tags.forEach((personId) => {
-      createRelationship({
-        source_id: entityId,
-        source_type: entityType,
-        target_id: Number(personId),
-        target_type: RelationshipEntityType.Person,
-      });
+  const link = (source: EntityRef, target: EntityRef) =>
+    createRelationship({
+      source_id: source.id,
+      source_type: source.type,
+      target_id: target.id,
+      target_type: target.type,
     });
 
-    values.description.tasks.forEach((taskId) => {
-      createRelationship({
-        source_id: entityId,
-        source_type: entityType,
-        target_id: Number(taskId),
-        target_type: RelationshipEntityType.Task,
-      });
+  /** everything the line mentions, in the order the ids were collected */
+  const mentionsOf = (line: ParsedLine): EntityRef[] => [
+    ...line.people.map((id) => ({
+      id: Number(id),
+      type: RelationshipEntityType.Person,
+    })),
+    ...line.locations.map((id) => ({
+      id: Number(id),
+      type: RelationshipEntityType.Location,
+    })),
+    ...line.habits.map((id) => ({
+      id: Number(id),
+      type: RelationshipEntityType.Habit,
+    })),
+    ...line.projects.map((id) => ({
+      id: Number(id),
+      type: RelationshipEntityType.Project,
+    })),
+  ];
+
+  const applyNote = async (line: ParsedLine) => {
+    const note = await createNote({
+      title: toTitle(line.text),
+      content: line.text,
+      json_content: toDocument(line),
     });
 
-    values.description.locations.forEach((locationId) => {
-      createRelationship({
-        source_id: entityId,
-        source_type: entityType,
-        target_id: Number(locationId),
-        target_type: RelationshipEntityType.Location,
-      });
-    });
+    if (!note) {
+      return;
+    }
 
-    values.description.habits.forEach((habitId) => {
-      createRelationship({
-        source_id: entityId,
-        source_type: entityType,
-        target_id: Number(habitId),
-        target_type: RelationshipEntityType.Habit,
-      });
-    });
-    // }
+    const ref = { id: note.id, type: RelationshipEntityType.Note };
+
+    // the note is what the line produced, so it anchors the line: it hangs off
+    // the entity, and everything the line mentioned hangs off it
+    await link(self, ref);
+    await Promise.all(
+      [
+        ...mentionsOf(line),
+        ...line.tasks.map((id) => ({
+          id: Number(id),
+          type: RelationshipEntityType.Task,
+        })),
+      ].map((target) => link(ref, target))
+    );
   };
 
-  return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-        <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem className="flex flex-col">
-              <FormLabel>{`Attach items to the for this ${entityType}`}</FormLabel>
-              <FormControl>
-                <RteFormField
-                  testId={rteTestId}
-                  value={field.value.content}
-                  onChange={field.onChange}
-                  placeholder={`Attach items to the for this ${entityType}`}
-                />
-              </FormControl>
-              <RteMessage />
-            </FormItem>
-          )}
-        />
+  const applyJournal = async (line: ParsedLine) => {
+    const entry = await createEntry({
+      title: toTitle(line.text),
+      note: line.text || "(no content)",
+      json_note: toDocument(line),
+      mentioned_people_ids: line.people.map(Number),
+    });
 
-        <div className="space-x-2">
-          <Button type="submit">Create</Button>
-        </div>
-      </form>
-    </Form>
+    if (!entry) {
+      return;
+    }
+
+    const ref = { id: entry.id, type: RelationshipEntityType.Journal };
+
+    await link(self, ref);
+    // people are left out on purpose: the backend already wires them up from
+    // `mentioned_people_ids`, the same way JournalEntryForm relies on
+    await Promise.all(
+      [
+        ...mentionsOf(line).filter(
+          (m) => m.type !== RelationshipEntityType.Person
+        ),
+        ...line.tasks.map((id) => ({
+          id: Number(id),
+          type: RelationshipEntityType.Task,
+        })),
+      ].map((target) => link(ref, target))
+    );
+  };
+
+  const applyAttach = async (line: ParsedLine) => {
+    const tasks = line.tasks.map((id) => ({
+      id: Number(id),
+      type: RelationshipEntityType.Task,
+    }));
+
+    // tasks always belong to the entity being edited, and the rest of the line
+    // describes the first of them when there is one — `/t buy milk /at shop`
+    // puts the shop on the task, not on the event
+    const anchor = tasks[0] ?? self;
+
+    await Promise.all([
+      ...tasks.map((task) => link(self, task)),
+      ...mentionsOf(line).map((target) => link(anchor, target)),
+    ]);
+  };
+
+  const applyLine = (line: ParsedLine) => {
+    switch (line.kind) {
+      case LineKind.Note:
+        return applyNote(line);
+      case LineKind.Journal:
+        return applyJournal(line);
+      case LineKind.Attach:
+        return applyAttach(line);
+    }
+  };
+
+  const handleSubmit = async () => {
+    const lines = parseRelationshipInput(editor.getJSON());
+
+    if (!lines.length) {
+      return;
+    }
+
+    setSubmitting(true);
+
+    try {
+      // one line at a time: a line can create an entity that the next one is
+      // allowed to read, and the toasts stay in the order they were typed
+      for (const line of lines) {
+        await applyLine(line);
+      }
+
+      editor.commands.setContent("");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === "Enter" && event.ctrlKey) {
+      handleSubmit();
+    }
+  };
+
+  const submitButtonDisabled =
+    !editor.getHTML().length || editor.getHTML() === "<p></p>";
+
+  return (
+    <div>
+      <RichTextEditor
+        testId={rteTestId}
+        editor={editor}
+        onKeyDown={handleKeyDown}
+      />
+      <Button
+        disabled={submitButtonDisabled || submitting}
+        onClick={handleSubmit}
+        className="mt-4"
+      >
+        Create
+      </Button>
+    </div>
   );
 };
