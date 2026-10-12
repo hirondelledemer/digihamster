@@ -290,24 +290,26 @@ export const RelatedHabit: FC<{
 
   return (
     <div className="relative w-full">
-      <div className="absolute right-0 z-10">
-        <Button variant="ghost" size="icon">
+      <div className="absolute right-0 z-10 flex flex-col">
+        <Button variant="ghost" size="icon" className="h-5 w-5">
           <IconArrowRampRight2
             onClick={selectEntity}
-            size={16}
+            size={12}
             color={!!relationships.length ? "green" : "red"}
           />
         </Button>
-        <Button variant="ghost" size="icon">
+        <Button variant="ghost" size="icon" className="h-5 w-5">
           <Trash
-            size={16}
+            size={12}
             onClick={() => {
               remove(relationshipId);
             }}
           />
         </Button>
       </div>
-      <HabitCard habit={habit} event={event} />
+      <div className="w-[93%]">
+        <HabitCard habit={habit} event={event} />
+      </div>
     </div>
   );
 };
