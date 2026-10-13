@@ -2,6 +2,7 @@
 import React, { FC, useState } from "react";
 
 import { RelationshipEntityType } from "@/app/utils/types/relationship";
+import { relationshipTypeFor } from "@/app/utils/relationships/relationship-types";
 import { useRelationshipsActions } from "@/app/utils/hooks/use-relationships/actions-context";
 import { useNotesActions } from "@/app/utils/hooks/use-notes/actions-context";
 import { useEntriesActions } from "@/app/utils/hooks/use-entry/actions-context";
@@ -68,6 +69,9 @@ export const CreateRelationshipsForm: FC<CreateEventFormProps> = ({
       source_type: source.type,
       target_id: target.id,
       target_type: target.type,
+      // what the edge means follows from what it joins, so no caller has to
+      // remember to say "this one is an occurrence"
+      relationship_type: relationshipTypeFor(source.type, target.type),
     });
 
   /** everything the line mentions, in the order the ids were collected */

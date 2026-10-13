@@ -2,6 +2,11 @@ import {
   IRelationship,
   RelationshipEntityType,
 } from "../../types/relationship";
+import {
+  isAllowedTarget,
+  isTerminalTaskStatus,
+} from "../../relationships/display-rules";
+import { useTasksNewState } from "../use-tasks-new/state-context";
 import { useRelationshipsState } from "./state-context";
 
 export const useRelationshipIdBetweenEntities = ({
@@ -92,53 +97,8 @@ export const useAllRelationshipsForEntity = ({
   return [...targets, ...sources];
 };
 
-const ALLOWED_TYPES: {
-  [key: string]: RelationshipEntityType[]; // TODO: fix. also maybe extract
-} = {
-  [RelationshipEntityType.Location]: [
-    RelationshipEntityType.Task,
-    RelationshipEntityType.Habit,
-    RelationshipEntityType.Project,
-  ],
-  [RelationshipEntityType.Event]: [
-    RelationshipEntityType.Task,
-    RelationshipEntityType.Habit,
-    RelationshipEntityType.Person,
-    RelationshipEntityType.Journal,
-    RelationshipEntityType.Note,
-    RelationshipEntityType.Location,
-    RelationshipEntityType.Project,
-  ],
-  [RelationshipEntityType.Person]: [
-    RelationshipEntityType.Task,
-    RelationshipEntityType.Journal,
-    RelationshipEntityType.Note,
-    RelationshipEntityType.Habit,
-    RelationshipEntityType.Event,
-  ],
-  [RelationshipEntityType.Project]: [
-    RelationshipEntityType.Task,
-    RelationshipEntityType.Note,
-  ],
-  [RelationshipEntityType.Task]: [
-    RelationshipEntityType.Task,
-    RelationshipEntityType.Note,
-    RelationshipEntityType.Person,
-    RelationshipEntityType.Location,
-  ],
-  [RelationshipEntityType.Journal]: [
-    RelationshipEntityType.Person,
-    RelationshipEntityType.Event,
-  ],
-  [RelationshipEntityType.Note]: [
-    RelationshipEntityType.Person,
-    RelationshipEntityType.Task,
-    RelationshipEntityType.Location,
-    RelationshipEntityType.Habit,
-    RelationshipEntityType.Project,
-  ],
-};
 
+/** the neighbours worth showing in the panel of the given entity */
 export const useRelevantRelationshipsForEntity = ({
   entityId,
   entityType,
@@ -147,8 +107,21 @@ export const useRelevantRelationshipsForEntity = ({
   entityType: RelationshipEntityType;
 }): IRelationship[] => {
   const relationships = useAllRelationshipsForEntity({ entityId, entityType });
+  const { data: tasks } = useTasksNewState();
 
-  return relationships.filter((r) =>
-    (ALLOWED_TYPES[entityType] || []).includes(r.target_type)
-  );
+  return relationships.filter((r) => {
+    if (!isAllowedTarget(entityType, r)) {
+      return false;
+    }
+
+    // A done or cancelled task is history. Dropping it here rather than in
+    // RelatedTask means the surrounding chrome - the action buttons, the
+    // "no stuff here" empty state - agrees about what is on screen.
+    if (r.target_type === RelationshipEntityType.Task) {
+      const task = tasks.find((t) => t.id === r.target_id);
+      return !!task && !isTerminalTaskStatus(task.status);
+    }
+
+    return true;
+  });
 };

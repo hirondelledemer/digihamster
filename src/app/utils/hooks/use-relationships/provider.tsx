@@ -14,10 +14,8 @@ import { RelationshipsActionsContext } from "./actions-context";
 import { getApiErrorMessage } from "../../axios";
 import { now } from "../../date/now";
 import { IRelationship } from "../../types/relationship";
+import { DEFAULT_RELATIONSHIP_TYPE } from "../../relationships/relationship-types";
 
-// the backend only knows one kind of link so far, and it is what it fills in
-// for a created relationship — the optimistic copy has to match it
-const DEFAULT_RELATIONSHIP_TYPE = "related";
 
 const handleApiError = (
   error: unknown,
@@ -87,11 +85,13 @@ export const RelationshipsContextProvider = ({
     async (data: CreateRelationshipParams, onDone?: () => void) => {
       const tempId = nextTempId();
 
+      // the optimistic copy has to carry the same type the backend will
+      // persist, otherwise the row changes meaning when the response lands
       const tempRelationship = {
         id: tempId,
-        relationship_type: DEFAULT_RELATIONSHIP_TYPE,
         ...data,
-      } as const satisfies IRelationship;
+        relationship_type: data.relationship_type ?? DEFAULT_RELATIONSHIP_TYPE,
+      } satisfies IRelationship;
 
       dispatch({
         type: RelationshipsStateActionType.CreateRelationship,

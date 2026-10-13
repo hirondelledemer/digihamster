@@ -44,54 +44,6 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { Button } from "../ui/button";
 import { Trash } from "lucide-react";
 import { useRelationshipsActions } from "@/app/utils/hooks/use-relationships/actions-context";
-import { TaskStatus } from "@/app/utils/types/task";
-
-const ALLOWED_TYPES: {
-  [key: string]: RelationshipEntityType[]; // TODO: fix. also maybe extract
-} = {
-  [RelationshipEntityType.Location]: [
-    RelationshipEntityType.Task,
-    RelationshipEntityType.Habit,
-    RelationshipEntityType.Project,
-  ],
-  [RelationshipEntityType.Event]: [
-    RelationshipEntityType.Task,
-    RelationshipEntityType.Habit,
-    RelationshipEntityType.Person,
-    RelationshipEntityType.Journal,
-    RelationshipEntityType.Note,
-    RelationshipEntityType.Location,
-    RelationshipEntityType.Project,
-  ],
-  [RelationshipEntityType.Person]: [
-    RelationshipEntityType.Task,
-    RelationshipEntityType.Journal,
-    RelationshipEntityType.Note,
-    RelationshipEntityType.Habit,
-    RelationshipEntityType.Event,
-  ],
-  [RelationshipEntityType.Project]: [
-    RelationshipEntityType.Task,
-    RelationshipEntityType.Note,
-  ],
-  [RelationshipEntityType.Task]: [
-    RelationshipEntityType.Task,
-    RelationshipEntityType.Note,
-    RelationshipEntityType.Person,
-    RelationshipEntityType.Location,
-  ],
-  [RelationshipEntityType.Journal]: [
-    RelationshipEntityType.Person,
-    RelationshipEntityType.Event,
-  ],
-  [RelationshipEntityType.Note]: [
-    RelationshipEntityType.Person,
-    RelationshipEntityType.Task,
-    RelationshipEntityType.Location,
-    RelationshipEntityType.Habit,
-    RelationshipEntityType.Project,
-  ],
-};
 
 const RelatedEntityActions: FC<{
   entityId: number;
@@ -114,11 +66,6 @@ const RelatedEntityActions: FC<{
       type: entityType,
     });
 
-  console.log("children", children);
-  if (!children) {
-    return null;
-  }
-
   return (
     <div className="relative w-full">
       <div className="absolute right-0 z-10 flex flex-col">
@@ -126,12 +73,13 @@ const RelatedEntityActions: FC<{
           <IconArrowRampRight2
             onClick={selectEntity}
             size={12}
-            color={!!relationships.length ? "grey" : "#e11d48"}
+            color={!!relationships.length ? "#e11d48" : "grey"}
           />
         </Button>
         <Button variant="ghost" size="icon" className="h-5 w-5">
           <Trash
             size={12}
+            color="grey"
             onClick={() => {
               remove(relationshipId);
             }}
@@ -516,7 +464,7 @@ export const RelatedJournal: FC<{ id: number; compact: boolean }> = ({
   const journal = useJournalEntryById(id);
   const relationships = useRelevantRelationshipsForEntity({
     entityId: id,
-    entityType: RelationshipEntityType.Habit,
+    entityType: RelationshipEntityType.Journal,
   });
 
   const { setActiveEntity, entities } = useContext(
@@ -580,7 +528,7 @@ export const RelatedProject: FC<{ id: number; compact: boolean }> = ({
   const project = useProjectById(id);
   const relationships = useRelevantRelationshipsForEntity({
     entityId: id,
-    entityType: RelationshipEntityType.Habit,
+    entityType: RelationshipEntityType.Project,
   });
 
   const task = useFirstTaskForTheProject(id);
@@ -657,11 +605,7 @@ export const RelatedTask: FC<{ id: number; compact: boolean }> = ({
       type: RelationshipEntityType.Task,
     });
 
-  if (
-    !task ||
-    task.status === TaskStatus.Cancelled ||
-    task.status === TaskStatus.Done
-  ) {
+  if (!task) {
     return null;
   }
 
@@ -824,7 +768,7 @@ export const EntityWithRelationships: FC<RelationshipPanelProps> = ({
   entityType,
   compact,
 }) => {
-  const relationships = useAllRelationshipsForEntity({
+  const relationships = useRelevantRelationshipsForEntity({
     entityId,
     entityType,
   });
@@ -832,16 +776,9 @@ export const EntityWithRelationships: FC<RelationshipPanelProps> = ({
   return (
     <div className="flex flex-col gap-2 items-center w-full">
       {relationships.map((r) => (
-        <RelatedEntity
-          key={Math.random()}
-          relationship={r}
-          compact={compact}
-          allowedTypes={ALLOWED_TYPES[entityType]}
-        />
+        <RelatedEntity key={r.id} relationship={r} compact={compact} />
       ))}
-      {!relationships.filter((r) =>
-        (ALLOWED_TYPES[entityType] || []).includes(r.target_type)
-      ).length && <div className="w-full">no stuff here</div>}
+      {!relationships.length && <div className="w-full">no stuff here</div>}
     </div>
   );
 };
