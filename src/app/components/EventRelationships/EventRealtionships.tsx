@@ -128,9 +128,15 @@ export function RelationshipNavigatorContextProvider({
       (e) => e.id === id && e.type === type
     );
     if (entityIndex !== -1) {
-      // keep the entity that was clicked - it is the one being navigated to.
-      // Without the +1 the root collapsed the stack to nothing.
-      setEntities((e) => e.slice(0, entityIndex + 1));
+      // The compact rail draws an entity that is already open as selected, so
+      // clicking it again means "close this" - drop it and everything after.
+      // That is how you get back out of a branch.
+      //
+      // The root is the exception: there is nothing before it to fall back to,
+      // so closing it collapses the stack to the root instead of emptying it.
+      setEntities((e) =>
+        entityIndex === 0 ? e.slice(0, 1) : e.slice(0, entityIndex)
+      );
     } else {
       setEntities((e) => [...e, { id, type }]);
     }
