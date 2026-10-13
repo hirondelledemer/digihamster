@@ -3,6 +3,7 @@ import React, { FC, useState } from "react";
 
 import { RelationshipEntityType } from "@/app/utils/types/relationship";
 import { relationshipTypeFor } from "@/app/utils/relationships/relationship-types";
+import { useEntityLabel } from "../use-entity-label";
 import { useRelationshipsActions } from "@/app/utils/hooks/use-relationships/actions-context";
 import { useNotesActions } from "@/app/utils/hooks/use-notes/actions-context";
 import { useEntriesActions } from "@/app/utils/hooks/use-entry/actions-context";
@@ -21,6 +22,7 @@ export interface CreateEventFormProps {
 }
 
 export const rteTestId = "CreateRelationshipsForm-rte-testId";
+export const headerTestId = "CreateRelationshipsForm-header-testId";
 
 const TITLE_LENGTH = 60;
 
@@ -48,6 +50,8 @@ export const CreateRelationshipsForm: FC<CreateEventFormProps> = ({
   const { create: createRelationship } = useRelationshipsActions();
   const { create: createNote } = useNotesActions();
   const { create: createEntry } = useEntriesActions();
+
+  const label = useEntityLabel(entityId, entityType);
 
   const placeholder = `Attach items to this ${entityType}`;
 
@@ -212,6 +216,16 @@ export const CreateRelationshipsForm: FC<CreateEventFormProps> = ({
 
   return (
     <div>
+      {/* the placeholder says the same thing but disappears on the first
+          keystroke, which is exactly when it stops being obvious what the
+          line is going to be attached to */}
+      <div
+        className="mb-2 text-sm text-muted-foreground"
+        data-testid={headerTestId}
+      >
+        Attach to this {entityType}
+        {label && <span className="text-foreground">: {label}</span>}
+      </div>
       <RichTextEditor
         testId={rteTestId}
         editor={editor}

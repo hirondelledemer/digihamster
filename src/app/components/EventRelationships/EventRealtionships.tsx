@@ -1,8 +1,5 @@
 import { useEventById } from "@/app/utils/hooks/use-events/selectors";
-import {
-  useAllRelationshipsForEntity,
-  useRelevantRelationshipsForEntity,
-} from "@/app/utils/hooks/use-relationships/selectors";
+import { useRelevantRelationshipsForEntity } from "@/app/utils/hooks/use-relationships/selectors";
 import {
   IRelationship,
   RelationshipEntityType,
@@ -105,7 +102,8 @@ type RelationshipNavigatorValue = {
     type: RelationshipEntityType;
   }): void;
 };
-const RelationshipNavigatorContext = createContext<RelationshipNavigatorValue>({
+export const RelationshipNavigatorContext =
+  createContext<RelationshipNavigatorValue>({
   entities: [] as NavigatorItem[],
   setActiveEntity: () => {},
 });
@@ -130,7 +128,9 @@ export function RelationshipNavigatorContextProvider({
       (e) => e.id === id && e.type === type
     );
     if (entityIndex !== -1) {
-      setEntities((e) => e.slice(0, entityIndex));
+      // keep the entity that was clicked - it is the one being navigated to.
+      // Without the +1 the root collapsed the stack to nothing.
+      setEntities((e) => e.slice(0, entityIndex + 1));
     } else {
       setEntities((e) => [...e, { id, type }]);
     }
@@ -159,10 +159,11 @@ export interface RelatedEventProps {
 export const RelatedEvent: FC<RelatedEventProps> = ({ id, compact }) => {
   const event = useEventById(id);
 
-  const relationships = useAllRelationshipsForEntity({
+  const relationships = useRelevantRelationshipsForEntity({
     entityId: id,
     entityType: RelationshipEntityType.Event,
   });
+
   if (!event) {
     return null;
   }
@@ -179,22 +180,15 @@ export const RelatedEvent: FC<RelatedEventProps> = ({ id, compact }) => {
   }
 
   return (
-    <>
-      <EventActions event={event}>
-        <Card className="p-0 rounded-md">
-          <CardHeader className="p-4 pt-2">
-            <CardTitle className="font-normal flex items-center justify-between">
-              <div>{event.title}</div>
-            </CardTitle>
-          </CardHeader>
-        </Card>
-      </EventActions>
-      <div>
-        {relationships.map((r) => (
-          <RelatedEntityIcon key={Math.random()} relationship={r} />
-        ))}
-      </div>
-    </>
+    <EventActions event={event}>
+      <Card className="p-0 rounded-md">
+        <CardHeader className="p-4 pt-2">
+          <CardTitle className="font-normal flex items-center justify-between">
+            <div>{event.title}</div>
+          </CardTitle>
+        </CardHeader>
+      </Card>
+    </EventActions>
   );
 };
 
@@ -507,16 +501,9 @@ export const RelatedJournal: FC<{ id: number; compact: boolean }> = ({
     );
   }
   return (
-    <div>
-      <Card className="p-0 rounded-md">
-        <MinimalNote note={journal.json_note} />
-      </Card>
-      <div>
-        {relationships.map((r) => (
-          <RelatedEntityIcon key={Math.random()} relationship={r} />
-        ))}
-      </div>
-    </div>
+    <Card className="p-0 rounded-md">
+      <MinimalNote note={journal.json_note} />
+    </Card>
   );
 };
 
@@ -791,6 +778,13 @@ export const RelationshipPanel: FC = () => {
 
   const { entities } = useContext(RelationshipNavigatorContext);
 
+  // the stack always holds at least the entity it was opened on
+  const activeEntity = entities[entities.length - 1];
+
+  if (!activeEntity) {
+    return null;
+  }
+
   return (
     <div>
       <div className="flex gap-2 mb-4">
@@ -808,8 +802,8 @@ export const RelationshipPanel: FC = () => {
         ))}
       </div>
       <CreateRelationshipsForm
-        entityId={entities[entities.length - 1].id}
-        entityType={entities[entities.length - 1].type}
+        entityId={activeEntity.id}
+        entityType={activeEntity.type}
       />
     </div>
   );
