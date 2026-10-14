@@ -12,6 +12,8 @@ import { Button } from "../ui/button";
 import { IconArrowLeft } from "@tabler/icons-react";
 import { ActiveEventInfo } from "./components/ActiveEventInfo";
 
+export const eventTitleTestId = "ActiveContext-event-title-testid";
+
 export const ActiveContext: FC = (): JSX.Element | null => {
   const currentEvent = useCurrentEvent();
   const searchParams = useSearchParams();
@@ -51,7 +53,9 @@ export const ActiveContext: FC = (): JSX.Element | null => {
         >
           <IconArrowLeft />
         </Button>
-        <div className="text-xl">{selectedEvent.title}</div>
+        <div className="text-xl" data-testid={eventTitleTestId}>
+          {selectedEvent.title}
+        </div>
       </div>
       <ActiveEventInfo event={selectedEvent} />
     </div>

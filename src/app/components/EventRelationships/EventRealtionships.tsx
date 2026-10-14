@@ -23,18 +23,28 @@ import {
 } from "@/app/utils/hooks/use-tasks-new/selectors";
 import TaskCard from "../TaskCard";
 import {
-  Icon24Hours,
   IconArrowRampRight2,
   IconCalendar,
   IconCheckbox,
   IconFeather,
-  IconFolder,
   IconManFilled,
   IconMapPin,
   IconNote,
-  IconProgress,
 } from "@tabler/icons-react";
 import { CreateRelationshipsForm } from "./components/RelationshipForm";
+import {
+  NavigatorColumn,
+  RelationshipNavigatorContext,
+  RelationshipNavigatorContextProvider,
+  useNavigator,
+} from "./navigator-context";
+
+export {
+  RelationshipNavigatorContext,
+  RelationshipNavigatorContextProvider,
+} from "./navigator-context";
+import { NavigatorPath } from "./NavigatorPath";
+import { EntityTypeIcon } from "./entity-type-icon";
 import { HabitCard } from "../HabitCard";
 import { useHabitLifeAspectAssetIcon } from "@/app/utils/hooks/use-life-aspects/selectors";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
@@ -53,7 +63,7 @@ const RelatedEntityActions: FC<{
     entityType,
   });
 
-  const { setActiveEntity } = useContext(RelationshipNavigatorContext);
+  const { setActiveEntity } = useNavigator();
 
   const { delete: remove } = useRelationshipsActions();
 
@@ -87,72 +97,6 @@ const RelatedEntityActions: FC<{
     </div>
   );
 };
-
-type NavigatorItem = {
-  id: number;
-  type: RelationshipEntityType;
-};
-type RelationshipNavigatorValue = {
-  entities: NavigatorItem[];
-  setActiveEntity({
-    id,
-    type,
-  }: {
-    id: number;
-    type: RelationshipEntityType;
-  }): void;
-};
-export const RelationshipNavigatorContext =
-  createContext<RelationshipNavigatorValue>({
-  entities: [] as NavigatorItem[],
-  setActiveEntity: () => {},
-});
-
-export function RelationshipNavigatorContextProvider({
-  initialItem,
-  children,
-}: {
-  initialItem: { id: number; type: RelationshipEntityType };
-  children: ReactNode;
-}) {
-  const [entities, setEntities] = useState<NavigatorItem[]>([initialItem]);
-
-  const setActiveEntity = ({
-    id,
-    type,
-  }: {
-    id: number;
-    type: RelationshipEntityType;
-  }) => {
-    const entityIndex = entities.findIndex(
-      (e) => e.id === id && e.type === type
-    );
-    if (entityIndex !== -1) {
-      // The compact rail draws an entity that is already open as selected, so
-      // clicking it again means "close this" - drop it and everything after.
-      // That is how you get back out of a branch.
-      //
-      // The root is the exception: there is nothing before it to fall back to,
-      // so closing it collapses the stack to the root instead of emptying it.
-      setEntities((e) =>
-        entityIndex === 0 ? e.slice(0, 1) : e.slice(0, entityIndex)
-      );
-    } else {
-      setEntities((e) => [...e, { id, type }]);
-    }
-  };
-
-  return (
-    <RelationshipNavigatorContext.Provider
-      value={{
-        entities,
-        setActiveEntity,
-      }}
-    >
-      {children}
-    </RelationshipNavigatorContext.Provider>
-  );
-}
 
 //////////
 
@@ -206,9 +150,7 @@ export const RelatedHabit: FC<{
 
   const icon = useHabitLifeAspectAssetIcon(habit);
 
-  const { entities, setActiveEntity } = useContext(
-    RelationshipNavigatorContext
-  );
+  const { entities, setActiveEntity } = useNavigator();
 
   const eventId = entities.findLast(
     (e) => e.type === RelationshipEntityType.Event
@@ -289,7 +231,7 @@ export const RelatedLocation: FC<{
     entityId: id,
     entityType: RelationshipEntityType.Location,
   });
-  const { setActiveEntity } = useContext(RelationshipNavigatorContext);
+  const { setActiveEntity } = useNavigator();
 
   const selectEntity = () =>
     setActiveEntity({
@@ -362,9 +304,7 @@ export const RelatedPerson: FC<{ id: number; compact: boolean }> = ({
     entityType: RelationshipEntityType.Person,
   });
 
-  const { setActiveEntity, entities } = useContext(
-    RelationshipNavigatorContext
-  );
+  const { setActiveEntity, entities } = useNavigator();
 
   const selectEntity = () =>
     setActiveEntity({
@@ -467,9 +407,7 @@ export const RelatedJournal: FC<{ id: number; compact: boolean }> = ({
     entityType: RelationshipEntityType.Journal,
   });
 
-  const { setActiveEntity, entities } = useContext(
-    RelationshipNavigatorContext
-  );
+  const { setActiveEntity, entities } = useNavigator();
 
   const selectEntity = () =>
     setActiveEntity({
@@ -526,9 +464,7 @@ export const RelatedProject: FC<{ id: number; compact: boolean }> = ({
 
   const task = useFirstTaskForTheProject(id);
 
-  const { entities, setActiveEntity } = useContext(
-    RelationshipNavigatorContext
-  );
+  const { entities, setActiveEntity } = useNavigator();
 
   const selectEntity = () =>
     setActiveEntity({
@@ -588,9 +524,7 @@ export const RelatedTask: FC<{ id: number; compact: boolean }> = ({
     entityType: RelationshipEntityType.Task,
   });
   const { main: color } = useTaskProjectColor(task);
-  const { setActiveEntity, entities } = useContext(
-    RelationshipNavigatorContext
-  );
+  const { setActiveEntity, entities } = useNavigator();
 
   const selectEntity = () =>
     setActiveEntity({
@@ -685,68 +619,7 @@ export interface RelatedEntityIconProps {
 }
 export const RelatedEntityIcon: FC<RelatedEntityIconProps> = ({
   relationship,
-}) => {
-  switch (relationship.target_type) {
-    case RelationshipEntityType.Event:
-      return (
-        <IconCalendar
-          size={16}
-          // onClick={() => selectEntity(RelationshipEntityType.Event)}
-        />
-      );
-    case RelationshipEntityType.Habit:
-      return (
-        <Icon24Hours
-          size={16}
-          // onClick={() => selectEntity(RelationshipEntityType.Habit)}
-        />
-      );
-    case RelationshipEntityType.Journal:
-      return (
-        <IconFeather
-          size={16}
-          // onClick={() => selectEntity(RelationshipEntityType.Journal)}
-        />
-      );
-    case RelationshipEntityType.Location:
-      return (
-        <IconMapPin
-          size={16}
-          // onClick={() => selectEntity(RelationshipEntityType.Location)}
-        />
-      );
-    case RelationshipEntityType.Note:
-      return (
-        <IconNote
-          size={16}
-          // onClick={() => selectEntity(RelationshipEntityType.Note)}
-        />
-      );
-    case RelationshipEntityType.Person:
-      return (
-        <IconManFilled
-          size={16}
-          // onClick={() => selectEntity(RelationshipEntityType.Person)}
-        />
-      );
-    case RelationshipEntityType.Project:
-      return (
-        <IconFolder
-          size={16}
-          // onClick={() => selectEntity(RelationshipEntityType.Project)}
-        />
-      );
-    case RelationshipEntityType.Task:
-      return (
-        <IconProgress
-          size={16}
-          // onClick={() => selectEntity(RelationshipEntityType.Task)}
-        />
-      );
-    default:
-      return <div>error</div>;
-  }
-};
+}) => <EntityTypeIcon type={relationship.target_type} size={16} />;
 
 //////
 
@@ -793,19 +666,30 @@ export const RelationshipPanel: FC = () => {
 
   return (
     <div>
-      <div className="flex gap-2 mb-4">
-        {entities.map((e, idx) => (
-          <div
-            key={Math.random()}
-            className={idx === entities.length - 1 ? "grow" : ""}
-          >
-            <EntityWithRelationships
-              entityId={e.id}
-              entityType={e.type}
-              compact={idx !== entities.length - 1}
-            />
-          </div>
-        ))}
+      <NavigatorPath />
+      <div className="mb-4 flex gap-2">
+        {entities.map((e, idx) => {
+          const isCurrent = idx === entities.length - 1;
+
+          return (
+            <NavigatorColumn key={Math.random()} index={idx}>
+              <div
+                // the levels you came through read as stacked rails rather
+                // than loose icons, so it is obvious they are not part of the
+                // panel
+                className={
+                  isCurrent ? "grow" : "shrink-0 rounded-md bg-muted/40 p-1"
+                }
+              >
+                <EntityWithRelationships
+                  entityId={e.id}
+                  entityType={e.type}
+                  compact={!isCurrent}
+                />
+              </div>
+            </NavigatorColumn>
+          );
+        })}
       </div>
       <CreateRelationshipsForm
         entityId={activeEntity.id}
