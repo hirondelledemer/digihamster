@@ -4,7 +4,7 @@ import {
   IRelationship,
   RelationshipEntityType,
 } from "@/app/utils/types/relationship";
-import { createContext, FC, ReactNode, useContext, useState } from "react";
+import { FC, ReactNode, useContext } from "react";
 import { EventActions } from "../EventActions";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { useHabitById } from "@/app/utils/hooks/use-habits-new/selectors";
