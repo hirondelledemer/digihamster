@@ -1,3 +1,4 @@
+import { ProjectStatus } from "../types/project";
 import { IRelationship, RelationshipEntityType } from "../types/relationship";
 import { TaskStatus } from "../types/task";
 
@@ -84,3 +85,12 @@ const TERMINAL_TASK_STATUSES = [TaskStatus.Done, TaskStatus.Cancelled];
 
 export const isTerminalTaskStatus = (status: TaskStatus): boolean =>
   TERMINAL_TASK_STATUSES.includes(status);
+
+const TERMINAL_PROJECT_STATUSES = [
+  ProjectStatus.Cancelled,
+  ProjectStatus.Done,
+  ProjectStatus.Todo,
+];
+
+export const isTerminalProjectStatus = (status: ProjectStatus): boolean =>
+  TERMINAL_PROJECT_STATUSES.includes(status);

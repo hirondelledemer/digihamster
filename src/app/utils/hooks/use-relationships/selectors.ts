@@ -4,10 +4,12 @@ import {
 } from "../../types/relationship";
 import {
   isAllowedTarget,
+  isTerminalProjectStatus,
   isTerminalTaskStatus,
 } from "../../relationships/display-rules";
 import { useTasksNewState } from "../use-tasks-new/state-context";
 import { useRelationshipsState } from "./state-context";
+import { useProjectsState } from "../use-projects/state-context";
 
 export const useRelationshipIdBetweenEntities = ({
   targetId,
@@ -97,7 +99,6 @@ export const useAllRelationshipsForEntity = ({
   return [...targets, ...sources];
 };
 
-
 /** the neighbours worth showing in the panel of the given entity */
 export const useRelevantRelationshipsForEntity = ({
   entityId,
@@ -108,6 +109,7 @@ export const useRelevantRelationshipsForEntity = ({
 }): IRelationship[] => {
   const relationships = useAllRelationshipsForEntity({ entityId, entityType });
   const { data: tasks } = useTasksNewState();
+  const { data: projects } = useProjectsState();
 
   return relationships.filter((r) => {
     if (!isAllowedTarget(entityType, r)) {
@@ -120,6 +122,11 @@ export const useRelevantRelationshipsForEntity = ({
     if (r.target_type === RelationshipEntityType.Task) {
       const task = tasks.find((t) => t.id === r.target_id);
       return !!task && !isTerminalTaskStatus(task.status);
+    }
+
+    if (r.target_type === RelationshipEntityType.Project) {
+      const project = projects.find((p) => p.id === r.target_id);
+      return !!project && !isTerminalProjectStatus(project.status);
     }
 
     return true;
