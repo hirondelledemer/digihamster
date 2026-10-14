@@ -2,7 +2,7 @@ import { FC, Fragment, useContext } from "react";
 import { IconChevronRight } from "@tabler/icons-react";
 import { RelationshipEntityType } from "@/app/utils/types/relationship";
 import { RelationshipNavigatorContext } from "./navigator-context";
-import { EntityTypeIcon } from "./entity-type-icon";
+import { EntityTypeIcon } from "./components/EntityTypeIcon";
 import { useEntityColor } from "./use-entity-color";
 import { useEntityLabel } from "./use-entity-label";
 

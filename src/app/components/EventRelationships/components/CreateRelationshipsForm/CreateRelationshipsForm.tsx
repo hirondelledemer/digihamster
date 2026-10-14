@@ -3,13 +3,13 @@ import React, { FC, useState } from "react";
 
 import { RelationshipEntityType } from "@/app/utils/types/relationship";
 import { relationshipTypeFor } from "@/app/utils/relationships/relationship-types";
-import { useEntityLabel } from "../use-entity-label";
+import { useEntityLabel } from "../../use-entity-label";
 import { useRelationshipsActions } from "@/app/utils/hooks/use-relationships/actions-context";
 import { useNotesActions } from "@/app/utils/hooks/use-notes/actions-context";
 import { useEntriesActions } from "@/app/utils/hooks/use-entry/actions-context";
 import { useRte } from "@/app/utils/rte/rte-hook";
-import RichTextEditor from "../../RichTextEditor";
-import { Button } from "../../ui/button";
+import RichTextEditor from "../../../RichTextEditor";
+import { Button } from "../../../ui/button";
 import {
   LineKind,
   ParsedLine,

@@ -31,7 +31,7 @@ import {
   IconMapPin,
   IconNote,
 } from "@tabler/icons-react";
-import { CreateRelationshipsForm } from "./components/RelationshipForm";
+import { CreateRelationshipsForm } from "./components/CreateRelationshipsForm/CreateRelationshipsForm";
 import {
   NavigatorColumn,
   RelationshipNavigatorContext,
@@ -44,7 +44,7 @@ export {
   RelationshipNavigatorContextProvider,
 } from "./navigator-context";
 import { NavigatorPath } from "./NavigatorPath";
-import { EntityTypeIcon } from "./entity-type-icon";
+import { EntityTypeIcon } from "./components/EntityTypeIcon";
 import { HabitCard } from "../HabitCard";
 import { useHabitLifeAspectAssetIcon } from "@/app/utils/hooks/use-life-aspects/selectors";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";

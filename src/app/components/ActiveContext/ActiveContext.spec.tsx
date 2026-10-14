@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from "@/config/utils/test-utils";
+import { fireEvent, render, screen } from "@/config/utils/test-utils";
 import { ActiveContext, eventTitleTestId } from "./ActiveContext";
 import { EventsStateContext } from "@/app/utils/hooks/use-events/state-context";
 import { EventsState } from "@/app/utils/hooks/use-events/actions";

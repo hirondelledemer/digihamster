@@ -1,0 +1,1 @@
+export { EntityTypeIcon } from "./EntityTypeIcon";
