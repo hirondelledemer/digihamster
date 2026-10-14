@@ -14,10 +14,8 @@ import { RelationshipsActionsContext } from "./actions-context";
 import { getApiErrorMessage } from "../../axios";
 import { now } from "../../date/now";
 import { IRelationship } from "../../types/relationship";
+import { DEFAULT_RELATIONSHIP_TYPE } from "../../relationships/relationship-types";
 
-// the backend only knows one kind of link so far, and it is what it fills in
-// for a created relationship — the optimistic copy has to match it
-const DEFAULT_RELATIONSHIP_TYPE = "related";
 
 const handleApiError = (
   error: unknown,
@@ -54,6 +52,15 @@ const fetchRelationships = async (
   }
 };
 
+/**
+ * One submit can create a whole batch of relationships at once, so the
+ * placeholder id cannot come from the clock alone — calls landing in the same
+ * millisecond would share an id and overwrite each other's optimistic row.
+ * Adding an ever growing offset keeps the ids strictly decreasing.
+ */
+let tempIdOffset = 0;
+const nextTempId = () => -(now().valueOf() + tempIdOffset++);
+
 export const RelationshipsContextProvider = ({
   children,
 }: {
@@ -76,13 +83,15 @@ export const RelationshipsContextProvider = ({
 
   const createRelationship = useCallback(
     async (data: CreateRelationshipParams, onDone?: () => void) => {
-      const tempId = -now().valueOf();
+      const tempId = nextTempId();
 
+      // the optimistic copy has to carry the same type the backend will
+      // persist, otherwise the row changes meaning when the response lands
       const tempRelationship = {
         id: tempId,
-        relationship_type: DEFAULT_RELATIONSHIP_TYPE,
         ...data,
-      } as const satisfies IRelationship;
+        relationship_type: data.relationship_type ?? DEFAULT_RELATIONSHIP_TYPE,
+      } satisfies IRelationship;
 
       dispatch({
         type: RelationshipsStateActionType.CreateRelationship,

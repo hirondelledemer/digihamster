@@ -39,7 +39,7 @@ export interface CrudStoreConfig<
   Entity extends { id: number },
   CreateParams,
   Extra,
-  ExtraAction extends UnknownAction,
+  ExtraAction extends UnknownAction
 > {
   /** Used in toasts: "Location has been created". */
   entityName: string;
@@ -79,7 +79,7 @@ export function createCrudStore<
   Entity extends { id: number },
   CreateParams,
   Extra = object,
-  ExtraAction extends UnknownAction = never,
+  ExtraAction extends UnknownAction = never
 >(config: CrudStoreConfig<Entity, CreateParams, Extra, ExtraAction>) {
   type Action = CrudAction<Entity> | ExtraAction;
   type ActionsValue = CrudActions<Entity, CreateParams> & Extra;
@@ -107,7 +107,7 @@ export function createCrudStore<
   ): CrudState<Entity> =>
     isCrudAction<Entity>(action)
       ? crudReducer(state, action)
-      : (config.extraReducer?.(state, action) ?? state);
+      : config.extraReducer?.(state, action) ?? state;
 
   const useExtraActions = (config.useExtraActions ?? useNoExtraActions) as (
     args: ExtraActionsArgs<Entity, Action>
@@ -232,7 +232,7 @@ export function createCrudStore<
           update,
           delete: remove,
           ...extraActions,
-        }) as ActionsValue,
+        } as ActionsValue),
       [create, update, remove, extraActions]
     );
 

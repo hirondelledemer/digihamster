@@ -44,3 +44,15 @@ export const usePeopleGroupedByEvents = (): GroupedPeople | undefined => {
 
   return groupedPeople;
 };
+
+export const usePersonById = (
+  id: number | null | undefined
+): IPerson | null => {
+  const { data } = usePeopleState();
+
+  if (id === null || id === undefined) {
+    return null;
+  }
+
+  return data.find((person) => person.id === id) ?? null;
+};

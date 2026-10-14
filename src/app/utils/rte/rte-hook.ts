@@ -2,6 +2,7 @@ import { Content, JSONContent, useEditor } from "@tiptap/react";
 import Mention from "@tiptap/extension-mention";
 import StarterKit from "@tiptap/starter-kit";
 import { reduce } from "remeda";
+import { Placeholder } from "@tiptap/extensions";
 import styles from "./rte-hook.module.scss";
 import { PluginKey } from "@tiptap/pm/state";
 import { getMentionsConfig } from "./suggestions";
@@ -101,13 +102,18 @@ const ParamsMention = Mention.extend({
 export function useRte({
   value,
   editable,
+  placeholder,
 }: {
   value: Content;
   editable: boolean;
+  placeholder?: string;
 }) {
   const editor = useEditor({
     extensions: [
       StarterKit,
+      Placeholder.configure({
+        placeholder,
+      }),
       CustomMention.configure({
         HTMLAttributes: {
           class: styles.tag,

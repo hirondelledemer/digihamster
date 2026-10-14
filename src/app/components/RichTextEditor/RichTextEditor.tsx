@@ -8,6 +8,7 @@ export interface RichTextEditorProps {
   editor: Editor | null;
   onKeyDown?(event: React.KeyboardEvent<HTMLDivElement>): void;
   onBlur?(): void;
+  placeholder?: string;
 }
 
 export const textareaTestId = "textarea-testid";
@@ -17,6 +18,7 @@ const RichTextEditorM: FC<RichTextEditorProps> = ({
   editor,
   onKeyDown,
   onBlur,
+  placeholder,
 }): JSX.Element => {
   if (!editor) {
     return <div>Error: editor not provided</div>;
@@ -24,7 +26,12 @@ const RichTextEditorM: FC<RichTextEditorProps> = ({
 
   return (
     <div data-testid={testId}>
-      <EditorContent editor={editor} onKeyDown={onKeyDown} onBlur={onBlur} />
+      <EditorContent
+        editor={editor}
+        onKeyDown={onKeyDown}
+        onBlur={onBlur}
+        placeholder={placeholder}
+      />
     </div>
   );
 };

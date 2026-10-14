@@ -39,13 +39,13 @@ export const Home = (): JSX.Element => {
       <ResizableHandle />
       <ResizablePanel>
         <div className="flex h-screen gap-4">
-          <div className="flex flex-col p-6 pb-12 w-[400px]">
+          <div className="flex flex-col p-6 pb-12 grow">
             <Suspense>
               <ActiveContext />
             </Suspense>
           </div>
 
-          <div className="flex p-6 pl-0 pb-12 flex-col grow gap-4">
+          <div className="flex p-6 pl-0 pb-12 flex-col gap-4">
             <Agent />
             <ProjectProgress />
             <div className="max-h-[400px] overflow-auto p-[1px]">

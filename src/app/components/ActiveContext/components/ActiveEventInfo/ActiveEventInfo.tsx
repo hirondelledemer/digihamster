@@ -3,34 +3,21 @@
 
 import React, { FC } from "react";
 
-import {
-  useFirstTaskForTheProjects,
-  useTasksForEvent,
-} from "@/app/utils/hooks/use-tasks-new/selectors";
 import { IEvent } from "@/app/utils/types/event";
 
-import TaskCard from "@/app/components/TaskCard";
 import { ScrollArea } from "@/app/components/ui/scroll-area";
-import { useJournalEntriesForEvent } from "@/app/utils/hooks/use-entry/selectors";
-import MinimalNote from "@/app/components/MinimalNote";
-import { useHabitsForEvent } from "@/app/utils/hooks/use-habits-new/selectors";
-import { HabitCard } from "@/app/components/HabitCard/HabitCard";
 import { format, isSameDay } from "date-fns";
 import { now } from "@/app/utils/date/now";
-import { useProjectsForTheEventByLocation } from "@/app/utils/hooks/use-projects/selectors";
+import { RelationshipEntityType } from "@/app/utils/types/relationship";
+import { RelationshipNavigator } from "@/app/components/EventRelationships/components/RelationshipNavigator";
 
 interface ActiveEventInfoProps {
   event: IEvent;
 }
+
 export const ActiveEventInfo: FC<ActiveEventInfoProps> = ({
   event,
 }): JSX.Element | null => {
-  const tasks = useTasksForEvent(event.id);
-  const entries = useJournalEntriesForEvent(event.id);
-  const habits = useHabitsForEvent(event.id);
-  const projects = useProjectsForTheEventByLocation(event.id);
-  const suggestedTasks = useFirstTaskForTheProjects(projects.map((p) => p.id));
-
   const isEventToday = isSameDay(event.start_at, now());
 
   return (
@@ -43,29 +30,12 @@ export const ActiveEventInfo: FC<ActiveEventInfoProps> = ({
           {format(event.start_at, "HH:mm")} - {format(event.end_at, "HH:mm")}
         </div>
       </div>
-      <ScrollArea className="h-[50%] pb-[60px]">
+      <ScrollArea className="h-full pb-[60px]">
         <div className="flex flex-col gap-4">
-          {tasks.map((task) => (
-            <TaskCard key={task.id} task={task} />
-          ))}
-          {habits.map((habit) => (
-            <HabitCard key={habit.id} habit={habit} event={event} />
-          ))}
-          {tasks.length + habits.length === 0 && (
-            <>
-              <div>There are no tasks here. Pick something?</div>
-              {suggestedTasks.map((task) => (
-                <TaskCard key={task.id} task={task} indicateActive />
-              ))}
-            </>
-          )}
-        </div>
-      </ScrollArea>
-      <ScrollArea className="h-[50%] pb-[60px]">
-        <div className="flex flex-col gap-4">
-          {entries.map((entry) => (
-            <MinimalNote key={entry.id} note={entry.json_note || entry.note} />
-          ))}
+          <RelationshipNavigator
+            entityId={event.id}
+            entityType={RelationshipEntityType.Event}
+          />
         </div>
       </ScrollArea>
     </div>

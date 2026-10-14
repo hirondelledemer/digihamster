@@ -1,5 +1,5 @@
 import { fireEvent, render, screen } from "@/config/utils/test-utils";
-import { ActiveContext } from "./ActiveContext";
+import { ActiveContext, eventTitleTestId } from "./ActiveContext";
 import { EventsStateContext } from "@/app/utils/hooks/use-events/state-context";
 import { EventsState } from "@/app/utils/hooks/use-events/actions";
 import { generateEvent } from "@/app/utils/mocks/event";
@@ -30,7 +30,7 @@ describe("ActiveContext", () => {
         isLoading: false,
       };
 
-      it("should show the event from query params, even if currentEvent is different", () => {
+      it("should show the event from query params, even if currentEvent is different", async () => {
         (useSearchParams as jest.Mock).mockReturnValue({
           get: () => String(EVENT.id),
         });
@@ -41,7 +41,9 @@ describe("ActiveContext", () => {
           </EventsStateContext.Provider>
         );
 
-        expect(screen.getByText(EVENT.title)).toBeInTheDocument();
+        expect(screen.getByTestId(eventTitleTestId)).toHaveTextContent(
+          EVENT.title
+        );
       });
 
       it("pressing x would remove the selected sevent from query params", async () => {
@@ -81,7 +83,9 @@ describe("ActiveContext", () => {
           </EventsStateContext.Provider>
         );
 
-        expect(screen.getByText(CURRENT_EVENT.title)).toBeInTheDocument();
+        expect(screen.getByTestId(eventTitleTestId)).toHaveTextContent(
+          CURRENT_EVENT.title
+        );
       });
     });
 

@@ -46,11 +46,12 @@ const TaskCard: FC<TaskCardProps> = ({
   };
 
   return (
-    <div data-testid={testId}>
+    // TODO: find out if this the outer layer needed at all
+    <div data-testid={testId} className="w-full">
       <TaskActions task={task}>
         <Card
           data-testid={cardTestId}
-          className={`p-0 rounded-md ${
+          className={`p-0 rounded-md w-full ${
             task.status === "done" ? "opacity-40 line-through" : ""
           }`}
           ref={setNodeRef}

@@ -47,3 +47,15 @@ export const useLocationsGroupedByEvents = (): GroupedLocations | undefined => {
 
   return groupedLocations;
 };
+
+export const useLocationById = (
+  id: number | null | undefined
+): ILocation | null => {
+  const { data } = useLocationsState();
+
+  if (id === null || id === undefined) {
+    return null;
+  }
+
+  return data.find((location) => location.id === id) ?? null;
+};

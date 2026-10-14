@@ -1,4 +1,5 @@
 import apiClient from "../../api-client";
+import { RelationshipType } from "../../relationships/relationship-types";
 import { IRelationship } from "../../types/relationship";
 
 export type FieldsRequired = Pick<
@@ -6,7 +7,10 @@ export type FieldsRequired = Pick<
   "source_type" | "source_id" | "target_id" | "target_type"
 >;
 
-export type CreateRelationshipParams = FieldsRequired;
+export type CreateRelationshipParams = FieldsRequired & {
+  /** omitted means the backend applies its default of `related` */
+  relationship_type?: RelationshipType;
+};
 
 export const RELATIONSHIPS_PATH = "/relationships";
 

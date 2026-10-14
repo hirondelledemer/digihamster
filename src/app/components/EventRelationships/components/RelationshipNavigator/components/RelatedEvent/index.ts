@@ -1,0 +1,1 @@
+export { RelatedEvent } from "./RelatedEvent";
