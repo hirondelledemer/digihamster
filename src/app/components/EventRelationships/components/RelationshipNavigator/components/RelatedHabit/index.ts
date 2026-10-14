@@ -1,0 +1,1 @@
+export { RelatedHabit } from "./RelatedHabit";

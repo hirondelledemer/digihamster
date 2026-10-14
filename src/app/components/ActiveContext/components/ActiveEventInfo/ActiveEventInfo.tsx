@@ -8,8 +8,8 @@ import { IEvent } from "@/app/utils/types/event";
 import { ScrollArea } from "@/app/components/ui/scroll-area";
 import { format, isSameDay } from "date-fns";
 import { now } from "@/app/utils/date/now";
-import { RelationshipNavigator } from "@/app/components/EventRelationships/EventRealtionships";
 import { RelationshipEntityType } from "@/app/utils/types/relationship";
+import { RelationshipNavigator } from "@/app/components/EventRelationships/components/RelationshipNavigator";
 
 interface ActiveEventInfoProps {
   event: IEvent;

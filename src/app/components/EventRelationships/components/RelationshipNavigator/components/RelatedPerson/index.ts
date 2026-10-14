@@ -1,0 +1,1 @@
+export { RelatedPerson } from "./RelatedPerson";

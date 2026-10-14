@@ -9,7 +9,7 @@ import { NavigatorPath, crumbTestId } from "./NavigatorPath";
 import {
   RelationshipNavigatorContext,
   RelationshipNavigatorContextProvider,
-} from "./navigator-context";
+} from "../../../../navigator-context";
 
 const EVENT = generateEvent(1, { title: "Morning standup" });
 const PERSON = generatePerson(2, { name: "Mom" });

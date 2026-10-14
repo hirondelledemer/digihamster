@@ -1,10 +1,10 @@
 import { FC, Fragment, useContext } from "react";
 import { IconChevronRight } from "@tabler/icons-react";
 import { RelationshipEntityType } from "@/app/utils/types/relationship";
-import { RelationshipNavigatorContext } from "./navigator-context";
-import { EntityTypeIcon } from "./components/EntityTypeIcon";
-import { useEntityColor } from "./use-entity-color";
-import { useEntityLabel } from "./use-entity-label";
+import { RelationshipNavigatorContext } from "../../../../navigator-context";
+import { EntityTypeIcon } from "../../../EntityTypeIcon";
+import { useEntityColor } from "../../../../use-entity-color";
+import { useEntityLabel } from "../../../../use-entity-label";
 
 export const pathTestId = "NavigatorPath-testid";
 export const crumbTestId = "NavigatorPath-crumb-testid";
