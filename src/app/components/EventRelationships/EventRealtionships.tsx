@@ -123,7 +123,7 @@ export const RelatedEvent: FC<RelatedEventProps> = ({ id, compact }) => {
       <div className="flex flex-col items-center gap-1">
         <IconCalendar size={24} aria-label="location" />
         {relationships.map((r) => (
-          <RelatedEntityIcon key={Math.random()} relationship={r} />
+          <RelatedEntityIcon key={r.id} relationship={r} />
         ))}
       </div>
     );
@@ -194,7 +194,7 @@ export const RelatedHabit: FC<{
           </TooltipContent>
         </Tooltip>
         {relationships.map((r) => (
-          <RelatedEntityIcon key={Math.random()} relationship={r} />
+          <RelatedEntityIcon key={r.id} relationship={r} />
         ))}
       </div>
     );
@@ -212,7 +212,7 @@ export const RelatedHabit: FC<{
         </Card>
         <div>
           {relationships.map((r) => (
-            <RelatedEntityIcon key={Math.random()} relationship={r} />
+            <RelatedEntityIcon key={r.id} relationship={r} />
           ))}
         </div>
       </>
@@ -261,7 +261,7 @@ export const RelatedLocation: FC<{
           </TooltipContent>
         </Tooltip>
         {relationships.map((r) => (
-          <RelatedEntityIcon key={Math.random()} relationship={r} />
+          <RelatedEntityIcon key={r.id} relationship={r} />
         ))}
       </div>
     );
@@ -282,11 +282,7 @@ export const RelatedLocation: FC<{
         </CardHeader>
         <CardContent className="flex flex-col gap-2">
           {relationships.map((r) => (
-            <RelatedEntity
-              key={Math.random()}
-              relationship={r}
-              compact={false}
-            />
+            <RelatedEntity key={r.id} relationship={r} compact={false} />
           ))}
         </CardContent>
       </Card>
@@ -337,7 +333,7 @@ export const RelatedPerson: FC<{ id: number; compact: boolean }> = ({
           onClick={selectEntity}
         />
         {relationships.slice(0, 3).map((r) => (
-          <RelatedEntityIcon key={Math.random()} relationship={r} />
+          <RelatedEntityIcon key={r.id} relationship={r} />
         ))}
         {relationships.length - relationshipNumber}
       </div>
@@ -358,7 +354,7 @@ export const RelatedPerson: FC<{ id: number; compact: boolean }> = ({
             (
               r // todo: maybe show somehow differently
             ) => (
-              <RelatedEntityIcon key={Math.random()} relationship={r} />
+              <RelatedEntityIcon key={r.id} relationship={r} />
             )
           )}
         </div>
@@ -390,7 +386,7 @@ export const RelatedNote: FC<{ id: number }> = ({ id }) => {
       </Card>
       <div className="flex">
         {relationships.map((r) => (
-          <RelatedEntityIcon key={Math.random()} relationship={r} />
+          <RelatedEntityIcon key={r.id} relationship={r} />
         ))}
       </div>
     </div>
@@ -439,7 +435,7 @@ export const RelatedJournal: FC<{ id: number; compact: boolean }> = ({
           onClick={selectEntity}
         />
         {relationships.map((r) => (
-          <RelatedEntityIcon key={Math.random()} relationship={r} />
+          <RelatedEntityIcon key={r.id} relationship={r} />
         ))}
       </div>
     );
@@ -496,7 +492,7 @@ export const RelatedProject: FC<{ id: number; compact: boolean }> = ({
           onClick={selectEntity}
         />
         {relationships.map((r) => (
-          <RelatedEntityIcon key={Math.random()} relationship={r} />
+          <RelatedEntityIcon key={r.id} relationship={r} />
         ))}
       </div>
     );
@@ -507,7 +503,7 @@ export const RelatedProject: FC<{ id: number; compact: boolean }> = ({
       <TaskCard task={task} />
       <div>
         {relationships.map((r) => (
-          <RelatedEntityIcon key={Math.random()} relationship={r} />
+          <RelatedEntityIcon key={r.id} relationship={r} />
         ))}
       </div>
     </div>
@@ -556,7 +552,7 @@ export const RelatedTask: FC<{ id: number; compact: boolean }> = ({
           onClick={selectEntity}
         />
         {relationships.map((r) => (
-          <RelatedEntityIcon key={Math.random()} relationship={r} />
+          <RelatedEntityIcon key={r.id} relationship={r} />
         ))}
       </div>
     );
@@ -672,7 +668,7 @@ export const RelationshipPanel: FC = () => {
           const isCurrent = idx === entities.length - 1;
 
           return (
-            <NavigatorColumn key={Math.random()} index={idx}>
+            <NavigatorColumn key={`${e.type}-${e.id}`} index={idx}>
               <div
                 // the levels you came through read as stacked rails rather
                 // than loose icons, so it is obvious they are not part of the
@@ -710,7 +706,7 @@ export const RelationshipNavigator: FC<RelationshipNavigatorProps> = ({
 }) => {
   return (
     <RelationshipNavigatorContextProvider
-      key={Math.random()}
+      key={`${entityType}-${entityId}`}
       initialItem={{ id: entityId, type: entityType }}
     >
       <RelationshipPanel />

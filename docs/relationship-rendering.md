@@ -96,6 +96,82 @@ accumulates.
    Those two tables probably want to become one: "what to show here" and "how
    to show it" are the same decision made twice.
 
+## Worked example: a thing that is in two places
+
+"Computer" will not sit still under home or work, because it is not a place.
+**A place is singular — you are in exactly one. A resource is plural — you have
+several to hand.** Computer is the second kind: a context in the GTD sense,
+not a location.
+
+It does not need a new entity type. Let locations relate to locations:
+
+```
+computer --available_at--> home
+computer --available_at--> work
+task     --related-->      computer
+```
+
+From an event at home the panel walks `home → computer → task`, which is the
+conduit pattern above with one more hop. `ALLOWED_TYPES[Location]` needs to
+include `Location` for it to render.
+
+The payoff is that one set of computer tasks surfaces at both places without
+being duplicated or re-linked.
+
+Two caveats:
+
+- Location-to-location now carries two meanings — containment ("the kitchen is
+  in the house") and availability ("the computer is at work"). That is a second
+  real use for `relationship_type`, after `occurrence_of`.
+- This models the *capability*, not the hardware. If "that file is on the work
+  computer" ever matters, they have to become two entities.
+
+## Days as entities
+
+Referring to a day — `/n check #tomorrow if this still holds`, `/j #yesterday
+they said...` — is worth more than a parser trick. Make `Day` an entity type
+and a **day page** falls out: open a day, see its events, journals, notes and
+habit logs. That is the answer to wanting to look back over a week; reflection
+becomes walking days.
+
+**A day is the only entity type that cannot dangle.** `target_id: 20261014,
+target_type: "day"` needs no row, no table and no lifecycle, because dates
+always exist. In a polymorphic edge table where orphans are the inherent
+weakness, days are immune. `YYYYMMDD` as an integer sorts correctly and fits
+`target_id: number` as it is.
+
+Three calls that matter:
+
+1. **Resolve `#tomorrow` when the line is written**, never store the word. A
+   relative reference silently changes meaning every day afterwards.
+2. **The day page is a union, not a list of edges.** Events already carry
+   `start_at` and habit logs carry `log_date`, so the page is
+   *derived-by-date* ∪ *explicitly linked*. Writing an `event → day` edge for
+   every event would double the edge count to store something already known.
+3. **For `/j #yesterday during /e work ...`, link the event only.** The day
+   follows from `event.start_at` and the union picks it up.
+
+### Tokens should narrow what comes after them
+
+The most useful part of this is not the day itself:
+
+> **A token earlier in the line narrows the candidates for the ones after it.**
+
+With `#yesterday` already in the line, `/e` offers yesterday's events, `/h`
+offers habits logged yesterday, and `/at home` followed by `/t` puts tasks
+linked to home first. The line becomes a query that narrows as it is typed
+rather than a row of independent global lookups.
+
+It is cheap: the suggestion query takes the line's already-parsed tokens as
+filter context, and `parseRelationshipInput` already produces exactly that
+shape. `MENTION_BUCKETS` gains `dayMention: "days"`, and mention ids already
+carry extra data (`12:#f97316`), so a date in one is no stretch.
+
+### Not weeks or months
+
+A week is a range over days. A second way of saying the same thing will drift
+from the first.
+
 ## Open questions
 
 - Does a conduit keep its own card, or vanish and leave only its children?
@@ -105,3 +181,6 @@ accumulates.
   back wants.
 - Does the compact icon rail traverse as well, or stop at one hop as it does
   now?
+- Does a day page show what *happened* that day, what was *planned* for it, or
+  both in one list? They read very differently looking backwards versus
+  forwards.
