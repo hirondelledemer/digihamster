@@ -3,8 +3,8 @@ import { IconChevronRight } from "@tabler/icons-react";
 import { RelationshipEntityType } from "@/app/utils/types/relationship";
 import { RelationshipNavigatorContext } from "../../../../navigator-context";
 import { EntityTypeIcon } from "../../../EntityTypeIcon";
-import { useEntityColor } from "../../../../use-entity-color";
-import { useEntityLabel } from "../../../../use-entity-label";
+import { useEntityLabel } from "@/app/utils/relationships/use-entity-label";
+import { useEntityColor } from "@/app/utils/relationships/use-entity-color";
 
 export const pathTestId = "NavigatorPath-testid";
 export const crumbTestId = "NavigatorPath-crumb-testid";

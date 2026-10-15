@@ -1,8 +1,5 @@
 import { IEvent } from "@/app/utils/types/event";
-import { IHabitWithLogs } from "@/app/utils/types/habit";
 import { IJournalEntry } from "@/app/utils/types/journal-entry";
-import { ILocation } from "@/app/utils/types/location";
-import { IPerson } from "@/app/utils/types/person";
 import { ITask } from "@/app/utils/types/task";
 import { Event } from "react-big-calendar";
 
@@ -60,11 +57,6 @@ export interface CalendarEventEntry extends Event {
     id: number;
     type: "event";
     event: IEvent;
-    tasks: ITask[];
-    journalEntries: IJournalEntry[];
-    habits: IHabitWithLogs[];
-    people: IPerson[];
-    locations: ILocation[];
   };
 }
 

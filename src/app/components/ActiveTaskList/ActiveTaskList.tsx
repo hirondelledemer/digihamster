@@ -8,7 +8,7 @@ import { IconCircle, IconCircleCheck } from "@tabler/icons-react";
 import { useTasksNewState } from "@/app/utils/hooks/use-tasks-new/state-context";
 import { DraggableTaskCard } from "../TaskCard/DraggableTaskCard";
 
-const ActiveTaskList: FC = (): JSX.Element | null => {
+export const ActiveTaskList: FC = (): JSX.Element | null => {
   const { data: tasks } = useTasksNewState();
 
   const tasksToShow = useMemo(
@@ -56,5 +56,3 @@ const ActiveTaskList: FC = (): JSX.Element | null => {
     </div>
   );
 };
-
-export default ActiveTaskList;

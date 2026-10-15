@@ -6,7 +6,7 @@ import {
   useCurrentEvent,
   useEventById,
 } from "@/app/utils/hooks/use-events/selectors";
-import ActiveTaskList from "../ActiveTaskList";
+import { ActiveTaskList } from "../ActiveTaskList";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "../ui/button";
 import { IconArrowLeft } from "@tabler/icons-react";

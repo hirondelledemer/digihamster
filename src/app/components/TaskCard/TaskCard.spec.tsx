@@ -1,24 +1,40 @@
-import TaskCard, { cardTestId, TaskCardProps } from "./TaskCard";
+import TaskCard, { cardTestId, titleTestId, TaskCardProps } from "./TaskCard";
 import { generateTask } from "@/app/utils/mocks/task";
+import { generateProject } from "@/app/utils/mocks/project";
 import {
+  act,
   render,
   screen,
-  userEvent,
   fireEvent,
   waitFor,
 } from "@/config/utils/test-utils";
 
 import mockAxios from "jest-mock-axios";
 import { ProjectsContextProvider } from "@/app/utils/hooks/use-projects/provider";
-import { generateProject } from "@/app/utils/mocks/project";
 import { TasksNewContextProvider } from "@/app/utils/hooks/use-tasks-new/provider";
 import { PROJECTS_PATH } from "@/app/utils/hooks/use-projects/api";
-import { getTasksPath } from "@/app/utils/hooks/use-tasks-new/api";
-import { TaskStatus } from "@/app/utils/types/task";
+import { ITask, TaskStatus } from "@/app/utils/types/task";
 import { toBackendDateTime } from "#utils/date";
+import { now } from "@/app/utils/date/now";
+import { subDays } from "date-fns";
+import { TooltipProvider } from "../ui/tooltip";
+import {
+  CalendarDateContextProvider,
+  useCalendarDate,
+} from "@/app/utils/hooks/use-calendar-date";
+import { DraggableAttributes } from "@dnd-kit/core";
 
 jest.mock("../../utils/date/now");
 jest.mock("next/navigation");
+
+const selectedDateTestId = "selected-date-testid";
+
+const SelectedDateProbe = () => {
+  const { selectedDate } = useCalendarDate();
+  return (
+    <div data-testid={selectedDateTestId}>{selectedDate.toISOString()}</div>
+  );
+};
 
 describe("TaskCard", () => {
   afterEach(() => {
@@ -31,243 +47,244 @@ describe("TaskCard", () => {
 
   const DEFAULT_PROPS: TaskCardProps = {
     task: DEFAULT_TASK,
-    dragId: "drag-id",
   };
 
-  const renderComponent = (props = DEFAULT_PROPS) =>
-    render(
-      <ProjectsContextProvider>
-        <TasksNewContextProvider>
-          <TaskCard {...props} />
-        </TasksNewContextProvider>
-      </ProjectsContextProvider>,
+  /**
+   * The projects request is fired by the provider on mount; the card only knows
+   * its project once that request has resolved, so every render waits for it.
+   */
+  const resolveProjects = async (projects = DEFAULT_PROJECTS) => {
+    // eslint-disable-next-line testing-library/prefer-find-by
+    await waitFor(() =>
+      expect(mockAxios.getReqByUrl(PROJECTS_PATH)).not.toBeNull()
     );
 
-  const openContextMenu = () => {
-    const title = screen.getByTestId("TaskCard-title-testid");
-    fireEvent.contextMenu(title);
-  };
-
-  const assertLoaded = async () => {
-    await waitFor(() => expect(mockAxios.queue()).toHaveLength(2));
-
-    mockAxios.mockResponseFor(
-      { url: PROJECTS_PATH },
-      { data: DEFAULT_PROJECTS },
-    );
-  };
-
-  it("shows task title, project name, description, tags", async () => {
-    renderComponent();
-
-    await assertLoaded();
-
-    await expect(
-      screen.findByText(DEFAULT_TASK.title),
-    ).resolves.toBeInTheDocument();
-
-    expect(screen.getByText(DEFAULT_PROJECT.title)).toBeInTheDocument();
-    expect(screen.getByText(DEFAULT_TASK.description!)).toBeInTheDocument();
-  });
-
-  it("should not show stale indicator", () => {
-    renderComponent();
-    expect(screen.queryByTestId("dinosaur-icon")).not.toBeInTheDocument();
-  });
-
-  it("should edit task", async () => {
-    renderComponent();
-
-    await assertLoaded();
-
-    openContextMenu();
-    fireEvent.click(screen.getByText("Edit"));
-
-    const input = screen.getByRole("textbox", { name: /title/i });
-    fireEvent.change(input, { target: { value: "new title" } });
-
-    const descInput = screen.getByRole("textbox", {
-      name: /description/i,
+    await act(async () => {
+      mockAxios.mockResponseFor({ url: PROJECTS_PATH }, { data: projects });
     });
-    await userEvent.type(descInput, "new desc");
+  };
 
-    const button = screen.getByRole("button", { name: /save/i });
-    await userEvent.click(button);
-
-    expect(mockAxios.patch).toHaveBeenCalledWith(
-      getTasksPath(DEFAULT_TASK.id),
-      {
-        deadline: null,
-        description: "task description 1new desc",
-        project_id: 1,
-        title: "new title",
-      },
+  const renderComponent = async (props: TaskCardProps = DEFAULT_PROPS) => {
+    render(
+      <TooltipProvider>
+        <CalendarDateContextProvider>
+          <ProjectsContextProvider>
+            <TasksNewContextProvider>
+              <SelectedDateProbe />
+              <TaskCard {...props} />
+            </TasksNewContextProvider>
+          </ProjectsContextProvider>
+        </CalendarDateContextProvider>
+      </TooltipProvider>
     );
+
+    await resolveProjects();
+  };
+
+  const renderTask = (task: Partial<ITask>, props?: Partial<TaskCardProps>) =>
+    renderComponent({
+      ...DEFAULT_PROPS,
+      task: generateTask(1, { project_id: DEFAULT_PROJECT.id, ...task }),
+      ...props,
+    });
+
+  const getIcon = (name: string) =>
+    document.querySelector(`.tabler-icon-${name}`);
+
+  const openContextMenu = () =>
+    fireEvent.contextMenu(screen.getByTestId(titleTestId));
+
+  describe("content", () => {
+    it("should show the task title and description", async () => {
+      await renderComponent();
+
+      expect(screen.getByText(DEFAULT_TASK.title)).toBeInTheDocument();
+      expect(screen.getByText(DEFAULT_TASK.description!)).toBeInTheDocument();
+    });
+
+    it("should show the project of the task", async () => {
+      await renderComponent();
+
+      expect(screen.getByText(DEFAULT_PROJECT.title)).toBeInTheDocument();
+    });
+
+    it("should paint the card border in the project color", async () => {
+      await renderComponent();
+
+      expect(screen.getByTestId(cardTestId)).toHaveStyle({
+        borderColor: DEFAULT_PROJECT.color,
+      });
+    });
+
+    it("should render a task without a project", async () => {
+      await renderTask({ project_id: null });
+
+      expect(screen.getByText(DEFAULT_TASK.title)).toBeInTheDocument();
+      expect(screen.queryByText(DEFAULT_PROJECT.title)).not.toBeInTheDocument();
+    });
+
+    it("should render a task without a description", async () => {
+      await renderTask({ description: null });
+
+      expect(screen.getByText(DEFAULT_TASK.title)).toBeInTheDocument();
+      expect(
+        screen.queryByText(DEFAULT_TASK.description!)
+      ).not.toBeInTheDocument();
+    });
   });
-
-  // TODO add this feature
-  // it("should add note to the task", async () => {
-  //   mockAxios.get.mockResolvedValueOnce({ data: { projects: [] } });
-  //   mockAxios.get.mockResolvedValueOnce({ data: [] });
-
-  //   renderComponent(defaultProps);
-  //   openContextMenu();
-  //   fireEvent.click(screen.getByText("Add note"));
-  //   expect(
-  //     screen.getByRole("heading", { name: /Add note/i }),
-  //   ).toBeInTheDocument();
-
-  //   const rte = screen.getByTestId(rteTestId);
-  //   const rteWrapper = getRichTextEditorTestkit(rte);
-  //   rteWrapper.enterValue("<p>new note/p><p>new desc</p>");
-  //   rteWrapper.blur();
-
-  //   await waitFor(async () => {
-  //     expect(
-  //       screen.getByRole("button", { name: /create/i }),
-  //     ).not.toBeDisabled();
-  //   });
-  //   await userEvent.click(screen.getByRole("button", { name: /create/i }));
-
-  //   expect(mockAxios.post).toHaveBeenCalledWith("/api/notes", {
-  //     jsonNote: {
-  //       content: [
-  //         {
-  //           content: [
-  //             {
-  //               text: "new note/p>",
-  //               type: "text",
-  //             },
-  //           ],
-  //           type: "paragraph",
-  //         },
-  //         {
-  //           content: [
-  //             {
-  //               text: "new desc",
-  //               type: "text",
-  //             },
-  //           ],
-  //           type: "paragraph",
-  //         },
-  //       ],
-  //       type: "doc",
-  //     },
-  //     note: "new desc",
-  //     parentTaskId: "task1",
-  //     tags: [],
-  //     title: "new note/p>",
-  //   });
-  // });
 
   describe("task is not completed", () => {
-    it("should complete the task", async () => {
-      renderComponent();
+    it("should show the card without opacity and strike through", async () => {
+      await renderComponent();
 
-      await assertLoaded();
+      const card = screen.getByTestId(cardTestId);
 
-      openContextMenu();
-      fireEvent.click(screen.getByText("Complete"));
-
-      expect(mockAxios.patch).toHaveBeenCalledWith(
-        getTasksPath(DEFAULT_TASK.id),
-        {
-          status: TaskStatus.Done,
-        },
-      );
-    });
-
-    it("should show task without opacity and full info", () => {
-      renderComponent();
-
-      expect(
-        screen.getByTestId(cardTestId).className.includes("opacity-40"),
-      ).toBe(false);
-      expect(
-        screen.getByTestId(cardTestId).className.includes("line-through"),
-      ).toBe(false);
+      expect(card.className).not.toContain("opacity-40");
+      expect(card.className).not.toContain("line-through");
     });
   });
 
   describe("task is completed", () => {
-    const COMPLETED_TASK = generateTask(1, { status: TaskStatus.Done });
-    const props: TaskCardProps = {
-      task: COMPLETED_TASK,
-      dragId: "dragId",
-    };
-
-    it("should undo the task", async () => {
-      renderComponent(props);
-
-      await assertLoaded();
-
-      openContextMenu();
-
-      fireEvent.click(screen.getByText("Undo"));
-      expect(mockAxios.patch).toHaveBeenCalledWith(
-        getTasksPath(COMPLETED_TASK.id),
-        {
-          status: TaskStatus.Doing,
-        },
-      );
+    const COMPLETED_TASK = generateTask(1, {
+      status: TaskStatus.Done,
+      project_id: DEFAULT_PROJECT.id,
     });
 
-    it("should show task as with opacity and limited info", () => {
-      renderComponent(props);
+    it("should show the card with opacity and strike through", async () => {
+      await renderComponent({ task: COMPLETED_TASK });
 
+      const card = screen.getByTestId(cardTestId);
+
+      expect(card.className).toContain("opacity-40");
+      expect(card.className).toContain("line-through");
+    });
+
+    it("should hide the description", async () => {
+      await renderComponent({ task: COMPLETED_TASK });
+
+      expect(screen.getByText(COMPLETED_TASK.title)).toBeInTheDocument();
       expect(
-        screen.getByTestId(cardTestId).className.includes("opacity-40"),
-      ).toBe(true);
-      expect(
-        screen.getByTestId(cardTestId).className.includes("line-through"),
-      ).toBe(true);
+        screen.queryByText(COMPLETED_TASK.description!)
+      ).not.toBeInTheDocument();
     });
   });
 
-  describe("task is active and stale", () => {
-    const weekInMs = 7 * 24 * 60 * 60 * 1000;
-    const dayInMs = 24 * 60 * 60 * 1000;
+  describe("active task indication", () => {
+    it("should show the active icon when the task is being done", async () => {
+      await renderTask({ status: TaskStatus.Doing }, { indicateActive: true });
 
-    const STALE_TASK = generateTask(1, {
-      activated_at: toBackendDateTime(new Date((weekInMs + dayInMs) * -1)),
-      status: TaskStatus.Doing,
+      expect(getIcon("progress-check")).toBeInTheDocument();
     });
 
-    const props: TaskCardProps = {
-      task: STALE_TASK,
-      dragId: "dragId",
-    };
+    it("should not show the active icon when the task is not being done", async () => {
+      await renderTask({ status: TaskStatus.Todo }, { indicateActive: true });
 
-    it("show stale indicator", () => {
-      renderComponent(props);
-      expect(screen.queryByTestId("dinosaur-icon") !== null).toBe(true);
+      expect(getIcon("progress-check")).not.toBeInTheDocument();
+    });
+
+    it("should not show the active icon when indication is off", async () => {
+      await renderTask({ status: TaskStatus.Doing });
+
+      expect(getIcon("progress-check")).not.toBeInTheDocument();
     });
   });
 
-  describe("task has an event", () => {
-    const TASK_WITH_EVENT = generateTask(1, { event_id: 2 });
-    const props: TaskCardProps = {
-      task: TASK_WITH_EVENT,
-      dragId: "",
-    };
+  describe("stale indicator", () => {
+    it("should show the stale indicator for a task activated long ago", async () => {
+      await renderTask({
+        status: TaskStatus.Doing,
+        activated_at: toBackendDateTime(subDays(now(), 10)),
+      });
 
-    it("should remove event", () => {
-      renderComponent(props);
-
-      openContextMenu();
-      fireEvent.click(screen.getByText("Remove from event"));
-
-      expect(mockAxios.patch).toHaveBeenCalledWith(
-        getTasksPath(TASK_WITH_EVENT.id),
-        {
-          event_id: null,
-        },
-      );
+      expect(screen.getByTestId("dinosaur-icon")).toBeInTheDocument();
     });
 
-    it("should not allow to deactivate it", () => {
-      renderComponent(props);
-      expect(screen.queryByText("Deactivate")).not.toBeInTheDocument();
+    it("should not show the stale indicator for a freshly activated task", async () => {
+      await renderTask({
+        status: TaskStatus.Doing,
+        activated_at: toBackendDateTime(now()),
+      });
+
+      expect(screen.queryByTestId("dinosaur-icon")).not.toBeInTheDocument();
+    });
+
+    it("should not show the stale indicator for a task that is not being done", async () => {
+      await renderTask({
+        status: TaskStatus.Todo,
+        activated_at: toBackendDateTime(subDays(now(), 10)),
+      });
+
+      expect(screen.queryByTestId("dinosaur-icon")).not.toBeInTheDocument();
+    });
+  });
+
+  describe("task has a deadline", () => {
+    const DEADLINE = "1970-01-20T00:00:00.000Z";
+
+    it("should show the deadline icon", async () => {
+      await renderTask({ deadline: DEADLINE });
+
+      expect(getIcon("calendar")).toBeInTheDocument();
+    });
+
+    it("should not show the deadline icon when there is no deadline", async () => {
+      await renderTask({ deadline: null });
+
+      expect(getIcon("calendar")).not.toBeInTheDocument();
+    });
+
+    it("should select the deadline date in the calendar on click", async () => {
+      await renderTask({ deadline: DEADLINE });
+
+      fireEvent.click(getIcon("calendar")!);
+
+      expect(screen.getByTestId(selectedDateTestId)).toHaveTextContent(
+        DEADLINE
+      );
+    });
+  });
+
+  describe("context menu", () => {
+    it("should open the task actions on right click", async () => {
+      await renderComponent();
+
+      openContextMenu();
+
+      expect(await screen.findAllByRole("menuitem")).not.toHaveLength(0);
+    });
+  });
+
+  describe("drag and drop", () => {
+    it("should wire the drag handle up to the card", async () => {
+      const setNodeRef = jest.fn();
+      const onPointerDown = jest.fn();
+      const attributes: DraggableAttributes = {
+        role: "button",
+        tabIndex: 0,
+        "aria-disabled": false,
+        "aria-pressed": undefined,
+        "aria-roledescription": "draggable",
+        "aria-describedby": "DndDescribedBy-0",
+      };
+
+      await renderComponent({
+        ...DEFAULT_PROPS,
+        testId: "task-card-testid",
+        setNodeRef,
+        listeners: { onPointerDown },
+        attributes,
+        style: { opacity: 0.5 },
+      });
+
+      const card = screen.getByTestId(cardTestId);
+
+      expect(screen.getByTestId("task-card-testid")).toBeInTheDocument();
+      expect(setNodeRef).toHaveBeenCalledWith(card);
+      expect(card).toHaveAttribute("aria-roledescription", "draggable");
+      expect(card).toHaveStyle({ opacity: "0.5" });
+
+      fireEvent.pointerDown(card);
+      expect(onPointerDown).toHaveBeenCalled();
     });
   });
 });

@@ -10,14 +10,10 @@ import { format } from "date-fns";
 import { EventStatus } from "@/app/utils/types/event";
 import { cn } from "../utils";
 import { useDroppable } from "@dnd-kit/core";
-import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
-import {
-  IconBubbleFilled,
-  IconCheckbox,
-  IconManFilled,
-  IconMapPin,
-} from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
+import { RelationshipEntityType } from "@/app/utils/types/relationship";
+import { RelatedEntity } from "../EventRelationships/components/RelationshipNavigator/components/RelatedEntity/RelatedEntity";
+import { useRelevantRelationshipsForEntity } from "../../utils/hooks/use-relationships/selectors";
 
 export interface CalendarEventProps {
   event: CalendarEventEntry;
@@ -53,6 +49,11 @@ const CalendarEvent: FC<CalendarEventProps> = ({
     id: event.resource.id,
   });
 
+  const relationships = useRelevantRelationshipsForEntity({
+    entityId: event.resource.id,
+    entityType: RelationshipEntityType.Event,
+  });
+
   const content = useMemo(() => {
     return (
       <div className="pb-5 h-fit">
@@ -60,66 +61,15 @@ const CalendarEvent: FC<CalendarEventProps> = ({
           <div>{event.title}</div>
           <div className="text-xs">{event.resource.event.description}</div>
 
-          <div className="flex space-between pt-2 gap-4">
-            {event.resource.tasks.length + event.resource.habits.length > 0 && (
-              <div className="flex gap-1">
-                <IconCheckbox size={16} />
-                {event.resource.tasks.length + event.resource.habits.length}
-              </div>
-            )}
-            {event.resource.journalEntries.length > 0 && (
-              <div className="flex gap-1">
-                <IconBubbleFilled size={16} />
-                {event.resource.journalEntries.length}
-              </div>
-            )}
-            <div className="flex gap-1">
-              {event.resource.people.map((person) => (
-                <div key={person.id}>
-                  <Tooltip delayDuration={0}>
-                    <TooltipTrigger
-                      className="pointer-events-auto"
-                      onMouseDownCapture={(e) => {
-                        // the calendar starts a slot selection on a native mousedown
-                        e.stopPropagation();
-                      }}
-                    >
-                      <IconManFilled size={16} color={person.color} />
-                    </TooltipTrigger>
-                    <TooltipContent className="w-[200px]" side="right">
-                      {person.name}
-                    </TooltipContent>
-                  </Tooltip>
-                </div>
-              ))}
-              {event.resource.locations.map((location) => (
-                <div key={location.id}>
-                  <Tooltip delayDuration={0}>
-                    <TooltipTrigger
-                      className="pointer-events-auto"
-                      onMouseDownCapture={(e) => {
-                        // the calendar starts a slot selection on a native mousedown
-                        e.stopPropagation();
-                      }}
-                    >
-                      <IconMapPin
-                        size={16}
-                        color={location.color}
-                        aria-label="location"
-                      />
-                    </TooltipTrigger>
-                    <TooltipContent className="w-[200px]" side="right">
-                      {location.title}
-                    </TooltipContent>
-                  </Tooltip>
-                </div>
-              ))}
-            </div>
+          <div className="flex space-between pt-2 gap-2">
+            {relationships.map((r) => (
+              <RelatedEntity key={r.id} relationship={r} compact />
+            ))}
           </div>
         </div>
       </div>
     );
-  }, [event]);
+  }, [event.resource.event.description, event.title, relationships]);
 
   const projectColor = project
     ? `color-mix(in srgb, ${project.color} 20%, transparent)`
