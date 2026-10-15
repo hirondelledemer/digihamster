@@ -60,15 +60,13 @@ import { useEventsActions } from "@/app/utils/hooks/use-events/actions-context";
 import { useCalendarDate } from "../../utils/hooks/use-calendar-date";
 import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
 import { parseBackendDate, toBackendDateTime } from "#utils/date";
-import { useTasksNewState } from "@/app/utils/hooks/use-tasks-new/state-context";
-import { useTasksNewActions } from "@/app/utils/hooks/use-tasks-new/actions-context";
+import { useTasksState } from "@/app/utils/hooks/use-tasks/state-context";
+import { useTasksActions } from "@/app/utils/hooks/use-tasks/actions-context";
 import axios from "axios";
 import { useJournalEntriesGroupedByEvents } from "@/app/utils/hooks/use-entry/selectors";
 import { CalendarJournalEvent } from "../CalendarJournalEvent";
-import { usePeopleGroupedByEvents } from "@/app/utils/hooks/use-people/selectors";
-import { useHabitsGroupedByEvents } from "@/app/utils/hooks/use-habits-new/selectors";
+
 import TaskCard from "../TaskCard";
-import { useLocationsGroupedByEvents } from "@/app/utils/hooks/use-location/selectors";
 
 export const now = () => new Date();
 
@@ -114,17 +112,15 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
   }, []);
 
   const journalEntriesData = useJournalEntriesGroupedByEvents();
-  const peopleData = usePeopleGroupedByEvents();
-  const habitData = useHabitsGroupedByEvents();
-  const locationData = useLocationsGroupedByEvents();
+
   const { data: eventsData } = useEventsState();
   const { update: updateEvent } = useEventsActions();
   const { data: cycleData } = useCycle();
   const { isLoading: projectsLoading } = useProjectsState();
 
   //todo: check editing of deadline tasks
-  const { data: tasksData } = useTasksNewState(); //todo this is fetching all the tasks. fetch only tasks with deadline
-  const { updateTask: editTask } = useTasksNewActions(); //todo this is fetching all the tasks. fetch only tasks with deadline
+  const { data: tasksData } = useTasksState(); //todo this is fetching all the tasks. fetch only tasks with deadline
+  const { updateTask: editTask } = useTasksActions(); //todo this is fetching all the tasks. fetch only tasks with deadline
 
   const eventsResolved = eventsData.map<CalendarEventEntry>((event) => {
     return {
@@ -136,13 +132,6 @@ export const Planner: FunctionComponent<PlannerProps> = ({ view }) => {
         id: event.id,
         type: "event",
         event,
-        tasks: tasksData.filter((t) => t.event_id === event.id),
-        journalEntries: journalEntriesData
-          ? journalEntriesData[event.id] || []
-          : [],
-        people: peopleData ? peopleData[event.id] || [] : [],
-        habits: habitData ? habitData[event.id] || [] : [],
-        locations: locationData ? locationData[event.id] || [] : [],
       },
     };
   });

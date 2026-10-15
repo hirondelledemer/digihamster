@@ -42,8 +42,8 @@ import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
 import { ProjectStatus } from "@/app/utils/types/project";
 import { Badge } from "../ui/badge";
 import { IEvent } from "@/app/utils/types/event";
-import { useTasksNewState } from "@/app/utils/hooks/use-tasks-new/state-context";
-import { useTasksNewActions } from "@/app/utils/hooks/use-tasks-new/actions-context";
+import { useTasksState } from "@/app/utils/hooks/use-tasks/state-context";
+import { useTasksActions } from "@/app/utils/hooks/use-tasks/actions-context";
 import { SortableTaskCard } from "../TaskCard/SortableTaskCard";
 import CreateTaskForm from "../CreateTaskForm";
 
@@ -67,15 +67,15 @@ export interface EventFormProps {
 
 const EditEventForm: FC<EventFormProps> = ({ onDone, event }): JSX.Element => {
   const { data: projects } = useProjectsState();
-  const { data: tasks } = useTasksNewState();
-  const { reorderTasksInTheEvent } = useTasksNewActions();
+  const { data: tasks } = useTasksState();
+  const { reorderTasksInTheEvent } = useTasksActions();
   const { update: updateEvent } = useEventsActions();
 
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
-    }),
+    })
   );
 
   const form = useForm<FormValues>({
@@ -98,7 +98,7 @@ const EditEventForm: FC<EventFormProps> = ({ onDone, event }): JSX.Element => {
         description: data.description,
         project_id: data.project || null,
       },
-      onDone,
+      onDone
     );
   };
 
@@ -115,7 +115,7 @@ const EditEventForm: FC<EventFormProps> = ({ onDone, event }): JSX.Element => {
 
     reorderTasksInTheEvent(
       event.id,
-      reordered.map((task) => task.id),
+      reordered.map((task) => task.id)
     );
   };
 
@@ -123,7 +123,7 @@ const EditEventForm: FC<EventFormProps> = ({ onDone, event }): JSX.Element => {
     .filter((task) => task.event_id === event.id)
     .sort(
       (taskA, taskB) =>
-        (taskA.event_sort_order || 0) - (taskB.event_sort_order || 0),
+        (taskA.event_sort_order || 0) - (taskB.event_sort_order || 0)
     );
 
   return (

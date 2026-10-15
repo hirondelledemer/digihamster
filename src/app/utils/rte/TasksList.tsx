@@ -10,8 +10,8 @@ import { Badge } from "@/app/components/ui/badge";
 import { MentionsConfigProps } from "./types";
 import { SuggestionKeyDownProps } from "@tiptap/suggestion";
 import { ITask, TaskStatus } from "../types/task";
-import { useTasksNewActions } from "../hooks/use-tasks-new/actions-context";
-import { useActiveTasks } from "../hooks/use-tasks-new/selectors";
+import { useTasksActions } from "../hooks/use-tasks/actions-context";
+import { useActiveTasks } from "../hooks/use-tasks/selectors";
 import { useTaskProjectColor } from "../hooks/use-projects/selectors";
 import { IconCalendar, IconProgressCheck } from "@tabler/icons-react";
 
@@ -47,7 +47,7 @@ export const TasksList = forwardRef(
     const [selectedIndex, setSelectedIndex] = useState(0);
 
     const tasks = useActiveTasks();
-    const { createTask } = useTasksNewActions();
+    const { createTask } = useTasksActions();
 
     useEffect(() => {
       setSelectedIndex(0);

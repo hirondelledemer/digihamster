@@ -5,8 +5,8 @@ import CreateTaskForm, {
 } from "./CreateTaskForm";
 import { getRichTextEditorTestkit } from "../RichTextEditor/RichTextEditor.testkit";
 import mockAxios from "jest-mock-axios";
-import { TasksNewContextProvider } from "@/app/utils/hooks/use-tasks-new/provider";
-import { TASKS_PATH } from "@/app/utils/hooks/use-tasks-new/api";
+import { TasksContextProvider } from "@/app/utils/hooks/use-tasks/provider";
+import { TASKS_PATH } from "@/app/utils/hooks/use-tasks/api";
 
 jest.mock("../../utils/date/now");
 
@@ -25,9 +25,9 @@ describe("CreateTaskForm", () => {
 
   const renderComponent = (props = defaultProps) =>
     render(
-      <TasksNewContextProvider>
+      <TasksContextProvider>
         <CreateTaskForm {...props} />
-      </TasksNewContextProvider>
+      </TasksContextProvider>
     );
 
   it("should render CreateTaskForm", () => {

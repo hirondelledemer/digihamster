@@ -35,7 +35,7 @@ export const ProjectRow: FC<ProjectRowProps> = ({
   const handleEditSave = () => {
     const trimmed = editTitle.trim();
     if (trimmed && trimmed !== project.title) {
-      update(project.id.toString(), { title: trimmed });
+      update(project.id, { title: trimmed });
     }
     setEditing(false);
   };
@@ -84,7 +84,7 @@ export const ProjectRow: FC<ProjectRowProps> = ({
           value={project.status}
           onClick={(e) => e.stopPropagation()}
           onValueChange={(status: ProjectStatus) =>
-            update(project.id.toString(), { status })
+            update(project.id, { status })
           }
         >
           <ToggleGroupItem value={ProjectStatus.Todo}>Todo</ToggleGroupItem>
@@ -114,7 +114,7 @@ export const ProjectRow: FC<ProjectRowProps> = ({
             variant="destructive"
             onClick={(e) => {
               e.stopPropagation();
-              deleteProject(project.id.toString());
+              deleteProject(project.id);
             }}
           >
             Delete

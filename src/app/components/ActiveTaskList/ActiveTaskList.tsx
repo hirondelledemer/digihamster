@@ -4,48 +4,24 @@
 import React, { FC, useMemo } from "react";
 
 import { ScrollArea } from "../ui/scroll-area";
-import { IconCircle, IconCircleCheck } from "@tabler/icons-react";
-import { useTasksNewState } from "@/app/utils/hooks/use-tasks-new/state-context";
+import { useTasksState } from "@/app/utils/hooks/use-tasks/state-context";
 import { DraggableTaskCard } from "../TaskCard/DraggableTaskCard";
+import { TaskStatus } from "@/app/utils/types/task";
 
-const ActiveTaskList: FC = (): JSX.Element | null => {
-  const { data: tasks } = useTasksNewState();
+export const ActiveTaskList: FC = (): JSX.Element | null => {
+  const { data: tasks } = useTasksState();
 
   const tasksToShow = useMemo(
     () =>
-      tasks
-        .filter(
-          (task) => task.status === "doing" && !task.deadline && !task.event_id
-        )
-        .sort((a, b) =>
-          a.status === b.status ? 0 : a.status === "done" ? 1 : -1
-        ),
+      tasks.filter(
+        (task) =>
+          task.status === TaskStatus.Doing && !task.deadline && !task.event_id
+      ),
     [tasks]
-  );
-
-  const pendingTasksCount = useMemo(
-    () => tasksToShow.filter((t) => !(t.status === "done")).length,
-    [tasksToShow]
-  );
-
-  const completedTasksCount = useMemo(
-    () => tasksToShow.filter((t) => t.status === "done").length,
-    [tasksToShow]
   );
 
   return (
     <div className="w-full h-full">
-      <div className="text-sm flex items-center mb-3 space-x-2">
-        <IconCircle size={16} color="green" className="mr-1" />
-        {pendingTasksCount}
-        <IconCircleCheck
-          size={19}
-          color="black"
-          fill="green"
-          className="mr-1"
-        />
-        {completedTasksCount}
-      </div>
       <ScrollArea className="h-full pb-[60px]">
         <div className="flex flex-col gap-4">
           {tasksToShow.map((task) => (
@@ -56,5 +32,3 @@ const ActiveTaskList: FC = (): JSX.Element | null => {
     </div>
   );
 };
-
-export default ActiveTaskList;

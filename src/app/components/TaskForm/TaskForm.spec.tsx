@@ -7,9 +7,9 @@ import mockAxios from "jest-mock-axios";
 
 import { generateCustomProjectsList } from "@/app/utils/mocks/project";
 import { ProjectsContextProvider } from "@/app/utils/hooks/use-projects/provider";
-import { TasksNewContextProvider } from "@/app/utils/hooks/use-tasks-new/provider";
+import { TasksContextProvider } from "@/app/utils/hooks/use-tasks/provider";
 import { PROJECTS_PATH } from "@/app/utils/hooks/use-projects/api";
-import { getTasksPath, TASKS_PATH } from "@/app/utils/hooks/use-tasks-new/api";
+import { getTasksPath, TASKS_PATH } from "@/app/utils/hooks/use-tasks/api";
 import { ProjectStatus } from "@/app/utils/types/project";
 import { TaskStatus } from "@/app/utils/types/task";
 
@@ -32,10 +32,10 @@ describe("TaskForm", () => {
   const renderComponent = (props: TaskFormProps = DEFAULT_PROPS) =>
     render(
       <ProjectsContextProvider>
-        <TasksNewContextProvider>
+        <TasksContextProvider>
           <TaskForm {...props} />
-        </TasksNewContextProvider>
-      </ProjectsContextProvider>,
+        </TasksContextProvider>
+      </ProjectsContextProvider>
     );
 
   afterEach(() => {
@@ -49,7 +49,7 @@ describe("TaskForm", () => {
 
     mockAxios.mockResponseFor(
       { url: PROJECTS_PATH },
-      { data: DEFAULT_PROJECTS },
+      { data: DEFAULT_PROJECTS }
     );
     mockAxios.mockResponseFor({ url: TASKS_PATH }, { data: [] });
 
@@ -83,13 +83,13 @@ describe("TaskForm", () => {
 
       mockAxios.mockResponseFor(
         { url: PROJECTS_PATH },
-        { data: DEFAULT_PROJECTS },
+        { data: DEFAULT_PROJECTS }
       );
       mockAxios.mockResponseFor({ url: TASKS_PATH }, { data: [] });
 
       await userEvent.type(
         screen.getByRole("textbox", { name: "Title" }),
-        " edited",
+        " edited"
       );
 
       await userEvent.click(screen.getByRole("combobox", { name: /project/i }));
@@ -97,7 +97,7 @@ describe("TaskForm", () => {
 
       await userEvent.type(
         screen.getByRole("textbox", { name: "Description" }),
-        " edited",
+        " edited"
       );
 
       await userEvent.click(screen.getByRole("button", { name: /deadline/i }));
@@ -112,7 +112,7 @@ describe("TaskForm", () => {
             description: "task description 1 edited",
             project_id: 0,
             title: "Task 1 edited",
-          },
+          }
         );
       });
     });
@@ -124,7 +124,7 @@ describe("TaskForm", () => {
 
       await waitFor(() => {
         expect(mockAxios.delete).toHaveBeenCalledWith(
-          getTasksPath(DEFAULT_PROPS.task.id),
+          getTasksPath(DEFAULT_PROPS.task.id)
         );
       });
 
@@ -140,7 +140,7 @@ describe("TaskForm", () => {
       await waitFor(() => {
         expect(mockAxios.patch).toHaveBeenCalledWith(
           getTasksPath(DEFAULT_PROPS.task.id),
-          { status: TaskStatus.Done },
+          { status: TaskStatus.Done }
         );
       });
 
@@ -158,7 +158,7 @@ describe("TaskForm", () => {
       await waitFor(() => {
         expect(mockAxios.patch).toHaveBeenCalledWith(
           getTasksPath(DEFAULT_PROPS.task.id),
-          { status: TaskStatus.Doing },
+          { status: TaskStatus.Doing }
         );
       });
 

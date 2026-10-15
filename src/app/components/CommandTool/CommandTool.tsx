@@ -15,7 +15,7 @@ import { HABITS, HOME, PROJECTS, WIKI } from "@/app/utils/consts/routes";
 import { DialogTitle } from "@radix-ui/react-dialog";
 import TaskFormModal from "../TaskFormModal";
 import { WIKI_MESSAGES } from "./types";
-import { useTasksNewActions } from "@/app/utils/hooks/use-tasks-new/actions-context";
+import { useTasksActions } from "@/app/utils/hooks/use-tasks/actions-context";
 
 export interface CommandToolProps {
   testId?: string;
@@ -44,7 +44,7 @@ const CommandTool: FC<CommandToolProps> = (): JSX.Element => {
     return () => window.removeEventListener("message", handleMessage);
   }, []);
 
-  const { createTask: createNewTask } = useTasksNewActions();
+  const { createTask: createNewTask } = useTasksActions();
   const [searchValue, setSearchValue] = useState<string>("");
   const router = useRouter();
 

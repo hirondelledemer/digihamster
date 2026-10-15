@@ -5,10 +5,10 @@ import mockAxios from "jest-mock-axios";
 import { generateEvent } from "@/app/utils/mocks/event";
 import { EventsContextProvider } from "@/app/utils/hooks/use-events/provider";
 import { ProjectsContextProvider } from "@/app/utils/hooks/use-projects/provider";
-import { TasksNewContextProvider } from "@/app/utils/hooks/use-tasks-new/provider";
+import { TasksContextProvider } from "@/app/utils/hooks/use-tasks/provider";
 import { PROJECTS_PATH } from "@/app/utils/hooks/use-projects/api";
 import { generateListOfProjects } from "@/app/utils/mocks/project";
-import { TASKS_PATH } from "@/app/utils/hooks/use-tasks-new/api";
+import { TASKS_PATH } from "@/app/utils/hooks/use-tasks/api";
 import { EVENTS_PATH, getEventsPath } from "@/app/utils/hooks/use-events/api";
 import { userEvent } from "@storybook/test";
 import { generateCustomTasksList } from "@/app/utils/mocks/task";
@@ -47,11 +47,11 @@ describe("EditEventForm", () => {
     render(
       <ProjectsContextProvider>
         <EventsContextProvider>
-          <TasksNewContextProvider>
+          <TasksContextProvider>
             <EditEventForm {...props} />
-          </TasksNewContextProvider>
+          </TasksContextProvider>
         </EventsContextProvider>
-      </ProjectsContextProvider>,
+      </ProjectsContextProvider>
     );
 
   it("shows all the inputs", async () => {
@@ -61,20 +61,20 @@ describe("EditEventForm", () => {
 
     expect(screen.getByRole("textbox", { name: /title/i })).toBeInTheDocument();
     expect(screen.getByRole("textbox", { name: /title/i })).toHaveValue(
-      EVENT.title,
+      EVENT.title
     );
     expect(
-      screen.getByRole("textbox", { name: /description/i }),
+      screen.getByRole("textbox", { name: /description/i })
     ).toBeInTheDocument();
     expect(screen.getByRole("textbox", { name: /description/i })).toHaveValue(
-      EVENT.description,
+      EVENT.description
     );
     expect(
-      screen.getByRole("combobox", { name: /project/i }),
+      screen.getByRole("combobox", { name: /project/i })
     ).toBeInTheDocument();
 
     expect(
-      screen.getByRole("combobox", { name: /project/i }),
+      screen.getByRole("combobox", { name: /project/i })
     ).toHaveTextContent(PROJECTS[1].title);
     expect(screen.getByRole("button", { name: /save/i })).toBeInTheDocument();
   });
@@ -86,12 +86,12 @@ describe("EditEventForm", () => {
 
     await userEvent.type(
       screen.getByRole("textbox", { name: /title/i }),
-      " edited",
+      " edited"
     );
 
     await userEvent.type(
       screen.getByRole("textbox", { name: /description/i }),
-      " edited",
+      " edited"
     );
 
     await userEvent.click(screen.getByRole("combobox", { name: /project/i }));

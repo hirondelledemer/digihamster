@@ -1,12 +1,12 @@
 import { ITask } from "../../types/task";
 
-export interface TasksNewState {
+export interface TasksState {
   data: ITask[];
   isLoading: boolean;
   errorMessage?: unknown;
 }
 
-export enum TasksNewActionType {
+export enum TasksActionType {
   StartLoading = "START_LOADING",
   FinishLoading = "FINISH_LOADING",
   Error = "ERROR",
@@ -16,30 +16,30 @@ export enum TasksNewActionType {
 }
 
 export interface StartLoadingAction {
-  type: TasksNewActionType.StartLoading;
+  type: TasksActionType.StartLoading;
 }
 export interface FinishLoadingAction {
-  type: TasksNewActionType.FinishLoading;
+  type: TasksActionType.FinishLoading;
   payload: { data: ITask[] };
 }
 export interface ErrorAction {
-  type: TasksNewActionType.Error;
+  type: TasksActionType.Error;
   payload: { errorMessage: unknown };
 }
 export interface CreateTaskAction {
-  type: TasksNewActionType.CreateTask;
+  type: TasksActionType.CreateTask;
   payload: { task: ITask };
 }
 export interface UpdateTaskAction {
-  type: TasksNewActionType.UpdateTask;
+  type: TasksActionType.UpdateTask;
   payload: { id: number; task: Partial<ITask> };
 }
 export interface DeleteTaskAction {
-  type: TasksNewActionType.DeleteTask;
+  type: TasksActionType.DeleteTask;
   payload: { id: number };
 }
 
-export type TasksNewAction =
+export type TasksAction =
   | StartLoadingAction
   | FinishLoadingAction
   | ErrorAction

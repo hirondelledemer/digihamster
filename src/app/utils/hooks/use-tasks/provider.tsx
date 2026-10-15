@@ -2,10 +2,10 @@
 import { ReactNode, useCallback, useEffect, useReducer } from "react";
 import { useToast } from "@/app/components/ui/use-toast";
 import { reducer } from "./reducer";
-import { TasksNewAction, TasksNewActionType } from "./actions";
+import { TasksAction, TasksActionType } from "./actions";
 import { api, CreateTaskParams } from "./api";
-import { TasksNewStateContext } from "./state-context";
-import { TasksNewActionsContext } from "./actions-context";
+import { TasksStateContext } from "./state-context";
+import { TasksActionsContext } from "./actions-context";
 import { ITask, TaskStatus } from "../../types/task";
 import { now } from "../../date/now";
 import { toBackendDateTime } from "#utils/date";
@@ -23,30 +23,26 @@ const handleApiError = (
 };
 
 const fetchTasks = async (
-  dispatch: React.Dispatch<TasksNewAction>,
+  dispatch: React.Dispatch<TasksAction>,
   toast: ReturnType<typeof useToast>["toast"]
 ) => {
   try {
-    dispatch({ type: TasksNewActionType.StartLoading });
+    dispatch({ type: TasksActionType.StartLoading });
     const response = await api.getTasks();
     dispatch({
-      type: TasksNewActionType.FinishLoading,
+      type: TasksActionType.FinishLoading,
       payload: { data: response.data || [] },
     });
   } catch (err) {
     dispatch({
-      type: TasksNewActionType.Error,
+      type: TasksActionType.Error,
       payload: { errorMessage: err },
     });
     handleApiError(err, toast);
   }
 };
 
-export const TasksNewContextProvider = ({
-  children,
-}: {
-  children: ReactNode;
-}) => {
+export const TasksContextProvider = ({ children }: { children: ReactNode }) => {
   const [state, dispatch] = useReducer(reducer, {
     isLoading: false,
     data: [],
@@ -82,7 +78,7 @@ export const TasksNewContextProvider = ({
       };
 
       dispatch({
-        type: TasksNewActionType.CreateTask,
+        type: TasksActionType.CreateTask,
         payload: { task: tempTask },
       });
 
@@ -91,7 +87,7 @@ export const TasksNewContextProvider = ({
       try {
         const response = await api.createTask(data);
         dispatch({
-          type: TasksNewActionType.UpdateTask,
+          type: TasksActionType.UpdateTask,
           payload: { id: tempId, task: response.data },
         });
         toast({ title: "Success", description: "Task has been created" });
@@ -99,7 +95,7 @@ export const TasksNewContextProvider = ({
         return response.data;
       } catch (e: any) {
         dispatch({
-          type: TasksNewActionType.DeleteTask,
+          type: TasksActionType.DeleteTask,
           payload: { id: tempId },
         });
         handleApiError(e, toast);
@@ -112,7 +108,7 @@ export const TasksNewContextProvider = ({
   const updateTask = useCallback(
     async (id: number, data: Partial<ITask>, onDone?: () => void) => {
       dispatch({
-        type: TasksNewActionType.UpdateTask,
+        type: TasksActionType.UpdateTask,
         payload: { id, task: data },
       });
       if (onDone) onDone();
@@ -130,7 +126,7 @@ export const TasksNewContextProvider = ({
     async (eventId: number, sortedTaskIds: number[]) => {
       sortedTaskIds.forEach((id, index) => {
         dispatch({
-          type: TasksNewActionType.UpdateTask,
+          type: TasksActionType.UpdateTask,
           payload: { id, task: { event_sort_order: index + 1 } },
         });
       });
@@ -151,7 +147,7 @@ export const TasksNewContextProvider = ({
     async (projectId: number, sortedTaskIds: number[]) => {
       sortedTaskIds.forEach((id, index) => {
         dispatch({
-          type: TasksNewActionType.UpdateTask,
+          type: TasksActionType.UpdateTask,
           payload: { id, task: { project_sort_order: index + 1 } },
         });
       });
@@ -170,7 +166,7 @@ export const TasksNewContextProvider = ({
 
   const deleteTask = useCallback(
     async (id: number, onDone?: () => void) => {
-      dispatch({ type: TasksNewActionType.DeleteTask, payload: { id } });
+      dispatch({ type: TasksActionType.DeleteTask, payload: { id } });
       if (onDone) onDone();
       try {
         await api.deleteTask(id);
@@ -183,8 +179,8 @@ export const TasksNewContextProvider = ({
   );
 
   return (
-    <TasksNewStateContext.Provider value={state}>
-      <TasksNewActionsContext.Provider
+    <TasksStateContext.Provider value={state}>
+      <TasksActionsContext.Provider
         value={{
           createTask,
           updateTask,
@@ -194,7 +190,7 @@ export const TasksNewContextProvider = ({
         }}
       >
         {children}
-      </TasksNewActionsContext.Provider>
-    </TasksNewStateContext.Provider>
+      </TasksActionsContext.Provider>
+    </TasksStateContext.Provider>
   );
 };

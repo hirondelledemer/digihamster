@@ -2,7 +2,7 @@ import { createContext, useContext } from "react";
 import { CreateTaskParams } from "./api";
 import { ITask } from "../../types/task";
 
-export interface TasksNewActionsContextValue {
+export interface TasksActionsContextValue {
   createTask(
     data: CreateTaskParams,
     onDone?: () => void
@@ -13,7 +13,7 @@ export interface TasksNewActionsContextValue {
   reorderTasksInTheProject(projectId: number, taskIds: number[]): void;
 }
 
-const DEFAULT_ACTIONS: TasksNewActionsContextValue = {
+const DEFAULT_ACTIONS: TasksActionsContextValue = {
   createTask: async () => null,
   updateTask: () => {},
   deleteTask: () => {},
@@ -21,7 +21,7 @@ const DEFAULT_ACTIONS: TasksNewActionsContextValue = {
   reorderTasksInTheProject: () => {},
 };
 
-export const TasksNewActionsContext =
-  createContext<TasksNewActionsContextValue>(DEFAULT_ACTIONS);
+export const TasksActionsContext =
+  createContext<TasksActionsContextValue>(DEFAULT_ACTIONS);
 
-export const useTasksNewActions = () => useContext(TasksNewActionsContext);
+export const useTasksActions = () => useContext(TasksActionsContext);

@@ -3,17 +3,17 @@ import { TaskActions } from "./TaskActions";
 import { generateTask } from "@/app/utils/mocks/task";
 import { TaskStatus, ITask } from "@/app/utils/types/task";
 import {
-  TasksNewActionsContext,
-  TasksNewActionsContextValue,
-} from "@/app/utils/hooks/use-tasks-new/actions-context";
+  TasksActionsContext,
+  TasksActionsContextValue,
+} from "@/app/utils/hooks/use-tasks/actions-context";
 
 const renderComponent = (
   task: ITask,
-  actions: Partial<TasksNewActionsContextValue> = {},
+  actions: Partial<TasksActionsContextValue> = {}
 ) => {
   const updateTask = jest.fn();
   const deleteTask = jest.fn();
-  const contextValue: TasksNewActionsContextValue = {
+  const contextValue: TasksActionsContextValue = {
     createTask: jest.fn(),
     updateTask,
     deleteTask,
@@ -23,11 +23,11 @@ const renderComponent = (
   };
 
   render(
-    <TasksNewActionsContext.Provider value={contextValue}>
+    <TasksActionsContext.Provider value={contextValue}>
       <TaskActions task={task}>
         <span>trigger</span>
       </TaskActions>
-    </TasksNewActionsContext.Provider>,
+    </TasksActionsContext.Provider>
   );
 
   const openMenu = () => fireEvent.contextMenu(screen.getByText("trigger"));
@@ -44,15 +44,10 @@ describe("TaskActions", () => {
       openMenu();
 
       const options = (await screen.findAllByRole("menuitem")).map(
-        (el) => el.textContent,
+        (el) => el.textContent
       );
 
-      expect(options).toStrictEqual([
-        "Complete",
-        "Activate",
-        "Edit",
-        "Delete",
-      ]);
+      expect(options).toStrictEqual(["Complete", "Activate", "Edit", "Delete"]);
     });
 
     it("should complete the task", async () => {
@@ -60,13 +55,13 @@ describe("TaskActions", () => {
       openMenu();
 
       fireEvent.click(
-        await screen.findByRole("menuitem", { name: "Complete" }),
+        await screen.findByRole("menuitem", { name: "Complete" })
       );
 
       expect(updateTask).toHaveBeenCalledWith(
         task.id,
         { status: TaskStatus.Done },
-        expect.any(Function),
+        expect.any(Function)
       );
     });
 
@@ -75,13 +70,13 @@ describe("TaskActions", () => {
       openMenu();
 
       fireEvent.click(
-        await screen.findByRole("menuitem", { name: "Activate" }),
+        await screen.findByRole("menuitem", { name: "Activate" })
       );
 
       expect(updateTask).toHaveBeenCalledWith(
         task.id,
         { status: TaskStatus.Doing },
-        expect.any(Function),
+        expect.any(Function)
       );
     });
   });
@@ -94,7 +89,7 @@ describe("TaskActions", () => {
       openMenu();
 
       const options = (await screen.findAllByRole("menuitem")).map(
-        (el) => el.textContent,
+        (el) => el.textContent
       );
 
       expect(options).toStrictEqual([
@@ -110,13 +105,13 @@ describe("TaskActions", () => {
       openMenu();
 
       fireEvent.click(
-        await screen.findByRole("menuitem", { name: "Deactivate" }),
+        await screen.findByRole("menuitem", { name: "Deactivate" })
       );
 
       expect(updateTask).toHaveBeenCalledWith(
         task.id,
         { status: TaskStatus.Todo },
-        expect.any(Function),
+        expect.any(Function)
       );
     });
   });
@@ -129,7 +124,7 @@ describe("TaskActions", () => {
       openMenu();
 
       const options = (await screen.findAllByRole("menuitem")).map(
-        (el) => el.textContent,
+        (el) => el.textContent
       );
 
       expect(options).toStrictEqual(["Undo", "Activate", "Edit", "Delete"]);
@@ -144,7 +139,7 @@ describe("TaskActions", () => {
       expect(updateTask).toHaveBeenCalledWith(
         task.id,
         { status: TaskStatus.Doing },
-        expect.any(Function),
+        expect.any(Function)
       );
     });
   });
@@ -157,7 +152,7 @@ describe("TaskActions", () => {
       openMenu();
 
       const options = (await screen.findAllByRole("menuitem")).map(
-        (el) => el.textContent,
+        (el) => el.textContent
       );
 
       expect(options).toStrictEqual([
@@ -173,7 +168,7 @@ describe("TaskActions", () => {
       openMenu();
 
       fireEvent.click(
-        await screen.findByRole("menuitem", { name: "Remove from event" }),
+        await screen.findByRole("menuitem", { name: "Remove from event" })
       );
 
       expect(updateTask).toHaveBeenCalledWith(task.id, {
@@ -194,7 +189,7 @@ describe("TaskActions", () => {
       openMenu();
 
       const options = (await screen.findAllByRole("menuitem")).map(
-        (el) => el.textContent,
+        (el) => el.textContent
       );
 
       expect(options).toContain("Move to the list");
@@ -205,7 +200,7 @@ describe("TaskActions", () => {
       openMenu();
 
       fireEvent.click(
-        await screen.findByRole("menuitem", { name: "Move to the list" }),
+        await screen.findByRole("menuitem", { name: "Move to the list" })
       );
 
       expect(updateTask).toHaveBeenCalledWith(task.id, {
@@ -221,9 +216,7 @@ describe("TaskActions", () => {
       const { openMenu, deleteTask } = renderComponent(task);
       openMenu();
 
-      fireEvent.click(
-        await screen.findByRole("menuitem", { name: "Delete" }),
-      );
+      fireEvent.click(await screen.findByRole("menuitem", { name: "Delete" }));
 
       expect(deleteTask).toHaveBeenCalledWith(task.id);
     });

@@ -26,7 +26,7 @@ import { format } from "date-fns";
 import { Calendar } from "../ui/calendar";
 import { Textarea } from "../ui/textarea";
 import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
-import { useTasksNewActions } from "@/app/utils/hooks/use-tasks-new/actions-context";
+import { useTasksActions } from "@/app/utils/hooks/use-tasks/actions-context";
 import { ITask, TaskStatus } from "@/app/utils/types/task";
 import { toBackendDateTime } from "#utils/date";
 import { Badge } from "../ui/badge";
@@ -56,7 +56,7 @@ const TaskForm: FC<TaskFormProps> = ({
   ...restProps
 }): JSX.Element => {
   const { data: projects } = useProjectsState();
-  const { updateTask: editTask, deleteTask } = useTasksNewActions();
+  const { updateTask: editTask, deleteTask } = useTasksActions();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(FormSchema),
@@ -84,7 +84,7 @@ const TaskForm: FC<TaskFormProps> = ({
       deleteTask(restProps.task.id);
       onDone();
     },
-    [deleteTask, restProps, onDone],
+    [deleteTask, restProps, onDone]
   );
 
   const handleComplete = useCallback(
@@ -96,7 +96,7 @@ const TaskForm: FC<TaskFormProps> = ({
       });
       onDone();
     },
-    [editTask, restProps, onDone],
+    [editTask, restProps, onDone]
   );
 
   const handleUndo = useCallback(
@@ -108,7 +108,7 @@ const TaskForm: FC<TaskFormProps> = ({
       });
       onDone();
     },
-    [editTask, restProps, onDone],
+    [editTask, restProps, onDone]
   );
 
   return (
@@ -210,7 +210,7 @@ const TaskForm: FC<TaskFormProps> = ({
                       variant={"outline"}
                       className={cn(
                         "pl-3 text-left font-normal",
-                        !field.value && "text-muted-foreground",
+                        !field.value && "text-muted-foreground"
                       )}
                     >
                       {field.value ? (
@@ -229,7 +229,7 @@ const TaskForm: FC<TaskFormProps> = ({
                     onSelect={(date) => {
                       // console.log(date);
                       field.onChange(
-                        date ? toBackendDateTime(date) : undefined,
+                        date ? toBackendDateTime(date) : undefined
                       );
                     }}
                   />

@@ -3,7 +3,6 @@ import React, { FC, useState } from "react";
 
 import { RelationshipEntityType } from "@/app/utils/types/relationship";
 import { relationshipTypeFor } from "@/app/utils/relationships/relationship-types";
-import { useEntityLabel } from "../../use-entity-label";
 import { useRelationshipsActions } from "@/app/utils/hooks/use-relationships/actions-context";
 import { useNotesActions } from "@/app/utils/hooks/use-notes/actions-context";
 import { useEntriesActions } from "@/app/utils/hooks/use-entry/actions-context";
@@ -15,6 +14,7 @@ import {
   ParsedLine,
   parseRelationshipInput,
 } from "./parse-relationship-input";
+import { useEntityLabel } from "@/app/utils/relationships/use-entity-label";
 
 export interface CreateEventFormProps {
   entityId: number;

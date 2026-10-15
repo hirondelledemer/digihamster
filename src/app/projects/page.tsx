@@ -5,9 +5,9 @@ import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
 import { useProjectsActions } from "@/app/utils/hooks/use-projects/actions-context";
 import { LifeAspectsContextProvider } from "@/app/utils/hooks/use-life-aspects/provider";
 import { useLifeAspectsState } from "@/app/utils/hooks/use-life-aspects/state-context";
-import { TasksNewContextProvider } from "@/app/utils/hooks/use-tasks-new/provider";
-import { useTasksNewState } from "@/app/utils/hooks/use-tasks-new/state-context";
-import { useTasksNewActions } from "@/app/utils/hooks/use-tasks-new/actions-context";
+import { TasksContextProvider } from "@/app/utils/hooks/use-tasks/provider";
+import { useTasksState } from "@/app/utils/hooks/use-tasks/state-context";
+import { useTasksActions } from "@/app/utils/hooks/use-tasks/actions-context";
 import {
   Table,
   TableBody,
@@ -50,7 +50,7 @@ const STATUS_CYCLE: ITask["status"][] = [
 ];
 
 const TaskRow: FC<TaskRowProps> = ({ task }) => {
-  const { updateTask, deleteTask } = useTasksNewActions();
+  const { updateTask, deleteTask } = useTasksActions();
   const [editing, setEditing] = useState(false);
   const [editTitle, setEditTitle] = useState(task.title);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -141,8 +141,8 @@ interface TasksPanelProps {
 }
 
 const TasksPanel: FC<TasksPanelProps> = ({ project }) => {
-  const { data: tasks, isLoading } = useTasksNewState();
-  const { createTask } = useTasksNewActions();
+  const { data: tasks, isLoading } = useTasksState();
+  const { createTask } = useTasksActions();
   const [title, setTitle] = useState("");
 
   const projectTasks = tasks.filter((t) => t.project_id === project.id);
@@ -320,14 +320,14 @@ export default function ProjectsNewPage() {
   return (
     <ProjectsContextProvider>
       <LifeAspectsContextProvider>
-        <TasksNewContextProvider>
+        <TasksContextProvider>
           <LocationsContextProvider>
             <RelationshipsContextProvider>
               <CommandTool />
               <Projects />
             </RelationshipsContextProvider>
           </LocationsContextProvider>
-        </TasksNewContextProvider>
+        </TasksContextProvider>
       </LifeAspectsContextProvider>
     </ProjectsContextProvider>
   );

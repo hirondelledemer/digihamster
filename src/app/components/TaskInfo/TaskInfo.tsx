@@ -7,7 +7,7 @@ import { ScrollArea } from "../ui/scroll-area";
 import { useProjectById } from "@/app/utils/hooks/use-projects/selectors";
 import MinimalNote from "../MinimalNote";
 import { useRouter, useSearchParams } from "#lib/navigation";
-import { useTasksNewState } from "@/app/utils/hooks/use-tasks-new/state-context";
+import { useTasksState } from "@/app/utils/hooks/use-tasks/state-context";
 import { DraggableTaskCard } from "../TaskCard/DraggableTaskCard";
 import {
   closestCenter,
@@ -27,7 +27,7 @@ import {
 import { SortableTaskCard } from "../TaskCard/SortableTaskCard";
 import { Switch } from "../ui/switch";
 import { Label } from "../ui/label";
-import { useTasksNewActions } from "@/app/utils/hooks/use-tasks-new/actions-context";
+import { useTasksActions } from "@/app/utils/hooks/use-tasks/actions-context";
 import { TaskStatus } from "@/app/utils/types/task";
 
 export interface TaskInfoProps {
@@ -38,11 +38,11 @@ const TaskInfo: FC<TaskInfoProps> = (): JSX.Element | null => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [allowSorting, setAllowSorting] = useState<boolean>(false);
-  const { reorderTasksInTheProject } = useTasksNewActions();
+  const { reorderTasksInTheProject } = useTasksActions();
 
   const projectId = searchParams.get("projectId"); // TODO: convert to number
 
-  const { data: tasks } = useTasksNewState();
+  const { data: tasks } = useTasksState();
 
   const selectedProject = useProjectById(projectId ? Number(projectId) : null);
 

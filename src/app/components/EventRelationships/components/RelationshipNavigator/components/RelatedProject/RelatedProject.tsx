@@ -1,7 +1,7 @@
 import { useNavigator } from "@/app/components/EventRelationships/navigator-context";
 import { useProjectById } from "@/app/utils/hooks/use-projects/selectors";
 import { useRelevantRelationshipsForEntity } from "@/app/utils/hooks/use-relationships/selectors";
-import { useFirstTaskForTheProject } from "@/app/utils/hooks/use-tasks-new/selectors";
+import { useFirstTaskForTheProject } from "@/app/utils/hooks/use-tasks/selectors";
 import { RelationshipEntityType } from "@/app/utils/types/relationship";
 import { IconCheckbox } from "@tabler/icons-react";
 import { FC } from "react";

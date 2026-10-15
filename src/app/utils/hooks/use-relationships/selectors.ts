@@ -8,7 +8,7 @@ import {
   isTerminalProjectStatus,
   isTerminalTaskStatus,
 } from "../../relationships/display-rules";
-import { useTasksNewState } from "../use-tasks-new/state-context";
+import { useTasksState } from "../use-tasks/state-context";
 import { useRelationshipsState } from "./state-context";
 import { useProjectsState } from "../use-projects/state-context";
 
@@ -109,7 +109,7 @@ export const useRelevantRelationshipsForEntity = ({
   entityType: RelationshipEntityType;
 }): IRelationship[] => {
   const relationships = useAllRelationshipsForEntity({ entityId, entityType });
-  const { data: tasks } = useTasksNewState();
+  const { data: tasks } = useTasksState();
   const { data: projects } = useProjectsState();
 
   return relationships

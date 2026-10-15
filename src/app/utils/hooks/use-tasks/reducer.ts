@@ -1,30 +1,27 @@
-import { TasksNewState, TasksNewAction, TasksNewActionType } from "./actions";
+import { TasksState, TasksAction, TasksActionType } from "./actions";
 
-export function reducer(
-  state: TasksNewState,
-  action: TasksNewAction,
-): TasksNewState {
+export function reducer(state: TasksState, action: TasksAction): TasksState {
   switch (action.type) {
-    case TasksNewActionType.StartLoading:
+    case TasksActionType.StartLoading:
       return { ...state, isLoading: true };
-    case TasksNewActionType.FinishLoading:
+    case TasksActionType.FinishLoading:
       return { ...state, isLoading: false, data: action.payload.data };
-    case TasksNewActionType.Error:
+    case TasksActionType.Error:
       return {
         ...state,
         isLoading: false,
         errorMessage: action.payload.errorMessage,
       };
-    case TasksNewActionType.CreateTask:
+    case TasksActionType.CreateTask:
       return { ...state, data: [...state.data, action.payload.task] };
-    case TasksNewActionType.UpdateTask:
+    case TasksActionType.UpdateTask:
       return {
         ...state,
         data: state.data.map((t) =>
-          t.id === action.payload.id ? { ...t, ...action.payload.task } : t,
+          t.id === action.payload.id ? { ...t, ...action.payload.task } : t
         ),
       };
-    case TasksNewActionType.DeleteTask:
+    case TasksActionType.DeleteTask:
       return {
         ...state,
         data: state.data.filter((t) => t.id !== action.payload.id),

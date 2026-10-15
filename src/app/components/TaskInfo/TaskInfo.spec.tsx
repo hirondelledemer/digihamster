@@ -7,9 +7,9 @@ import mockAxios from "jest-mock-axios";
 import { ProjectsContextProvider } from "@/app/utils/hooks/use-projects/provider";
 import { generateListOfProjects } from "@/app/utils/mocks/project";
 import { useSearchParams } from "next/navigation";
-import { TasksNewContextProvider } from "@/app/utils/hooks/use-tasks-new/provider";
+import { TasksContextProvider } from "@/app/utils/hooks/use-tasks/provider";
 import { TaskStatus } from "@/app/utils/types/task";
-import { TASKS_PATH } from "@/app/utils/hooks/use-tasks-new/api";
+import { TASKS_PATH } from "@/app/utils/hooks/use-tasks/api";
 import { PROJECTS_PATH } from "@/app/utils/hooks/use-projects/api";
 
 const routerPushSpy = jest.fn();
@@ -41,11 +41,11 @@ describe("TaskInfo", () => {
 
   const renderComponent = (props = defaultProps) =>
     render(
-      <TasksNewContextProvider>
+      <TasksContextProvider>
         <ProjectsContextProvider>
           <TaskInfo {...props} />
         </ProjectsContextProvider>
-      </TasksNewContextProvider>
+      </TasksContextProvider>
     );
 
   describe("projectId is present in the query params", () => {
