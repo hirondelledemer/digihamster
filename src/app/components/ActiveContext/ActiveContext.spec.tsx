@@ -46,7 +46,7 @@ describe("ActiveContext", () => {
         );
       });
 
-      it("pressing x would remove the selected sevent from query params", async () => {
+      it("pressing x would remove the selected event from query params", async () => {
         (useSearchParams as jest.Mock).mockReturnValue({
           get: () => String(EVENT.id),
         });
@@ -63,7 +63,7 @@ describe("ActiveContext", () => {
       });
     });
 
-    describe("current event is present", () => {
+    describe("current event is present, no query params", () => {
       const TEST_DATE = now();
       const TEST_DATE_START = subHours(TEST_DATE, 1);
       const TEST_DATE_END = addHours(TEST_DATE, 1);
