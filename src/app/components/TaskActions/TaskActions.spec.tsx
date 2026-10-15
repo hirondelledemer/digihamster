@@ -3,17 +3,17 @@ import { TaskActions } from "./TaskActions";
 import { generateTask } from "@/app/utils/mocks/task";
 import { TaskStatus, ITask } from "@/app/utils/types/task";
 import {
-  TasksNewActionsContext,
-  TasksNewActionsContextValue,
+  TasksActionsContext,
+  TasksActionsContextValue,
 } from "@/app/utils/hooks/use-tasks/actions-context";
 
 const renderComponent = (
   task: ITask,
-  actions: Partial<TasksNewActionsContextValue> = {}
+  actions: Partial<TasksActionsContextValue> = {}
 ) => {
   const updateTask = jest.fn();
   const deleteTask = jest.fn();
-  const contextValue: TasksNewActionsContextValue = {
+  const contextValue: TasksActionsContextValue = {
     createTask: jest.fn(),
     updateTask,
     deleteTask,
@@ -23,11 +23,11 @@ const renderComponent = (
   };
 
   render(
-    <TasksNewActionsContext.Provider value={contextValue}>
+    <TasksActionsContext.Provider value={contextValue}>
       <TaskActions task={task}>
         <span>trigger</span>
       </TaskActions>
-    </TasksNewActionsContext.Provider>
+    </TasksActionsContext.Provider>
   );
 
   const openMenu = () => fireEvent.contextMenu(screen.getByText("trigger"));

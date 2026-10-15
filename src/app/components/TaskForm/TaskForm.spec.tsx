@@ -7,7 +7,7 @@ import mockAxios from "jest-mock-axios";
 
 import { generateCustomProjectsList } from "@/app/utils/mocks/project";
 import { ProjectsContextProvider } from "@/app/utils/hooks/use-projects/provider";
-import { TasksNewContextProvider } from "@/app/utils/hooks/use-tasks/provider";
+import { TasksContextProvider } from "@/app/utils/hooks/use-tasks/provider";
 import { PROJECTS_PATH } from "@/app/utils/hooks/use-projects/api";
 import { getTasksPath, TASKS_PATH } from "@/app/utils/hooks/use-tasks/api";
 import { ProjectStatus } from "@/app/utils/types/project";
@@ -32,9 +32,9 @@ describe("TaskForm", () => {
   const renderComponent = (props: TaskFormProps = DEFAULT_PROPS) =>
     render(
       <ProjectsContextProvider>
-        <TasksNewContextProvider>
+        <TasksContextProvider>
           <TaskForm {...props} />
-        </TasksNewContextProvider>
+        </TasksContextProvider>
       </ProjectsContextProvider>
     );
 

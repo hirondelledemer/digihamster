@@ -5,7 +5,7 @@ import mockAxios from "jest-mock-axios";
 import { generateEvent } from "@/app/utils/mocks/event";
 import { EventsContextProvider } from "@/app/utils/hooks/use-events/provider";
 import { ProjectsContextProvider } from "@/app/utils/hooks/use-projects/provider";
-import { TasksNewContextProvider } from "@/app/utils/hooks/use-tasks/provider";
+import { TasksContextProvider } from "@/app/utils/hooks/use-tasks/provider";
 import { PROJECTS_PATH } from "@/app/utils/hooks/use-projects/api";
 import { generateListOfProjects } from "@/app/utils/mocks/project";
 import { TASKS_PATH } from "@/app/utils/hooks/use-tasks/api";
@@ -47,9 +47,9 @@ describe("EditEventForm", () => {
     render(
       <ProjectsContextProvider>
         <EventsContextProvider>
-          <TasksNewContextProvider>
+          <TasksContextProvider>
             <EditEventForm {...props} />
-          </TasksNewContextProvider>
+          </TasksContextProvider>
         </EventsContextProvider>
       </ProjectsContextProvider>
     );

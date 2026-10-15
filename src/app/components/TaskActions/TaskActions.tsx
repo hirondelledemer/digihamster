@@ -9,7 +9,7 @@ import {
 import { ITask, TaskStatus } from "@/app/utils/types/task";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "../ui/sheet";
 import TaskFormModal from "../TaskFormModal";
-import { useTasksNewActions } from "@/app/utils/hooks/use-tasks/actions-context";
+import { useTasksActions } from "@/app/utils/hooks/use-tasks/actions-context";
 import {
   IconBackspace,
   IconCalendarCancel,
@@ -28,7 +28,7 @@ interface TaskActionProps {
 export const TaskActions: React.FC<TaskActionProps> = ({ children, task }) => {
   const [addNoteFormOpen, setAddNoteFormOpen] = useState<boolean>(false);
   const [taskFormOpen, setTaskFormOpen] = useState<boolean>(false);
-  const { updateTask: editTask, deleteTask } = useTasksNewActions();
+  const { updateTask: editTask, deleteTask } = useTasksActions();
 
   const closeTaskForm = () => setTaskFormOpen(false);
 

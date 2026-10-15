@@ -15,7 +15,7 @@ import {
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { IProject, ProjectStatus } from "@/app/utils/types/project";
-import { useTasksNewState } from "@/app/utils/hooks/use-tasks/state-context";
+import { useTasksState } from "@/app/utils/hooks/use-tasks/state-context";
 import { TaskStatus } from "@/app/utils/types/task";
 import { ProjectProgressBar } from "../ProjectProgressBar";
 import { useProjectLifeAspectAssetIcon } from "@/app/utils/hooks/use-life-aspects/selectors";
@@ -33,7 +33,7 @@ const ProjectCard: FC<ProjectCardProps> = ({
   selected,
   onClick,
 }): JSX.Element => {
-  const { data: tasks } = useTasksNewState();
+  const { data: tasks } = useTasksState();
 
   const assetIcon = useProjectLifeAspectAssetIcon(project);
 

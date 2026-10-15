@@ -4,12 +4,12 @@
 import React, { FC, useMemo } from "react";
 
 import { ScrollArea } from "../ui/scroll-area";
-import { useTasksNewState } from "@/app/utils/hooks/use-tasks/state-context";
+import { useTasksState } from "@/app/utils/hooks/use-tasks/state-context";
 import { DraggableTaskCard } from "../TaskCard/DraggableTaskCard";
 import { TaskStatus } from "@/app/utils/types/task";
 
 export const ActiveTaskList: FC = (): JSX.Element | null => {
-  const { data: tasks } = useTasksNewState();
+  const { data: tasks } = useTasksState();
 
   const tasksToShow = useMemo(
     () =>

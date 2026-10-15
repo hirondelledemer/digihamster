@@ -5,7 +5,7 @@ import { generateTask } from "@/app/utils/mocks/task";
 import { DEFAULT_TEST_DATE } from "@/app/utils/mocks/date";
 import { EventsContextProvider } from "@/app/utils/hooks/use-events/provider";
 import { ProjectsContextProvider } from "@/app/utils/hooks/use-projects/provider";
-import { TasksNewContextProvider } from "@/app/utils/hooks/use-tasks/provider";
+import { TasksContextProvider } from "@/app/utils/hooks/use-tasks/provider";
 import { DndContext } from "@dnd-kit/core";
 import { addHours } from "date-fns";
 import mockAxios from "jest-mock-axios";
@@ -74,13 +74,13 @@ describe("Today", () => {
   const renderComponent = (props = defaultProps) =>
     render(
       <ProjectsContextProvider>
-        <TasksNewContextProvider>
+        <TasksContextProvider>
           <EventsContextProvider>
             <DndContext>
               <Today {...props} />
             </DndContext>
           </EventsContextProvider>
-        </TasksNewContextProvider>
+        </TasksContextProvider>
       </ProjectsContextProvider>
     );
 

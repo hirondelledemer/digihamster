@@ -42,8 +42,8 @@ import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
 import { ProjectStatus } from "@/app/utils/types/project";
 import { Badge } from "../ui/badge";
 import { IEvent } from "@/app/utils/types/event";
-import { useTasksNewState } from "@/app/utils/hooks/use-tasks/state-context";
-import { useTasksNewActions } from "@/app/utils/hooks/use-tasks/actions-context";
+import { useTasksState } from "@/app/utils/hooks/use-tasks/state-context";
+import { useTasksActions } from "@/app/utils/hooks/use-tasks/actions-context";
 import { SortableTaskCard } from "../TaskCard/SortableTaskCard";
 import CreateTaskForm from "../CreateTaskForm";
 
@@ -67,8 +67,8 @@ export interface EventFormProps {
 
 const EditEventForm: FC<EventFormProps> = ({ onDone, event }): JSX.Element => {
   const { data: projects } = useProjectsState();
-  const { data: tasks } = useTasksNewState();
-  const { reorderTasksInTheEvent } = useTasksNewActions();
+  const { data: tasks } = useTasksState();
+  const { reorderTasksInTheEvent } = useTasksActions();
   const { update: updateEvent } = useEventsActions();
 
   const sensors = useSensors(

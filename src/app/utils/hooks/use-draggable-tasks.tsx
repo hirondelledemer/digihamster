@@ -7,10 +7,10 @@ import {
   useSensors,
 } from "@dnd-kit/core";
 import { snapCenterToCursor } from "@dnd-kit/modifiers";
-import { useTasksNewActions } from "./use-tasks/actions-context";
+import { useTasksActions } from "./use-tasks/actions-context";
 
 export const DraggableTasksContextProvider = ({ children }: any) => {
-  const { updateTask: editTask } = useTasksNewActions();
+  const { updateTask: editTask } = useTasksActions();
 
   const sensors = useSensors(
     useSensor(PointerSensor, {

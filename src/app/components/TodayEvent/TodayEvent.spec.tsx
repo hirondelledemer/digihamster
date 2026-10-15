@@ -6,7 +6,7 @@ import { EventsContextProvider } from "@/app/utils/hooks/use-events/provider";
 import { generateEvent } from "@/app/utils/mocks/event";
 import { DEFAULT_TEST_DATE } from "@/app/utils/mocks/date";
 import { ProjectsContextProvider } from "@/app/utils/hooks/use-projects/provider";
-import { TasksNewContextProvider } from "@/app/utils/hooks/use-tasks/provider";
+import { TasksContextProvider } from "@/app/utils/hooks/use-tasks/provider";
 import { getTasksPath, TASKS_PATH } from "@/app/utils/hooks/use-tasks/api";
 import { TaskStatus } from "@/app/utils/types/task";
 import { addHours } from "date-fns";
@@ -40,11 +40,11 @@ describe("TodayEvent", () => {
   const renderComponent = (props = DEFAULT_PROPS) =>
     render(
       <ProjectsContextProvider>
-        <TasksNewContextProvider>
+        <TasksContextProvider>
           <EventsContextProvider>
             <TodayEvent {...props} />
           </EventsContextProvider>
-        </TasksNewContextProvider>
+        </TasksContextProvider>
       </ProjectsContextProvider>
     );
 

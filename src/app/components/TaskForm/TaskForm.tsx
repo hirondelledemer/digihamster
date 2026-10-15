@@ -26,7 +26,7 @@ import { format } from "date-fns";
 import { Calendar } from "../ui/calendar";
 import { Textarea } from "../ui/textarea";
 import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
-import { useTasksNewActions } from "@/app/utils/hooks/use-tasks/actions-context";
+import { useTasksActions } from "@/app/utils/hooks/use-tasks/actions-context";
 import { ITask, TaskStatus } from "@/app/utils/types/task";
 import { toBackendDateTime } from "#utils/date";
 import { Badge } from "../ui/badge";
@@ -56,7 +56,7 @@ const TaskForm: FC<TaskFormProps> = ({
   ...restProps
 }): JSX.Element => {
   const { data: projects } = useProjectsState();
-  const { updateTask: editTask, deleteTask } = useTasksNewActions();
+  const { updateTask: editTask, deleteTask } = useTasksActions();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(FormSchema),

@@ -19,7 +19,7 @@ import { generateCustomRelationshipsList } from "@/app/utils/mocks/relationship"
 import { DEFAULT_TEST_DATE } from "@/app/utils/mocks/date";
 import { EventsContextProvider } from "@/app/utils/hooks/use-events/provider";
 import { ProjectsContextProvider } from "@/app/utils/hooks/use-projects/provider";
-import { TasksNewContextProvider } from "@/app/utils/hooks/use-tasks/provider";
+import { TasksContextProvider } from "@/app/utils/hooks/use-tasks/provider";
 import { PeopleContextProvider } from "@/app/utils/hooks/use-people/provider";
 import { LocationsContextProvider } from "@/app/utils/hooks/use-location/provider";
 import { NotesContextProvider } from "@/app/utils/hooks/use-notes/provider";
@@ -81,7 +81,7 @@ const RELATIONSHIPS = generateCustomRelationshipsList([
 const PROVIDERS = [
   TooltipProvider,
   ProjectsContextProvider,
-  TasksNewContextProvider,
+  TasksContextProvider,
   EventsContextProvider,
   PeopleContextProvider,
   LocationsContextProvider,

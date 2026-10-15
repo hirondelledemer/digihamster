@@ -1,13 +1,12 @@
 import { createContext, useContext } from "react";
-import { TasksNewState } from "./actions";
+import { TasksState } from "./actions";
 
-const DEFAULT_STATE: TasksNewState = {
+const DEFAULT_STATE: TasksState = {
   data: [],
   isLoading: false,
   errorMessage: undefined,
 };
 
-export const TasksNewStateContext =
-  createContext<TasksNewState>(DEFAULT_STATE);
+export const TasksStateContext = createContext<TasksState>(DEFAULT_STATE);
 
-export const useTasksNewState = () => useContext(TasksNewStateContext);
+export const useTasksState = () => useContext(TasksStateContext);

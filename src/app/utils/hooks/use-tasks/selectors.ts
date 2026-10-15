@@ -2,10 +2,10 @@
 
 import { sortInTheEvent } from "../../tasks/sort";
 import { ITask, TaskStatus } from "../../types/task";
-import { useTasksNewState } from "./state-context";
+import { useTasksState } from "./state-context";
 
 export const useActiveTasks = (): ITask[] => {
-  const { data } = useTasksNewState();
+  const { data } = useTasksState();
 
   return data.filter(
     (task) =>
@@ -14,13 +14,13 @@ export const useActiveTasks = (): ITask[] => {
 };
 
 export const useTasksForEvent = (eventId: number): ITask[] => {
-  const { data } = useTasksNewState();
+  const { data } = useTasksState();
 
   return sortInTheEvent(data).filter((task) => task.event_id === eventId);
 };
 
 export const useFirstTaskForTheProject = (projectId: number): ITask => {
-  const { data } = useTasksNewState(); // TODO: rename
+  const { data } = useTasksState(); // TODO: rename
   const sortedTasks = data
     .filter(
       (t) =>
@@ -36,7 +36,7 @@ export const useFirstTaskForTheProject = (projectId: number): ITask => {
 };
 
 export const useFirstTaskForTheProjects = (projectIds: number[]): ITask[] => {
-  const { data } = useTasksNewState(); // TODO: rename
+  const { data } = useTasksState(); // TODO: rename
 
   return projectIds.map((projectId) => {
     return data
@@ -53,7 +53,7 @@ export const useFirstTaskForTheProjects = (projectIds: number[]): ITask[] => {
 };
 
 export const useTaskById = (id: number | null | undefined): ITask | null => {
-  const { data } = useTasksNewState();
+  const { data } = useTasksState();
 
   if (id === null || id === undefined) {
     return null;

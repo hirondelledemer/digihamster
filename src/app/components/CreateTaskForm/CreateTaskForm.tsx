@@ -9,7 +9,7 @@ import { Button } from "../ui/button";
 import { now } from "@/app/utils/date/now";
 import { toBackendDateTime } from "@/app/utils/date/date";
 import { addDays } from "date-fns";
-import { useTasksNewActions } from "@/app/utils/hooks/use-tasks/actions-context";
+import { useTasksActions } from "@/app/utils/hooks/use-tasks/actions-context";
 import { CreateTaskParams } from "@/app/utils/hooks/use-tasks/api";
 
 export interface CreateTaskFormProps {
@@ -44,7 +44,7 @@ const CreateTaskForm: FC<CreateTaskFormProps> = ({
   projectId,
   eventId,
 }): JSX.Element => {
-  const { createTask: createNewTask } = useTasksNewActions();
+  const { createTask: createNewTask } = useTasksActions();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(FormSchema),

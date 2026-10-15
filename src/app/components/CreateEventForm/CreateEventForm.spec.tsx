@@ -1,5 +1,5 @@
 import { EventsContextProvider } from "@/app/utils/hooks/use-events/provider";
-import { TasksNewContextProvider } from "@/app/utils/hooks/use-tasks/provider";
+import { TasksContextProvider } from "@/app/utils/hooks/use-tasks/provider";
 import { render, screen, userEvent, waitFor } from "@/config/utils/test-utils";
 import {
   CreateEventForm,
@@ -32,9 +32,9 @@ describe("CreateEventForm", () => {
   it("should create a basic event", async () => {
     render(
       <EventsContextProvider>
-        <TasksNewContextProvider>
+        <TasksContextProvider>
           <CreateEventForm {...DEFAULT_PROPS} />
-        </TasksNewContextProvider>
+        </TasksContextProvider>
       </EventsContextProvider>
     );
 
@@ -62,9 +62,9 @@ describe("CreateEventForm", () => {
 
     render(
       <EventsContextProvider>
-        <TasksNewContextProvider>
+        <TasksContextProvider>
           <CreateEventForm {...DEFAULT_PROPS} />
-        </TasksNewContextProvider>
+        </TasksContextProvider>
       </EventsContextProvider>
     );
 
@@ -126,11 +126,11 @@ describe("CreateEventForm", () => {
 
     render(
       <EventsContextProvider>
-        <TasksNewContextProvider>
+        <TasksContextProvider>
           <RelationshipsContextProvider>
             <CreateEventForm {...DEFAULT_PROPS} />
           </RelationshipsContextProvider>
-        </TasksNewContextProvider>
+        </TasksContextProvider>
       </EventsContextProvider>
     );
 
@@ -195,11 +195,11 @@ describe("CreateEventForm", () => {
 
     render(
       <EventsContextProvider>
-        <TasksNewContextProvider>
+        <TasksContextProvider>
           <RelationshipsContextProvider>
             <CreateEventForm {...DEFAULT_PROPS} />
           </RelationshipsContextProvider>
-        </TasksNewContextProvider>
+        </TasksContextProvider>
       </EventsContextProvider>
     );
 

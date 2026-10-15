@@ -8,7 +8,7 @@ import { ProjectStatus } from "@/app/utils/types/project";
 import { ProjectsContextProvider } from "@/app/utils/hooks/use-projects/provider";
 import { TaskStatus } from "@/app/utils/types/task";
 import { toBackendDate } from "#utils/date";
-import { TasksNewContextProvider } from "@/app/utils/hooks/use-tasks/provider";
+import { TasksContextProvider } from "@/app/utils/hooks/use-tasks/provider";
 import { TASKS_PATH } from "@/app/utils/hooks/use-tasks/api";
 import { PROJECTS_PATH } from "@/app/utils/hooks/use-projects/api";
 
@@ -58,11 +58,11 @@ const assertLoaded = async () => {
 describe("ProjectProgress", () => {
   const renderComponent = () =>
     render(
-      <TasksNewContextProvider>
+      <TasksContextProvider>
         <ProjectsContextProvider>
           <ProjectProgress />
         </ProjectsContextProvider>
-      </TasksNewContextProvider>
+      </TasksContextProvider>
     );
 
   afterEach(() => {
