@@ -26,7 +26,7 @@ import { Label } from "../ui/label";
 import { getColumns } from "./columns";
 import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
 import { useProjectsActions } from "@/app/utils/hooks/use-projects/actions-context";
-import { useTasksNewState } from "@/app/utils/hooks/use-tasks-new/state-context";
+import { useTasksNewState } from "@/app/utils/hooks/use-tasks/state-context";
 import CreateTaskForm from "../CreateTaskForm";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "../ui/sheet";
 import { ITask } from "@/app/utils/types/task";

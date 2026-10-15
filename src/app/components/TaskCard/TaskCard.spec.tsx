@@ -11,7 +11,7 @@ import {
 
 import mockAxios from "jest-mock-axios";
 import { ProjectsContextProvider } from "@/app/utils/hooks/use-projects/provider";
-import { TasksNewContextProvider } from "@/app/utils/hooks/use-tasks-new/provider";
+import { TasksNewContextProvider } from "@/app/utils/hooks/use-tasks/provider";
 import { PROJECTS_PATH } from "@/app/utils/hooks/use-projects/api";
 import { ITask, TaskStatus } from "@/app/utils/types/task";
 import { toBackendDateTime } from "#utils/date";

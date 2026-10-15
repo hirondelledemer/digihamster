@@ -8,7 +8,7 @@ import {
   isTerminalProjectStatus,
   isTerminalTaskStatus,
 } from "../../relationships/display-rules";
-import { useTasksNewState } from "../use-tasks-new/state-context";
+import { useTasksNewState } from "../use-tasks/state-context";
 import { useRelationshipsState } from "./state-context";
 import { useProjectsState } from "../use-projects/state-context";
 

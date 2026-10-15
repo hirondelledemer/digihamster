@@ -23,8 +23,8 @@ import EventForm from "../EditEventForm";
 import { EventStatus, IEvent } from "@/app/utils/types/event";
 import { addDays, format } from "date-fns";
 import { toBackendDateTime } from "#utils/date";
-import { useTasksNewActions } from "@/app/utils/hooks/use-tasks-new/actions-context";
-import { useTasksNewState } from "@/app/utils/hooks/use-tasks-new/state-context";
+import { useTasksNewActions } from "@/app/utils/hooks/use-tasks/actions-context";
+import { useTasksNewState } from "@/app/utils/hooks/use-tasks/state-context";
 import { CheckIcon } from "lucide-react";
 import {
   IconBackspace,

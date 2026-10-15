@@ -5,7 +5,7 @@ import { useLocationById } from "@/app/utils/hooks/use-location/selectors";
 import { useNoteById } from "@/app/utils/hooks/use-notes/selectors";
 import { usePersonById } from "@/app/utils/hooks/use-people/selectors";
 import { useProjectById } from "@/app/utils/hooks/use-projects/selectors";
-import { useTaskById } from "@/app/utils/hooks/use-tasks-new/selectors";
+import { useTaskById } from "@/app/utils/hooks/use-tasks/selectors";
 import { IEvent } from "@/app/utils/types/event";
 import { IHabitWithLogs } from "@/app/utils/types/habit";
 import { IJournalEntry } from "@/app/utils/types/journal-entry";

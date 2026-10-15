@@ -7,7 +7,7 @@ import {
   useSensors,
 } from "@dnd-kit/core";
 import { snapCenterToCursor } from "@dnd-kit/modifiers";
-import { useTasksNewActions } from "./use-tasks-new/actions-context";
+import { useTasksNewActions } from "./use-tasks/actions-context";
 
 export const DraggableTasksContextProvider = ({ children }: any) => {
   const { updateTask: editTask } = useTasksNewActions();
@@ -17,7 +17,7 @@ export const DraggableTasksContextProvider = ({ children }: any) => {
       activationConstraint: {
         distance: 8,
       },
-    }),
+    })
   );
 
   return (

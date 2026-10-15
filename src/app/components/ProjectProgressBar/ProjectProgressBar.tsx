@@ -1,4 +1,4 @@
-import { useTasksNewState } from "@/app/utils/hooks/use-tasks-new/state-context";
+import { useTasksNewState } from "@/app/utils/hooks/use-tasks/state-context";
 import { IProject } from "@/app/utils/types/project";
 import { FC, useMemo } from "react";
 
@@ -13,16 +13,16 @@ export const ProjectProgressBar: FC<ProjectProgressBarProps> = ({
 
   const allTasks = useMemo(
     () => tasks.filter((task) => task.project_id === project.id),
-    [project.id, tasks],
+    [project.id, tasks]
   );
   const activeTaskCount = useMemo(
     () => allTasks.filter((task) => task.status === "doing").length,
-    [allTasks],
+    [allTasks]
   );
 
   const completedTaskCount = useMemo(
     () => allTasks.filter((task) => task.status === "done").length,
-    [allTasks],
+    [allTasks]
   );
 
   return (

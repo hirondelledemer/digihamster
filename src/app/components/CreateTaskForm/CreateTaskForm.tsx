@@ -9,8 +9,8 @@ import { Button } from "../ui/button";
 import { now } from "@/app/utils/date/now";
 import { toBackendDateTime } from "@/app/utils/date/date";
 import { addDays } from "date-fns";
-import { useTasksNewActions } from "@/app/utils/hooks/use-tasks-new/actions-context";
-import { CreateTaskParams } from "@/app/utils/hooks/use-tasks-new/api";
+import { useTasksNewActions } from "@/app/utils/hooks/use-tasks/actions-context";
+import { CreateTaskParams } from "@/app/utils/hooks/use-tasks/api";
 
 export interface CreateTaskFormProps {
   testId?: string;

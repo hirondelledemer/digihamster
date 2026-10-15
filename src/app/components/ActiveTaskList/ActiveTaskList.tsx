@@ -4,7 +4,7 @@
 import React, { FC, useMemo } from "react";
 
 import { ScrollArea } from "../ui/scroll-area";
-import { useTasksNewState } from "@/app/utils/hooks/use-tasks-new/state-context";
+import { useTasksNewState } from "@/app/utils/hooks/use-tasks/state-context";
 import { DraggableTaskCard } from "../TaskCard/DraggableTaskCard";
 import { TaskStatus } from "@/app/utils/types/task";
 

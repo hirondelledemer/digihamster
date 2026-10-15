@@ -6,7 +6,7 @@ import { EventsContextProvider } from "@/app/utils/hooks/use-events/provider";
 import { ProjectsContextProvider } from "@/app/utils/hooks/use-projects/provider";
 import { TagsContextProvider } from "@/app/utils/hooks/use-tags/provider";
 import { CycleContextProvider } from "@/app/utils/hooks/use-cycle";
-import { TasksNewContextProvider } from "@/app/utils/hooks/use-tasks-new/provider";
+import { TasksNewContextProvider } from "@/app/utils/hooks/use-tasks/provider";
 import { DraggableTasksContextProvider } from "@/app/utils/hooks/use-draggable-tasks";
 import { CalendarDateContextProvider } from "@/app/utils/hooks/use-calendar-date";
 import { LifeAspectsContextProvider } from "@/app/utils/hooks/use-life-aspects/provider";

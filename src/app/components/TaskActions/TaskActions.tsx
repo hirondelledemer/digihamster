@@ -9,7 +9,7 @@ import {
 import { ITask, TaskStatus } from "@/app/utils/types/task";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "../ui/sheet";
 import TaskFormModal from "../TaskFormModal";
-import { useTasksNewActions } from "@/app/utils/hooks/use-tasks-new/actions-context";
+import { useTasksNewActions } from "@/app/utils/hooks/use-tasks/actions-context";
 import {
   IconBackspace,
   IconCalendarCancel,

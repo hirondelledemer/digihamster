@@ -19,7 +19,7 @@ import { generateCustomRelationshipsList } from "@/app/utils/mocks/relationship"
 import { DEFAULT_TEST_DATE } from "@/app/utils/mocks/date";
 import { EventsContextProvider } from "@/app/utils/hooks/use-events/provider";
 import { ProjectsContextProvider } from "@/app/utils/hooks/use-projects/provider";
-import { TasksNewContextProvider } from "@/app/utils/hooks/use-tasks-new/provider";
+import { TasksNewContextProvider } from "@/app/utils/hooks/use-tasks/provider";
 import { PeopleContextProvider } from "@/app/utils/hooks/use-people/provider";
 import { LocationsContextProvider } from "@/app/utils/hooks/use-location/provider";
 import { NotesContextProvider } from "@/app/utils/hooks/use-notes/provider";
@@ -27,7 +27,7 @@ import { EntriesContextProvider } from "@/app/utils/hooks/use-entry/provider";
 import { RelationshipsContextProvider } from "@/app/utils/hooks/use-relationships/provider";
 import { EVENTS_PATH, getEventsPath } from "@/app/utils/hooks/use-events/api";
 import { PROJECTS_PATH } from "@/app/utils/hooks/use-projects/api";
-import { TASKS_PATH } from "@/app/utils/hooks/use-tasks-new/api";
+import { TASKS_PATH } from "@/app/utils/hooks/use-tasks/api";
 import { PEOPLE_PATH } from "@/app/utils/hooks/use-people/api";
 import { LOCATIONS_PATH } from "@/app/utils/hooks/use-location/api";
 import { NOTES_PATH } from "@/app/utils/hooks/use-notes/api";

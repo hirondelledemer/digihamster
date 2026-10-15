@@ -9,7 +9,7 @@ import { Button } from "../ui/button";
 import { toBackendDateTime } from "@/app/utils/date/date";
 import { useEventsActions } from "@/app/utils/hooks/use-events/actions-context";
 import { FieldsRequired } from "@/app/utils/hooks/use-events/api";
-import { useTasksNewActions } from "@/app/utils/hooks/use-tasks-new/actions-context";
+import { useTasksNewActions } from "@/app/utils/hooks/use-tasks/actions-context";
 import { RelationshipEntityType } from "@/app/utils/types/relationship";
 import { useRelationshipsActions } from "@/app/utils/hooks/use-relationships/actions-context";
 

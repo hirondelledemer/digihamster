@@ -5,7 +5,7 @@ import { useLocationById } from "@/app/utils/hooks/use-location/selectors";
 import { useNoteById } from "@/app/utils/hooks/use-notes/selectors";
 import { usePersonById } from "@/app/utils/hooks/use-people/selectors";
 import { useProjectById } from "@/app/utils/hooks/use-projects/selectors";
-import { useTaskById } from "@/app/utils/hooks/use-tasks-new/selectors";
+import { useTaskById } from "@/app/utils/hooks/use-tasks/selectors";
 import { RelationshipEntityType } from "@/app/utils/types/relationship";
 
 /**
@@ -17,7 +17,7 @@ import { RelationshipEntityType } from "@/app/utils/types/relationship";
  */
 export const useEntityLabel = (
   id: number,
-  type: RelationshipEntityType,
+  type: RelationshipEntityType
 ): string | null => {
   const idWhen = (wanted: RelationshipEntityType) =>
     type === wanted ? id : undefined;

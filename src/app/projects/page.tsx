@@ -5,9 +5,9 @@ import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
 import { useProjectsActions } from "@/app/utils/hooks/use-projects/actions-context";
 import { LifeAspectsContextProvider } from "@/app/utils/hooks/use-life-aspects/provider";
 import { useLifeAspectsState } from "@/app/utils/hooks/use-life-aspects/state-context";
-import { TasksNewContextProvider } from "@/app/utils/hooks/use-tasks-new/provider";
-import { useTasksNewState } from "@/app/utils/hooks/use-tasks-new/state-context";
-import { useTasksNewActions } from "@/app/utils/hooks/use-tasks-new/actions-context";
+import { TasksNewContextProvider } from "@/app/utils/hooks/use-tasks/provider";
+import { useTasksNewState } from "@/app/utils/hooks/use-tasks/state-context";
+import { useTasksNewActions } from "@/app/utils/hooks/use-tasks/actions-context";
 import {
   Table,
   TableBody,

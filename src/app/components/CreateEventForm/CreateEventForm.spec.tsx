@@ -1,5 +1,5 @@
 import { EventsContextProvider } from "@/app/utils/hooks/use-events/provider";
-import { TasksNewContextProvider } from "@/app/utils/hooks/use-tasks-new/provider";
+import { TasksNewContextProvider } from "@/app/utils/hooks/use-tasks/provider";
 import { render, screen, userEvent, waitFor } from "@/config/utils/test-utils";
 import {
   CreateEventForm,
@@ -8,7 +8,7 @@ import {
 } from "./CreateEventForm";
 import { getRichTextEditorTestkit } from "../RichTextEditor/RichTextEditor.testkit";
 import mockAxios from "@/__mocks__/axios";
-import { getTasksPath } from "@/app/utils/hooks/use-tasks-new/api";
+import { getTasksPath } from "@/app/utils/hooks/use-tasks/api";
 import { EVENTS_PATH } from "@/app/utils/hooks/use-events/api";
 import { RELATIONSHIPS_PATH } from "@/app/utils/hooks/use-relationships/api";
 import { RelationshipsContextProvider } from "@/app/utils/hooks/use-relationships/provider";

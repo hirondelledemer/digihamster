@@ -2,10 +2,10 @@ import { ActiveTaskList } from "./ActiveTaskList";
 import { generateCustomTasksList } from "@/app/utils/mocks/task";
 import { act, render, screen, waitFor } from "@/config/utils/test-utils";
 import mockAxios from "jest-mock-axios";
-import { TasksNewContextProvider } from "@/app/utils/hooks/use-tasks-new/provider";
+import { TasksNewContextProvider } from "@/app/utils/hooks/use-tasks/provider";
 import { TaskStatus } from "@/app/utils/types/task";
 import { DEFAULT_TEST_DATE } from "@/app/utils/mocks/date";
-import { TASKS_PATH } from "@/app/utils/hooks/use-tasks-new/api";
+import { TASKS_PATH } from "@/app/utils/hooks/use-tasks/api";
 import { DndContext } from "@dnd-kit/core";
 import { TooltipProvider } from "../ui/tooltip";
 

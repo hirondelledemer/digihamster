@@ -5,7 +5,7 @@ import { generateTask } from "@/app/utils/mocks/task";
 import { DEFAULT_TEST_DATE } from "@/app/utils/mocks/date";
 import { EventsContextProvider } from "@/app/utils/hooks/use-events/provider";
 import { ProjectsContextProvider } from "@/app/utils/hooks/use-projects/provider";
-import { TasksNewContextProvider } from "@/app/utils/hooks/use-tasks-new/provider";
+import { TasksNewContextProvider } from "@/app/utils/hooks/use-tasks/provider";
 import { DndContext } from "@dnd-kit/core";
 import { addHours } from "date-fns";
 import mockAxios from "jest-mock-axios";
@@ -81,7 +81,7 @@ describe("Today", () => {
             </DndContext>
           </EventsContextProvider>
         </TasksNewContextProvider>
-      </ProjectsContextProvider>,
+      </ProjectsContextProvider>
     );
 
   it("should show all events", () => {
@@ -95,9 +95,7 @@ describe("Today", () => {
   it("should show empty state when no events", () => {
     renderComponent({ ...defaultProps, events: [] });
 
-    expect(
-      screen.getByText("There are not events today."),
-    ).toBeInTheDocument();
+    expect(screen.getByText("There are not events today.")).toBeInTheDocument();
   });
 
   describe("keyboard navigation", () => {
@@ -132,7 +130,7 @@ describe("Today", () => {
       const entries = screen.getAllByTestId("today-event-container");
 
       await userEvent.keyboard(
-        "[ArrowDown][ArrowUp][ArrowUp][ArrowUp][ArrowUp][ArrowUp]",
+        "[ArrowDown][ArrowUp][ArrowUp][ArrowUp][ArrowUp][ArrowUp]"
       );
 
       expect(entries[0]).toHaveClass("bg-muted");
@@ -146,7 +144,7 @@ describe("Today", () => {
       const entries = screen.getAllByTestId("today-event-container");
 
       await userEvent.keyboard(
-        "[ArrowDown][ArrowDown][ArrowDown][ArrowDown][ArrowDown][ArrowDown]",
+        "[ArrowDown][ArrowDown][ArrowDown][ArrowDown][ArrowDown][ArrowDown]"
       );
 
       expect(entries[0]).not.toHaveClass("bg-muted");
