@@ -19,9 +19,9 @@ export const ALLOWED_TYPES: Record<
   [RelationshipEntityType.Event]: [
     RelationshipEntityType.Task,
     RelationshipEntityType.Habit,
+    RelationshipEntityType.Note,
     RelationshipEntityType.Person,
     RelationshipEntityType.Journal,
-    RelationshipEntityType.Note,
     RelationshipEntityType.Location,
     RelationshipEntityType.Project,
   ],

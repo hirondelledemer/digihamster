@@ -3,6 +3,7 @@ import {
   RelationshipEntityType,
 } from "../../types/relationship";
 import {
+  ALLOWED_TYPES,
   isAllowedTarget,
   isTerminalProjectStatus,
   isTerminalTaskStatus,
@@ -111,24 +112,31 @@ export const useRelevantRelationshipsForEntity = ({
   const { data: tasks } = useTasksNewState();
   const { data: projects } = useProjectsState();
 
-  return relationships.filter((r) => {
-    if (!isAllowedTarget(entityType, r)) {
-      return false;
-    }
+  return relationships
+    .filter((r) => {
+      if (!isAllowedTarget(entityType, r)) {
+        return false;
+      }
 
-    // A done or cancelled task is history. Dropping it here rather than in
-    // RelatedTask means the surrounding chrome - the action buttons, the
-    // "no stuff here" empty state - agrees about what is on screen.
-    if (r.target_type === RelationshipEntityType.Task) {
-      const task = tasks.find((t) => t.id === r.target_id);
-      return !!task && !isTerminalTaskStatus(task.status);
-    }
+      // A done or cancelled task is history. Dropping it here rather than in
+      // RelatedTask means the surrounding chrome - the action buttons, the
+      // "no stuff here" empty state - agrees about what is on screen.
+      if (r.target_type === RelationshipEntityType.Task) {
+        const task = tasks.find((t) => t.id === r.target_id);
+        return !!task && !isTerminalTaskStatus(task.status);
+      }
 
-    if (r.target_type === RelationshipEntityType.Project) {
-      const project = projects.find((p) => p.id === r.target_id);
-      return !!project && !isTerminalProjectStatus(project.status);
-    }
+      if (r.target_type === RelationshipEntityType.Project) {
+        const project = projects.find((p) => p.id === r.target_id);
+        return !!project && !isTerminalProjectStatus(project.status);
+      }
 
-    return true;
-  });
+      return true;
+    })
+    .sort((a, b) => {
+      return (
+        ALLOWED_TYPES[entityType].indexOf(a.target_type) -
+        ALLOWED_TYPES[entityType].indexOf(b.target_type)
+      );
+    });
 };
