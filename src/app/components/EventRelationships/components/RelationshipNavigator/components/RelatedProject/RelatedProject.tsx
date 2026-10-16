@@ -1,12 +1,10 @@
 import { useNavigator } from "@/app/components/EventRelationships/navigator-context";
 import { useProjectById } from "@/app/utils/hooks/use-projects/selectors";
 import { useRelevantRelationshipsForEntity } from "@/app/utils/hooks/use-relationships/selectors";
-import { useFirstTaskForTheProject } from "@/app/utils/hooks/use-tasks/selectors";
 import { RelationshipEntityType } from "@/app/utils/types/relationship";
 import { IconCheckbox } from "@tabler/icons-react";
 import { FC } from "react";
 import { EntityTypeIcon } from "../../../EntityTypeIcon";
-import TaskCard from "@/app/components/TaskCard";
 import { ProjectSwitchableTask } from "../RelatedLocation/components/ProjectSwitchableTask";
 
 export const RelatedProject: FC<{ id: number; compact: boolean }> = ({
@@ -18,8 +16,6 @@ export const RelatedProject: FC<{ id: number; compact: boolean }> = ({
     entityId: id,
     entityType: RelationshipEntityType.Project,
   });
-
-  // const task = useFirstTaskForTheProject(id);
 
   const { entities, setActiveEntity } = useNavigator();
 
@@ -62,7 +58,6 @@ export const RelatedProject: FC<{ id: number; compact: boolean }> = ({
   return (
     <div>
       <ProjectSwitchableTask project={project} />
-      {/* <TaskCard task={task} /> */}
       <div>
         {relationships.map((r) => (
           <EntityTypeIcon key={r.id} type={r.target_type} size={16} />
