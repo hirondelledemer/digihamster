@@ -47,17 +47,11 @@ export const ALLOWED_TYPES: Record<
     RelationshipEntityType.Event,
   ],
   [RelationshipEntityType.Habit]: [
-    // the occurrences - the events this habit actually happened at. This is
-    // the unbounded one: a weekly habit collects them forever, so whatever
-    // renders it has to bound by date rather than show the whole list.
-    RelationshipEntityType.Event,
     // what you wrote during an occurrence, which is the point of looking a
     // habit up later. The form already creates these straight off the habit.
     RelationshipEntityType.Note,
     RelationshipEntityType.Journal,
-    RelationshipEntityType.Task,
     RelationshipEntityType.Person,
-    RelationshipEntityType.Location,
   ],
   [RelationshipEntityType.Note]: [
     RelationshipEntityType.Person,
