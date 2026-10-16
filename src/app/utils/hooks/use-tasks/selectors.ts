@@ -19,6 +19,22 @@ export const useTasksForEvent = (eventId: number): ITask[] => {
   return sortInTheEvent(data).filter((task) => task.event_id === eventId);
 };
 
+export const useActiveTasksForProject = (projectId: number): ITask[] => {
+  const { data } = useTasksState(); // TODO: rename
+  const sortedTasks = data
+    .filter(
+      (t) =>
+        t.project_id === projectId &&
+        (t.status === TaskStatus.Doing || t.status === TaskStatus.Todo)
+    )
+    .sort(
+      (taskA, taskB) =>
+        (taskA.project_sort_order || 0) - (taskB.project_sort_order || 0) // TODO: export sorting
+    );
+
+  return sortedTasks;
+};
+
 export const useFirstTaskForTheProject = (projectId: number): ITask => {
   const { data } = useTasksState(); // TODO: rename
   const sortedTasks = data
