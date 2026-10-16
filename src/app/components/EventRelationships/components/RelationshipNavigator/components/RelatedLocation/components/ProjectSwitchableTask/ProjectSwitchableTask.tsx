@@ -28,14 +28,16 @@ export const ProjectSwitchableTask: FC<{ project: IProject }> = ({
   };
 
   return (
-    <div>
-      <div className="flex gap-2 items-center">
+    <div className="group">
+      <div className="flex gap-2 items-center opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0  duration-200 ease-out">
         <Button onClick={handleLeftClick}>
-          <IconArrowBadgeLeft color={project.color} />
+          <IconArrowBadgeLeft color={project.color} size={16} />
         </Button>
-        {activeTaskIndex + 1} / {tasks.length}
+        <div className="text-xs">
+          {activeTaskIndex + 1} / {tasks.length}
+        </div>
         <Button onClick={handleRightClick}>
-          <IconArrowBadgeRight color={project.color} />
+          <IconArrowBadgeRight color={project.color} size={16} />
         </Button>
       </div>
       <TaskCard task={tasks[activeTaskIndex]} />
