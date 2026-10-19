@@ -7,9 +7,9 @@ import {
   ContextMenuTrigger,
 } from "../ui/context-menu";
 import { ITask, TaskStatus } from "@/app/utils/types/task";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "../ui/sheet";
 import TaskFormModal from "../TaskFormModal";
 import { useTasksActions } from "@/app/utils/hooks/use-tasks/actions-context";
+import { AdditionalAction, AdditionalActions } from "../AdditionalActions";
 import {
   IconBackspace,
   IconCalendarCancel,
@@ -20,30 +20,17 @@ import {
   IconTrash,
 } from "@tabler/icons-react";
 
-/**
- * A menu item the surrounding context adds to the card's own. What a task
- * affords depends on where it is being looked at - a task reached from an
- * event can be pulled into it - and the card has no way of knowing that, so
- * the caller hands the item over whole rather than naming a situation here.
- */
-export interface TaskAction {
-  label: string;
-  icon?: ReactNode;
-  onClick(): void;
-}
-
 interface TaskActionProps {
   children: ReactNode;
   task: ITask;
-  additionalActions?: TaskAction[];
+  additionalActions?: AdditionalAction[];
 }
 
 export const TaskActions: React.FC<TaskActionProps> = ({
   children,
   task,
-  additionalActions = [],
+  additionalActions,
 }) => {
-  const [addNoteFormOpen, setAddNoteFormOpen] = useState<boolean>(false);
   const [taskFormOpen, setTaskFormOpen] = useState<boolean>(false);
   const { updateTask: editTask, deleteTask } = useTasksActions();
 
@@ -51,22 +38,6 @@ export const TaskActions: React.FC<TaskActionProps> = ({
 
   return (
     <>
-      <Sheet open={addNoteFormOpen}>
-        <SheetContent
-          side="right"
-          onCloseClick={() => setAddNoteFormOpen(false)}
-          showOverlay={false}
-          onEscapeKeyDown={() => setAddNoteFormOpen(false)}
-        >
-          <SheetHeader>
-            <SheetTitle>Add note</SheetTitle>
-          </SheetHeader>
-          {/* <NoteForm
-            onDone={() => setAddNoteFormOpen(false)}
-            parentTaskId={task.id}
-          /> */}
-        </SheetContent>
-      </Sheet>
       <TaskFormModal
         editMode
         open={taskFormOpen}
@@ -77,22 +48,13 @@ export const TaskActions: React.FC<TaskActionProps> = ({
       <ContextMenu>
         <ContextMenuTrigger>{children}</ContextMenuTrigger>
         <ContextMenuContent className="w-64">
-          {/* <ContextMenuItem inset onClick={() => setAddNoteFormOpen(true)}>
-            Add note
-          </ContextMenuItem> */}
-          {additionalActions.map((action) => (
-            <ContextMenuItem key={action.label} inset onClick={action.onClick}>
-              {action.icon}
-              {action.label}
-            </ContextMenuItem>
-          ))}
-          {!!additionalActions.length && <ContextMenuSeparator />}
+          <AdditionalActions actions={additionalActions} />
           {task.status === "done" && (
             <ContextMenuItem
               inset
               onClick={() =>
                 editTask(task.id, { status: TaskStatus.Doing }, () =>
-                  setTaskFormOpen(false)
+                  setTaskFormOpen(false),
                 )
               }
             >
@@ -105,7 +67,7 @@ export const TaskActions: React.FC<TaskActionProps> = ({
               inset
               onClick={() =>
                 editTask(task.id, { status: TaskStatus.Done }, () =>
-                  setTaskFormOpen(false)
+                  setTaskFormOpen(false),
                 )
               }
             >
@@ -118,7 +80,7 @@ export const TaskActions: React.FC<TaskActionProps> = ({
               inset
               onClick={() =>
                 editTask(task.id, { status: TaskStatus.Todo }, () =>
-                  setTaskFormOpen(false)
+                  setTaskFormOpen(false),
                 )
               }
             >
@@ -131,7 +93,7 @@ export const TaskActions: React.FC<TaskActionProps> = ({
               inset
               onClick={() =>
                 editTask(task.id, { status: TaskStatus.Doing }, () =>
-                  setTaskFormOpen(false)
+                  setTaskFormOpen(false),
                 )
               }
             >

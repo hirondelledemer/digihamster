@@ -5,6 +5,8 @@ import { IHabitWithLogs } from "@/app/utils/types/habit";
 import { getHabitLogForADay } from "@/app/utils/habits/habit-log";
 import { IEvent } from "@/app/utils/types/event";
 import { HabitActions } from "./HabitActions";
+import { AdditionalAction } from "../AdditionalActions";
+import { ScheduledIndicator } from "../ScheduledIndicator";
 import { useHabitLifeAspectAssetIcon } from "@/app/utils/hooks/use-life-aspects/selectors";
 import { useHabitWindow } from "@/app/utils/hooks/use-habits-new/selectors";
 import { HabitProgress } from "./HabitProgress";
@@ -15,11 +17,16 @@ export const cardTestId = "TaskCard-card-testid";
 export interface HabitCardProps {
   habit: IHabitWithLogs;
   event: IEvent;
+  additionalActions?: AdditionalAction[];
+  /** the habit is already attached to the event being looked at */
+  scheduled?: boolean;
 }
 
 export const HabitCard: FC<HabitCardProps> = ({
   habit,
   event,
+  additionalActions,
+  scheduled,
 }): JSX.Element => {
   const date = new Date(event.start_at);
   const log = getHabitLogForADay(habit, date);
@@ -29,7 +36,11 @@ export const HabitCard: FC<HabitCardProps> = ({
 
   return (
     <div className="w-full">
-      <HabitActions habit={habit} event={event}>
+      <HabitActions
+        habit={habit}
+        event={event}
+        additionalActions={additionalActions}
+      >
         <Card
           data-testid={cardTestId}
           className={`p-0 rounded-md ${
@@ -44,6 +55,7 @@ export const HabitCard: FC<HabitCardProps> = ({
               <div>
                 {icon} {habit.title}
               </div>
+              {scheduled && <ScheduledIndicator />}
             </CardTitle>
             {/* the bar says where the habit stands overall, which is a
                 different question from the line-through above - that is only

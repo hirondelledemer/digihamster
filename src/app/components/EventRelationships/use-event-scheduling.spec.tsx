@@ -11,7 +11,7 @@ import {
   NavigatorItem,
   RelationshipNavigatorContextProvider,
 } from "./navigator-context";
-import { useTaskEventScheduling } from "./use-task-event-scheduling";
+import { useEventScheduling } from "./use-event-scheduling";
 
 const EVENT: NavigatorItem = { id: 1, type: RelationshipEntityType.Event };
 const LOCATION: NavigatorItem = {
@@ -19,11 +19,12 @@ const LOCATION: NavigatorItem = {
   type: RelationshipEntityType.Location,
 };
 const TASK_ID = 3;
+const HABIT_ID = 4;
 
 const relates = (
   id: number,
   source: NavigatorItem,
-  target: { id: number; type: RelationshipEntityType }
+  target: { id: number; type: RelationshipEntityType },
 ): IRelationship => ({
   id,
   source_id: source.id,
@@ -43,12 +44,17 @@ interface RenderOptions {
    */
   column?: number;
   relationships?: IRelationship[];
+  /** what is being offered; a task unless a test says otherwise */
+  type?: RelationshipEntityType;
+  id?: number;
 }
 
 const renderScheduling = ({
   root = EVENT,
   column = 0,
   relationships = [],
+  type = RelationshipEntityType.Task,
+  id = TASK_ID,
 }: RenderOptions = {}) => {
   const create = jest.fn();
 
@@ -68,7 +74,7 @@ const renderScheduling = ({
 
   return {
     create,
-    ...renderHook(() => useTaskEventScheduling(TASK_ID), { wrapper }),
+    ...renderHook(() => useEventScheduling(type, id), { wrapper }),
   };
 };
 
@@ -77,7 +83,7 @@ const renderScheduling = ({
  * the tasks you do when you are there, and you want one of them pulled into
  * the event you came from.
  */
-describe("useTaskEventScheduling", () => {
+describe("useEventScheduling", () => {
   it("offers the move for a task suggested under the event", () => {
     const { result } = renderScheduling();
 
@@ -106,7 +112,7 @@ describe("useTaskEventScheduling", () => {
         source_type: RelationshipEntityType.Event,
         target_id: TASK_ID,
         target_type: RelationshipEntityType.Task,
-      })
+      }),
     );
   });
 
@@ -129,16 +135,61 @@ describe("useTaskEventScheduling", () => {
     it("reads the link written from the task's end", () => {
       const { result } = renderScheduling({
         relationships: [
-          relates(
-            1,
-            { id: TASK_ID, type: RelationshipEntityType.Task },
-            EVENT
-          ),
+          relates(1, { id: TASK_ID, type: RelationshipEntityType.Task }, EVENT),
         ],
       });
 
       expect(result.current.scheduled).toBe(true);
     });
+  });
+
+  describe("a habit kept at the location", () => {
+    const habit = {
+      type: RelationshipEntityType.Habit,
+      id: HABIT_ID,
+    };
+
+    it("is offered the same move as a task", () => {
+      const { result } = renderScheduling(habit);
+
+      expect(result.current.actions).toHaveLength(1);
+      expect(result.current.actions[0].label).toBe("Move to the event");
+    });
+
+    // a habit joined to an event is a session of it, not a loose association,
+    // and the plan counts those rows
+    it("is attached as an occurrence of the event", () => {
+      const { result, create } = renderScheduling(habit);
+
+      act(() => result.current.actions[0].onClick());
+
+      expect(create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          target_id: HABIT_ID,
+          target_type: RelationshipEntityType.Habit,
+          relationship_type: "occurrence_of",
+        }),
+      );
+    });
+
+    it("is marked once it is in the event", () => {
+      const { result } = renderScheduling({
+        ...habit,
+        relationships: [relates(1, EVENT, habit)],
+      });
+
+      expect(result.current.scheduled).toBe(true);
+      expect(result.current.actions).toEqual([]);
+    });
+  });
+
+  // the habit card needs the event itself to log against, and must not work
+  // it out a second way
+  it("reports the event the panel was opened on", () => {
+    expect(renderScheduling().result.current.eventId).toBe(EVENT.id);
+    expect(
+      renderScheduling({ root: LOCATION }).result.current.eventId,
+    ).toBeNull();
   });
 
   it("offers nothing when the panel was not opened on an event", () => {

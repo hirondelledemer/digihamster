@@ -4,7 +4,8 @@ import { IProject } from "@/app/utils/types/project";
 import { Button } from "@base-ui/react";
 import { IconArrowBadgeLeft, IconArrowBadgeRight } from "@tabler/icons-react";
 import { FC, useState } from "react";
-import { useTaskEventScheduling } from "@/app/components/EventRelationships/use-task-event-scheduling";
+import { useEventScheduling } from "@/app/components/EventRelationships/use-event-scheduling";
+import { RelationshipEntityType } from "@/app/utils/types/relationship";
 
 export const ProjectSwitchableTask: FC<{ project: IProject }> = ({
   project,
@@ -17,7 +18,10 @@ export const ProjectSwitchableTask: FC<{ project: IProject }> = ({
   // whatever the arrows last set
   const index = Math.min(activeTaskIndex, tasks.length - 1);
   const activeTask = tasks[index];
-  const { scheduled, actions } = useTaskEventScheduling(activeTask?.id);
+  const { scheduled, actions } = useEventScheduling(
+    RelationshipEntityType.Task,
+    activeTask?.id
+  );
 
   const handleRightClick = () => {
     if (index === tasks.length - 1) {

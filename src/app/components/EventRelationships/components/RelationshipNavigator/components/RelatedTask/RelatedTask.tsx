@@ -7,7 +7,7 @@ import { IconCheckbox } from "@tabler/icons-react";
 import { FC } from "react";
 import { EntityTypeIcon } from "../../../EntityTypeIcon";
 import TaskCard from "@/app/components/TaskCard";
-import { useTaskEventScheduling } from "@/app/components/EventRelationships/use-task-event-scheduling";
+import { useEventScheduling } from "@/app/components/EventRelationships/use-event-scheduling";
 
 export const RelatedTask: FC<{
   id: number;
@@ -20,7 +20,10 @@ export const RelatedTask: FC<{
   });
   const { main: color } = useTaskProjectColor(task);
   const { setActiveEntity, entities } = useNavigator();
-  const { scheduled, actions } = useTaskEventScheduling(id);
+  const { scheduled, actions } = useEventScheduling(
+    RelationshipEntityType.Task,
+    id
+  );
 
   const selectEntity = () =>
     setActiveEntity({
