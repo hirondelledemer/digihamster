@@ -7,11 +7,12 @@ import { IconCheckbox } from "@tabler/icons-react";
 import { FC } from "react";
 import { EntityTypeIcon } from "../../../EntityTypeIcon";
 import TaskCard from "@/app/components/TaskCard";
+import { useEventScheduling } from "@/app/components/EventRelationships/use-event-scheduling";
 
-export const RelatedTask: FC<{ id: number; compact: boolean }> = ({
-  id,
-  compact,
-}) => {
+export const RelatedTask: FC<{
+  id: number;
+  compact: boolean;
+}> = ({ id, compact }) => {
   const task = useTaskById(id);
   const relationships = useRelevantRelationshipsForEntity({
     entityId: id,
@@ -19,6 +20,10 @@ export const RelatedTask: FC<{ id: number; compact: boolean }> = ({
   });
   const { main: color } = useTaskProjectColor(task);
   const { setActiveEntity, entities } = useNavigator();
+  const { scheduled, actions } = useEventScheduling(
+    RelationshipEntityType.Task,
+    id
+  );
 
   const selectEntity = () =>
     setActiveEntity({
@@ -56,5 +61,7 @@ export const RelatedTask: FC<{ id: number; compact: boolean }> = ({
     );
   }
 
-  return <TaskCard task={task} />;
+  return (
+    <TaskCard task={task} scheduled={scheduled} additionalActions={actions} />
+  );
 };

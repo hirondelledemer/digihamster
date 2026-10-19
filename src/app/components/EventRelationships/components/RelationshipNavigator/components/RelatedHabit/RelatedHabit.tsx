@@ -13,6 +13,7 @@ import { FC } from "react";
 import { EntityTypeIcon } from "../../../EntityTypeIcon";
 import { Card, CardHeader, CardTitle } from "@/app/components/ui/card";
 import { HabitCard } from "@/app/components/HabitCard";
+import { useEventScheduling } from "@/app/components/EventRelationships/use-event-scheduling";
 
 export const RelatedHabit: FC<{
   id: number;
@@ -24,9 +25,12 @@ export const RelatedHabit: FC<{
 
   const { entities, setActiveEntity } = useNavigator();
 
-  const eventId = entities.findLast(
-    (e) => e.type === RelationshipEntityType.Event
-  )?.id;
+  // which event the panel hangs off, and whether this habit is in it already,
+  // is the same question the task cards ask
+  const { eventId, scheduled, actions } = useEventScheduling(
+    RelationshipEntityType.Habit,
+    id
+  );
 
   const event = useEventById(eventId);
 
@@ -91,5 +95,12 @@ export const RelatedHabit: FC<{
     );
   }
 
-  return <HabitCard habit={habit} event={event} />;
+  return (
+    <HabitCard
+      habit={habit}
+      event={event}
+      scheduled={scheduled}
+      additionalActions={actions}
+    />
+  );
 };

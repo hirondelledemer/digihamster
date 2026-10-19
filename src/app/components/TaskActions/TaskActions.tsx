@@ -7,9 +7,9 @@ import {
   ContextMenuTrigger,
 } from "../ui/context-menu";
 import { ITask, TaskStatus } from "@/app/utils/types/task";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "../ui/sheet";
 import TaskFormModal from "../TaskFormModal";
 import { useTasksActions } from "@/app/utils/hooks/use-tasks/actions-context";
+import { AdditionalAction, AdditionalActions } from "../AdditionalActions";
 import {
   IconBackspace,
   IconCalendarCancel,
@@ -23,10 +23,14 @@ import {
 interface TaskActionProps {
   children: ReactNode;
   task: ITask;
+  additionalActions?: AdditionalAction[];
 }
 
-export const TaskActions: React.FC<TaskActionProps> = ({ children, task }) => {
-  const [addNoteFormOpen, setAddNoteFormOpen] = useState<boolean>(false);
+export const TaskActions: React.FC<TaskActionProps> = ({
+  children,
+  task,
+  additionalActions,
+}) => {
   const [taskFormOpen, setTaskFormOpen] = useState<boolean>(false);
   const { updateTask: editTask, deleteTask } = useTasksActions();
 
@@ -34,22 +38,6 @@ export const TaskActions: React.FC<TaskActionProps> = ({ children, task }) => {
 
   return (
     <>
-      <Sheet open={addNoteFormOpen}>
-        <SheetContent
-          side="right"
-          onCloseClick={() => setAddNoteFormOpen(false)}
-          showOverlay={false}
-          onEscapeKeyDown={() => setAddNoteFormOpen(false)}
-        >
-          <SheetHeader>
-            <SheetTitle>Add note</SheetTitle>
-          </SheetHeader>
-          {/* <NoteForm
-            onDone={() => setAddNoteFormOpen(false)}
-            parentTaskId={task.id}
-          /> */}
-        </SheetContent>
-      </Sheet>
       <TaskFormModal
         editMode
         open={taskFormOpen}
@@ -60,15 +48,13 @@ export const TaskActions: React.FC<TaskActionProps> = ({ children, task }) => {
       <ContextMenu>
         <ContextMenuTrigger>{children}</ContextMenuTrigger>
         <ContextMenuContent className="w-64">
-          {/* <ContextMenuItem inset onClick={() => setAddNoteFormOpen(true)}>
-            Add note
-          </ContextMenuItem> */}
+          <AdditionalActions actions={additionalActions} />
           {task.status === "done" && (
             <ContextMenuItem
               inset
               onClick={() =>
                 editTask(task.id, { status: TaskStatus.Doing }, () =>
-                  setTaskFormOpen(false)
+                  setTaskFormOpen(false),
                 )
               }
             >
@@ -81,7 +67,7 @@ export const TaskActions: React.FC<TaskActionProps> = ({ children, task }) => {
               inset
               onClick={() =>
                 editTask(task.id, { status: TaskStatus.Done }, () =>
-                  setTaskFormOpen(false)
+                  setTaskFormOpen(false),
                 )
               }
             >
@@ -94,7 +80,7 @@ export const TaskActions: React.FC<TaskActionProps> = ({ children, task }) => {
               inset
               onClick={() =>
                 editTask(task.id, { status: TaskStatus.Todo }, () =>
-                  setTaskFormOpen(false)
+                  setTaskFormOpen(false),
                 )
               }
             >
@@ -107,7 +93,7 @@ export const TaskActions: React.FC<TaskActionProps> = ({ children, task }) => {
               inset
               onClick={() =>
                 editTask(task.id, { status: TaskStatus.Doing }, () =>
-                  setTaskFormOpen(false)
+                  setTaskFormOpen(false),
                 )
               }
             >

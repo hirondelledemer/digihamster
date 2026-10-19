@@ -10,6 +10,8 @@ import { TooltipTrigger } from "@radix-ui/react-tooltip";
 import { useTaskProject } from "@/app/utils/hooks/use-projects/selectors";
 import { ITask, TaskStatus } from "@/app/utils/types/task";
 import { TaskActions } from "../TaskActions";
+import { AdditionalAction } from "../AdditionalActions";
+import { ScheduledIndicator } from "../ScheduledIndicator";
 import { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
 
 export const titleTestId = "TaskCard-title-testid";
@@ -23,6 +25,10 @@ export interface TaskCardProps {
   listeners?: SyntheticListenerMap;
   attributes?: DraggableAttributes;
   style?: CSSProperties;
+  /** menu items the context this card sits in wants to add */
+  additionalActions?: AdditionalAction[];
+  /** the task is already attached to the event being looked at */
+  scheduled?: boolean;
 }
 
 export const taskFormTestId = "TaskCard-task-form-test-id";
@@ -35,6 +41,8 @@ const TaskCard: FC<TaskCardProps> = ({
   listeners,
   attributes,
   style,
+  additionalActions,
+  scheduled,
 }): JSX.Element => {
   const { setSelectedDate } = useCalendarDate();
 
@@ -48,7 +56,7 @@ const TaskCard: FC<TaskCardProps> = ({
   return (
     // TODO: find out if this the outer layer needed at all
     <div data-testid={testId} className="w-full">
-      <TaskActions task={task}>
+      <TaskActions task={task} additionalActions={additionalActions}>
         <Card
           data-testid={cardTestId}
           className={`p-0 rounded-md w-full ${
@@ -67,6 +75,7 @@ const TaskCard: FC<TaskCardProps> = ({
               {project?.title}
 
               <div className="flex items-center gap-1">
+                {scheduled && <ScheduledIndicator />}
                 {indicateActive && task.status === TaskStatus.Doing && (
                   <IconProgressCheck size={18} color="green" />
                 )}

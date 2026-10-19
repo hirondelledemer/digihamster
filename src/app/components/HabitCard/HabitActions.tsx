@@ -17,17 +17,20 @@ import { useRelationshipIdBetweenEntities } from "@/app/utils/hooks/use-relation
 import { IEvent } from "@/app/utils/types/event";
 import { RelationshipEntityType } from "@/app/utils/types/relationship";
 import { useRelationshipsActions } from "@/app/utils/hooks/use-relationships/actions-context";
+import { AdditionalAction, AdditionalActions } from "../AdditionalActions";
 
-interface TaskActionProps {
+interface HabitActionProps {
   children: ReactNode;
   habit: IHabitWithLogs;
   event: IEvent;
+  additionalActions?: AdditionalAction[];
 }
 
-export const HabitActions: React.FC<TaskActionProps> = ({
+export const HabitActions: React.FC<HabitActionProps> = ({
   children,
   habit,
   event,
+  additionalActions,
 }) => {
   const { addLog } = useHabitsNewActions();
   const { delete: deleteRelationship } = useRelationshipsActions();
@@ -67,6 +70,7 @@ export const HabitActions: React.FC<TaskActionProps> = ({
     <ContextMenu>
       <ContextMenuTrigger>{children}</ContextMenuTrigger>
       <ContextMenuContent className="w-64">
+        <AdditionalActions actions={additionalActions} />
         {isCompleted && (
           <ContextMenuItem inset onClick={onUndoClick}>
             <IconBackspace />
