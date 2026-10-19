@@ -4,6 +4,7 @@ import { IProject } from "@/app/utils/types/project";
 import { Button } from "@base-ui/react";
 import { IconArrowBadgeLeft, IconArrowBadgeRight } from "@tabler/icons-react";
 import { FC, useState } from "react";
+import { useTaskEventScheduling } from "@/app/components/EventRelationships/use-task-event-scheduling";
 
 export const ProjectSwitchableTask: FC<{ project: IProject }> = ({
   project,
@@ -11,21 +12,33 @@ export const ProjectSwitchableTask: FC<{ project: IProject }> = ({
   const tasks = useActiveTasksForProject(project.id);
   const [activeTaskIndex, setActiveTaskIndex] = useState<number>(0);
 
+  // completing a task shortens the list under the index you are parked on, so
+  // the position has to be read back as "as far along as there is", not as
+  // whatever the arrows last set
+  const index = Math.min(activeTaskIndex, tasks.length - 1);
+  const activeTask = tasks[index];
+  const { scheduled, actions } = useTaskEventScheduling(activeTask?.id);
+
   const handleRightClick = () => {
-    if (activeTaskIndex === tasks.length - 1) {
+    if (index === tasks.length - 1) {
       return;
     }
 
-    setActiveTaskIndex((val) => val + 1);
+    setActiveTaskIndex(index + 1);
   };
 
   const handleLeftClick = () => {
-    if (activeTaskIndex === 0) {
+    if (index === 0) {
       return;
     }
 
-    setActiveTaskIndex((val) => val - 1);
+    setActiveTaskIndex(index - 1);
   };
+
+  // a project whose tasks are all done has nothing to switch between
+  if (!activeTask) {
+    return null;
+  }
 
   return (
     <div className="group">
@@ -34,13 +47,17 @@ export const ProjectSwitchableTask: FC<{ project: IProject }> = ({
           <IconArrowBadgeLeft color={project.color} size={16} />
         </Button>
         <div className="text-xs">
-          {activeTaskIndex + 1} / {tasks.length}
+          {index + 1} / {tasks.length}
         </div>
         <Button onClick={handleRightClick}>
           <IconArrowBadgeRight color={project.color} size={16} />
         </Button>
       </div>
-      <TaskCard task={tasks[activeTaskIndex]} />
+      <TaskCard
+        task={activeTask}
+        scheduled={scheduled}
+        additionalActions={actions}
+      />
     </div>
   );
 };

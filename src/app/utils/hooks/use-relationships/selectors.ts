@@ -140,3 +140,36 @@ export const useRelevantRelationshipsForEntity = ({
       );
     });
 };
+
+export interface EntityRef {
+  id: number;
+  type: RelationshipEntityType;
+}
+
+/**
+ * The edge joining two entities, whichever way round it happens to be stored.
+ *
+ * `useRelationshipIdBetweenEntities` matches the stored direction only, which
+ * is fine when you know which end wrote the row. A task can be attached to an
+ * event from either side, so asking "are these two joined at all" has to look
+ * both ways. Either ref may be null, so callers can ask the question before
+ * they know there is anything to ask about.
+ */
+export const useRelationshipBetweenEntities = (
+  a: EntityRef | null,
+  b: EntityRef | null
+): IRelationship | null => {
+  const { data: relationships, isLoading } = useRelationshipsState();
+
+  if (isLoading || !relationships || !a || !b) {
+    return null;
+  }
+
+  const joins = (r: IRelationship, from: EntityRef, to: EntityRef) =>
+    r.source_id === from.id &&
+    r.source_type === from.type &&
+    r.target_id === to.id &&
+    r.target_type === to.type;
+
+  return relationships.find((r) => joins(r, a, b) || joins(r, b, a)) ?? null;
+};

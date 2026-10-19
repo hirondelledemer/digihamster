@@ -20,12 +20,29 @@ import {
   IconTrash,
 } from "@tabler/icons-react";
 
+/**
+ * A menu item the surrounding context adds to the card's own. What a task
+ * affords depends on where it is being looked at - a task reached from an
+ * event can be pulled into it - and the card has no way of knowing that, so
+ * the caller hands the item over whole rather than naming a situation here.
+ */
+export interface TaskAction {
+  label: string;
+  icon?: ReactNode;
+  onClick(): void;
+}
+
 interface TaskActionProps {
   children: ReactNode;
   task: ITask;
+  additionalActions?: TaskAction[];
 }
 
-export const TaskActions: React.FC<TaskActionProps> = ({ children, task }) => {
+export const TaskActions: React.FC<TaskActionProps> = ({
+  children,
+  task,
+  additionalActions = [],
+}) => {
   const [addNoteFormOpen, setAddNoteFormOpen] = useState<boolean>(false);
   const [taskFormOpen, setTaskFormOpen] = useState<boolean>(false);
   const { updateTask: editTask, deleteTask } = useTasksActions();
@@ -63,6 +80,13 @@ export const TaskActions: React.FC<TaskActionProps> = ({ children, task }) => {
           {/* <ContextMenuItem inset onClick={() => setAddNoteFormOpen(true)}>
             Add note
           </ContextMenuItem> */}
+          {additionalActions.map((action) => (
+            <ContextMenuItem key={action.label} inset onClick={action.onClick}>
+              {action.icon}
+              {action.label}
+            </ContextMenuItem>
+          ))}
+          {!!additionalActions.length && <ContextMenuSeparator />}
           {task.status === "done" && (
             <ContextMenuItem
               inset
