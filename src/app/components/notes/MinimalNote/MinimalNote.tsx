@@ -28,7 +28,7 @@ function isEditable(
   return (restProps as EditableProps).editable;
 }
 
-const MinimalNote: FC<MinimalNoteProps | MinimalNoteEditableProps> = ({
+export const MinimalNote: FC<MinimalNoteProps | MinimalNoteEditableProps> = ({
   testId,
   note,
   styledAsNote = false,
@@ -109,5 +109,3 @@ const MinimalNote: FC<MinimalNoteProps | MinimalNoteEditableProps> = ({
     <RichTextEditor testId={testId} editor={editor} onKeyDown={handleKeyDown} />
   );
 };
-
-export default MinimalNote;

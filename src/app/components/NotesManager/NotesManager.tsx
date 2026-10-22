@@ -11,7 +11,7 @@ import {
   CardTitle,
 } from "../ui/card";
 import { Button } from "../ui/button";
-import MinimalNote from "../notes/MinimalNote";
+import { MinimalNote } from "../notes";
 import { format } from "date-fns";
 
 export interface NotesManagerProps {

@@ -1,1 +1,1 @@
-export { default } from './MinimalNote';
+export { MinimalNote } from "./MinimalNote";

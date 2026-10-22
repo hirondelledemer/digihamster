@@ -15,7 +15,7 @@ import {
   sub,
 } from "date-fns";
 import { sortBy } from "remeda";
-import MinimalNote from "../notes/MinimalNote";
+import { MinimalNote } from "../notes";
 import {
   IconCalendarCancel,
   IconCalendarCheck,
@@ -39,6 +39,7 @@ export interface TimelineProps {
   testId?: string;
 }
 type IPeriod = "this_week" | "month" | "last_week" | "last_2_weeks";
+// TODO: remove timeline
 
 const Timeline: FC<TimelineProps> = ({ testId }): JSX.Element => {
   // const { data: tasks } = useTasks();

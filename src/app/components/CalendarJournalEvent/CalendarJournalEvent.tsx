@@ -3,7 +3,7 @@ import { IconBubbleFilled } from "@tabler/icons-react";
 import { CalendarJournalEntry } from "../CalendarEvent/CalendarEvent.types";
 import { cn } from "../utils";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
-import MinimalNote from "../notes/MinimalNote";
+import { MinimalNote } from "../notes";
 
 export interface CalendarJournalEventProps {
   event: CalendarJournalEntry;

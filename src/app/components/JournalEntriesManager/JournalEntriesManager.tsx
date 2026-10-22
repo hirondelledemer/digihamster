@@ -11,7 +11,7 @@ import {
   CardTitle,
 } from "../ui/card";
 import { Button } from "../ui/button";
-import MinimalNote from "../notes/MinimalNote";
+import { MinimalNote } from "../notes";
 
 export interface JournalEntriesManagerProps {
   testId?: string;
@@ -70,7 +70,7 @@ const JournalEntriesManager: FC<JournalEntriesManagerProps> = ({ testId }) => {
                       {
                         title,
                         note: textContent || "(no content)",
-                        mentioned_people_ids: tags.map((tag) => Number(tag)),
+                        mentioned_people_ids: tags.map((tag) => Number(tag)), //TODO: what is this error?
                         json_note: contentJSON,
                       },
                       () => setEditingId(null)

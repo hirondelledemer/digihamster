@@ -15,7 +15,7 @@ import { ScheduledIndicator } from "../ScheduledIndicator";
 import { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
 import { useRelevantRelationshipsForEntity } from "@/app/utils/hooks/use-relationships/selectors";
 import { RelationshipEntityType } from "@/app/utils/types/relationship";
-import MinimalNote from "../notes/MinimalNote";
+import { MinimalNote } from "../notes";
 import { useNoteById } from "@/app/utils/hooks/use-notes/selectors";
 
 export const titleTestId = "TaskCard-title-testid";
