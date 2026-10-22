@@ -10,7 +10,7 @@ import {
   TooltipTrigger,
 } from "@/app/components/ui/tooltip";
 import { useNavigator } from "@/app/components/EventRelationships/navigator-context";
-import { MinimalNote } from "@/app/components/notes";
+import { StickyNote } from "@/app/components/notes";
 
 export const RelatedNote: FC<{ id: number; compact: boolean }> = ({
   id,
@@ -59,7 +59,7 @@ export const RelatedNote: FC<{ id: number; compact: boolean }> = ({
 
   return (
     <div className="w-full">
-      <MinimalNote note={note.json_content} styledAsNote />
+      <StickyNote note={note} variant="tape" />
       <div className="flex">
         {relationships.map((r) => (
           <EntityTypeIcon key={r.id} type={r.target_type} size={16} />
