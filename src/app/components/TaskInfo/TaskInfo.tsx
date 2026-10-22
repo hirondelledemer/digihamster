@@ -5,7 +5,7 @@ import { cn } from "../utils";
 import CreateTaskForm from "../CreateTaskForm";
 import { ScrollArea } from "../ui/scroll-area";
 import { useProjectById } from "@/app/utils/hooks/use-projects/selectors";
-import MinimalNote from "../MinimalNote";
+import MinimalNote from "../notes/MinimalNote";
 import { useRouter, useSearchParams } from "#lib/navigation";
 import { useTasksState } from "@/app/utils/hooks/use-tasks/state-context";
 import { DraggableTaskCard } from "../TaskCard/DraggableTaskCard";

@@ -3,7 +3,7 @@ import { IconBubbleFilled } from "@tabler/icons-react";
 import { CalendarJournalEntry } from "../CalendarEvent/CalendarEvent.types";
 import { cn } from "../utils";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
-import MinimalNote from "../MinimalNote";
+import MinimalNote from "../notes/MinimalNote";
 
 export interface CalendarJournalEventProps {
   event: CalendarJournalEntry;
@@ -19,7 +19,7 @@ export const CalendarJournalEvent: FC<CalendarJournalEventProps> = ({
       className={cn(
         // "flex text-xs items-center justify-start relative z-10",
         "flex text-xs items-center justify-end relative z-10",
-        className,
+        className
       )}
     >
       <Tooltip delayDuration={0}>

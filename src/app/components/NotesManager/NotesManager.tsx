@@ -11,7 +11,7 @@ import {
   CardTitle,
 } from "../ui/card";
 import { Button } from "../ui/button";
-import MinimalNote from "../MinimalNote";
+import MinimalNote from "../notes/MinimalNote";
 import { format } from "date-fns";
 
 export interface NotesManagerProps {
@@ -64,7 +64,7 @@ const NotesManager: FC<NotesManagerProps> = ({ testId }) => {
           .sort(
             (itemA, itemB) =>
               new Date(itemB.created_at).valueOf() -
-              new Date(itemA.created_at).valueOf(),
+              new Date(itemA.created_at).valueOf()
           )
           .map((item) => (
             <Card key={item.id}>
@@ -83,7 +83,7 @@ const NotesManager: FC<NotesManagerProps> = ({ testId }) => {
                           content: textContent || "(no content)",
                           json_content: contentJSON,
                         },
-                        () => setEditingId(null),
+                        () => setEditingId(null)
                       )
                     }
                   />

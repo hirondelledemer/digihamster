@@ -10,7 +10,7 @@ import {
   TooltipTrigger,
 } from "@/app/components/ui/tooltip";
 import { useNavigator } from "@/app/components/EventRelationships/navigator-context";
-import MinimalNote from "@/app/components/MinimalNote";
+import MinimalNote from "@/app/components/notes/MinimalNote";
 
 export const RelatedNote: FC<{ id: number; compact: boolean }> = ({
   id,

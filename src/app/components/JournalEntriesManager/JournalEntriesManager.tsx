@@ -11,7 +11,7 @@ import {
   CardTitle,
 } from "../ui/card";
 import { Button } from "../ui/button";
-import MinimalNote from "../MinimalNote";
+import MinimalNote from "../notes/MinimalNote";
 
 export interface JournalEntriesManagerProps {
   testId?: string;

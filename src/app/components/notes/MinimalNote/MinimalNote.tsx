@@ -1,8 +1,8 @@
 "use client";
 import React, { FC, useEffect } from "react";
-import RichTextEditor from "../RichTextEditor";
+import RichTextEditor from "../../RichTextEditor";
 import { useRte } from "@/app/utils/rte/rte-hook";
-import { useToast } from "../ui/use-toast";
+import { useToast } from "../../ui/use-toast";
 import { Content } from "@tiptap/react";
 
 interface RegularProps {

@@ -4,7 +4,7 @@ import React, { useMemo, useState } from "react";
 import { Navigate, View } from "react-big-calendar";
 import * as dates from "date-arithmetic";
 import TodayEvent from "../TodayEvent";
-import MinimalNote from "../MinimalNote";
+import MinimalNote from "../notes/MinimalNote";
 import {
   Collapsible,
   CollapsibleContent,

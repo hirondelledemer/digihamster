@@ -15,7 +15,7 @@ import {
   sub,
 } from "date-fns";
 import { sortBy } from "remeda";
-import MinimalNote from "../MinimalNote";
+import MinimalNote from "../notes/MinimalNote";
 import {
   IconCalendarCancel,
   IconCalendarCheck,
@@ -56,7 +56,7 @@ const Timeline: FC<TimelineProps> = ({ testId }): JSX.Element => {
         sub(now(), {
           weeks: 1,
         }),
-        { weekStartsOn: 1 },
+        { weekStartsOn: 1 }
       );
     }
     if (period === "last_2_weeks") {
@@ -64,7 +64,7 @@ const Timeline: FC<TimelineProps> = ({ testId }): JSX.Element => {
         sub(now(), {
           weeks: 2,
         }),
-        { weekStartsOn: 1 },
+        { weekStartsOn: 1 }
       );
     }
     if (period === "month") {
@@ -80,17 +80,17 @@ const Timeline: FC<TimelineProps> = ({ testId }): JSX.Element => {
     (task) =>
       task.completedAt &&
       isAfter(task.completedAt, startDate) &&
-      isBefore(task.completedAt, endDate),
+      isBefore(task.completedAt, endDate)
   );
 
   const filteredEvents = events.filter(
     (event) =>
-      isAfter(event.startAt, startDate) && isBefore(event.startAt, endDate),
+      isAfter(event.startAt, startDate) && isBefore(event.startAt, endDate)
   );
 
   const filteredEntries = journalEntries.filter(
     (entry) =>
-      isAfter(entry.updatedAt, startDate) && isBefore(entry.updatedAt, endDate),
+      isAfter(entry.updatedAt, startDate) && isBefore(entry.updatedAt, endDate)
   );
 
   const logEvents = [...filteredTasks, ...filteredEntries, ...filteredEvents];
@@ -110,7 +110,7 @@ const Timeline: FC<TimelineProps> = ({ testId }): JSX.Element => {
   const projectPercentages = getProjectPercentages(
     filteredTasks,
     projects,
-    filteredEvents,
+    filteredEvents
   );
 
   const getCompletedTasksCount = useCallback(
@@ -118,7 +118,7 @@ const Timeline: FC<TimelineProps> = ({ testId }): JSX.Element => {
       filteredTasks
         .filter((t) => (projectId ? t.projectId === projectId : true))
         .reduce(addEstimates, 0),
-    [filteredTasks],
+    [filteredTasks]
   );
 
   const chartData = useMemo(
@@ -127,11 +127,11 @@ const Timeline: FC<TimelineProps> = ({ testId }): JSX.Element => {
         const pp = getProjectPercentages(
           tasks.filter((t) => t.completedAt && isSameDay(date, t.completedAt)),
           projects,
-          events.filter((e) => isSameDay(e.startAt, date)),
+          events.filter((e) => isSameDay(e.startAt, date))
         );
 
         const newObj = Object.fromEntries(
-          Object.entries(pp).map(([k, v]) => [k, v.estimate]),
+          Object.entries(pp).map(([k, v]) => [k, v.estimate])
         );
         return {
           day: format(date, "dd, E"),
@@ -139,7 +139,7 @@ const Timeline: FC<TimelineProps> = ({ testId }): JSX.Element => {
           ...newObj,
         };
       }),
-    [endDate, events, projects, startDate, tasks],
+    [endDate, events, projects, startDate, tasks]
   );
 
   return (
@@ -175,7 +175,7 @@ const Timeline: FC<TimelineProps> = ({ testId }): JSX.Element => {
           </div>
           {Object.keys(projectPercentages).map(
             (
-              projectId, // todo: extract and add tooltip
+              projectId // todo: extract and add tooltip
             ) => (
               <div
                 key={projectId}
@@ -189,7 +189,7 @@ const Timeline: FC<TimelineProps> = ({ testId }): JSX.Element => {
                 />
                 {projectPercentages[projectId].estimate}
               </div>
-            ),
+            )
           )}
         </div>
         {sortedEvents.map((val) => {

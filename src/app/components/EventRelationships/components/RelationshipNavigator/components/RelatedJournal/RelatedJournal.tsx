@@ -6,7 +6,7 @@ import { IconFeather } from "@tabler/icons-react";
 import { FC } from "react";
 import { EntityTypeIcon } from "../../../EntityTypeIcon";
 import { Card } from "@/app/components/ui/card";
-import MinimalNote from "@/app/components/MinimalNote";
+import MinimalNote from "@/app/components/notes/MinimalNote";
 
 export const RelatedJournal: FC<{ id: number; compact: boolean }> = ({
   id,
