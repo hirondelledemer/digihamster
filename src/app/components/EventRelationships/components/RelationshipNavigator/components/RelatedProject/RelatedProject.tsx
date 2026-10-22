@@ -6,6 +6,7 @@ import { IconCheckbox } from "@tabler/icons-react";
 import { FC } from "react";
 import { EntityTypeIcon } from "../../../EntityTypeIcon";
 import { ProjectSwitchableTask } from "../RelatedLocation/components/ProjectSwitchableTask";
+import { RelatedEntity } from "../RelatedEntity";
 
 export const RelatedProject: FC<{ id: number; compact: boolean }> = ({
   id,
@@ -58,11 +59,17 @@ export const RelatedProject: FC<{ id: number; compact: boolean }> = ({
   return (
     <div>
       <ProjectSwitchableTask project={project} />
-      <div>
-        {relationships.map((r) => (
-          <EntityTypeIcon key={r.id} type={r.target_type} size={16} />
-        ))}
-      </div>
+
+      {relationships.map((r) => (
+        <div
+          key={r.id}
+          className={
+            r.target_type === RelationshipEntityType.Note ? "mt-[-12px]" : ""
+          }
+        >
+          <RelatedEntity relationship={r} compact={false} />
+        </div>
+      ))}
     </div>
   );
 };

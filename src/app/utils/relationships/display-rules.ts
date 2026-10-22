@@ -53,13 +53,7 @@ export const ALLOWED_TYPES: Record<
     RelationshipEntityType.Journal,
     RelationshipEntityType.Person,
   ],
-  [RelationshipEntityType.Note]: [
-    RelationshipEntityType.Person,
-    RelationshipEntityType.Task,
-    RelationshipEntityType.Location,
-    RelationshipEntityType.Habit,
-    RelationshipEntityType.Project,
-  ],
+  [RelationshipEntityType.Note]: [],
 };
 
 export const isAllowedTarget = (

@@ -47,7 +47,7 @@ export const RelatedEntity: FC<RelatedEntityProps> = ({
     }
   };
 
-  if (compact) {
+  if (compact || relationship.target_type === RelationshipEntityType.Note) {
     return getComponent();
   }
 
