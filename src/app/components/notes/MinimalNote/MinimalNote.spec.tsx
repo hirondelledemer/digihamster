@@ -1,5 +1,6 @@
 import { render } from "@/config/utils/test-utils";
-import MinimalNote, {
+import {
+  MinimalNote,
   MinimalNoteEditableProps,
   MinimalNoteProps,
 } from "./MinimalNote";
@@ -14,7 +15,7 @@ describe("MinimalNote", () => {
   ) => getMinimalNoteTestkit(render(<MinimalNote {...props} />).container);
 
   it("should render MinimalNote", () => {
-    const wrapper = renderComponent();
+    const wrapper = renderComponent(); // TODO: redo these wrappers
     expect(wrapper.getComponent()).not.toBe(null);
   });
 

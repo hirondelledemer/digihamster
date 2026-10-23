@@ -13,6 +13,10 @@ import { TaskActions } from "../TaskActions";
 import { AdditionalAction } from "../AdditionalActions";
 import { ScheduledIndicator } from "../ScheduledIndicator";
 import { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
+import { useRelevantRelationshipsForEntity } from "@/app/utils/hooks/use-relationships/selectors";
+import { RelationshipEntityType } from "@/app/utils/types/relationship";
+import { MinimalNote } from "../notes";
+import { useNoteById } from "@/app/utils/hooks/use-notes/selectors";
 
 export const titleTestId = "TaskCard-title-testid";
 export const cardTestId = "TaskCard-card-testid";
@@ -33,6 +37,15 @@ export interface TaskCardProps {
 
 export const taskFormTestId = "TaskCard-task-form-test-id";
 
+const Note: FC<{ id: number }> = ({ id }) => {
+  const note = useNoteById(id);
+  if (!note) {
+    return null;
+  }
+
+  return <MinimalNote note={note.json_content} />;
+};
+
 const TaskCard: FC<TaskCardProps> = ({
   testId,
   task,
@@ -45,6 +58,17 @@ const TaskCard: FC<TaskCardProps> = ({
   scheduled,
 }): JSX.Element => {
   const { setSelectedDate } = useCalendarDate();
+
+  const relationships = useRelevantRelationshipsForEntity({
+    entityId: task.id,
+    entityType: RelationshipEntityType.Task,
+  });
+
+  console.log("relationships", relationships);
+
+  const noteRelationships = relationships.filter(
+    (r) => r.target_type === RelationshipEntityType.Note
+  );
 
   const project = useTaskProject(task);
 
@@ -111,6 +135,13 @@ const TaskCard: FC<TaskCardProps> = ({
           {task.description && !(task.status === "done") && (
             <CardContent className="pb-4 px-4 text-xs whitespace-pre-wrap muted">
               {task.description}
+            </CardContent>
+          )}
+          {!!noteRelationships.length && (
+            <CardContent className="pb-4 px-4 text-xs whitespace-pre-wrap muted">
+              {noteRelationships.map((r) => (
+                <Note key={r.target_id} id={r.target_id} />
+              ))}
             </CardContent>
           )}
         </Card>

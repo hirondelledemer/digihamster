@@ -15,7 +15,7 @@ import { useRelevantRelationshipsForEntity } from "@/app/utils/hooks/use-relatio
 import { RelationshipEntityType } from "@/app/utils/types/relationship";
 import { IconMapPin } from "@tabler/icons-react";
 import { FC } from "react";
-import { RelatedEntity } from "../RelatedEntity/RelatedEntity";
+import { RelatedEntity } from "../RelatedEntity";
 import { EntityTypeIcon } from "../../../EntityTypeIcon";
 
 export const RelatedLocation: FC<{

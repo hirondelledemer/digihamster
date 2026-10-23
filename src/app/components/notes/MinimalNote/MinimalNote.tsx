@@ -1,8 +1,8 @@
 "use client";
 import React, { FC, useEffect } from "react";
-import RichTextEditor from "../RichTextEditor";
+import RichTextEditor from "../../RichTextEditor";
 import { useRte } from "@/app/utils/rte/rte-hook";
-import { useToast } from "../ui/use-toast";
+import { useToast } from "../../ui/use-toast";
 import { Content } from "@tiptap/react";
 
 interface RegularProps {
@@ -16,6 +16,7 @@ interface EditableProps {
 interface CommonProps {
   testId?: string;
   note: Content;
+  className?: string;
 }
 export type MinimalNoteProps = RegularProps & CommonProps;
 export type MinimalNoteEditableProps = EditableProps & CommonProps;
@@ -26,9 +27,10 @@ function isEditable(
   return (restProps as EditableProps).editable;
 }
 
-const MinimalNote: FC<MinimalNoteProps | MinimalNoteEditableProps> = ({
+export const MinimalNote: FC<MinimalNoteProps | MinimalNoteEditableProps> = ({
   testId,
   note,
+  className,
   ...restProps
 }): JSX.Element | null => {
   const editable = isEditable(restProps) ? restProps.editable : false;
@@ -38,6 +40,7 @@ const MinimalNote: FC<MinimalNoteProps | MinimalNoteEditableProps> = ({
   const { editor } = useRte({
     value: note,
     editable: editable,
+    className,
   });
 
   useEffect(() => {
@@ -72,5 +75,3 @@ const MinimalNote: FC<MinimalNoteProps | MinimalNoteEditableProps> = ({
     <RichTextEditor testId={testId} editor={editor} onKeyDown={handleKeyDown} />
   );
 };
-
-export default MinimalNote;

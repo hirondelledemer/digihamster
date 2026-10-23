@@ -1,0 +1,1 @@
+export { RelatedEntity } from "./RelatedEntity";
