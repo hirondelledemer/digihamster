@@ -1,15 +1,15 @@
 "use client";
-import React, { ComponentProps, FC } from "react";
+import React, { FC } from "react";
 
 import { StickyNoteWrapper } from "../StickyNoteWrapper/StickyNoteWrapper";
 import { MinimalNote } from "../MinimalNote";
 import { cn } from "../../utils";
-import { INote } from "@/app/utils/types/note";
+import { INote, StickyNoteVariant } from "@/app/utils/types/note";
 
 export const StickyNote: FC<{
   note: INote;
-  variant: ComponentProps<typeof StickyNoteWrapper>["variant"];
-}> = ({ note, variant }): JSX.Element | null => {
+  variant: StickyNoteVariant;
+}> = ({ note, variant }) => {
   const variantIndex = note.id % 4;
 
   // Mix of messy hand-placed rotations

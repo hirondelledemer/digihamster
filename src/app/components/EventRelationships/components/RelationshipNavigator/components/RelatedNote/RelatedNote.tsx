@@ -1,5 +1,8 @@
 import { useNoteById } from "@/app/utils/hooks/use-notes/selectors";
-import { useRelevantRelationshipsForEntity } from "@/app/utils/hooks/use-relationships/selectors";
+import {
+  useAllRelationshipsForEntity,
+  useRelevantRelationshipsForEntity,
+} from "@/app/utils/hooks/use-relationships/selectors";
 import { RelationshipEntityType } from "@/app/utils/types/relationship";
 import { IconNote } from "@tabler/icons-react";
 import { FC } from "react";
@@ -11,6 +14,7 @@ import {
 } from "@/app/components/ui/tooltip";
 import { useNavigator } from "@/app/components/EventRelationships/navigator-context";
 import { StickyNote } from "@/app/components/notes";
+import { noteAttachment } from "@/app/utils/relationships/display-rules";
 
 export const RelatedNote: FC<{ id: number; compact: boolean }> = ({
   id,
@@ -18,6 +22,13 @@ export const RelatedNote: FC<{ id: number; compact: boolean }> = ({
 }) => {
   const note = useNoteById(id);
   const relationships = useRelevantRelationshipsForEntity({
+    entityId: id,
+    entityType: RelationshipEntityType.Note,
+  });
+
+  // every edge the note has, not just the ones the panel would list: the
+  // panel lists none, because ALLOWED_TYPES[Note] is empty
+  const neighbours = useAllRelationshipsForEntity({
     entityId: id,
     entityType: RelationshipEntityType.Note,
   });
@@ -59,7 +70,7 @@ export const RelatedNote: FC<{ id: number; compact: boolean }> = ({
 
   return (
     <div className="w-full">
-      <StickyNote note={note} variant="tape" />
+      <StickyNote note={note} variant={noteAttachment(neighbours)} />
       <div className="flex">
         {relationships.map((r) => (
           <EntityTypeIcon key={r.id} type={r.target_type} size={16} />

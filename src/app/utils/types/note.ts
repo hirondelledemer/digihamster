@@ -7,3 +7,6 @@ export interface INote {
   user_id: string;
   created_at: string;
 }
+
+/** How a note is physically held onto whatever it is shown against. */
+export type StickyNoteVariant = "pin" | "tape";

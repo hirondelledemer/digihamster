@@ -1,9 +1,11 @@
 "use client";
 import React, { FC, ReactNode } from "react";
 
+import { StickyNoteVariant } from "@/app/utils/types/note";
+
 type StickyNoteWrapperProps = {
   children: ReactNode;
-  variant: "pin" | "tape";
+  variant: StickyNoteVariant;
 };
 
 export const StickyNoteWrapper: FC<StickyNoteWrapperProps> = ({
