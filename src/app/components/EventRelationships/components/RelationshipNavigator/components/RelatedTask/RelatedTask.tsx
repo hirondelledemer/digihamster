@@ -8,6 +8,7 @@ import { FC } from "react";
 import { EntityTypeIcon } from "../../../EntityTypeIcon";
 import TaskCard from "@/app/components/TaskCard";
 import { useEventScheduling } from "@/app/components/EventRelationships/use-event-scheduling";
+import { RelatedEntity } from "../RelatedEntity";
 
 export const RelatedTask: FC<{
   id: number;
@@ -62,6 +63,18 @@ export const RelatedTask: FC<{
   }
 
   return (
-    <TaskCard task={task} scheduled={scheduled} additionalActions={actions} />
+    <div>
+      <TaskCard task={task} scheduled={scheduled} additionalActions={actions} />
+      {relationships.map((r) => (
+        <div
+          key={r.id}
+          className={
+            r.target_type === RelationshipEntityType.Note ? "mt-[-12px]" : ""
+          }
+        >
+          <RelatedEntity relationship={r} compact={false} />
+        </div>
+      ))}
+    </div>
   );
 };

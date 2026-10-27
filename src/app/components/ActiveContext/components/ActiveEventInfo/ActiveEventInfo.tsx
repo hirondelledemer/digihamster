@@ -35,6 +35,7 @@ export const ActiveEventInfo: FC<ActiveEventInfoProps> = ({
           <RelationshipNavigator
             entityId={event.id}
             entityType={RelationshipEntityType.Event}
+            relationshipPriority="primary"
           />
         </div>
       </ScrollArea>

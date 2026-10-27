@@ -8,53 +8,67 @@ import { TaskStatus } from "../types/task";
  * type. A relationship is stored both ways, so without this every panel would
  * show every neighbour, including the ones that say nothing in that context.
  */
-export const ALLOWED_TYPES: Record<
+
+type AllowedTypes = Record<
   RelationshipEntityType,
-  RelationshipEntityType[]
-> = {
-  [RelationshipEntityType.Location]: [
-    RelationshipEntityType.Task,
-    RelationshipEntityType.Habit,
-    RelationshipEntityType.Project,
-  ],
-  [RelationshipEntityType.Event]: [
-    RelationshipEntityType.Task,
-    RelationshipEntityType.Habit,
-    RelationshipEntityType.Note,
-    RelationshipEntityType.Person,
-    RelationshipEntityType.Journal,
-    RelationshipEntityType.Location,
-    RelationshipEntityType.Project,
-  ],
-  [RelationshipEntityType.Person]: [
-    RelationshipEntityType.Task,
-    RelationshipEntityType.Journal,
-    RelationshipEntityType.Note,
-    RelationshipEntityType.Habit,
-    RelationshipEntityType.Event,
-  ],
-  [RelationshipEntityType.Project]: [
-    RelationshipEntityType.Task,
-    RelationshipEntityType.Note,
-  ],
-  [RelationshipEntityType.Task]: [
-    RelationshipEntityType.Task,
-    RelationshipEntityType.Note,
-    RelationshipEntityType.Person,
-    RelationshipEntityType.Location,
-  ],
-  [RelationshipEntityType.Journal]: [
-    RelationshipEntityType.Person,
-    RelationshipEntityType.Event,
-  ],
-  [RelationshipEntityType.Habit]: [
-    // what you wrote during an occurrence, which is the point of looking a
-    // habit up later. The form already creates these straight off the habit.
-    RelationshipEntityType.Note,
-    RelationshipEntityType.Journal,
-    RelationshipEntityType.Person,
-  ],
-  [RelationshipEntityType.Note]: [],
+  { primary: RelationshipEntityType[]; secondary: RelationshipEntityType[] }
+>;
+
+export const ALLOWED_TYPES: AllowedTypes = {
+  [RelationshipEntityType.Location]: {
+    primary: [
+      RelationshipEntityType.Task,
+      RelationshipEntityType.Habit,
+      RelationshipEntityType.Project,
+    ],
+    secondary: [],
+  },
+  [RelationshipEntityType.Event]: {
+    primary: [
+      RelationshipEntityType.Task,
+      RelationshipEntityType.Habit,
+      RelationshipEntityType.Note,
+      RelationshipEntityType.Person,
+      RelationshipEntityType.Journal,
+    ],
+    secondary: [
+      RelationshipEntityType.Location,
+      RelationshipEntityType.Project,
+    ],
+  },
+  [RelationshipEntityType.Person]: {
+    primary: [
+      RelationshipEntityType.Task,
+      RelationshipEntityType.Journal,
+      RelationshipEntityType.Note,
+      RelationshipEntityType.Habit,
+      RelationshipEntityType.Event,
+    ],
+    secondary: [],
+  },
+  [RelationshipEntityType.Project]: {
+    primary: [RelationshipEntityType.Task, RelationshipEntityType.Note],
+    secondary: [],
+  },
+  [RelationshipEntityType.Task]: {
+    primary: [RelationshipEntityType.Task, RelationshipEntityType.Note],
+    secondary: [RelationshipEntityType.Person, RelationshipEntityType.Location],
+  },
+  [RelationshipEntityType.Journal]: {
+    primary: [RelationshipEntityType.Person, RelationshipEntityType.Event],
+    secondary: [],
+  },
+  [RelationshipEntityType.Habit]: {
+    primary: [
+      // what you wrote during an occurrence, which is the point of looking a
+      // habit up later. The form already creates these straight off the habit.
+      RelationshipEntityType.Note,
+      RelationshipEntityType.Journal,
+      RelationshipEntityType.Person,
+    ],
+    secondary: [],
+  },
+  [RelationshipEntityType.Note]: { primary: [], secondary: [] },
 };
 
 /**
@@ -87,8 +101,19 @@ export const noteAttachment = (
 
 export const isAllowedTarget = (
   entityType: RelationshipEntityType,
-  relationship: IRelationship
-): boolean => ALLOWED_TYPES[entityType].includes(relationship.target_type);
+  relationship: IRelationship,
+  key?: "primary" | "secondary"
+): boolean => {
+  console.log("key", key);
+  if (!key) {
+    return (
+      ALLOWED_TYPES[entityType].primary.includes(relationship.target_type) ||
+      ALLOWED_TYPES[entityType].secondary.includes(relationship.target_type)
+    );
+  }
+
+  return ALLOWED_TYPES[entityType][key].includes(relationship.target_type);
+};
 
 /**
  * Terminal statuses: a done or cancelled thing is history, not something you

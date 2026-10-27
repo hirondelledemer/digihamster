@@ -7,15 +7,18 @@ export interface RelationshipPanelProps {
   entityId: number;
   entityType: RelationshipEntityType;
   compact: boolean;
+  relationshipPriority?: "primary" | "secondary";
 }
 export const EntityWithRelationships: FC<RelationshipPanelProps> = ({
   entityId,
   entityType,
   compact,
+  relationshipPriority: key,
 }) => {
   const relationships = useRelevantRelationshipsForEntity({
     entityId,
     entityType,
+    key,
   });
 
   return (

@@ -12,6 +12,7 @@ import TaskInfo from "../TaskInfo";
 import ProjectProgress from "../ProjectProgress";
 import { Agent } from "../Agent";
 import { ActiveContext } from "../ActiveContext";
+import { ActiveSecondaryContext } from "../ActiveContext/ActiveSecondaryContext";
 
 export const Home = (): JSX.Element => {
   return (
@@ -37,17 +38,17 @@ export const Home = (): JSX.Element => {
       </ResizablePanel>
       <ResizableHandle />
       <ResizablePanel>
-        <div className="flex h-screen gap-4">
-          <div className="flex flex-col p-6 pb-12 grow">
+        <div className="flex h-screen">
+          <div className="p-6 pb-12 w-[50%]">
             <Suspense>
               <ActiveContext />
             </Suspense>
           </div>
 
-          <div className="flex p-6 pl-0 pb-12 flex-col gap-4">
-            <Agent />
-            <ProjectProgress />
-            <HealthChart />
+          <div className="p-6 pb-12 w-[50%]">
+            <Suspense>
+              <ActiveSecondaryContext />
+            </Suspense>
           </div>
         </div>
       </ResizablePanel>

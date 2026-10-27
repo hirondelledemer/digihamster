@@ -104,9 +104,11 @@ export const useAllRelationshipsForEntity = ({
 export const useRelevantRelationshipsForEntity = ({
   entityId,
   entityType,
+  key,
 }: {
   entityId: number;
   entityType: RelationshipEntityType;
+  key?: "primary" | "secondary";
 }): IRelationship[] => {
   const relationships = useAllRelationshipsForEntity({ entityId, entityType });
   const { data: tasks } = useTasksState();
@@ -114,7 +116,7 @@ export const useRelevantRelationshipsForEntity = ({
 
   return relationships
     .filter((r) => {
-      if (!isAllowedTarget(entityType, r)) {
+      if (!isAllowedTarget(entityType, r, key)) {
         return false;
       }
 
@@ -135,8 +137,8 @@ export const useRelevantRelationshipsForEntity = ({
     })
     .sort((a, b) => {
       return (
-        ALLOWED_TYPES[entityType].indexOf(a.target_type) -
-        ALLOWED_TYPES[entityType].indexOf(b.target_type)
+        Object.values(ALLOWED_TYPES[entityType]).flat().indexOf(a.target_type) -
+        Object.values(ALLOWED_TYPES[entityType]).flat().indexOf(b.target_type)
       );
     });
 };
