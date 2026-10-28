@@ -104,7 +104,6 @@ export const isAllowedTarget = (
   relationship: IRelationship,
   key?: "primary" | "secondary"
 ): boolean => {
-  console.log("key", key);
   if (!key) {
     return (
       ALLOWED_TYPES[entityType].primary.includes(relationship.target_type) ||
