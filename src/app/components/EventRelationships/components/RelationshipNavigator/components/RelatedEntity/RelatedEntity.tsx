@@ -23,7 +23,7 @@ export interface RelatedEntityProps {
 }
 
 export const RelatedEntity: FC<RelatedEntityProps> = ({ node, compact }) => {
-  const { entity, children, edge, summary } = node;
+  const { entity, children, edge, summary, truncated } = node;
 
   const getComponent = () => {
     const props = { id: entity.id, compact, summary };
@@ -60,6 +60,8 @@ export const RelatedEntity: FC<RelatedEntityProps> = ({ node, compact }) => {
       entityId={entity.id}
       entityType={entity.type}
       relationshipId={edge.id}
+      // neighbours shown only as icons, or ones the walk stopped short of
+      hasMore={summary.length > 0 || truncated}
     >
       {getComponent()}
     </RelatedEntityActions>

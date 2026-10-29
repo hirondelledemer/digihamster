@@ -1,7 +1,6 @@
 import { useNavigator } from "@/app/components/EventRelationships/navigator-context";
 import { Button } from "@/app/components/ui/button";
 import { useRelationshipsActions } from "@/app/utils/hooks/use-relationships/actions-context";
-import { useRelevantRelationshipsForEntity } from "@/app/utils/hooks/use-relationships/selectors";
 import { RelationshipEntityType } from "@/app/utils/types/relationship";
 import { IconArrowRampRight2 } from "@tabler/icons-react";
 import { Trash } from "lucide-react";
@@ -12,11 +11,16 @@ export const RelatedEntityActions: FC<{
   entityType: RelationshipEntityType;
   children: ReactNode;
   relationshipId: number;
-}> = ({ entityId, entityType, children, relationshipId }) => {
-  const relationships = useRelevantRelationshipsForEntity({
-    entityId,
-    entityType,
-  });
+  /**
+   * Whether drilling in would show anything: either neighbours the walk
+   * stopped short of, or ones it showed only as hint icons.
+   *
+   * This used to be its own lookup, which lit the arrow on every entity -
+   * the row joining it to the thing you are looking at counts as a
+   * relationship, so nothing ever came back empty.
+   */
+  hasMore?: boolean;
+}> = ({ entityId, entityType, children, relationshipId, hasMore = false }) => {
 
   const { setActiveEntity } = useNavigator();
 
@@ -35,7 +39,7 @@ export const RelatedEntityActions: FC<{
           <IconArrowRampRight2
             onClick={selectEntity}
             size={12}
-            color={!!relationships.length ? "#e11d48" : "grey"}
+            color={hasMore ? "#e11d48" : "grey"}
           />
         </Button>
         <Button variant="ghost" size="icon" className="h-5 w-5">

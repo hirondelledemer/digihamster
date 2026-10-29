@@ -54,7 +54,8 @@ export const RelatedPerson: FC<{
         {summary.slice(0, 3).map((type, i) => (
           <EntityTypeIcon key={`${type}-${i}`} type={type} size={16} />
         ))}
-        {summary.length - relationshipNumber}
+        {summary.length > relationshipNumber &&
+          `+${summary.length - relationshipNumber}`}
       </div>
     );
   }

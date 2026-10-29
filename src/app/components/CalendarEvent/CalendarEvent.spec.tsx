@@ -237,10 +237,12 @@ describe("CalendarEvent", () => {
       expect(screen.queryByLabelText(TASK.title)).not.toBeInTheDocument();
     });
 
-    // an event carries project_id, so a project is not one of its
-    // relationships. The badge row drops it even though the row is stored and
-    // the project is loaded.
-    it("should not show a badge for a type an event does not relate to", async () => {
+    // an event carries project_id, so an event-to-project row is not a
+    // relationship at all - `canonicalEdge` has no entry for the pair and
+    // `edgeTypeOf` resolves it to null. Rows like this are still in the
+    // database until the backfill deletes them, so they have to stay
+    // invisible rather than render as a stray badge.
+    it("should not show a badge for a pair that is not a relationship", async () => {
       await renderComponent(defaultProps, {
         relationships: generateCustomRelationshipsList([
           relatedTo(RelationshipEntityType.Location, LOCATION.id),
@@ -250,6 +252,23 @@ describe("CalendarEvent", () => {
 
       expect(screen.getByLabelText("location")).toBeInTheDocument();
       expect(document.querySelector(".tabler-icon-folder")).toBeNull();
+    });
+
+    // this used to be the opposite assertion: ALLOWED_TYPES[Event] omitted
+    // Event, so the badge row dropped it. VIEWS lists it on purpose now -
+    // "moved to", "cancelled in favour of" - so the reversal is deliberate
+    // and worth pinning rather than leaving to be rediscovered.
+    it("should show a badge for another event it relates to", async () => {
+      const OTHER_EVENT = generateEvent(2);
+
+      await renderComponent(defaultProps, {
+        events: [EVENT, OTHER_EVENT],
+        relationships: generateCustomRelationshipsList([
+          relatedTo(RelationshipEntityType.Event, OTHER_EVENT.id),
+        ]),
+      });
+
+      expect(document.querySelector(".tabler-icon-calendar")).not.toBeNull();
     });
   });
 

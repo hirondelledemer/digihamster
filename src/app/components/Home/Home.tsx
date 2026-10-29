@@ -7,10 +7,7 @@ import {
 } from "../ui/resizable";
 import Calendar from "../Calendar";
 import CommandTool from "../CommandTool";
-import HealthChart from "../HealthChart";
 import TaskInfo from "../TaskInfo";
-import ProjectProgress from "../ProjectProgress";
-import { Agent } from "../Agent";
 import { ActiveContext } from "../ActiveContext";
 import { ActiveSecondaryContext } from "../ActiveContext/ActiveSecondaryContext";
 
