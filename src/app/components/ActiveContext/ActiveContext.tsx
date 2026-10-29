@@ -15,7 +15,7 @@ export const ActiveContext: FC = (): JSX.Element | null => {
   const selectedEvent = useSelectedEvent();
   const router = useRouter();
 
-  const handleBackClick = () => router.replace("/", undefined);
+  const handleBackClick = () => router.replace("/?eventId=null", undefined);
 
   if (!selectedEvent) {
     return <ActiveTaskList />;
