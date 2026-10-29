@@ -14,8 +14,6 @@ import { RelationshipNavigator } from "../EventRelationships/components/Relation
 import { RelationshipEntityType } from "@/app/utils/types/relationship";
 import { ScrollArea } from "@/app/components/ui/scroll-area";
 
-export const eventTitleTestId = "ActiveContext-event-title-testid";
-
 export const ActiveSecondaryContext: FC = (): JSX.Element | null => {
   const currentEvent = useCurrentEvent();
   const searchParams = useSearchParams();
@@ -43,12 +41,6 @@ export const ActiveSecondaryContext: FC = (): JSX.Element | null => {
       </>
     );
   }
-
-  //   const handleBackClick = () => {
-  //     if (selectedEventId) {
-  //       router.replace("/", undefined);
-  //     }
-  //   };
 
   return (
     <div className="w-full h-full">
