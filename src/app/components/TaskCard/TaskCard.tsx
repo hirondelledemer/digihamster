@@ -13,7 +13,7 @@ import { TaskActions } from "../TaskActions";
 import { AdditionalAction } from "../AdditionalActions";
 import { ScheduledIndicator } from "../ScheduledIndicator";
 import { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
-import { useRelevantRelationshipsForEntity } from "@/app/utils/hooks/use-relationships/selectors";
+import { useAllRelationshipsForEntity } from "@/app/utils/hooks/use-relationships/selectors";
 import { RelationshipEntityType } from "@/app/utils/types/relationship";
 import { MinimalNote } from "../notes";
 import { useNoteById } from "@/app/utils/hooks/use-notes/selectors";
@@ -59,16 +59,14 @@ const TaskCard: FC<TaskCardProps> = ({
 }): JSX.Element => {
   const { setSelectedDate } = useCalendarDate();
 
-  const relationships = useRelevantRelationshipsForEntity({
+  // A note on a task reads as part of the task, like its description - not as
+  // somewhere you navigate to. So the card carries it everywhere the card is
+  // used, rather than each caller having to pass it in. The relationship
+  // navigator is only one of eight places this is rendered.
+  const noteRelationships = useAllRelationshipsForEntity({
     entityId: task.id,
     entityType: RelationshipEntityType.Task,
-  });
-
-  console.log("relationships", relationships);
-
-  const noteRelationships = relationships.filter(
-    (r) => r.target_type === RelationshipEntityType.Note
-  );
+  }).filter((r) => r.target_type === RelationshipEntityType.Note);
 
   const project = useTaskProject(task);
 

@@ -7,8 +7,9 @@ import {
 import { useEventById } from "@/app/utils/hooks/use-events/selectors";
 import { useHabitById } from "@/app/utils/hooks/use-habits-new/selectors";
 import { useHabitLifeAspectAssetIcon } from "@/app/utils/hooks/use-life-aspects/selectors";
-import { useRelevantRelationshipsForEntity } from "@/app/utils/hooks/use-relationships/selectors";
 import { RelationshipEntityType } from "@/app/utils/types/relationship";
+import { RelationshipNode } from "@/app/utils/hooks/use-relationships/use-relationship-tree";
+import { RelatedEntity } from "../RelatedEntity";
 import { FC } from "react";
 import { EntityTypeIcon } from "../../../EntityTypeIcon";
 import { Card, CardHeader, CardTitle } from "@/app/components/ui/card";
@@ -18,7 +19,11 @@ import { useEventScheduling } from "@/app/components/EventRelationships/use-even
 export const RelatedHabit: FC<{
   id: number;
   compact: boolean;
-}> = ({ id, compact }) => {
+  /** neighbour types behind this one, for the hint row of little icons */
+  summary?: RelationshipEntityType[];
+  /** what was written during it - see VIEWS[Habit].asChild */
+  related?: RelationshipNode[];
+}> = ({ id, compact, summary = [], related = [] }) => {
   const habit = useHabitById(id);
 
   const icon = useHabitLifeAspectAssetIcon(habit);
@@ -34,10 +39,6 @@ export const RelatedHabit: FC<{
 
   const event = useEventById(eventId);
 
-  const relationships = useRelevantRelationshipsForEntity({
-    entityId: id,
-    entityType: RelationshipEntityType.Habit,
-  });
 
   if (!habit) {
     return null;
@@ -69,8 +70,8 @@ export const RelatedHabit: FC<{
             {habit.title}
           </TooltipContent>
         </Tooltip>
-        {relationships.map((r) => (
-          <EntityTypeIcon key={r.id} type={r.target_type} size={16} />
+        {summary.map((type, i) => (
+          <EntityTypeIcon key={`${type}-${i}`} type={type} size={16} />
         ))}
       </div>
     );
@@ -87,8 +88,8 @@ export const RelatedHabit: FC<{
           </CardHeader>
         </Card>
         <div>
-          {relationships.map((r) => (
-            <EntityTypeIcon key={r.id} type={r.target_type} size={16} />
+          {summary.map((type, i) => (
+            <EntityTypeIcon key={`${type}-${i}`} type={type} size={16} />
           ))}
         </div>
       </>
@@ -96,11 +97,20 @@ export const RelatedHabit: FC<{
   }
 
   return (
-    <HabitCard
-      habit={habit}
-      event={event}
-      scheduled={scheduled}
-      additionalActions={actions}
-    />
+    <>
+      <HabitCard
+        habit={habit}
+        event={event}
+        scheduled={scheduled}
+        additionalActions={actions}
+      />
+      {related.map((child) => (
+        <RelatedEntity
+          key={child.edge?.id ?? child.entity.id}
+          node={child}
+          compact={false}
+        />
+      ))}
+    </>
   );
 };

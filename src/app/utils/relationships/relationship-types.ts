@@ -17,6 +17,24 @@ export enum RelationshipType {
    * has to bound by date instead of listing them all.
    */
   OccurrenceOf = "occurrence_of",
+  /** this thing happens at that place */
+  At = "at",
+  /** that person takes part in this thing */
+  Includes = "includes",
+  /** this note is written about that thing */
+  Annotates = "annotates",
+  /** this journal entry was written about doing that thing */
+  During = "during",
+  /** structural parent to child: an event's tasks, a project's habits */
+  Contains = "contains",
+  /** that task cannot start until this one is done */
+  Blocks = "blocks",
+  /** this task comes after that one, without blocking it */
+  Follows = "follows",
+  /** this journal entry picks up the thread of that one */
+  Continues = "continues",
+  /** these two places are close enough to treat as one trip */
+  Near = "near",
 }
 
 export const DEFAULT_RELATIONSHIP_TYPE = RelationshipType.Related;

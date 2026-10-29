@@ -2,7 +2,7 @@
 import React, { FC, useState } from "react";
 
 import { RelationshipEntityType } from "@/app/utils/types/relationship";
-import { relationshipTypeFor } from "@/app/utils/relationships/relationship-types";
+import { canonicalEdge } from "@/app/utils/relationships/edges";
 import { useRelationshipsActions } from "@/app/utils/hooks/use-relationships/actions-context";
 import { useNotesActions } from "@/app/utils/hooks/use-notes/actions-context";
 import { useEntriesActions } from "@/app/utils/hooks/use-entry/actions-context";
@@ -15,6 +15,7 @@ import {
   parseRelationshipInput,
 } from "./parse-relationship-input";
 import { useEntityLabel } from "@/app/utils/relationships/use-entity-label";
+import { useToast } from "../../../ui/use-toast";
 
 export interface CreateEventFormProps {
   entityId: number;
@@ -52,6 +53,7 @@ export const CreateRelationshipsForm: FC<CreateEventFormProps> = ({
   const { create: createEntry } = useEntriesActions();
 
   const label = useEntityLabel(entityId, entityType);
+  const { toast } = useToast();
 
   const placeholder = `Attach items to this ${entityType}`;
 
@@ -67,16 +69,35 @@ export const CreateRelationshipsForm: FC<CreateEventFormProps> = ({
 
   const self: EntityRef = { id: entityId, type: entityType };
 
-  const link = (source: EntityRef, target: EntityRef) =>
-    createRelationship({
+  /**
+   * Writes an edge the rest of the app can read back.
+   *
+   * The pair decides both the verb and which way round the row is stored, so
+   * no caller has to remember either - and a pair that is not an edge at all
+   * is refused here rather than written and then silently skipped by
+   * `edgeTypeOf` at render time, which looked like the link had worked.
+   */
+  const link = async (a: EntityRef, b: EntityRef) => {
+    const edge = canonicalEdge(a.type, b.type);
+
+    if (!edge) {
+      toast({
+        title: "Not a relationship",
+        description: `A ${a.type} cannot be linked to a ${b.type}.`,
+      });
+      return;
+    }
+
+    const [source, target] = edge.flipped ? [b, a] : [a, b];
+
+    return createRelationship({
       source_id: source.id,
       source_type: source.type,
       target_id: target.id,
       target_type: target.type,
-      // what the edge means follows from what it joins, so no caller has to
-      // remember to say "this one is an occurrence"
-      relationship_type: relationshipTypeFor(source.type, target.type),
+      relationship_type: edge.type,
     });
+  };
 
   /** everything the line mentions, in the order the ids were collected */
   const mentionsOf = (line: ParsedLine): EntityRef[] => [

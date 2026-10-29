@@ -13,7 +13,7 @@ import { useDroppable } from "@dnd-kit/core";
 import { useRouter } from "next/navigation";
 import { RelationshipEntityType } from "@/app/utils/types/relationship";
 import { RelatedEntity } from "../EventRelationships/components/RelationshipNavigator/components/RelatedEntity/RelatedEntity";
-import { useRelevantRelationshipsForEntity } from "../../utils/hooks/use-relationships/selectors";
+import { useRelationshipTree } from "../../utils/hooks/use-relationships/use-relationship-tree";
 
 export interface CalendarEventProps {
   event: CalendarEventEntry;
@@ -49,10 +49,11 @@ const CalendarEvent: FC<CalendarEventProps> = ({
     id: event.resource.id,
   });
 
-  const relationships = useRelevantRelationshipsForEntity({
-    entityId: event.resource.id,
-    entityType: RelationshipEntityType.Event,
-  });
+  // compact chips only, so there is nothing below the first level to walk
+  const { children: related } = useRelationshipTree(
+    { id: event.resource.id, type: RelationshipEntityType.Event },
+    { depth: 1 }
+  );
 
   const content = useMemo(() => {
     return (
@@ -62,14 +63,18 @@ const CalendarEvent: FC<CalendarEventProps> = ({
           <div className="text-xs">{event.resource.event.description}</div>
 
           <div className="flex space-between pt-2 gap-2">
-            {relationships.map((r) => (
-              <RelatedEntity key={r.id} relationship={r} compact />
+            {related.map((child) => (
+              <RelatedEntity
+                key={child.edge?.id ?? child.entity.id}
+                node={child}
+                compact
+              />
             ))}
           </div>
         </div>
       </div>
     );
-  }, [event.resource.event.description, event.title, relationships]);
+  }, [event.resource.event.description, event.title, related]);
 
   const projectColor = project
     ? `color-mix(in srgb, ${project.color} 20%, transparent)`

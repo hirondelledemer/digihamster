@@ -1,7 +1,6 @@
 import { useNoteById } from "@/app/utils/hooks/use-notes/selectors";
 import {
   useAllRelationshipsForEntity,
-  useRelevantRelationshipsForEntity,
 } from "@/app/utils/hooks/use-relationships/selectors";
 import { RelationshipEntityType } from "@/app/utils/types/relationship";
 import { IconNote } from "@tabler/icons-react";
@@ -16,18 +15,17 @@ import { useNavigator } from "@/app/components/EventRelationships/navigator-cont
 import { StickyNote } from "@/app/components/notes";
 import { noteAttachment } from "@/app/utils/relationships/display-rules";
 
-export const RelatedNote: FC<{ id: number; compact: boolean }> = ({
-  id,
-  compact,
-}) => {
+export const RelatedNote: FC<{
+  id: number;
+  compact: boolean;
+  /** neighbour types behind this one, for the hint row of little icons */
+  summary?: RelationshipEntityType[];
+}> = ({ id, compact, summary = [] }) => {
   const note = useNoteById(id);
-  const relationships = useRelevantRelationshipsForEntity({
-    entityId: id,
-    entityType: RelationshipEntityType.Note,
-  });
 
-  // every edge the note has, not just the ones the panel would list: the
-  // panel lists none, because ALLOWED_TYPES[Note] is empty
+  // every edge the note has, not just the ones the panel would list. What a
+  // note is taped to is about the note's own edges, not about which of them
+  // the panel it happens to be sitting in cares to show.
   const neighbours = useAllRelationshipsForEntity({
     entityId: id,
     entityType: RelationshipEntityType.Note,
@@ -52,7 +50,7 @@ export const RelatedNote: FC<{ id: number; compact: boolean }> = ({
           <TooltipTrigger>
             <IconNote
               size={20}
-              aria-label="location"
+              aria-label="note"
               className="cursor"
               onClick={selectEntity}
             />
@@ -61,8 +59,8 @@ export const RelatedNote: FC<{ id: number; compact: boolean }> = ({
             {note.title}
           </TooltipContent>
         </Tooltip>
-        {relationships.map((r) => (
-          <EntityTypeIcon key={r.id} type={r.target_type} size={16} />
+        {summary.map((type, i) => (
+          <EntityTypeIcon key={`${type}-${i}`} type={type} size={16} />
         ))}
       </div>
     );
@@ -72,8 +70,8 @@ export const RelatedNote: FC<{ id: number; compact: boolean }> = ({
     <div className="w-full">
       <StickyNote note={note} variant={noteAttachment(neighbours)} />
       <div className="flex">
-        {relationships.map((r) => (
-          <EntityTypeIcon key={r.id} type={r.target_type} size={16} />
+        {summary.map((type, i) => (
+          <EntityTypeIcon key={`${type}-${i}`} type={type} size={16} />
         ))}
       </div>
     </div>

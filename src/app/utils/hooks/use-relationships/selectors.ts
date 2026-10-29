@@ -3,11 +3,10 @@ import {
   RelationshipEntityType,
 } from "../../types/relationship";
 import {
-  ALLOWED_TYPES,
-  isAllowedTarget,
   isTerminalProjectStatus,
   isTerminalTaskStatus,
 } from "../../relationships/display-rules";
+import { matchesView, viewOrder } from "../../relationships/edges";
 import { useTasksState } from "../use-tasks/state-context";
 import { useRelationshipsState } from "./state-context";
 import { useProjectsState } from "../use-projects/state-context";
@@ -104,9 +103,11 @@ export const useAllRelationshipsForEntity = ({
 export const useRelevantRelationshipsForEntity = ({
   entityId,
   entityType,
+  key,
 }: {
   entityId: number;
   entityType: RelationshipEntityType;
+  key?: "primary" | "secondary";
 }): IRelationship[] => {
   const relationships = useAllRelationshipsForEntity({ entityId, entityType });
   const { data: tasks } = useTasksState();
@@ -114,7 +115,7 @@ export const useRelevantRelationshipsForEntity = ({
 
   return relationships
     .filter((r) => {
-      if (!isAllowedTarget(entityType, r)) {
+      if (!matchesView(entityType, r.target_type, key)) {
         return false;
       }
 
@@ -135,8 +136,8 @@ export const useRelevantRelationshipsForEntity = ({
     })
     .sort((a, b) => {
       return (
-        ALLOWED_TYPES[entityType].indexOf(a.target_type) -
-        ALLOWED_TYPES[entityType].indexOf(b.target_type)
+        viewOrder(entityType, a.target_type) -
+        viewOrder(entityType, b.target_type)
       );
     });
 };

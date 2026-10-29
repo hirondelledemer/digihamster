@@ -1,22 +1,23 @@
 import { useNavigator } from "@/app/components/EventRelationships/navigator-context";
 import { useJournalEntryById } from "@/app/utils/hooks/use-entry/selectors";
-import { useRelevantRelationshipsForEntity } from "@/app/utils/hooks/use-relationships/selectors";
 import { RelationshipEntityType } from "@/app/utils/types/relationship";
+import { RelationshipNode } from "@/app/utils/hooks/use-relationships/use-relationship-tree";
+import { RelatedEntity } from "../RelatedEntity";
 import { IconFeather } from "@tabler/icons-react";
 import { FC } from "react";
 import { EntityTypeIcon } from "../../../EntityTypeIcon";
 import { Card } from "@/app/components/ui/card";
 import { MinimalNote } from "@/app/components/notes";
 
-export const RelatedJournal: FC<{ id: number; compact: boolean }> = ({
-  id,
-  compact,
-}) => {
+export const RelatedJournal: FC<{
+  id: number;
+  compact: boolean;
+  /** neighbour types behind this one, for the hint row of little icons */
+  summary?: RelationshipEntityType[];
+  /** the thread this entry picks up, and what it was written about */
+  related?: RelationshipNode[];
+}> = ({ id, compact, summary = [], related = [] }) => {
   const journal = useJournalEntryById(id);
-  const relationships = useRelevantRelationshipsForEntity({
-    entityId: id,
-    entityType: RelationshipEntityType.Journal,
-  });
 
   const { setActiveEntity, entities } = useNavigator();
 
@@ -49,15 +50,24 @@ export const RelatedJournal: FC<{ id: number; compact: boolean }> = ({
           className="cursor"
           onClick={selectEntity}
         />
-        {relationships.map((r) => (
-          <EntityTypeIcon key={r.id} type={r.target_type} size={16} />
+        {summary.map((type, i) => (
+          <EntityTypeIcon key={`${type}-${i}`} type={type} size={16} />
         ))}
       </div>
     );
   }
   return (
-    <Card className="p-0 rounded-md">
-      <MinimalNote note={journal.json_note} />
-    </Card>
+    <>
+      <Card className="p-0 rounded-md">
+        <MinimalNote note={journal.json_note} />
+      </Card>
+      {related.map((child) => (
+        <RelatedEntity
+          key={child.edge?.id ?? child.entity.id}
+          node={child}
+          compact={false}
+        />
+      ))}
+    </>
   );
 };
