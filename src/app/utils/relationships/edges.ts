@@ -85,43 +85,213 @@ export const EDGE_ALTERNATIVES: Partial<
 };
 
 /**
- * What is worth showing underneath an entity, once it is something you are
- * looking at rather than the thing you opened.
+ * What an entity shows, and where.
  *
- * EDGES says which links may exist; this says which of them earn space when
- * the entity is a neighbour rather than the root. A location is linked to
- * every event that ever happened there and everyone who was present, but what
- * you want off the side of an event is what you could *do* here.
+ * EDGES says which links may exist. This says which of them earn space when
+ * you are looking at one - the only table the panels read.
  *
- * A type with no entry shows all of its neighbours.
+ * `primary` and `secondary` split the two panels when the entity is the thing
+ * you opened. `asChild` is what it shows when it is somebody else's
+ * neighbour, and defaults to both lists together.
+ *
+ * Every list is reconciled against EDGES: a type that cannot be linked has no
+ * business here, and a type that can be linked but is listed nowhere is
+ * invisible no matter what EDGES says.
  */
-export const CHILD_TYPES: Partial<
-  Record<RelationshipEntityType, RelationshipEntityType[]>
-> = {
-  [RelationshipEntityType.Location]: [
-    RelationshipEntityType.Task,
-    RelationshipEntityType.Habit,
-    RelationshipEntityType.Project,
-  ],
-  // what you wrote during an occurrence, which is the point of looking a habit
-  // up from an event. Its other occurrences are not - a weekly habit grows one
-  // of those a week forever, and they all carry the same title, so listing
-  // them under an event reads as the event repeating itself.
-  [RelationshipEntityType.Habit]: [
-    RelationshipEntityType.Note,
-    RelationshipEntityType.Journal,
-    RelationshipEntityType.Person,
-  ],
+export interface EntityView {
+  /** the main panel */
+  primary: RelationshipEntityType[];
+  /** the side panel: where, with whom, what it belongs to */
+  secondary: RelationshipEntityType[];
+  /**
+   * what it shows as somebody else's neighbour. Defaults to primary and
+   * secondary together; narrow it when a neighbour would otherwise drag in
+   * an unbounded set.
+   */
+  asChild?: RelationshipEntityType[];
+  /**
+   * Whether this entity draws neighbours underneath itself when it is not the
+   * root. The rest stop at their own card plus the row of hint icons, so
+   * walking into one would build a subtree nothing renders.
+   */
+  nests?: boolean;
+}
+
+export const VIEWS: Record<RelationshipEntityType, EntityView> = {
+  [RelationshipEntityType.Task]: {
+    nests: true,
+    primary: [
+      RelationshipEntityType.Task,
+      RelationshipEntityType.Note,
+      // added: a journal entry written while doing it reads like a note
+      RelationshipEntityType.Journal,
+    ],
+    secondary: [
+      RelationshipEntityType.Person,
+      RelationshipEntityType.Location,
+      // added: the event this task is part of
+      RelationshipEntityType.Event,
+    ],
+  },
+  [RelationshipEntityType.Event]: {
+    primary: [
+      RelationshipEntityType.Task,
+      RelationshipEntityType.Habit,
+      RelationshipEntityType.Note,
+      RelationshipEntityType.Person,
+      RelationshipEntityType.Journal,
+      // added: "moved to", "cancelled in favour of" - about this event, so
+      // it belongs next to the rest of it rather than off to the side
+      RelationshipEntityType.Event,
+    ],
+    // Project is gone: an event carries project_id, so it was never a
+    // relationship to begin with
+    secondary: [RelationshipEntityType.Location],
+  },
+  [RelationshipEntityType.Project]: {
+    nests: true,
+    // Task is gone for the same reason it is gone from Event
+    primary: [
+      RelationshipEntityType.Note,
+      // added: a project's habits are the recurring half of doing it
+      RelationshipEntityType.Habit,
+      RelationshipEntityType.Project,
+    ],
+    secondary: [
+      RelationshipEntityType.Location,
+      RelationshipEntityType.Person,
+    ],
+  },
+  [RelationshipEntityType.Location]: {
+    nests: true,
+    primary: [
+      RelationshipEntityType.Task,
+      RelationshipEntityType.Habit,
+      RelationshipEntityType.Project,
+    ],
+    // added: everything else that happened here, worth seeing once you have
+    // opened the place itself
+    secondary: [
+      RelationshipEntityType.Event,
+      RelationshipEntityType.Person,
+      RelationshipEntityType.Journal,
+      RelationshipEntityType.Note,
+      RelationshipEntityType.Location,
+    ],
+    // off the side of an event, a place answers "what could I do here" - not
+    // every event ever held there
+    asChild: [
+      RelationshipEntityType.Task,
+      RelationshipEntityType.Habit,
+      RelationshipEntityType.Project,
+    ],
+  },
+  [RelationshipEntityType.Habit]: {
+    nests: true,
+    primary: [
+      RelationshipEntityType.Note,
+      RelationshipEntityType.Journal,
+      RelationshipEntityType.Person,
+    ],
+    // added: where you do it, and what it belongs to
+    secondary: [
+      RelationshipEntityType.Location,
+      RelationshipEntityType.Project,
+      RelationshipEntityType.Event,
+    ],
+    // what you wrote during an occurrence. Its other occurrences are not -
+    // a weekly habit grows one a week forever and they all share a title, so
+    // listing them under an event reads as the event repeating itself
+    asChild: [
+      RelationshipEntityType.Note,
+      RelationshipEntityType.Journal,
+      RelationshipEntityType.Person,
+    ],
+  },
+  [RelationshipEntityType.Journal]: {
+    nests: true,
+    primary: [
+      RelationshipEntityType.Person,
+      RelationshipEntityType.Event,
+      // added: the thread this entry picks up, and what it was written about
+      RelationshipEntityType.Journal,
+      RelationshipEntityType.Task,
+      RelationshipEntityType.Habit,
+    ],
+    secondary: [RelationshipEntityType.Location],
+  },
+  [RelationshipEntityType.Note]: {
+    // was empty, which made a note's own panel permanently say "no stuff
+    // here". A note's panel is what it is about.
+    primary: [
+      RelationshipEntityType.Task,
+      RelationshipEntityType.Event,
+      RelationshipEntityType.Project,
+      RelationshipEntityType.Habit,
+      RelationshipEntityType.Note,
+    ],
+    secondary: [
+      RelationshipEntityType.Person,
+      RelationshipEntityType.Location,
+    ],
+  },
+  [RelationshipEntityType.Person]: {
+    primary: [
+      RelationshipEntityType.Task,
+      RelationshipEntityType.Journal,
+      RelationshipEntityType.Note,
+      RelationshipEntityType.Habit,
+      RelationshipEntityType.Event,
+      // added: how you know them
+      RelationshipEntityType.Person,
+    ],
+    secondary: [
+      RelationshipEntityType.Location,
+      RelationshipEntityType.Project,
+    ],
+  },
 };
 
-/** whether a neighbour of `parentType` is worth showing underneath it */
+/** everything an entity shows, or just one panel's worth */
+export const viewTypes = (
+  entityType: RelationshipEntityType,
+  priority?: "primary" | "secondary"
+): RelationshipEntityType[] =>
+  priority
+    ? VIEWS[entityType][priority]
+    : [...VIEWS[entityType].primary, ...VIEWS[entityType].secondary];
+
+/** whether a neighbour belongs in this entity's panel */
+export const matchesView = (
+  entityType: RelationshipEntityType,
+  neighbourType: RelationshipEntityType,
+  priority?: "primary" | "secondary"
+): boolean => !priority || viewTypes(entityType, priority).includes(neighbourType);
+
+/** whether a neighbour is worth showing underneath this entity */
 export const isWorthShowingUnder = (
   parentType: RelationshipEntityType,
   neighbourType: RelationshipEntityType
-): boolean => {
-  const allowed = CHILD_TYPES[parentType];
-  return !allowed || allowed.includes(neighbourType);
-};
+): boolean =>
+  (VIEWS[parentType].asChild ?? viewTypes(parentType)).includes(neighbourType);
+
+/**
+ * Whether a neighbour of this type draws anything underneath it.
+ *
+ * Paired with `expands` on the edge: the edge says the link is worth
+ * following, this says there is somewhere for the result to go. A note
+ * reached through `annotates` is worth following from the note's own panel
+ * and nowhere else, because RelatedNote renders content and a hint row - so
+ * descending into one from a task would build a subtree that is thrown away.
+ */
+export const nests = (entityType: RelationshipEntityType): boolean =>
+  VIEWS[entityType].nests === true;
+
+/** the order neighbours read in, following how the panels are listed */
+export const viewOrder = (
+  entityType: RelationshipEntityType,
+  neighbourType: RelationshipEntityType
+): number => viewTypes(entityType).indexOf(neighbourType);
 
 export interface RelationshipTypeRule {
   /** reading the edge from its canonical source: "task <at> location" */

@@ -3,11 +3,10 @@ import {
   RelationshipEntityType,
 } from "../../types/relationship";
 import {
-  ALLOWED_TYPES,
-  isAllowedTarget,
   isTerminalProjectStatus,
   isTerminalTaskStatus,
 } from "../../relationships/display-rules";
+import { matchesView, viewOrder } from "../../relationships/edges";
 import { useTasksState } from "../use-tasks/state-context";
 import { useRelationshipsState } from "./state-context";
 import { useProjectsState } from "../use-projects/state-context";
@@ -116,7 +115,7 @@ export const useRelevantRelationshipsForEntity = ({
 
   return relationships
     .filter((r) => {
-      if (!isAllowedTarget(entityType, r, key)) {
+      if (!matchesView(entityType, r.target_type, key)) {
         return false;
       }
 
@@ -137,8 +136,8 @@ export const useRelevantRelationshipsForEntity = ({
     })
     .sort((a, b) => {
       return (
-        Object.values(ALLOWED_TYPES[entityType]).flat().indexOf(a.target_type) -
-        Object.values(ALLOWED_TYPES[entityType]).flat().indexOf(b.target_type)
+        viewOrder(entityType, a.target_type) -
+        viewOrder(entityType, b.target_type)
       );
     });
 };

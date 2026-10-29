@@ -64,6 +64,52 @@ describe("buildIndex", () => {
   });
 });
 
+describe("buildIndex - sharing", () => {
+  it("reuses the index for the same array", () => {
+    // every consumer builds its own inside a useMemo, and a day view renders
+    // one per calendar event
+    const rows = [rel(1, Type.Task, 1, Type.Location, 9)];
+
+    expect(buildIndex(rows)).toBe(buildIndex(rows));
+  });
+
+  it("builds a new one when the data changes", () => {
+    const rows = [rel(1, Type.Task, 1, Type.Location, 9)];
+    const changed = [...rows, rel(2, Type.Task, 2, Type.Location, 9)];
+
+    expect(buildIndex(changed)).not.toBe(buildIndex(rows));
+    expect(buildIndex(changed).get("location:9")).toHaveLength(2);
+  });
+});
+
+describe("walk - nesting", () => {
+  it("does not build a subtree for something that draws no children", () => {
+    // `annotates` expands - a note's own panel lists what it is about - but
+    // RelatedNote renders content and a hint row, so walking into one from a
+    // task would build a subtree nothing reads
+    const tree = from({ id: 1, type: Type.Task }, [
+      rel(1, Type.Note, 7, Type.Task, 1),
+      rel(2, Type.Note, 7, Type.Event, 5),
+    ], 3);
+
+    const note = tree.children[0];
+    expect(note.entity.type).toBe(Type.Note);
+    expect(note.children).toHaveLength(0);
+    // the hint row still knows there is an event behind it
+    expect(note.summary).toEqual([Type.Event]);
+  });
+
+  it("still builds one for something that does", () => {
+    const tree = from({ id: 5, type: Type.Event }, [
+      rel(1, Type.Event, 5, Type.Task, 1),
+      rel(2, Type.Task, 1, Type.Person, 4),
+    ], 3);
+
+    expect(tree.children[0].entity.type).toBe(Type.Task);
+    expect(tree.children[0].children).toHaveLength(1);
+  });
+});
+
 describe("walk - termination", () => {
   it("stops on a task-to-task cycle", () => {
     // blocks does not expand, so the cycle is never entered in the first place

@@ -23,8 +23,9 @@ export const RelatedNote: FC<{
 }> = ({ id, compact, summary = [] }) => {
   const note = useNoteById(id);
 
-  // every edge the note has, not just the ones the panel would list: the
-  // panel lists none, because ALLOWED_TYPES[Note] is empty
+  // every edge the note has, not just the ones the panel would list. What a
+  // note is taped to is about the note's own edges, not about which of them
+  // the panel it happens to be sitting in cares to show.
   const neighbours = useAllRelationshipsForEntity({
     entityId: id,
     entityType: RelationshipEntityType.Note,

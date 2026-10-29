@@ -8,6 +8,8 @@ import { useEventById } from "@/app/utils/hooks/use-events/selectors";
 import { useHabitById } from "@/app/utils/hooks/use-habits-new/selectors";
 import { useHabitLifeAspectAssetIcon } from "@/app/utils/hooks/use-life-aspects/selectors";
 import { RelationshipEntityType } from "@/app/utils/types/relationship";
+import { RelationshipNode } from "@/app/utils/hooks/use-relationships/use-relationship-tree";
+import { RelatedEntity } from "../RelatedEntity";
 import { FC } from "react";
 import { EntityTypeIcon } from "../../../EntityTypeIcon";
 import { Card, CardHeader, CardTitle } from "@/app/components/ui/card";
@@ -19,7 +21,9 @@ export const RelatedHabit: FC<{
   compact: boolean;
   /** neighbour types behind this one, for the hint row of little icons */
   summary?: RelationshipEntityType[];
-}> = ({ id, compact, summary = [] }) => {
+  /** what was written during it - see VIEWS[Habit].asChild */
+  related?: RelationshipNode[];
+}> = ({ id, compact, summary = [], related = [] }) => {
   const habit = useHabitById(id);
 
   const icon = useHabitLifeAspectAssetIcon(habit);
@@ -93,11 +97,20 @@ export const RelatedHabit: FC<{
   }
 
   return (
-    <HabitCard
-      habit={habit}
-      event={event}
-      scheduled={scheduled}
-      additionalActions={actions}
-    />
+    <>
+      <HabitCard
+        habit={habit}
+        event={event}
+        scheduled={scheduled}
+        additionalActions={actions}
+      />
+      {related.map((child) => (
+        <RelatedEntity
+          key={child.edge?.id ?? child.entity.id}
+          node={child}
+          compact={false}
+        />
+      ))}
+    </>
   );
 };

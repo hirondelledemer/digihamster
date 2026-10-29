@@ -34,9 +34,9 @@ export const RelatedEntity: FC<RelatedEntityProps> = ({ node, compact }) => {
       case RelationshipEntityType.Event:
         return <RelatedEvent {...props} />;
       case RelationshipEntityType.Habit:
-        return <RelatedHabit {...props} />;
+        return <RelatedHabit {...props} related={children} />;
       case RelationshipEntityType.Journal:
-        return <RelatedJournal {...props} />; // TODO: maybe extract these props
+        return <RelatedJournal {...props} related={children} />;
       case RelationshipEntityType.Location:
         return <RelatedLocation {...props} related={children} />;
       case RelationshipEntityType.Note:

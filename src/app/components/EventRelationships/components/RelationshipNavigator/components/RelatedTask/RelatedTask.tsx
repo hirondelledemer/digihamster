@@ -66,22 +66,21 @@ export const RelatedTask: FC<{
     <TaskCard task={task} scheduled={scheduled} additionalActions={actions} />
   );
 
-  if (!related.length) {
+  // the card draws its own notes, wherever it is rendered, so listing them
+  // again underneath would show each one twice
+  const beside = related.filter(
+    (child) => child.entity.type !== RelationshipEntityType.Note
+  );
+
+  if (!beside.length) {
     return card;
   }
 
   return (
     <div>
       {card}
-      {related.map((child) => (
-        <div
-          key={child.edge?.id ?? child.entity.id}
-          className={
-            child.entity.type === RelationshipEntityType.Note
-              ? "mt-[-12px]"
-              : ""
-          }
-        >
+      {beside.map((child) => (
+        <div key={child.edge?.id ?? child.entity.id}>
           <RelatedEntity node={child} compact={false} />
         </div>
       ))}

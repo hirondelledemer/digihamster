@@ -1,6 +1,13 @@
 import { generateRelationship } from "../mocks/relationship";
 import { RelationshipEntityType } from "../types/relationship";
-import { edgeTypeOf, labelForEdge, resolveEdge } from "./edges";
+import {
+  VIEWS,
+  canRelate,
+  edgeTypeOf,
+  labelForEdge,
+  resolveEdge,
+  viewTypes,
+} from "./edges";
 import { RelationshipType } from "./relationship-types";
 
 const row = (
@@ -195,5 +202,63 @@ describe("resolveEdge", () => {
     );
 
     expect(resolveEdge(taskToProject, task)).toBeNull();
+  });
+});
+
+/**
+ * EDGES and VIEWS used to be two tables in two files that drifted apart: a
+ * link you could make but no panel would show, or a panel listing a link that
+ * could not exist. Both directions had already produced bugs, so they are
+ * pinned here rather than left to agree by habit.
+ */
+describe("VIEWS agrees with EDGES", () => {
+  const allTypes = Object.values(RelationshipEntityType);
+
+  it.each(allTypes)("%s lists only types it can link to", (type) => {
+    viewTypes(type).forEach((neighbour) => {
+      expect([neighbour, canRelate(type, neighbour)]).toEqual([
+        neighbour,
+        true,
+      ]);
+    });
+  });
+
+  it.each(allTypes)("%s lists every type it can link to", (type) => {
+    const linkable = allTypes.filter((other) => canRelate(type, other));
+
+    expect([...viewTypes(type)].sort()).toEqual([...linkable].sort());
+  });
+
+  it.each(allTypes)("%s only narrows as a child, never widens", (type) => {
+    const { asChild } = VIEWS[type];
+    if (!asChild) {
+      return;
+    }
+
+    asChild.forEach((neighbour) =>
+      expect(viewTypes(type)).toContain(neighbour)
+    );
+  });
+});
+
+describe("the panels a type appears in", () => {
+  it("shows a note what it is about, rather than nothing", () => {
+    // ALLOWED_TYPES[Note] was empty, so a note's own column always read
+    // "no stuff here" however much was attached to it
+    expect(viewTypes(RelationshipEntityType.Note, "primary")).not.toHaveLength(
+      0
+    );
+  });
+
+  it("shows a journal its own thread", () => {
+    expect(viewTypes(RelationshipEntityType.Journal, "primary")).toContain(
+      RelationshipEntityType.Journal
+    );
+  });
+
+  it("shows an event the events it was moved to or from", () => {
+    expect(viewTypes(RelationshipEntityType.Event, "primary")).toContain(
+      RelationshipEntityType.Event
+    );
   });
 });

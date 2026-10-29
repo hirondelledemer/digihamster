@@ -5,10 +5,12 @@ import {
   ResolvedEdge,
   expands,
   isWorthShowingUnder,
+  matchesView,
+  nests,
   resolveEdge,
+  viewOrder,
 } from "../../relationships/edges";
 import {
-  ALLOWED_TYPES,
   isTerminalProjectStatus,
   isTerminalTaskStatus,
 } from "../../relationships/display-rules";
@@ -55,12 +57,30 @@ const keyOf = (ref: EntityRef) => `${ref.type}:${ref.id}`;
 export type RelationshipIndex = Map<string, IRelationship[]>;
 
 /**
+ * Built once per version of the relationships array rather than once per
+ * caller.
+ *
+ * The index is the same for everybody, but every consumer builds its own
+ * inside its own useMemo - and a day view renders one of those per calendar
+ * event, so a screenful of events meant a screenful of passes over the whole
+ * table. The reducer always returns a fresh array and never mutates in place,
+ * so the array's identity is exactly the right cache key, and the old index
+ * falls out of the map with the old array.
+ */
+const indexCache = new WeakMap<IRelationship[], RelationshipIndex>();
+
+/**
  * Every relationship filed under both of the entities it touches, so a walk
  * is a lookup instead of two scans of the whole table per node.
  */
 export const buildIndex = (
   relationships: IRelationship[]
 ): RelationshipIndex => {
+  const cached = indexCache.get(relationships);
+  if (cached) {
+    return cached;
+  }
+
   const index: RelationshipIndex = new Map();
 
   const add = (key: string, relationship: IRelationship) => {
@@ -83,22 +103,10 @@ export const buildIndex = (
     }
   });
 
+  indexCache.set(relationships, index);
+
   return index;
 };
-
-const matchesPriority = (
-  rootType: RelationshipEntityType,
-  neighbourType: RelationshipEntityType,
-  priority?: "primary" | "secondary"
-): boolean =>
-  !priority || ALLOWED_TYPES[rootType][priority].includes(neighbourType);
-
-/** the order neighbours read in, kept the same as the old flat selector */
-const sortOrder = (
-  parentType: RelationshipEntityType,
-  neighbourType: RelationshipEntityType
-): number =>
-  Object.values(ALLOWED_TYPES[parentType]).flat().indexOf(neighbourType);
 
 export interface WalkContext {
   index: RelationshipIndex;
@@ -138,7 +146,7 @@ const neighbourTypesOf = (
     .filter((resolved) => isLive(resolved.other, context))
     .sort(
       (a, b) =>
-        sortOrder(ref.type, a.other.type) - sortOrder(ref.type, b.other.type)
+        viewOrder(ref.type, a.other.type) - viewOrder(ref.type, b.other.type)
     )
     .map((resolved) => resolved.other.type);
 
@@ -175,7 +183,7 @@ export const walk = (
     // arrived on.
     .filter((resolved) => !path.has(keyOf(resolved.other)))
     .filter((resolved) =>
-      matchesPriority(ref.type, resolved.other.type, priority)
+      matchesView(ref.type, resolved.other.type, priority)
     )
     // the root shows everything it is allowed to; below it, only what is
     // worth the space
@@ -186,7 +194,7 @@ export const walk = (
     .filter((resolved) => isLive(resolved.other, context))
     .sort(
       (a, b) =>
-        sortOrder(ref.type, a.other.type) - sortOrder(ref.type, b.other.type)
+        viewOrder(ref.type, a.other.type) - viewOrder(ref.type, b.other.type)
     );
 
   const summary = edges.map((resolved) => resolved.other.type);
@@ -205,7 +213,7 @@ export const walk = (
     // stopping at an edge that does not expand is the design, not a
     // truncation, so it gets no "there is more" affordance. The hint row
     // still needs to know what is behind it, which is one lookup not a walk.
-    if (!expands(resolved.type)) {
+    if (!expands(resolved.type) || !nests(resolved.other.type)) {
       const childPath = new Set(path);
       childPath.add(keyOf(resolved.other));
 

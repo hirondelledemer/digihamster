@@ -1,6 +1,8 @@
 import { useNavigator } from "@/app/components/EventRelationships/navigator-context";
 import { useJournalEntryById } from "@/app/utils/hooks/use-entry/selectors";
 import { RelationshipEntityType } from "@/app/utils/types/relationship";
+import { RelationshipNode } from "@/app/utils/hooks/use-relationships/use-relationship-tree";
+import { RelatedEntity } from "../RelatedEntity";
 import { IconFeather } from "@tabler/icons-react";
 import { FC } from "react";
 import { EntityTypeIcon } from "../../../EntityTypeIcon";
@@ -12,7 +14,9 @@ export const RelatedJournal: FC<{
   compact: boolean;
   /** neighbour types behind this one, for the hint row of little icons */
   summary?: RelationshipEntityType[];
-}> = ({ id, compact, summary = [] }) => {
+  /** the thread this entry picks up, and what it was written about */
+  related?: RelationshipNode[];
+}> = ({ id, compact, summary = [], related = [] }) => {
   const journal = useJournalEntryById(id);
 
   const { setActiveEntity, entities } = useNavigator();
@@ -53,8 +57,17 @@ export const RelatedJournal: FC<{
     );
   }
   return (
-    <Card className="p-0 rounded-md">
-      <MinimalNote note={journal.json_note} />
-    </Card>
+    <>
+      <Card className="p-0 rounded-md">
+        <MinimalNote note={journal.json_note} />
+      </Card>
+      {related.map((child) => (
+        <RelatedEntity
+          key={child.edge?.id ?? child.entity.id}
+          node={child}
+          compact={false}
+        />
+      ))}
+    </>
   );
 };
