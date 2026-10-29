@@ -76,12 +76,16 @@ describe("walk - termination", () => {
   });
 
   it("stops on the task - location - task triangle that used to hang", () => {
+    // the location opens up now, so this walks one step further than it used
+    // to - but the ancestry check still stops it coming back out again
     const tree = from({ id: 1, type: Type.Task }, [
       rel(1, Type.Task, 1, Type.Location, 9),
       rel(2, Type.Task, 2, Type.Location, 9),
     ], 6);
 
-    expect(size(tree)).toBe(2);
+    expect(size(tree)).toBe(3);
+    expect(tree.children[0].entity.type).toBe(Type.Location);
+    expect(childIds(tree.children[0])).toEqual([2]);
   });
 
   it("walks a cycle of journal entries once in each direction", () => {
@@ -155,14 +159,14 @@ describe("walk - truncated", () => {
   });
 
   it("does not mark an edge that simply does not expand", () => {
-    // the location has another task behind it, but `at` stops at a chip by
-    // design - that is not something to offer a click through to
+    // a person is a chip by design - that is not something to offer a click
+    // through to, however much is attached to them
     const tree = from({ id: 1, type: Type.Task }, [
-      rel(1, Type.Task, 1, Type.Location, 9),
-      rel(2, Type.Task, 2, Type.Location, 9),
+      rel(1, Type.Task, 1, Type.Person, 4),
+      rel(2, Type.Task, 2, Type.Person, 4),
     ], 5);
 
-    expect(tree.children[0].entity.type).toBe(Type.Location);
+    expect(tree.children[0].entity.type).toBe(Type.Person);
     expect(tree.children[0].truncated).toBe(false);
   });
 });
@@ -238,6 +242,125 @@ describe("walk - filtering", () => {
     );
 
     expect(tree.children).toHaveLength(0);
+  });
+});
+
+describe("walk - what a location opens up to", () => {
+  const atTheLocation = [
+    rel(1, Type.Event, 5, Type.Location, 9),
+    rel(2, Type.Task, 1, Type.Location, 9),
+    rel(3, Type.Habit, 3, Type.Location, 9),
+    rel(4, Type.Project, 1, Type.Location, 9),
+    rel(5, Type.Person, 4, Type.Location, 9),
+    rel(6, Type.Event, 6, Type.Location, 9),
+  ];
+
+  it("shows what you could do here, not everything that touches it", () => {
+    const tree = from({ id: 5, type: Type.Event }, atTheLocation, 2);
+    const location = tree.children[0];
+
+    expect(location.entity.type).toBe(Type.Location);
+    expect(childTypes(location)).toEqual([Type.Task, Type.Habit, Type.Project]);
+  });
+
+  it("does not list the event it hangs off", () => {
+    const tree = from({ id: 5, type: Type.Event }, atTheLocation, 2);
+
+    expect(childIds(tree.children[0])).not.toContain(5);
+  });
+
+  it("shows everything once the location is the thing you opened", () => {
+    const tree = from({ id: 9, type: Type.Location }, atTheLocation, 1);
+
+    expect(childTypes(tree)).toEqual(
+      expect.arrayContaining([Type.Person, Type.Event])
+    );
+  });
+});
+
+describe("walk - what a habit opens up to", () => {
+  it("does not list the habit's other occurrences under an event", () => {
+    // they all carry the habit's title, so they read as the event you opened
+    // showing up underneath itself
+    const tree = from({ id: 5, type: Type.Event }, [
+      rel(1, Type.Event, 5, Type.Habit, 3),
+      rel(2, Type.Event, 6, Type.Habit, 3),
+      rel(3, Type.Event, 7, Type.Habit, 3),
+    ], 3);
+
+    expect(tree.children[0].entity.type).toBe(Type.Habit);
+    expect(tree.children[0].children).toHaveLength(0);
+  });
+
+  it("shows what was written during it", () => {
+    const tree = from({ id: 5, type: Type.Event }, [
+      rel(1, Type.Event, 5, Type.Habit, 3),
+      rel(2, Type.Note, 7, Type.Habit, 3),
+      rel(3, Type.Journal, 2, Type.Habit, 3),
+    ], 3);
+
+    expect(childTypes(tree.children[0])).toEqual([Type.Note, Type.Journal]);
+  });
+});
+
+describe("walk - the root", () => {
+  it("never appears anywhere inside its own tree", () => {
+    const tree = from({ id: 5, type: Type.Event }, [
+      rel(1, Type.Event, 5, Type.Event, 5), // a row joining it to itself
+      rel(2, Type.Event, 5, Type.Task, 1),
+      rel(3, Type.Note, 7, Type.Event, 5),
+      rel(4, Type.Event, 5, Type.Habit, 3),
+    ], 4);
+
+    const ids: string[] = [];
+    const collect = (node: RelationshipNode) =>
+      node.children.forEach((child) => {
+        ids.push(`${child.entity.type}:${child.entity.id}`);
+        collect(child);
+      });
+    collect(tree);
+
+    expect(ids).not.toContain("event:5");
+  });
+});
+
+describe("walk - summary", () => {
+  it("never hints at the entity you are looking at", () => {
+    // the person is at the event, so a naive lookup from the person would
+    // list the event right back - which reads as the event you opened showing
+    // up inside its own panel
+    const tree = from({ id: 5, type: Type.Event }, [
+      rel(1, Type.Event, 5, Type.Person, 4),
+      rel(2, Type.Event, 6, Type.Person, 4),
+    ], 2);
+
+    const person = tree.children[0];
+    expect(person.entity.type).toBe(Type.Person);
+    expect(person.summary).toEqual([Type.Event]); // only the other one
+    expect(person.summary).toHaveLength(1);
+  });
+
+  it("is populated even when the edge does not expand", () => {
+    const tree = from({ id: 5, type: Type.Event }, [
+      rel(1, Type.Event, 5, Type.Person, 4),
+      rel(2, Type.Task, 1, Type.Person, 4),
+    ], 2);
+
+    // `includes` is a chip, so there are no children - but the hint row still
+    // knows there is a task behind the person
+    expect(tree.children[0].children).toHaveLength(0);
+    expect(tree.children[0].summary).toEqual([Type.Task]);
+  });
+
+  it("respects what is worth showing under the entity", () => {
+    const tree = from({ id: 5, type: Type.Event }, [
+      rel(1, Type.Event, 5, Type.Habit, 3),
+      rel(2, Type.Event, 6, Type.Habit, 3),
+      rel(3, Type.Note, 7, Type.Habit, 3),
+    ], 2);
+
+    // the habit's other occurrences are not worth hinting at either
+    expect(tree.children[0].summary).toEqual([Type.Note]);
   });
 });
 

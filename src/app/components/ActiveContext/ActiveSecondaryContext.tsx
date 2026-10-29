@@ -12,6 +12,7 @@ import ProjectProgress from "../ProjectProgress";
 import HealthChart from "../HealthChart";
 import { RelationshipNavigator } from "../EventRelationships/components/RelationshipNavigator";
 import { RelationshipEntityType } from "@/app/utils/types/relationship";
+import { ScrollArea } from "@/app/components/ui/scroll-area";
 
 export const eventTitleTestId = "ActiveContext-event-title-testid";
 
@@ -51,11 +52,13 @@ export const ActiveSecondaryContext: FC = (): JSX.Element | null => {
 
   return (
     <div className="w-full h-full">
-      <RelationshipNavigator
-        entityId={selectedEvent.id}
-        entityType={RelationshipEntityType.Event}
-        relationshipPriority="secondary"
-      />
+      <ScrollArea className="h-full pb-[60px]">
+        <RelationshipNavigator
+          entityId={selectedEvent.id}
+          entityType={RelationshipEntityType.Event}
+          relationshipPriority="secondary"
+        />
+      </ScrollArea>
     </div>
   );
 };

@@ -1,6 +1,5 @@
 import { useNavigator } from "@/app/components/EventRelationships/navigator-context";
 import { usePersonById } from "@/app/utils/hooks/use-people/selectors";
-import { useRelevantRelationshipsForEntity } from "@/app/utils/hooks/use-relationships/selectors";
 import { RelationshipEntityType } from "@/app/utils/types/relationship";
 import { IconManFilled } from "@tabler/icons-react";
 import { FC } from "react";
@@ -12,15 +11,13 @@ import {
   CardTitle,
 } from "@/app/components/ui/card";
 
-export const RelatedPerson: FC<{ id: number; compact: boolean }> = ({
-  id,
-  compact,
-}) => {
+export const RelatedPerson: FC<{
+  id: number;
+  compact: boolean;
+  /** neighbour types behind this one, for the hint row of little icons */
+  summary?: RelationshipEntityType[];
+}> = ({ id, compact, summary = [] }) => {
   const person = usePersonById(id);
-  const relationships = useRelevantRelationshipsForEntity({
-    entityId: id,
-    entityType: RelationshipEntityType.Person,
-  });
 
   const { setActiveEntity, entities } = useNavigator();
 
@@ -54,10 +51,10 @@ export const RelatedPerson: FC<{ id: number; compact: boolean }> = ({
           className="cursor"
           onClick={selectEntity}
         />
-        {relationships.slice(0, 3).map((r) => (
-          <EntityTypeIcon key={r.id} type={r.target_type} size={16} />
+        {summary.slice(0, 3).map((type, i) => (
+          <EntityTypeIcon key={`${type}-${i}`} type={type} size={16} />
         ))}
-        {relationships.length - relationshipNumber}
+        {summary.length - relationshipNumber}
       </div>
     );
   }
@@ -66,17 +63,18 @@ export const RelatedPerson: FC<{ id: number; compact: boolean }> = ({
     <Card className="p-0 rounded-md w-full">
       <CardHeader className="p-4 pt-2">
         <CardTitle className="font-normal flex gap-2">
-          <IconManFilled size={16} color={person.color} aria-label="location" />
+          <IconManFilled size={16} color={person.color} aria-label="person" />
           <div style={{ color: person.color }}>{person.name}</div>
         </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="flex overflow-hidden">
-          {relationships.slice(0, 5).map(
+          {summary.slice(0, 5).map(
             (
-              r // todo: maybe show somehow differently
+              type, // todo: maybe show somehow differently
+              i
             ) => (
-              <EntityTypeIcon key={r.id} type={r.target_type} size={16} />
+              <EntityTypeIcon key={`${type}-${i}`} type={type} size={16} />
             )
           )}
         </div>

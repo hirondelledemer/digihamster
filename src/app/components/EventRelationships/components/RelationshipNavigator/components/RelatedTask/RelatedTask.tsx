@@ -1,6 +1,6 @@
 import { useNavigator } from "@/app/components/EventRelationships/navigator-context";
 import { useTaskProjectColor } from "@/app/utils/hooks/use-projects/selectors";
-import { useRelevantRelationshipsForEntity } from "@/app/utils/hooks/use-relationships/selectors";
+import { RelationshipNode } from "@/app/utils/hooks/use-relationships/use-relationship-tree";
 import { useTaskById } from "@/app/utils/hooks/use-tasks/selectors";
 import { RelationshipEntityType } from "@/app/utils/types/relationship";
 import { IconCheckbox } from "@tabler/icons-react";
@@ -8,16 +8,17 @@ import { FC } from "react";
 import { EntityTypeIcon } from "../../../EntityTypeIcon";
 import TaskCard from "@/app/components/TaskCard";
 import { useEventScheduling } from "@/app/components/EventRelationships/use-event-scheduling";
+import { RelatedEntity } from "../RelatedEntity";
 
 export const RelatedTask: FC<{
   id: number;
   compact: boolean;
-}> = ({ id, compact }) => {
+  /** whatever the walk put under this task; empty when it stopped here */
+  related?: RelationshipNode[];
+  /** neighbour types behind this one, for the hint row of little icons */
+  summary?: RelationshipEntityType[];
+}> = ({ id, compact, related = [], summary = [] }) => {
   const task = useTaskById(id);
-  const relationships = useRelevantRelationshipsForEntity({
-    entityId: id,
-    entityType: RelationshipEntityType.Task,
-  });
   const { main: color } = useTaskProjectColor(task);
   const { setActiveEntity, entities } = useNavigator();
   const { scheduled, actions } = useEventScheduling(
@@ -54,14 +55,36 @@ export const RelatedTask: FC<{
           className="cursor"
           onClick={selectEntity}
         />
-        {relationships.map((r) => (
-          <EntityTypeIcon key={r.id} type={r.target_type} size={16} />
+        {summary.map((type, i) => (
+          <EntityTypeIcon key={`${type}-${i}`} type={type} size={16} />
         ))}
       </div>
     );
   }
 
-  return (
+  const card = (
     <TaskCard task={task} scheduled={scheduled} additionalActions={actions} />
+  );
+
+  if (!related.length) {
+    return card;
+  }
+
+  return (
+    <div>
+      {card}
+      {related.map((child) => (
+        <div
+          key={child.edge?.id ?? child.entity.id}
+          className={
+            child.entity.type === RelationshipEntityType.Note
+              ? "mt-[-12px]"
+              : ""
+          }
+        >
+          <RelatedEntity node={child} compact={false} />
+        </div>
+      ))}
+    </div>
   );
 };

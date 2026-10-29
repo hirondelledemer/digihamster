@@ -4,6 +4,7 @@ import {
   EntityRef,
   ResolvedEdge,
   expands,
+  isWorthShowingUnder,
   resolveEdge,
 } from "../../relationships/edges";
 import {
@@ -24,6 +25,13 @@ export interface RelationshipNode {
   /** how we got here; null on the root, which nothing points to */
   edge: ResolvedEdge | null;
   children: RelationshipNode[];
+  /**
+   * The neighbour types sitting behind this entity, for the row of little
+   * icons that hints at what is there. Already filtered the same way children
+   * are - so the thing you are looking at never shows up as a hint underneath
+   * one of its own neighbours.
+   */
+  summary: RelationshipEntityType[];
   /**
    * This node has neighbours the tree is not showing, because the walk ran
    * out of depth or looped back on itself. An edge that simply does not
@@ -112,6 +120,29 @@ const isLive = (ref: EntityRef, context: WalkContext): boolean => {
 };
 
 /**
+ * The neighbour types behind an entity, filtered exactly as children are.
+ *
+ * One index lookup and no recursion, so it is cheap enough to attach to every
+ * node including the ones the walk decided not to descend into.
+ */
+const neighbourTypesOf = (
+  ref: EntityRef,
+  path: ReadonlySet<string>,
+  context: WalkContext
+): RelationshipEntityType[] =>
+  (context.index.get(keyOf(ref)) ?? [])
+    .map((row) => resolveEdge(row, ref))
+    .filter((resolved): resolved is ResolvedEdge => resolved !== null)
+    .filter((resolved) => !path.has(keyOf(resolved.other)))
+    .filter((resolved) => isWorthShowingUnder(ref.type, resolved.other.type))
+    .filter((resolved) => isLive(resolved.other, context))
+    .sort(
+      (a, b) =>
+        sortOrder(ref.type, a.other.type) - sortOrder(ref.type, b.other.type)
+    )
+    .map((resolved) => resolved.other.type);
+
+/**
  * Walks the relationship graph into a finite tree.
  *
  * Everything that makes the walk terminate lives here rather than in the
@@ -128,6 +159,7 @@ export const walk = (
   context: WalkContext,
   priority?: "primary" | "secondary"
 ): RelationshipNode => {
+  const isRoot = ancestors.size === 0;
   const path = new Set(ancestors);
   path.add(keyOf(ref));
 
@@ -145,24 +177,43 @@ export const walk = (
     .filter((resolved) =>
       matchesPriority(ref.type, resolved.other.type, priority)
     )
+    // the root shows everything it is allowed to; below it, only what is
+    // worth the space
+    .filter(
+      (resolved) =>
+        isRoot || isWorthShowingUnder(ref.type, resolved.other.type)
+    )
     .filter((resolved) => isLive(resolved.other, context))
     .sort(
       (a, b) =>
         sortOrder(ref.type, a.other.type) - sortOrder(ref.type, b.other.type)
     );
 
+  const summary = edges.map((resolved) => resolved.other.type);
+
   if (remaining <= 0) {
-    return { entity: ref, edge, children: [], truncated: edges.length > 0 };
+    return {
+      entity: ref,
+      edge,
+      children: [],
+      summary,
+      truncated: edges.length > 0,
+    };
   }
 
-  const children = edges.map((resolved) => {
+  const children: RelationshipNode[] = edges.map((resolved) => {
     // stopping at an edge that does not expand is the design, not a
-    // truncation, so it gets no "there is more" affordance
+    // truncation, so it gets no "there is more" affordance. The hint row
+    // still needs to know what is behind it, which is one lookup not a walk.
     if (!expands(resolved.type)) {
+      const childPath = new Set(path);
+      childPath.add(keyOf(resolved.other));
+
       return {
         entity: resolved.other,
         edge: resolved,
         children: [],
+        summary: neighbourTypesOf(resolved.other, childPath, context),
         truncated: false,
       };
     }
@@ -171,7 +222,7 @@ export const walk = (
     return walk(resolved.other, resolved, remaining - 1, path, context);
   });
 
-  return { entity: ref, edge, children, truncated: false };
+  return { entity: ref, edge, children, summary, truncated: false };
 };
 
 /**
@@ -199,6 +250,7 @@ export const useRelationshipTree = (
       entity,
       edge: null,
       children: [],
+      summary: [],
       truncated: false,
     };
 

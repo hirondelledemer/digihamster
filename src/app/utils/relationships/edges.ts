@@ -84,6 +84,45 @@ export const EDGE_ALTERNATIVES: Partial<
   },
 };
 
+/**
+ * What is worth showing underneath an entity, once it is something you are
+ * looking at rather than the thing you opened.
+ *
+ * EDGES says which links may exist; this says which of them earn space when
+ * the entity is a neighbour rather than the root. A location is linked to
+ * every event that ever happened there and everyone who was present, but what
+ * you want off the side of an event is what you could *do* here.
+ *
+ * A type with no entry shows all of its neighbours.
+ */
+export const CHILD_TYPES: Partial<
+  Record<RelationshipEntityType, RelationshipEntityType[]>
+> = {
+  [RelationshipEntityType.Location]: [
+    RelationshipEntityType.Task,
+    RelationshipEntityType.Habit,
+    RelationshipEntityType.Project,
+  ],
+  // what you wrote during an occurrence, which is the point of looking a habit
+  // up from an event. Its other occurrences are not - a weekly habit grows one
+  // of those a week forever, and they all carry the same title, so listing
+  // them under an event reads as the event repeating itself.
+  [RelationshipEntityType.Habit]: [
+    RelationshipEntityType.Note,
+    RelationshipEntityType.Journal,
+    RelationshipEntityType.Person,
+  ],
+};
+
+/** whether a neighbour of `parentType` is worth showing underneath it */
+export const isWorthShowingUnder = (
+  parentType: RelationshipEntityType,
+  neighbourType: RelationshipEntityType
+): boolean => {
+  const allowed = CHILD_TYPES[parentType];
+  return !allowed || allowed.includes(neighbourType);
+};
+
 export interface RelationshipTypeRule {
   /** reading the edge from its canonical source: "task <at> location" */
   label: string;
@@ -124,7 +163,10 @@ export const RELATIONSHIP_TYPE_RULES: Record<
     label: "at",
     inverseLabel: "has",
     symmetric: false,
-    expands: false,
+    // a place is worth opening up - what is here is the point of looking a
+    // location up. Cycling back out through it is handled by the walk's
+    // ancestry check rather than by refusing to descend.
+    expands: true,
   },
   [RelationshipType.Includes]: {
     label: "includes",

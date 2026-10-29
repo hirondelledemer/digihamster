@@ -11,7 +11,7 @@ import {
   TooltipTrigger,
 } from "@/app/components/ui/tooltip";
 import { useLocationById } from "@/app/utils/hooks/use-location/selectors";
-import { useRelevantRelationshipsForEntity } from "@/app/utils/hooks/use-relationships/selectors";
+import { RelationshipNode } from "@/app/utils/hooks/use-relationships/use-relationship-tree";
 import { RelationshipEntityType } from "@/app/utils/types/relationship";
 import { IconMapPin } from "@tabler/icons-react";
 import { FC } from "react";
@@ -21,12 +21,12 @@ import { EntityTypeIcon } from "../../../EntityTypeIcon";
 export const RelatedLocation: FC<{
   id: number;
   compact: boolean;
-}> = ({ id, compact }) => {
+  /** whatever the walk put under this location; empty when it stopped here */
+  related?: RelationshipNode[];
+  /** neighbour types behind this one, for the hint row of little icons */
+  summary?: RelationshipEntityType[];
+}> = ({ id, compact, related = [], summary = [] }) => {
   const location = useLocationById(id);
-  const relationships = useRelevantRelationshipsForEntity({
-    entityId: id,
-    entityType: RelationshipEntityType.Location,
-  });
   const { setActiveEntity } = useNavigator();
 
   const selectEntity = () =>
@@ -56,8 +56,8 @@ export const RelatedLocation: FC<{
             {location.title}
           </TooltipContent>
         </Tooltip>
-        {relationships.map((r) => (
-          <EntityTypeIcon key={r.id} type={r.target_type} size={16} />
+        {summary.map((type, i) => (
+          <EntityTypeIcon key={`${type}-${i}`} type={type} size={16} />
         ))}
       </div>
     );
@@ -77,8 +77,12 @@ export const RelatedLocation: FC<{
           </CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-2">
-          {relationships.map((r) => (
-            <RelatedEntity key={r.id} relationship={r} compact={false} /> // TODO
+          {related.map((child) => (
+            <RelatedEntity
+              key={child.edge?.id ?? child.entity.id}
+              node={child}
+              compact={false}
+            />
           ))}
         </CardContent>
       </Card>

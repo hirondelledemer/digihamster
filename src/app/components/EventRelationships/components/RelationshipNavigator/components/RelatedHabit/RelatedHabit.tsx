@@ -7,7 +7,6 @@ import {
 import { useEventById } from "@/app/utils/hooks/use-events/selectors";
 import { useHabitById } from "@/app/utils/hooks/use-habits-new/selectors";
 import { useHabitLifeAspectAssetIcon } from "@/app/utils/hooks/use-life-aspects/selectors";
-import { useRelevantRelationshipsForEntity } from "@/app/utils/hooks/use-relationships/selectors";
 import { RelationshipEntityType } from "@/app/utils/types/relationship";
 import { FC } from "react";
 import { EntityTypeIcon } from "../../../EntityTypeIcon";
@@ -18,7 +17,9 @@ import { useEventScheduling } from "@/app/components/EventRelationships/use-even
 export const RelatedHabit: FC<{
   id: number;
   compact: boolean;
-}> = ({ id, compact }) => {
+  /** neighbour types behind this one, for the hint row of little icons */
+  summary?: RelationshipEntityType[];
+}> = ({ id, compact, summary = [] }) => {
   const habit = useHabitById(id);
 
   const icon = useHabitLifeAspectAssetIcon(habit);
@@ -34,10 +35,6 @@ export const RelatedHabit: FC<{
 
   const event = useEventById(eventId);
 
-  const relationships = useRelevantRelationshipsForEntity({
-    entityId: id,
-    entityType: RelationshipEntityType.Habit,
-  });
 
   if (!habit) {
     return null;
@@ -69,8 +66,8 @@ export const RelatedHabit: FC<{
             {habit.title}
           </TooltipContent>
         </Tooltip>
-        {relationships.map((r) => (
-          <EntityTypeIcon key={r.id} type={r.target_type} size={16} />
+        {summary.map((type, i) => (
+          <EntityTypeIcon key={`${type}-${i}`} type={type} size={16} />
         ))}
       </div>
     );
@@ -87,8 +84,8 @@ export const RelatedHabit: FC<{
           </CardHeader>
         </Card>
         <div>
-          {relationships.map((r) => (
-            <EntityTypeIcon key={r.id} type={r.target_type} size={16} />
+          {summary.map((type, i) => (
+            <EntityTypeIcon key={`${type}-${i}`} type={type} size={16} />
           ))}
         </div>
       </>

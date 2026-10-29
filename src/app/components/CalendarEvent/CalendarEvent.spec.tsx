@@ -215,11 +215,11 @@ describe("CalendarEvent", () => {
       await renderComponent();
 
       expect(screen.getByLabelText(TASK.title)).toBeInTheDocument();
-      expect(screen.getByLabelText(PROJECT.title)).toBeInTheDocument();
       expect(screen.getByLabelText(PERSON.name)).toBeInTheDocument();
       expect(screen.getByLabelText(JOURNAL.title)).toBeInTheDocument();
       expect(screen.getByLabelText("location")).toBeInTheDocument();
-      expect(screen.getByText(NOTE.title)).toBeInTheDocument();
+      // the note's title lives in a tooltip, so the badge is the icon
+      expect(screen.getByLabelText("note")).toBeInTheDocument();
     });
 
     it("should show no badges when the event has no relationships", async () => {
@@ -237,21 +237,19 @@ describe("CalendarEvent", () => {
       expect(screen.queryByLabelText(TASK.title)).not.toBeInTheDocument();
     });
 
-    // an event does not relate to another event, so the badge row drops it even
-    // though the relationship itself is stored and the event is loaded
+    // an event carries project_id, so a project is not one of its
+    // relationships. The badge row drops it even though the row is stored and
+    // the project is loaded.
     it("should not show a badge for a type an event does not relate to", async () => {
-      const OTHER_EVENT = generateEvent(2);
-
       await renderComponent(defaultProps, {
-        events: [EVENT, OTHER_EVENT],
         relationships: generateCustomRelationshipsList([
           relatedTo(RelationshipEntityType.Location, LOCATION.id),
-          relatedTo(RelationshipEntityType.Event, OTHER_EVENT.id),
+          relatedTo(RelationshipEntityType.Project, PROJECT.id),
         ]),
       });
 
       expect(screen.getByLabelText("location")).toBeInTheDocument();
-      expect(document.querySelector(".tabler-icon-calendar")).toBeNull();
+      expect(document.querySelector(".tabler-icon-folder")).toBeNull();
     });
   });
 

@@ -1,6 +1,6 @@
 import { useNavigator } from "@/app/components/EventRelationships/navigator-context";
 import { useProjectById } from "@/app/utils/hooks/use-projects/selectors";
-import { useRelevantRelationshipsForEntity } from "@/app/utils/hooks/use-relationships/selectors";
+import { RelationshipNode } from "@/app/utils/hooks/use-relationships/use-relationship-tree";
 import { RelationshipEntityType } from "@/app/utils/types/relationship";
 import { IconCheckbox } from "@tabler/icons-react";
 import { FC } from "react";
@@ -8,15 +8,15 @@ import { EntityTypeIcon } from "../../../EntityTypeIcon";
 import { ProjectSwitchableTask } from "../RelatedLocation/components/ProjectSwitchableTask";
 import { RelatedEntity } from "../RelatedEntity";
 
-export const RelatedProject: FC<{ id: number; compact: boolean }> = ({
-  id,
-  compact,
-}) => {
+export const RelatedProject: FC<{
+  id: number;
+  compact: boolean;
+  /** whatever the walk put under this project; empty when it stopped here */
+  related?: RelationshipNode[];
+  /** neighbour types behind this one, for the hint row of little icons */
+  summary?: RelationshipEntityType[];
+}> = ({ id, compact, related = [], summary = [] }) => {
   const project = useProjectById(id);
-  const relationships = useRelevantRelationshipsForEntity({
-    entityId: id,
-    entityType: RelationshipEntityType.Project,
-  });
 
   const { entities, setActiveEntity } = useNavigator();
 
@@ -49,8 +49,8 @@ export const RelatedProject: FC<{ id: number; compact: boolean }> = ({
           className="cursor"
           onClick={selectEntity}
         />
-        {relationships.map((r) => (
-          <EntityTypeIcon key={r.id} type={r.target_type} size={16} />
+        {summary.map((type, i) => (
+          <EntityTypeIcon key={`${type}-${i}`} type={type} size={16} />
         ))}
       </div>
     );
@@ -60,14 +60,16 @@ export const RelatedProject: FC<{ id: number; compact: boolean }> = ({
     <div>
       <ProjectSwitchableTask project={project} />
 
-      {relationships.map((r) => (
+      {related.map((child) => (
         <div
-          key={r.id}
+          key={child.edge?.id ?? child.entity.id}
           className={
-            r.target_type === RelationshipEntityType.Note ? "mt-[-12px]" : ""
+            child.entity.type === RelationshipEntityType.Note
+              ? "mt-[-12px]"
+              : ""
           }
         >
-          <RelatedEntity relationship={r} compact={false} />
+          <RelatedEntity node={child} compact={false} />
         </div>
       ))}
     </div>
