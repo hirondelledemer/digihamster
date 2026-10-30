@@ -18,6 +18,9 @@ const config = {
       },
     },
     extend: {
+      fontFamily: {
+        crayon: ["var(--font-crayon)", "cursive"],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

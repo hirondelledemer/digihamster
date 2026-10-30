@@ -1,8 +1,8 @@
+@import url('https://googleapis.com');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
  
-
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -46,7 +46,6 @@
     --scale-color-8: 142 76% 36%;   /* green-400 */
     --scale-color-9: 142 71% 45%;   /* green-500 */
     --scale-color-10: 152 72% 35%;  /* emerald-600 */
-
   }
 
   .dark {

@@ -2,6 +2,7 @@
 import React, { FC, ReactNode } from "react";
 
 import { StickyNoteVariant } from "@/app/utils/types/note";
+import { cn } from "../../utils";
 
 type StickyNoteWrapperProps = {
   children: ReactNode;
@@ -13,7 +14,12 @@ export const StickyNoteWrapper: FC<StickyNoteWrapperProps> = ({
   variant,
 }): JSX.Element | null => {
   return (
-    <div className="relative inline-block pt-3 group">
+    <div
+      className={cn(
+        "relative inline-block pt-3 group",
+        variant === "tape" && "mt-[-10px]"
+      )}
+    >
       {/* EMBELLISHMENT: Messy Torn-Edge Sticky Tape Overlay */}
       {variant === "tape" && (
         <div

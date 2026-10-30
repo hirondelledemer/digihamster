@@ -10,6 +10,7 @@ import { TaskStatus } from "../types/task";
 const TAPED_TO: RelationshipEntityType[] = [
   RelationshipEntityType.Project,
   RelationshipEntityType.Task,
+  RelationshipEntityType.Habit,
 ];
 
 /**

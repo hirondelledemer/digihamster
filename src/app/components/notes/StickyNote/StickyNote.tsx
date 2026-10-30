@@ -32,7 +32,7 @@ export const StickyNote: FC<{
 
   const calculated = cn(
     // Base Structure & Interactive State
-    "relative block max-w-64 h-auto min-h-[4.5rem] p-4 pl-5 text-xs font-mono leading-relaxed transform transition-all duration-200 focus-within:rotate-0 focus-within:scale-[1.02]",
+    "relative block max-w-64 h-auto min-h-[4.5rem] p-4 pl-5 text-xs font-crayon leading-relaxed transform transition-all duration-200 focus-within:rotate-0 focus-within:scale-[1.02]",
     // Dark Mode Sticky Note Colors
     "bg-secondary bg-gradient-to-br from-zinc-800 to-zinc-900 text-amber-100 placeholder:text-amber-600/40 border border-zinc-700/40",
     // Shadow Layers
