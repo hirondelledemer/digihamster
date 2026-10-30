@@ -14,6 +14,7 @@ import { AdditionalAction } from "../AdditionalActions";
 import { ScheduledIndicator } from "../ScheduledIndicator";
 import { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
 import { useSetSearchParams } from "@/app/utils/url/search-params";
+import { cn } from "../utils";
 
 export const titleTestId = "TaskCard-title-testid";
 export const cardTestId = "TaskCard-card-testid";
@@ -51,7 +52,6 @@ const TaskCard: FC<TaskCardProps> = ({
   const project = useTaskProject(task);
 
   const baseStyle: CSSProperties = {
-    ...style,
     borderColor: project?.color,
   };
 
@@ -61,9 +61,10 @@ const TaskCard: FC<TaskCardProps> = ({
       <TaskActions task={task} additionalActions={additionalActions}>
         <Card
           data-testid={cardTestId}
-          className={`p-0 rounded-md w-full ${
+          className={cn(
+            "p-0 rounded-md w-full",
             task.status === "done" ? "opacity-40" : ""
-          }`}
+          )}
           ref={setNodeRef}
           style={{ ...baseStyle, ...style }}
           {...listeners}
@@ -72,7 +73,7 @@ const TaskCard: FC<TaskCardProps> = ({
           <CardHeader className="p-4 pt-2">
             <div
               style={{ color: project?.color }}
-              className="text-[10px] uppercase underline flex items-center justify-between"
+              className="text-xxs uppercase underline flex items-center justify-between"
             >
               <span
                 className="hover:font-bold cursor-pointer"
@@ -124,7 +125,7 @@ const TaskCard: FC<TaskCardProps> = ({
             </CardTitle>
           </CardHeader>
           {task.description && !(task.status === "done") && (
-            <CardContent className="pb-4 px-4 text-xs whitespace-pre-wrap muted">
+            <CardContent className="pb-4 px-4 text-xs whitespace-pre-wrap">
               {task.description}
             </CardContent>
           )}

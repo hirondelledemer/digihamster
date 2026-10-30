@@ -34,7 +34,7 @@ export const RelatedNote: FC<{
 
   if (compact) {
     return (
-      <div className="flex flex-col items-center gap-1 w-[20px]">
+      <div className="flex flex-col items-center gap-1 w-5">
         <Tooltip delayDuration={0}>
           <TooltipTrigger>
             <IconNote

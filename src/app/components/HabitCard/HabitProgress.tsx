@@ -52,7 +52,7 @@ export const HabitProgress: FC<HabitProgressProps> = ({ habitWindow }) => {
         />
       </div>
       <div
-        className={`flex justify-between text-[10px] leading-none ${STATUS_TEXT[status]}`}
+        className={`flex justify-between text-xxs leading-none ${STATUS_TEXT[status]}`}
       >
         <span>
           {done}/{target}

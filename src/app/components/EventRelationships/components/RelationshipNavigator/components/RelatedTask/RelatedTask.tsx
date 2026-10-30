@@ -52,7 +52,7 @@ export const RelatedTask: FC<{
           size={24}
           color={color || "#fff"}
           aria-label={task.title}
-          className="cursor"
+          className="cursor-pointer"
           onClick={selectEntity}
         />
         {summary.map((type, i) => (

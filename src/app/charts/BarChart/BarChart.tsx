@@ -97,7 +97,7 @@ export function BarChart({ data: chartData, config }: BarChartProps) {
             style={{ height: 130 / data.length }}
             className="flex justify-end items-baseline"
           >
-            <div className="text-[10px]">{actionsItem.dataLabel}</div>
+            <div className="text-xxs">{actionsItem.dataLabel}</div>
             {actionsItem &&
               actionsItem.actions.map((item: ActionItem, index: number) => (
                 <Button
