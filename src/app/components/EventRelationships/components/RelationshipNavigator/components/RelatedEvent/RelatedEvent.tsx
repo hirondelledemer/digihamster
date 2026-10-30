@@ -44,9 +44,8 @@ export const RelatedEvent: FC<{
       >
         <IconCalendar size={16} />
         {/* TODO: maybe memoise this value? */}
-        Also mentioned on {event.title} ({format(event.start_at, "cccccc")},
-        {formatDistanceToNow(event.start_at)}{" "}
-        {compareAsc(event.start_at, now()) > 0 ? "in" : "ago"})
+        Also mentioned on {event.title} ({format(event.start_at, "cccccc")},{" "}
+        {formatDistanceToNow(event.start_at, { addSuffix: true })})
       </Button>
     );
   }

@@ -24,8 +24,16 @@ import { useRelationshipsState } from "./state-context";
 
 export interface RelationshipNode {
   entity: EntityRef;
-  // TODO: what is this edge? understand this
-  /** how we got here; null on the root, which nothing points to */
+
+  /**
+   * The relationship row this node was reached through, read from the parent's
+   * side: the row id (what the unlink button deletes), the verb (what `expands`
+   * reads to decide whether to descend), and which end the parent stands on
+   * (which of the two labels applies). Null on the root, which nothing points to.
+   *
+   * `edge.other` is always this node's own `entity` - resolveEdge returns it so
+   * the parent can find the far end, and the walk then uses it as the child.
+   */
   edge: ResolvedEdge | null;
   children: RelationshipNode[];
   /**
@@ -205,7 +213,7 @@ export const walk = (
       children: [],
       summary,
       truncated: edges.length > 0,
-      depth: path.size,
+      depth: ancestors.size,
     };
   }
 
@@ -237,7 +245,7 @@ export const walk = (
     children,
     summary,
     truncated: false,
-    depth: path.size,
+    depth: ancestors.size,
   };
 };
 
