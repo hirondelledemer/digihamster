@@ -6,8 +6,7 @@ import { IconCalendar } from "@tabler/icons-react";
 import { FC } from "react";
 import { EntityTypeIcon } from "../../../EntityTypeIcon";
 import { useCalendarDate } from "@/app/utils/hooks/use-calendar-date";
-import { formatDistanceToNow, format, compareAsc } from "date-fns";
-import { now } from "@/app/utils/date/now";
+import { formatDistanceToNow, format } from "date-fns";
 import { Button } from "@/app/components/ui/button";
 
 export const RelatedEvent: FC<{
