@@ -13,8 +13,6 @@ describe("search-params", () => {
     const mockPush = jest.fn();
     beforeEach(() => {
       jest.clearAllMocks();
-
-      // Set up default behavior for the mocked hooks
       (usePathname as jest.Mock).mockReturnValue("/dashboard");
       (useRouter as jest.Mock).mockReturnValue({ push: mockPush });
     });

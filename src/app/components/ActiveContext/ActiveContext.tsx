@@ -9,13 +9,17 @@ import { IconArrowLeft } from "@tabler/icons-react";
 import { ActiveEventInfo } from "./components/ActiveEventInfo";
 import { useSetSearchParams } from "@/app/utils/url/search-params";
 
+export const QUERY_PARAMS = {
+  eventId: "eventId",
+};
+
 export const eventTitleTestId = "ActiveContext-event-title-testid";
 
 export const ActiveContext: FC = (): JSX.Element | null => {
   const selectedEvent = useSelectedEvent();
   const setParams = useSetSearchParams();
 
-  const handleBackClick = () => setParams("eventId", null);
+  const handleBackClick = () => setParams(QUERY_PARAMS.eventId, null);
 
   if (!selectedEvent) {
     return <ActiveTaskList />;
