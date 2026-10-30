@@ -43,9 +43,9 @@ export const Home = (): JSX.Element => {
           </div>
 
           <div className="p-6 pb-12 w-[50%]">
-            <Suspense>
+            {/* <Suspense>
               <ActiveSecondaryContext />
-            </Suspense>
+            </Suspense> */}
           </div>
         </div>
       </ResizablePanel>

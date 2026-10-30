@@ -13,10 +13,6 @@ import { TaskActions } from "../TaskActions";
 import { AdditionalAction } from "../AdditionalActions";
 import { ScheduledIndicator } from "../ScheduledIndicator";
 import { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
-import { useAllRelationshipsForEntity } from "@/app/utils/hooks/use-relationships/selectors";
-import { RelationshipEntityType } from "@/app/utils/types/relationship";
-import { MinimalNote } from "../notes";
-import { useNoteById } from "@/app/utils/hooks/use-notes/selectors";
 import { useSetSearchParams } from "@/app/utils/url/search-params";
 
 export const titleTestId = "TaskCard-title-testid";
@@ -38,15 +34,6 @@ export interface TaskCardProps {
 
 export const taskFormTestId = "TaskCard-task-form-test-id";
 
-const Note: FC<{ id: number }> = ({ id }) => {
-  const note = useNoteById(id);
-  if (!note) {
-    return null;
-  }
-
-  return <MinimalNote note={note.json_content} />;
-};
-
 const TaskCard: FC<TaskCardProps> = ({
   testId,
   task,
@@ -60,15 +47,6 @@ const TaskCard: FC<TaskCardProps> = ({
 }): JSX.Element => {
   const { setSelectedDate } = useCalendarDate();
   const setParams = useSetSearchParams();
-
-  // A note on a task reads as part of the task, like its description - not as
-  // somewhere you navigate to. So the card carries it everywhere the card is
-  // used, rather than each caller having to pass it in. The relationship
-  // navigator is only one of eight places this is rendered.
-  const noteRelationships = useAllRelationshipsForEntity({
-    entityId: task.id,
-    entityType: RelationshipEntityType.Task,
-  }).filter((r) => r.target_type === RelationshipEntityType.Note);
 
   const project = useTaskProject(task);
 
@@ -148,13 +126,6 @@ const TaskCard: FC<TaskCardProps> = ({
           {task.description && !(task.status === "done") && (
             <CardContent className="pb-4 px-4 text-xs whitespace-pre-wrap muted">
               {task.description}
-            </CardContent>
-          )}
-          {!!noteRelationships.length && (
-            <CardContent className="pb-4 px-4 text-xs whitespace-pre-wrap muted">
-              {noteRelationships.map((r) => (
-                <Note key={r.target_id} id={r.target_id} />
-              ))}
             </CardContent>
           )}
         </Card>

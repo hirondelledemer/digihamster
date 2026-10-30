@@ -24,6 +24,7 @@ export interface RelatedEntityProps {
 
 export const RelatedEntity: FC<RelatedEntityProps> = ({ node, compact }) => {
   const { entity, children, edge, summary, truncated, depth } = node;
+  console.log("NODE", node);
 
   const getComponent = () => {
     const props = { id: entity.id, compact, summary };
