@@ -4,18 +4,22 @@ import React, { FC } from "react";
 
 import { useSelectedEvent } from "./use-selected-event";
 import { ActiveTaskList } from "../ActiveTaskList";
-import { useRouter } from "next/navigation";
 import { Button } from "../ui/button";
 import { IconArrowLeft } from "@tabler/icons-react";
 import { ActiveEventInfo } from "./components/ActiveEventInfo";
+import { useSetSearchParams } from "@/app/utils/url/search-params";
+
+export const QUERY_PARAMS = {
+  eventId: "eventId",
+};
 
 export const eventTitleTestId = "ActiveContext-event-title-testid";
 
 export const ActiveContext: FC = (): JSX.Element | null => {
   const selectedEvent = useSelectedEvent();
-  const router = useRouter();
+  const setParams = useSetSearchParams();
 
-  const handleBackClick = () => router.replace("/?eventId=null", undefined);
+  const handleBackClick = () => setParams(QUERY_PARAMS.eventId, null);
 
   if (!selectedEvent) {
     return <ActiveTaskList />;

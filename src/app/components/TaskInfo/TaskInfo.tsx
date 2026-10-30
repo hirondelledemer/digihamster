@@ -6,7 +6,7 @@ import CreateTaskForm from "../CreateTaskForm";
 import { ScrollArea } from "../ui/scroll-area";
 import { useProjectById } from "@/app/utils/hooks/use-projects/selectors";
 import { MinimalNote } from "../notes";
-import { useRouter, useSearchParams } from "#lib/navigation";
+import { useSearchParams } from "#lib/navigation";
 import { useTasksState } from "@/app/utils/hooks/use-tasks/state-context";
 import { DraggableTaskCard } from "../TaskCard/DraggableTaskCard";
 import {
@@ -29,6 +29,7 @@ import { Switch } from "../ui/switch";
 import { Label } from "../ui/label";
 import { useTasksActions } from "@/app/utils/hooks/use-tasks/actions-context";
 import { TaskStatus } from "@/app/utils/types/task";
+import { useSetSearchParams } from "@/app/utils/url/search-params";
 
 export interface TaskInfoProps {
   testId?: string;
@@ -36,7 +37,7 @@ export interface TaskInfoProps {
 
 const TaskInfo: FC<TaskInfoProps> = (): JSX.Element | null => {
   const searchParams = useSearchParams();
-  const router = useRouter();
+  const setParams = useSetSearchParams();
   const [allowSorting, setAllowSorting] = useState<boolean>(false);
   const { reorderTasksInTheProject } = useTasksActions();
 
@@ -90,8 +91,8 @@ const TaskInfo: FC<TaskInfoProps> = (): JSX.Element | null => {
       <SheetContent
         side="right"
         aria-describedby="Task info"
-        onCloseClick={() => router.replace("/", undefined)}
-        onEscapeKeyDown={() => router.replace("/", undefined)}
+        onCloseClick={() => setParams("projectId", null)}
+        onEscapeKeyDown={() => setParams("projectId", null)}
       >
         <SheetHeader>
           <SheetTitle>{selectedProject?.title}</SheetTitle>

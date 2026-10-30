@@ -1,5 +1,5 @@
 import { fireEvent, render, screen } from "@/config/utils/test-utils";
-import { ActiveContext, eventTitleTestId } from "./ActiveContext";
+import { ActiveContext, eventTitleTestId, QUERY_PARAMS } from "./ActiveContext";
 import { EventsStateContext } from "@/app/utils/hooks/use-events/state-context";
 import { EventsState } from "@/app/utils/hooks/use-events/actions";
 import { generateEvent } from "@/app/utils/mocks/event";
@@ -10,16 +10,20 @@ import { useSearchParams } from "next/navigation";
 jest.mock("../../utils/date/now");
 
 const routerPushSpy = jest.fn();
-const routerReplaceSpy = jest.fn();
 
 jest.mock("next/navigation", () => ({
   ...jest.requireActual("next/navigation"),
   useSearchParams: jest.fn(),
   useRouter: () => ({
-    replace: routerReplaceSpy,
     push: routerPushSpy,
   }),
 }));
+
+jest.mock("@/app/utils/url/search-params", () => ({
+  useSetSearchParams: jest.fn(() => jest.fn()), // Mocks the hook returning a setter function
+}));
+
+import { useSetSearchParams } from "@/app/utils/url/search-params";
 
 describe("ActiveContext", () => {
   describe("default view", () => {
@@ -51,6 +55,9 @@ describe("ActiveContext", () => {
           get: () => String(EVENT.id),
         });
 
+        const mockSet = jest.fn();
+        (useSetSearchParams as jest.Mock).mockReturnValue(mockSet);
+
         render(
           <EventsStateContext.Provider value={contextValue}>
             <ActiveContext />
@@ -59,7 +66,7 @@ describe("ActiveContext", () => {
 
         fireEvent.click(screen.getByRole("button", { name: /back/i }));
 
-        expect(routerReplaceSpy).toHaveBeenCalledWith("/", undefined);
+        expect(mockSet).toHaveBeenCalledWith(QUERY_PARAMS.eventId, null);
       });
     });
 

@@ -17,6 +17,10 @@ const config: Config = {
     "jest-watch-typeahead/filename",
     "jest-watch-typeahead/testname",
   ],
+  moduleNameMapper: {
+    // Maps the '@/' alias to your root 'src' or 'app' directory
+    "^@/(.*)$": "<rootDir>/src/$1",
+  },
 };
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async

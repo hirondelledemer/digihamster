@@ -13,10 +13,8 @@ import { TaskActions } from "../TaskActions";
 import { AdditionalAction } from "../AdditionalActions";
 import { ScheduledIndicator } from "../ScheduledIndicator";
 import { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
-import { useAllRelationshipsForEntity } from "@/app/utils/hooks/use-relationships/selectors";
-import { RelationshipEntityType } from "@/app/utils/types/relationship";
-import { MinimalNote } from "../notes";
-import { useNoteById } from "@/app/utils/hooks/use-notes/selectors";
+import { useSetSearchParams } from "@/app/utils/url/search-params";
+import { cn } from "../utils";
 
 export const titleTestId = "TaskCard-title-testid";
 export const cardTestId = "TaskCard-card-testid";
@@ -37,15 +35,6 @@ export interface TaskCardProps {
 
 export const taskFormTestId = "TaskCard-task-form-test-id";
 
-const Note: FC<{ id: number }> = ({ id }) => {
-  const note = useNoteById(id);
-  if (!note) {
-    return null;
-  }
-
-  return <MinimalNote note={note.json_content} />;
-};
-
 const TaskCard: FC<TaskCardProps> = ({
   testId,
   task,
@@ -58,20 +47,11 @@ const TaskCard: FC<TaskCardProps> = ({
   scheduled,
 }): JSX.Element => {
   const { setSelectedDate } = useCalendarDate();
-
-  // A note on a task reads as part of the task, like its description - not as
-  // somewhere you navigate to. So the card carries it everywhere the card is
-  // used, rather than each caller having to pass it in. The relationship
-  // navigator is only one of eight places this is rendered.
-  const noteRelationships = useAllRelationshipsForEntity({
-    entityId: task.id,
-    entityType: RelationshipEntityType.Task,
-  }).filter((r) => r.target_type === RelationshipEntityType.Note);
+  const setParams = useSetSearchParams();
 
   const project = useTaskProject(task);
 
   const baseStyle: CSSProperties = {
-    ...style,
     borderColor: project?.color,
   };
 
@@ -81,9 +61,10 @@ const TaskCard: FC<TaskCardProps> = ({
       <TaskActions task={task} additionalActions={additionalActions}>
         <Card
           data-testid={cardTestId}
-          className={`p-0 rounded-md w-full ${
-            task.status === "done" ? "opacity-40 line-through" : ""
-          }`}
+          className={cn(
+            "p-0 rounded-md w-full",
+            task.status === "done" ? "opacity-40" : ""
+          )}
           ref={setNodeRef}
           style={{ ...baseStyle, ...style }}
           {...listeners}
@@ -92,9 +73,16 @@ const TaskCard: FC<TaskCardProps> = ({
           <CardHeader className="p-4 pt-2">
             <div
               style={{ color: project?.color }}
-              className="text-[10px] uppercase underline flex items-center justify-between"
+              className="text-xxs uppercase underline flex items-center justify-between"
             >
-              {project?.title}
+              <span
+                className="hover:font-bold cursor-pointer"
+                onClick={() =>
+                  project && setParams("projectId", project?.id.toString())
+                }
+              >
+                {project?.title}
+              </span>
 
               <div className="flex items-center gap-1">
                 {scheduled && <ScheduledIndicator />}
@@ -127,19 +115,18 @@ const TaskCard: FC<TaskCardProps> = ({
               data-testid={titleTestId}
               className="font-normal flex items-center justify-between"
             >
-              <div>{task.title}</div>
+              <div
+                className={
+                  task.status === TaskStatus.Done ? "line-through" : ""
+                }
+              >
+                {task.title}
+              </div>
             </CardTitle>
           </CardHeader>
           {task.description && !(task.status === "done") && (
-            <CardContent className="pb-4 px-4 text-xs whitespace-pre-wrap muted">
+            <CardContent className="pb-4 px-4 text-xs whitespace-pre-wrap">
               {task.description}
-            </CardContent>
-          )}
-          {!!noteRelationships.length && (
-            <CardContent className="pb-4 px-4 text-xs whitespace-pre-wrap muted">
-              {noteRelationships.map((r) => (
-                <Note key={r.target_id} id={r.target_id} />
-              ))}
             </CardContent>
           )}
         </Card>

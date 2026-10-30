@@ -52,7 +52,7 @@ export const RelatedTask: FC<{
           size={24}
           color={color || "#fff"}
           aria-label={task.title}
-          className="cursor"
+          className="cursor-pointer"
           onClick={selectEntity}
         />
         {summary.map((type, i) => (
@@ -62,28 +62,14 @@ export const RelatedTask: FC<{
     );
   }
 
-  const card = (
-    <TaskCard task={task} scheduled={scheduled} additionalActions={actions} />
-  );
-
-  // the card draws its own notes, wherever it is rendered, so listing them
-  // again underneath would show each one twice
-  const beside = related.filter(
-    (child) => child.entity.type !== RelationshipEntityType.Note
-  );
-
-  if (!beside.length) {
-    return card;
-  }
-
   return (
-    <div>
-      {card}
-      {beside.map((child) => (
+    <>
+      <TaskCard task={task} scheduled={scheduled} additionalActions={actions} />
+      {related.map((child) => (
         <div key={child.edge?.id ?? child.entity.id}>
           <RelatedEntity node={child} compact={false} />
         </div>
       ))}
-    </div>
+    </>
   );
 };

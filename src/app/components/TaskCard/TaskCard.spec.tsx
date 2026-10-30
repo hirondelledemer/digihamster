@@ -23,13 +23,6 @@ import {
   useCalendarDate,
 } from "@/app/utils/hooks/use-calendar-date";
 import { DraggableAttributes } from "@dnd-kit/core";
-import { RelationshipsContextProvider } from "@/app/utils/hooks/use-relationships/provider";
-import { NotesContextProvider } from "@/app/utils/hooks/use-notes/provider";
-import { RELATIONSHIPS_PATH } from "@/app/utils/hooks/use-relationships/api";
-import { NOTES_PATH } from "@/app/utils/hooks/use-notes/api";
-import { generateNote } from "@/app/utils/mocks/note";
-import { generateRelationship } from "@/app/utils/mocks/relationship";
-import { RelationshipEntityType } from "@/app/utils/types/relationship";
 
 jest.mock("../../utils/date/now");
 jest.mock("next/navigation");
@@ -161,9 +154,10 @@ describe("TaskCard", () => {
       await renderComponent({ task: COMPLETED_TASK });
 
       const card = screen.getByTestId(cardTestId);
+      const title = screen.getByText(COMPLETED_TASK.title);
 
       expect(card.className).toContain("opacity-40");
-      expect(card.className).toContain("line-through");
+      expect(title.className).toContain("line-through");
     });
 
     it("should hide the description", async () => {
@@ -258,63 +252,6 @@ describe("TaskCard", () => {
       openContextMenu();
 
       expect(await screen.findAllByRole("menuitem")).not.toHaveLength(0);
-    });
-  });
-
-  // the card is rendered from eight places - the task list, the calendar, the
-  // event form, the habit card, the relationship navigator. A note attached to
-  // a task has to show in all of them, not only the one that happens to walk
-  // the relationship graph.
-  describe("attached notes", () => {
-    const NOTE = generateNote(3);
-
-    const renderWithNotes = async (relationships: unknown[]) => {
-      render(
-        <TooltipProvider>
-          <CalendarDateContextProvider>
-            <ProjectsContextProvider>
-              <TasksContextProvider>
-                <NotesContextProvider>
-                  <RelationshipsContextProvider>
-                    <TaskCard {...DEFAULT_PROPS} />
-                  </RelationshipsContextProvider>
-                </NotesContextProvider>
-              </TasksContextProvider>
-            </ProjectsContextProvider>
-          </CalendarDateContextProvider>
-        </TooltipProvider>
-      );
-
-      await resolveProjects();
-      await act(async () => {
-        mockAxios.mockResponseFor({ url: NOTES_PATH }, { data: [NOTE] });
-      });
-      await act(async () => {
-        mockAxios.mockResponseFor(
-          { url: RELATIONSHIPS_PATH },
-          { data: relationships }
-        );
-      });
-    };
-
-    const noteOnTask = (taskId: number) =>
-      generateRelationship(1, {
-        source_type: RelationshipEntityType.Note,
-        source_id: NOTE.id,
-        target_type: RelationshipEntityType.Task,
-        target_id: taskId,
-      });
-
-    it("should show a note attached to the task", async () => {
-      await renderWithNotes([noteOnTask(DEFAULT_PROPS.task.id)]);
-
-      expect(await screen.findByText(NOTE.content)).toBeInTheDocument();
-    });
-
-    it("should not show a note attached to some other task", async () => {
-      await renderWithNotes([noteOnTask(DEFAULT_PROPS.task.id + 1)]);
-
-      expect(screen.queryByText(NOTE.content)).not.toBeInTheDocument();
     });
   });
 

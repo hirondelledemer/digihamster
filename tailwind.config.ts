@@ -21,6 +21,7 @@ const config = {
       fontFamily: {
         crayon: ["var(--font-crayon)", "cursive"],
       },
+      fontSize: { xxs: ["10px", "14px"] },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

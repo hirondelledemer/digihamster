@@ -23,7 +23,7 @@ export interface RelatedEntityProps {
 }
 
 export const RelatedEntity: FC<RelatedEntityProps> = ({ node, compact }) => {
-  const { entity, children, edge, summary, truncated } = node;
+  const { entity, children, edge, summary, truncated, depth } = node;
 
   const getComponent = () => {
     const props = { id: entity.id, compact, summary };
@@ -32,7 +32,7 @@ export const RelatedEntity: FC<RelatedEntityProps> = ({ node, compact }) => {
       case RelationshipEntityType.Task:
         return <RelatedTask {...props} related={children} />;
       case RelationshipEntityType.Event:
-        return <RelatedEvent {...props} />;
+        return <RelatedEvent {...props} depth={depth} />;
       case RelationshipEntityType.Habit:
         return <RelatedHabit {...props} related={children} />;
       case RelationshipEntityType.Journal:
@@ -40,7 +40,7 @@ export const RelatedEntity: FC<RelatedEntityProps> = ({ node, compact }) => {
       case RelationshipEntityType.Location:
         return <RelatedLocation {...props} related={children} />;
       case RelationshipEntityType.Note:
-        return <RelatedNote {...props} />;
+        return <RelatedNote {...props} depth={depth} />;
       case RelationshipEntityType.Person:
         return <RelatedPerson {...props} />;
       case RelationshipEntityType.Project:
