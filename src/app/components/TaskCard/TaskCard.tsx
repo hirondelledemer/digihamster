@@ -1,4 +1,4 @@
-import React, { CSSProperties, FC, useCallback } from "react";
+import React, { CSSProperties, FC } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { format } from "date-fns";
 import StaleIndicator from "../StaleIndicator";
@@ -17,7 +17,7 @@ import { useAllRelationshipsForEntity } from "@/app/utils/hooks/use-relationship
 import { RelationshipEntityType } from "@/app/utils/types/relationship";
 import { MinimalNote } from "../notes";
 import { useNoteById } from "@/app/utils/hooks/use-notes/selectors";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useSetSearchParams } from "@/app/utils/url/search-params";
 
 export const titleTestId = "TaskCard-title-testid";
 export const cardTestId = "TaskCard-card-testid";
@@ -58,11 +58,8 @@ const TaskCard: FC<TaskCardProps> = ({
   additionalActions,
   scheduled,
 }): JSX.Element => {
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-
   const { setSelectedDate } = useCalendarDate();
+  const setParams = useSetSearchParams();
 
   // A note on a task reads as part of the task, like its description - not as
   // somewhere you navigate to. So the card carries it everywhere the card is
@@ -79,15 +76,6 @@ const TaskCard: FC<TaskCardProps> = ({
     ...style,
     borderColor: project?.color,
   };
-
-  const createQueryString = useCallback(
-    (name: string, value: string) => {
-      const params = new URLSearchParams(searchParams.toString());
-      params.set(name, value);
-      return params.toString();
-    },
-    [searchParams]
-  );
 
   return (
     // TODO: find out if this the outer layer needed at all
@@ -110,15 +98,8 @@ const TaskCard: FC<TaskCardProps> = ({
             >
               <span
                 className="hover:font-bold cursor-pointer"
-                onClick={
-                  () =>
-                    project &&
-                    router.push(
-                      pathname +
-                        "?" +
-                        createQueryString("projectId", project?.id.toString())
-                    )
-                  // router.push(`/?projectId=${project?.id}`, undefined)
+                onClick={() =>
+                  project && setParams("projectId", project?.id.toString())
                 }
               >
                 {project?.title}
