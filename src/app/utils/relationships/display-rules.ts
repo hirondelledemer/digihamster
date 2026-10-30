@@ -39,7 +39,7 @@ export const noteAttachment = (
  * that returns null still looks like a renderable child to its parent, so the
  * parent would keep drawing the chrome (actions, empty state) around nothing.
  */
-const TERMINAL_TASK_STATUSES = [TaskStatus.Done, TaskStatus.Cancelled];
+const TERMINAL_TASK_STATUSES = [TaskStatus.Cancelled];
 
 export const isTerminalTaskStatus = (status: TaskStatus): boolean =>
   TERMINAL_TASK_STATUSES.includes(status);

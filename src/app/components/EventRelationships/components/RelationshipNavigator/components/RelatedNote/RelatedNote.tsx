@@ -1,7 +1,5 @@
 import { useNoteById } from "@/app/utils/hooks/use-notes/selectors";
-import {
-  useAllRelationshipsForEntity,
-} from "@/app/utils/hooks/use-relationships/selectors";
+import { useAllRelationshipsForEntity } from "@/app/utils/hooks/use-relationships/selectors";
 import { RelationshipEntityType } from "@/app/utils/types/relationship";
 import { IconNote } from "@tabler/icons-react";
 import { FC } from "react";
@@ -69,11 +67,6 @@ export const RelatedNote: FC<{
   return (
     <div className="w-full">
       <StickyNote note={note} variant={noteAttachment(neighbours)} />
-      <div className="flex">
-        {summary.map((type, i) => (
-          <EntityTypeIcon key={`${type}-${i}`} type={type} size={16} />
-        ))}
-      </div>
     </div>
   );
 };

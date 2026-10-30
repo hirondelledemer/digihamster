@@ -1,4 +1,4 @@
-import React, { CSSProperties, FC } from "react";
+import React, { CSSProperties, FC, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { format } from "date-fns";
 import StaleIndicator from "../StaleIndicator";
@@ -17,6 +17,7 @@ import { useAllRelationshipsForEntity } from "@/app/utils/hooks/use-relationship
 import { RelationshipEntityType } from "@/app/utils/types/relationship";
 import { MinimalNote } from "../notes";
 import { useNoteById } from "@/app/utils/hooks/use-notes/selectors";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 export const titleTestId = "TaskCard-title-testid";
 export const cardTestId = "TaskCard-card-testid";
@@ -57,6 +58,10 @@ const TaskCard: FC<TaskCardProps> = ({
   additionalActions,
   scheduled,
 }): JSX.Element => {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
   const { setSelectedDate } = useCalendarDate();
 
   // A note on a task reads as part of the task, like its description - not as
@@ -75,6 +80,15 @@ const TaskCard: FC<TaskCardProps> = ({
     borderColor: project?.color,
   };
 
+  const createQueryString = useCallback(
+    (name: string, value: string) => {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set(name, value);
+      return params.toString();
+    },
+    [searchParams]
+  );
+
   return (
     // TODO: find out if this the outer layer needed at all
     <div data-testid={testId} className="w-full">
@@ -82,7 +96,7 @@ const TaskCard: FC<TaskCardProps> = ({
         <Card
           data-testid={cardTestId}
           className={`p-0 rounded-md w-full ${
-            task.status === "done" ? "opacity-40 line-through" : ""
+            task.status === "done" ? "opacity-40" : ""
           }`}
           ref={setNodeRef}
           style={{ ...baseStyle, ...style }}
@@ -94,7 +108,21 @@ const TaskCard: FC<TaskCardProps> = ({
               style={{ color: project?.color }}
               className="text-[10px] uppercase underline flex items-center justify-between"
             >
-              {project?.title}
+              <span
+                className="hover:font-bold cursor-pointer"
+                onClick={
+                  () =>
+                    project &&
+                    router.push(
+                      pathname +
+                        "?" +
+                        createQueryString("projectId", project?.id.toString())
+                    )
+                  // router.push(`/?projectId=${project?.id}`, undefined)
+                }
+              >
+                {project?.title}
+              </span>
 
               <div className="flex items-center gap-1">
                 {scheduled && <ScheduledIndicator />}
@@ -127,7 +155,13 @@ const TaskCard: FC<TaskCardProps> = ({
               data-testid={titleTestId}
               className="font-normal flex items-center justify-between"
             >
-              <div>{task.title}</div>
+              <div
+                className={
+                  task.status === TaskStatus.Done ? "line-through" : ""
+                }
+              >
+                {task.title}
+              </div>
             </CardTitle>
           </CardHeader>
           {task.description && !(task.status === "done") && (
