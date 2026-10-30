@@ -24,6 +24,7 @@ import { useRelationshipsState } from "./state-context";
 
 export interface RelationshipNode {
   entity: EntityRef;
+  // TODO: what is this edge? understand this
   /** how we got here; null on the root, which nothing points to */
   edge: ResolvedEdge | null;
   children: RelationshipNode[];
@@ -41,6 +42,7 @@ export interface RelationshipNode {
    * this is safe to render as "there is more, click through".
    */
   truncated: boolean;
+  depth: number;
 }
 
 export interface RelationshipTreeOptions {
@@ -182,14 +184,11 @@ export const walk = (
     // leaf looking like it has more behind it when all it has is the edge we
     // arrived on.
     .filter((resolved) => !path.has(keyOf(resolved.other)))
-    .filter((resolved) =>
-      matchesView(ref.type, resolved.other.type, priority)
-    )
+    .filter((resolved) => matchesView(ref.type, resolved.other.type, priority))
     // the root shows everything it is allowed to; below it, only what is
     // worth the space
     .filter(
-      (resolved) =>
-        isRoot || isWorthShowingUnder(ref.type, resolved.other.type)
+      (resolved) => isRoot || isWorthShowingUnder(ref.type, resolved.other.type)
     )
     .filter((resolved) => isLive(resolved.other, context))
     .sort(
@@ -206,6 +205,7 @@ export const walk = (
       children: [],
       summary,
       truncated: edges.length > 0,
+      depth: path.size,
     };
   }
 
@@ -223,6 +223,7 @@ export const walk = (
         children: [],
         summary: neighbourTypesOf(resolved.other, childPath, context),
         truncated: false,
+        depth: path.size,
       };
     }
 
@@ -230,7 +231,14 @@ export const walk = (
     return walk(resolved.other, resolved, remaining - 1, path, context);
   });
 
-  return { entity: ref, edge, children, summary, truncated: false };
+  return {
+    entity: ref,
+    edge,
+    children,
+    summary,
+    truncated: false,
+    depth: path.size,
+  };
 };
 
 /**
@@ -260,6 +268,7 @@ export const useRelationshipTree = (
       children: [],
       summary: [],
       truncated: false,
+      depth: 0,
     };
 
     if (isLoading || !relationships) {
