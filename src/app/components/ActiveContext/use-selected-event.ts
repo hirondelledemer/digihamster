@@ -25,13 +25,13 @@ export const useSelectedEvent = (): IEvent | null => {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const selectedEventId = searchParams.get("eventId"); // TODO: convert to number
+  const selectedEventId = searchParams.get("eventId");
 
   useEffect(() => {
     if (!selectedEventId && currentEvent) {
       router.replace(`/?eventId=${currentEvent.id}`, undefined);
     }
-  }, [router, currentEvent, selectedEventId]);
-
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [router, currentEvent]);
   return useEventById(selectedEventId ? Number(selectedEventId) : null);
 };
