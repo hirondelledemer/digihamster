@@ -5,15 +5,20 @@ import { RelationshipEntityType } from "@/app/utils/types/relationship";
 import { IconCalendar } from "@tabler/icons-react";
 import { FC } from "react";
 import { EntityTypeIcon } from "../../../EntityTypeIcon";
+import { useCalendarDate } from "@/app/utils/hooks/use-calendar-date";
+import { formatDistanceToNow, format, compareAsc } from "date-fns";
+import { now } from "@/app/utils/date/now";
+import { Button } from "@/app/components/ui/button";
 
 export const RelatedEvent: FC<{
   id: number;
   compact: boolean;
   /** neighbour types behind this one, for the hint row of little icons */
   summary?: RelationshipEntityType[];
-}> = ({ id, compact, summary = [] }) => {
+  depth: number;
+}> = ({ id, compact, summary = [], depth }) => {
   const event = useEventById(id);
-
+  const { setSelectedDate } = useCalendarDate();
 
   if (!event) {
     return null;
@@ -27,6 +32,22 @@ export const RelatedEvent: FC<{
           <EntityTypeIcon key={`${type}-${i}`} type={type} size={16} />
         ))}
       </div>
+    );
+  }
+
+  if (depth !== 1) {
+    return (
+      <Button
+        variant="link"
+        onClick={() => setSelectedDate(new Date(event.start_at))}
+        className="gap-2"
+      >
+        <IconCalendar size={16} />
+        {/* TODO: maybe memoise this value? */}
+        Also mentioned on {event.title} ({format(event.start_at, "cccccc")},
+        {formatDistanceToNow(event.start_at)}{" "}
+        {compareAsc(event.start_at, now()) > 0 ? "in" : "ago"})
+      </Button>
     );
   }
 

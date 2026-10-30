@@ -62,13 +62,9 @@ export const RelatedTask: FC<{
     );
   }
 
-  const card = (
-    <TaskCard task={task} scheduled={scheduled} additionalActions={actions} />
-  );
-
   return (
     <div>
-      {card}
+      <TaskCard task={task} scheduled={scheduled} additionalActions={actions} />
       {related.map((child) => (
         <div key={child.edge?.id ?? child.entity.id}>
           <RelatedEntity node={child} compact={false} />
