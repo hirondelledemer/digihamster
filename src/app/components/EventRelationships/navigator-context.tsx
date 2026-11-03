@@ -10,6 +10,15 @@ export type NavigatorItem = {
 type RelationshipNavigatorValue = {
   entities: NavigatorItem[];
   /**
+   * The day the whole panel is being read against, if there is one.
+   *
+   * It belongs to the navigator rather than to any one column: you opened
+   * this panel from an event on a particular day, and that stays true however
+   * deep you browse. The columns themselves are rooted at locations and tasks
+   * that have no date of their own, so none of them could supply it.
+   */
+  day?: Date;
+  /**
    * Select an entity from a given column.
    *
    * The column matters. The panel is a column browser, not a stack: every
@@ -27,6 +36,7 @@ type RelationshipNavigatorValue = {
 export const RelationshipNavigatorContext =
   createContext<RelationshipNavigatorValue>({
     entities: [] as NavigatorItem[],
+    day: undefined,
     selectFromColumn: () => {},
     goToIndex: () => {},
   });
@@ -70,9 +80,11 @@ export const useNavigator = () => {
 
 export function RelationshipNavigatorContextProvider({
   initialItem,
+  day,
   children,
 }: {
   initialItem: NavigatorItem;
+  day?: Date;
   children: ReactNode;
 }) {
   const [entities, setEntities] = useState<NavigatorItem[]>([initialItem]);
@@ -106,7 +118,7 @@ export function RelationshipNavigatorContextProvider({
 
   return (
     <RelationshipNavigatorContext.Provider
-      value={{ entities, selectFromColumn, goToIndex }}
+      value={{ entities, day, selectFromColumn, goToIndex }}
     >
       {children}
     </RelationshipNavigatorContext.Provider>

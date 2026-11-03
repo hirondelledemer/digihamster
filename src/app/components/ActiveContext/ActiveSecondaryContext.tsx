@@ -9,6 +9,7 @@ import HealthChart from "../HealthChart";
 import { RelationshipNavigator } from "../EventRelationships/components/RelationshipNavigator";
 import { RelationshipEntityType } from "@/app/utils/types/relationship";
 import { ScrollArea } from "@/app/components/ui/scroll-area";
+import { parseBackendDateTime } from "#utils/date";
 
 export const ActiveSecondaryContext: FC = (): JSX.Element | null => {
   const selectedEvent = useSelectedEvent();
@@ -30,6 +31,7 @@ export const ActiveSecondaryContext: FC = (): JSX.Element | null => {
           entityId={selectedEvent.id}
           entityType={RelationshipEntityType.Event}
           relationshipPriority="secondary"
+          day={parseBackendDateTime(selectedEvent.start_at)}
         />
       </ScrollArea>
     </div>

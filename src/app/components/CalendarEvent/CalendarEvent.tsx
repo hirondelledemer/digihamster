@@ -52,7 +52,7 @@ const CalendarEvent: FC<CalendarEventProps> = ({
   // compact chips only, so there is nothing below the first level to walk
   const { children: related } = useRelationshipTree(
     { id: event.resource.id, type: RelationshipEntityType.Event },
-    { depth: 1 }
+    { depth: 1, on: event.start }
   );
 
   const content = useMemo(() => {

@@ -1,6 +1,7 @@
 import { useRelationshipTree } from "@/app/utils/hooks/use-relationships/use-relationship-tree";
 import { RelationshipEntityType } from "@/app/utils/types/relationship";
-import { FC } from "react";
+import { FC, useContext } from "react";
+import { RelationshipNavigatorContext } from "@/app/components/EventRelationships/navigator-context";
 import { RelatedEntity } from "../RelatedEntity/RelatedEntity";
 
 export interface RelationshipPanelProps {
@@ -15,6 +16,8 @@ export const EntityWithRelationships: FC<RelationshipPanelProps> = ({
   compact,
   relationshipPriority,
 }) => {
+  const { day } = useContext(RelationshipNavigatorContext);
+
   const tree = useRelationshipTree(
     { id: entityId, type: entityType },
     {
@@ -22,6 +25,7 @@ export const EntityWithRelationships: FC<RelationshipPanelProps> = ({
       // so there is no point walking further than the first level
       depth: compact ? 1 : 2,
       priority: relationshipPriority,
+      on: day,
     }
   );
 

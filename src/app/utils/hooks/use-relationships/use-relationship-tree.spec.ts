@@ -4,6 +4,7 @@ import {
   RelationshipEntityType as Type,
 } from "../../types/relationship";
 import { RelationshipType } from "../../relationships/relationship-types";
+import { TaskStatus } from "../../types/task";
 import {
   RelationshipNode,
   WalkContext,
@@ -25,9 +26,17 @@ const rel = (
     target_id,
   });
 
+/** the fixture's tasks are all plain todos unless a test says otherwise */
+const withStatus = (
+  ids: number[],
+  status: TaskStatus = TaskStatus.Todo
+): Map<number, TaskStatus> => new Map(ids.map((id) => [id, status]));
+
 const context = (rows: IRelationship[]): WalkContext => ({
   index: buildIndex(rows),
-  liveTasks: new Set([1, 2, 3, 4, 5]),
+  taskStatusById: withStatus([1, 2, 3, 4, 5]),
+  // no day in play by default, so no habit is ever hidden
+  habitCompletedOnDay: new Map(),
   liveProjects: new Set([1, 2]),
 });
 
@@ -284,7 +293,7 @@ describe("walk - filtering", () => {
       null,
       2,
       new Set(),
-      { ...context(rows), liveTasks: new Set([1]) } // 99 is not live
+      { ...context(rows), taskStatusById: withStatus([1]) } // 99 is not live
     );
 
     expect(tree.children).toHaveLength(0);
@@ -321,6 +330,93 @@ describe("walk - what a location opens up to", () => {
     expect(childTypes(tree)).toEqual(
       expect.arrayContaining([Type.Person, Type.Event])
     );
+  });
+});
+
+describe("walk - what is already handled drops out of a location", () => {
+  const doneTask = (rows: IRelationship[]): WalkContext => ({
+    ...context(rows),
+    taskStatusById: withStatus([7], TaskStatus.Done),
+  });
+
+  it("hides a task you have already done", () => {
+    const rows = [rel(1, Type.Task, 7, Type.Location, 9)];
+    const tree = walk(
+      { id: 9, type: Type.Location },
+      null,
+      2,
+      new Set(),
+      doneTask(rows)
+    );
+
+    expect(tree.children).toHaveLength(0);
+  });
+
+  it("still shows that same task under an event", () => {
+    // the rule is the location's, not the task's - a done task is still part
+    // of the record of what an event involved
+    const rows = [rel(1, Type.Event, 5, Type.Task, 7)];
+    const tree = walk(
+      { id: 5, type: Type.Event },
+      null,
+      2,
+      new Set(),
+      doneTask(rows)
+    );
+
+    expect(childIds(tree)).toEqual([7]);
+  });
+
+  it("hides it under a location reached through something else", () => {
+    // the regression this guards: deciding the rule from the root of the
+    // tree rather than the parent of the node meant the same location showed
+    // a different list depending on which door you came in through
+    const rows = [
+      rel(1, Type.Event, 5, Type.Location, 9),
+      rel(2, Type.Task, 7, Type.Location, 9),
+    ];
+    const tree = walk(
+      { id: 5, type: Type.Event },
+      null,
+      3,
+      new Set(),
+      doneTask(rows)
+    );
+
+    expect(childTypes(tree)).toEqual([Type.Location]);
+    expect(tree.children[0].children).toHaveLength(0);
+  });
+
+  it("hides a habit already logged on the day in play", () => {
+    const rows = [rel(1, Type.Habit, 3, Type.Location, 9)];
+    const tree = walk({ id: 9, type: Type.Location }, null, 2, new Set(), {
+      ...context(rows),
+      habitCompletedOnDay: new Map([[3, true]]),
+    });
+
+    expect(tree.children).toHaveLength(0);
+  });
+
+  it("shows a habit that is not done yet on that day", () => {
+    const rows = [rel(1, Type.Habit, 3, Type.Location, 9)];
+    const tree = walk({ id: 9, type: Type.Location }, null, 2, new Set(), {
+      ...context(rows),
+      habitCompletedOnDay: new Map([[3, false]]),
+    });
+
+    expect(childIds(tree)).toEqual([3]);
+  });
+
+  it("shows every habit when no day is in play", () => {
+    // an empty map is what a panel with no date looks like, and it must not
+    // read as "nothing has been done" or "everything has"
+    const rows = [rel(1, Type.Habit, 3, Type.Location, 9)];
+    const tree = walk({ id: 9, type: Type.Location }, null, 2, new Set(), {
+      ...context(rows),
+      habitCompletedOnDay: new Map(),
+    });
+
+    expect(childIds(tree)).toEqual([3]);
   });
 });
 
