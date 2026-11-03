@@ -8,6 +8,7 @@ import { IEvent } from "@/app/utils/types/event";
 import { ScrollArea } from "@/app/components/ui/scroll-area";
 import { format, isSameDay } from "date-fns";
 import { now } from "@/app/utils/date/now";
+import { parseBackendDateTime } from "#utils/date";
 import { RelationshipEntityType } from "@/app/utils/types/relationship";
 import { RelationshipNavigator } from "@/app/components/EventRelationships/components/RelationshipNavigator";
 
@@ -36,6 +37,7 @@ export const ActiveEventInfo: FC<ActiveEventInfoProps> = ({
             entityId={event.id}
             entityType={RelationshipEntityType.Event}
             relationshipPriority="primary"
+            day={parseBackendDateTime(event.start_at)}
           />
         </div>
       </ScrollArea>

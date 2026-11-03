@@ -11,6 +11,8 @@ import {
   viewOrder,
 } from "../../relationships/edges";
 import {
+  hidesCompletedHabits,
+  isHiddenTaskUnder,
   isTerminalProjectStatus,
   isTerminalTaskStatus,
 } from "../../relationships/display-rules";
@@ -21,6 +23,12 @@ import {
 import { useProjectsState } from "../use-projects/state-context";
 import { useTasksState } from "../use-tasks/state-context";
 import { useRelationshipsState } from "./state-context";
+import { ITask, TaskStatus } from "../../types/task";
+import { IProject } from "../../types/project";
+import { IHabitWithLogs } from "../../types/habit";
+import { useHabitsNewState } from "../use-habits-new/state-context";
+import { getHabitLogForADay } from "../../habits/habit-log";
+import { toBackendDate } from "#utils/date";
 
 export interface RelationshipNode {
   entity: EntityRef;
@@ -58,6 +66,20 @@ export interface RelationshipTreeOptions {
   depth?: number;
   /** narrows the root's neighbours only; levels below it are never filtered */
   priority?: "primary" | "secondary";
+  /**
+   * The day the panel is being read against - the start of the event it was
+   * opened from, typically.
+   *
+   * It has to come from the caller. The tree's root is whichever entity this
+   * column happens to show, which in a navigator is as often a location or a
+   * task as it is the event you clicked, so there is nothing here to derive
+   * it from.
+   *
+   * Leaving it out means no day is in play - a note's panel is not "about"
+   * any particular date - and the rules that need one do not fire. It does
+   * not mean today.
+   */
+  on?: Date;
 }
 
 const DEFAULT_DEPTH = 2;
@@ -118,16 +140,151 @@ export const buildIndex = (
   return index;
 };
 
+/**
+ * The same WeakMap trick as `indexCache`, for the same reason.
+ *
+ * These are derived from a whole store, but they were being rebuilt inside
+ * every consumer's useMemo - and a day view mounts one per calendar event, so
+ * a screenful of events meant a screenful of passes over every task, project
+ * and habit. The stores hand back a fresh array on every change and never
+ * mutate in place, so the array identity is the cache key.
+ *
+ * The habit map additionally depends on which day is being asked about, so it
+ * is cached one level deeper: array identity, then day.
+ */
+const taskStatusCache = new WeakMap<ITask[], Map<number, TaskStatus>>();
+const liveProjectCache = new WeakMap<IProject[], Set<number>>();
+const habitCompletionCache = new WeakMap<
+  IHabitWithLogs[],
+  Map<string, Map<number, boolean>>
+>();
+
+const taskStatusById = (tasks: ITask[]): Map<number, TaskStatus> => {
+  const cached = taskStatusCache.get(tasks);
+  if (cached) {
+    return cached;
+  }
+
+  const byId = new Map<number, TaskStatus>();
+  tasks
+    .filter((task) => !isTerminalTaskStatus(task.status))
+    .forEach((task) => byId.set(task.id, task.status));
+
+  taskStatusCache.set(tasks, byId);
+
+  return byId;
+};
+
+const liveProjectIds = (projects: IProject[]): Set<number> => {
+  const cached = liveProjectCache.get(projects);
+  if (cached) {
+    return cached;
+  }
+
+  const ids = new Set(
+    projects
+      .filter((project) => !isTerminalProjectStatus(project.status))
+      .map((project) => project.id)
+  );
+
+  liveProjectCache.set(projects, ids);
+
+  return ids;
+};
+
+const NO_DAY = new Map<number, boolean>();
+
+const habitCompletionOn = (
+  habits: IHabitWithLogs[],
+  on: Date | undefined
+): Map<number, boolean> => {
+  // no day in play, so there is no such thing as "already done today" and
+  // every habit stays visible
+  if (!on) {
+    return NO_DAY;
+  }
+
+  let byDay = habitCompletionCache.get(habits);
+  if (!byDay) {
+    byDay = new Map();
+    habitCompletionCache.set(habits, byDay);
+  }
+
+  const key = toBackendDate(on);
+  const cached = byDay.get(key);
+  if (cached) {
+    return cached;
+  }
+
+  const completed = new Map<number, boolean>();
+  habits.forEach((habit) =>
+    completed.set(habit.id, !!getHabitLogForADay(habit, on)?.completed)
+  );
+
+  byDay.set(key, completed);
+
+  return completed;
+};
+
 export interface WalkContext {
   index: RelationshipIndex;
-  /** ids of tasks that are still live - a done task is history */
-  liveTasks: Set<number>;
+  /**
+   * Status by id, for the tasks that survived the global rule. A task that is
+   * terminal everywhere never makes it in, so a miss here already means "do
+   * not render"; the status is what the per-parent rules read.
+   */
+  taskStatusById: Map<number, TaskStatus>;
+  /**
+   * Whether each habit was already logged complete on the day in play. Empty
+   * when no day is in play, which is why a miss has to mean "show it".
+   */
+  habitCompletedOnDay: Map<number, boolean>;
+  /** ids of projects that are still live */
   liveProjects: Set<number>;
 }
 
-const isLive = (ref: EntityRef, context: WalkContext): boolean => {
+/**
+ * Whether a neighbour earns its space, read from where the walk actually
+ * stands rather than from the root.
+ *
+ * Two rules stacked, and they are different kinds of thing. The context maps
+ * carry the global one - a cancelled task is history no matter who points at
+ * it, so it never made it into `taskStatusById` at all. `parentType`
+ * then applies the local one: a place answers "what could I do here", so a
+ * task you have already done drops out underneath a location and stays
+ * visible everywhere else.
+ *
+ * The parent has to be an argument. The same location renders under an event,
+ * under a task and as its own root, and the answer has to be the same in all
+ * three - which it cannot be if it was decided once per tree.
+ */
+const isLive = (
+  parentType: RelationshipEntityType,
+  ref: EntityRef,
+  context: WalkContext
+): boolean => {
   if (ref.type === RelationshipEntityType.Task) {
-    return context.liveTasks.has(ref.id);
+    const status = context.taskStatusById.get(ref.id);
+
+    // absent means the global rule already dropped it, or the store has not
+    // got it - either way there is nothing to render
+    if (status === undefined) {
+      return false;
+    }
+
+    return !isHiddenTaskUnder(parentType, status);
+  }
+
+  if (ref.type === RelationshipEntityType.Habit) {
+    if (!hidesCompletedHabits(parentType)) {
+      return true;
+    }
+
+    // Unlike tasks, no habit is ever globally dropped, so a miss is a habit
+    // the store has not loaded yet - or a panel with no day in play at all.
+    // Both have to read as "show it": hiding on a miss would blink every
+    // habit off the panel while the store loads.
+    return !context.habitCompletedOnDay.get(ref.id);
   }
 
   if (ref.type === RelationshipEntityType.Project) {
@@ -153,7 +310,7 @@ const neighbourTypesOf = (
     .filter((resolved): resolved is ResolvedEdge => resolved !== null)
     .filter((resolved) => !path.has(keyOf(resolved.other)))
     .filter((resolved) => isWorthShowingUnder(ref.type, resolved.other.type))
-    .filter((resolved) => isLive(resolved.other, context))
+    .filter((resolved) => isLive(ref.type, resolved.other, context))
     .sort(
       (a, b) =>
         viewOrder(ref.type, a.other.type) - viewOrder(ref.type, b.other.type)
@@ -198,7 +355,7 @@ export const walk = (
     .filter(
       (resolved) => isRoot || isWorthShowingUnder(ref.type, resolved.other.type)
     )
-    .filter((resolved) => isLive(resolved.other, context))
+    .filter((resolved) => isLive(ref.type, resolved.other, context))
     .sort(
       (a, b) =>
         viewOrder(ref.type, a.other.type) - viewOrder(ref.type, b.other.type)
@@ -258,15 +415,18 @@ export const walk = (
  */
 export const useRelationshipTree = (
   root: EntityRef,
-  { depth = DEFAULT_DEPTH, priority }: RelationshipTreeOptions = {}
+  { depth = DEFAULT_DEPTH, priority, on }: RelationshipTreeOptions = {}
 ): RelationshipNode => {
   const { data: relationships, isLoading } = useRelationshipsState();
   const { data: tasks } = useTasksState();
   const { data: projects } = useProjectsState();
+  const { data: habits } = useHabitsNewState();
 
   // callers pass a fresh { id, type } literal every render, so the memo has
-  // to key on the two values rather than the object
+  // to key on the two values rather than the object. `on` is a Date and has
+  // the same problem, so it keys on the instant rather than the object.
   const { id: rootId, type: rootType } = root;
+  const onTime = on?.getTime();
 
   return useMemo(() => {
     const entity: EntityRef = { id: rootId, type: rootType };
@@ -285,16 +445,12 @@ export const useRelationshipTree = (
 
     const context: WalkContext = {
       index: buildIndex(relationships),
-      liveTasks: new Set(
-        (tasks ?? [])
-          .filter((task) => !isTerminalTaskStatus(task.status))
-          .map((task) => task.id)
+      taskStatusById: taskStatusById(tasks ?? []),
+      habitCompletedOnDay: habitCompletionOn(
+        habits ?? [],
+        onTime === undefined ? undefined : new Date(onTime)
       ),
-      liveProjects: new Set(
-        (projects ?? [])
-          .filter((project) => !isTerminalProjectStatus(project.status))
-          .map((project) => project.id)
-      ),
+      liveProjects: liveProjectIds(projects ?? []),
     };
 
     return walk(entity, null, depth, new Set(), context, priority);
@@ -302,9 +458,11 @@ export const useRelationshipTree = (
     relationships,
     isLoading,
     tasks,
+    habits,
     projects,
     rootId,
     rootType,
+    onTime,
     depth,
     priority,
   ]);
