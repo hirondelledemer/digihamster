@@ -3,7 +3,7 @@
 
 import React, { FC } from "react";
 
-import { IEvent } from "@/app/utils/types/event";
+import { EventStatus, IEvent } from "@/app/utils/types/event";
 
 import { ScrollArea } from "@/app/components/ui/scroll-area";
 import { format, isSameDay } from "date-fns";
@@ -26,15 +26,20 @@ export const ActiveEventInfo: FC<ActiveEventInfoProps> = ({
 
   return (
     <div className="w-full h-full">
-      <div className="py-4 flex">
+      <div className="py-4 flex items-center">
         {!isEventToday && (
           <div className="mr-5">{format(event.start_at, "MMM d")}</div>
         )}
         <div>
           {format(event.start_at, "HH:mm")} - {format(event.end_at, "HH:mm")}
         </div>
+        {event.status === EventStatus.Pending && (
+          <Button onClick={handleEventCompletion} variant="link">
+            Complete
+          </Button>
+        )}
       </div>
-      <Button onClick={handleEventCompletion}>Complete</Button>
+
       <ScrollArea className="h-full pb-[60px]">
         <div className="flex flex-col gap-4">
           <RelationshipNavigator
