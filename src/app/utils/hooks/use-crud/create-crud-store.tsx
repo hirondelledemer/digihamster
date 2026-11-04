@@ -25,7 +25,11 @@ import { Toast, handleApiError, handleSuccessToast } from "./toast";
 
 export interface CrudActions<Entity, CreateParams> {
   create(data: CreateParams, onDone?: () => void): Promise<Entity | null>;
-  update(id: number, props: Partial<Entity>, onDone?: () => void): void;
+  update(
+    id: number,
+    props: Partial<Entity>,
+    onDone?: () => void
+  ): Promise<Entity | null>; // TODO: review the ts errors because of this
   delete(id: number, onDone?: () => void): void;
 }
 
