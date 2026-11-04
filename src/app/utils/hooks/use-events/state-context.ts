@@ -1,15 +1,5 @@
-import { createContext, useContext } from "react";
-import { EventsState } from "./actions";
+import { eventsStore } from "./store";
 
-type EventContextValue = EventsState;
+export const EventsStateContext = eventsStore.StateContext;
 
-const DEFAULT_EVENTS_STATE: EventsState = {
-  data: [],
-  isLoading: false,
-  errorMessage: undefined,
-} as const;
-
-export const EventsStateContext =
-  createContext<EventContextValue>(DEFAULT_EVENTS_STATE);
-
-export const useEventsState = () => useContext(EventsStateContext);
+export const useEventsState = eventsStore.useEntityState;
