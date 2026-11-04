@@ -14,7 +14,7 @@ import { IPerson } from "../../types/person";
 
 const handleApiError = (
   error: unknown,
-  toast: ReturnType<typeof useToast>["toast"],
+  toast: ReturnType<typeof useToast>["toast"]
 ) => {
   toast({
     title: "Error",
@@ -25,7 +25,7 @@ const handleApiError = (
 
 const handleSuccessToast = (
   toast: ReturnType<typeof useToast>["toast"],
-  message: string,
+  message: string
 ) => {
   toast({
     title: "Success",
@@ -35,7 +35,7 @@ const handleSuccessToast = (
 
 const fetchPeople = async (
   dispatch: React.Dispatch<PeopleStateAction>,
-  toast: ReturnType<typeof useToast>["toast"],
+  toast: ReturnType<typeof useToast>["toast"]
 ) => {
   try {
     dispatch({ type: PeopleStateActionType.StartLoading });
@@ -120,7 +120,7 @@ export const PeopleContextProvider = ({
         return null;
       }
     },
-    [toast],
+    [toast]
   );
 
   const updatePerson = useCallback(
@@ -137,14 +137,15 @@ export const PeopleContextProvider = ({
           onDone();
         }
 
-        await api.updatePerson(id, props);
-
+        const updated = await api.updatePerson(id, props);
         handleSuccessToast(toast, "Person has been updated");
+        return updated;
       } catch (e: unknown) {
         handleApiError(e, toast);
+        return null;
       }
     },
-    [toast],
+    [toast]
   );
 
   const deletePerson = useCallback(
@@ -167,7 +168,7 @@ export const PeopleContextProvider = ({
         handleApiError(e, toast);
       }
     },
-    [toast],
+    [toast]
   );
 
   return (

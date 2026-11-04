@@ -84,8 +84,8 @@ describe("PeopleContext reducer", () => {
       errorMessage: undefined,
     };
 
-    const editedData = { title: "edited person" };
-    const editedPerson = { ...person, title: "edited person" };
+    const editedData = { name: "edited person" };
+    const editedPerson = { ...person, name: "edited person" };
 
     const action: UpdatePersonAction = {
       type: PeopleStateActionType.UpdatePerson,

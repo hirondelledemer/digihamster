@@ -14,6 +14,6 @@ export const api = {
   createPerson: (data: CreatePersonParams) =>
     apiClient.post<IPerson>(PEOPLE_PATH, data),
   updatePerson: (id: number, props: Partial<IPerson>) =>
-    apiClient.patch(getPeoplePath(id), props),
+    apiClient.patch<IPerson, IPerson>(getPeoplePath(id), props),
   deletePerson: (id: number) => apiClient.delete(getPeoplePath(id)),
 } as const;

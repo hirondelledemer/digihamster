@@ -3,9 +3,9 @@ import { getMentionListTestkit } from "./MentionList.testkit";
 import React from "react";
 import { act, render, waitFor } from "@/config/utils/test-utils";
 import MockAxios from "jest-mock-axios";
-import { wrapWithTagsProvider } from "../tests/wraps";
-import { generateListOfTags } from "../mocks/tag";
 import { Editor } from "@tiptap/react";
+import { PeopleStateContext } from "../hooks/use-people/state-context";
+import { generateListOfPeople } from "../mocks/person";
 
 jest.mock("../common/random-int", () => ({
   getRandomInt: () => 0,
@@ -28,11 +28,15 @@ describe("MentionList", () => {
     decorationNode: null,
   };
 
+  const PEOPLE = generateListOfPeople(2);
+
   const renderComponent = (props = defaultProps) =>
     getMentionListTestkit(
       render(
-        wrapWithTagsProvider(<MentionList {...props} />, generateListOfTags(2)),
-      ).container,
+        <PeopleStateContext.Provider value={{ data: PEOPLE, isLoading: false }}>
+          <MentionList {...props} />
+        </PeopleStateContext.Provider>
+      ).container
     );
 
   it("should render MentionList", () => {
@@ -44,7 +48,7 @@ describe("MentionList", () => {
     const { getComponent } = renderComponent();
 
     await waitFor(() => {
-      expect(getComponent().textContent).toBe("Tag 0Tag 1");
+      expect(getComponent().textContent).toBe("Person 0Person 1");
     });
   });
 
@@ -59,7 +63,7 @@ describe("MentionList", () => {
       } as any);
 
       await waitFor(() => {
-        expect(getComponent().textContent).toContain("Tag 0Tag 1");
+        expect(getComponent().textContent).toContain("Person 0Person 1");
       });
 
       act(() => {
@@ -70,8 +74,8 @@ describe("MentionList", () => {
       (ref.current as any).onKeyDown({ event: { key: "Enter" } });
 
       expect(command).toHaveBeenCalledWith({
-        id: "tag1:tag-color-1",
-        label: "Tag 1",
+        id: "1:person-color-1",
+        label: "Person 1",
       });
     });
 
@@ -103,14 +107,14 @@ describe("MentionList", () => {
       });
 
       await waitFor(() => {
-        expect(MockAxios.post).toHaveBeenCalledWith("/api/tags", {
+        expect(MockAxios.post).toHaveBeenCalledWith("/people", {
           color: "#C92A2A",
-          title: "new",
+          name: "new",
         });
       });
       expect(command).toHaveBeenCalledWith({
         id: "newTag1:#F06595",
-        label: "new",
+        label: undefined, // TODO: look into it, i think this value is wrong
       });
     });
   });

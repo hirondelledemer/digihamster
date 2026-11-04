@@ -15,7 +15,7 @@ import { toBackendDateTime } from "#utils/date";
 
 const handleApiError = (
   error: unknown,
-  toast: ReturnType<typeof useToast>["toast"],
+  toast: ReturnType<typeof useToast>["toast"]
 ) => {
   toast({
     title: "Error",
@@ -26,7 +26,7 @@ const handleApiError = (
 
 const handleSuccessToast = (
   toast: ReturnType<typeof useToast>["toast"],
-  message: string,
+  message: string
 ) => {
   toast({
     title: "Success",
@@ -36,7 +36,7 @@ const handleSuccessToast = (
 
 const fetchNotes = async (
   dispatch: React.Dispatch<NotesStateAction>,
-  toast: ReturnType<typeof useToast>["toast"],
+  toast: ReturnType<typeof useToast>["toast"]
 ) => {
   try {
     dispatch({ type: NotesStateActionType.StartLoading });
@@ -118,7 +118,7 @@ export const NotesContextProvider = ({ children }: { children: ReactNode }) => {
         return null;
       }
     },
-    [toast],
+    [toast]
   );
 
   const updateNote = useCallback(
@@ -135,14 +135,16 @@ export const NotesContextProvider = ({ children }: { children: ReactNode }) => {
           onDone();
         }
 
-        await api.updateNote(id, props);
+        const updated = await api.updateNote(id, props);
 
         handleSuccessToast(toast, "Note has been updated");
+        return updated;
       } catch (e: unknown) {
         handleApiError(getApiErrorMessage(e), toast);
+        return null;
       }
     },
-    [toast],
+    [toast]
   );
 
   const deleteNote = useCallback(
@@ -165,7 +167,7 @@ export const NotesContextProvider = ({ children }: { children: ReactNode }) => {
         handleApiError(getApiErrorMessage(e), toast);
       }
     },
-    [toast],
+    [toast]
   );
 
   return (

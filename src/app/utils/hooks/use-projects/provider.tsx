@@ -13,7 +13,7 @@ import { getApiErrorMessage } from "../../axios";
 
 const handleApiError = (
   error: unknown,
-  toast: ReturnType<typeof useToast>["toast"],
+  toast: ReturnType<typeof useToast>["toast"]
 ) => {
   toast({
     title: "Error",
@@ -24,7 +24,7 @@ const handleApiError = (
 
 const handleSuccessToast = (
   toast: ReturnType<typeof useToast>["toast"],
-  message: string,
+  message: string
 ) => {
   toast({
     title: "Success",
@@ -34,7 +34,7 @@ const handleSuccessToast = (
 
 const fetchProjects = async (
   dispatch: React.Dispatch<ProjectsStateAction>,
-  toast: ReturnType<typeof useToast>["toast"],
+  toast: ReturnType<typeof useToast>["toast"]
 ) => {
   try {
     dispatch({ type: ProjectsStateActionType.StartLoading });
@@ -120,14 +120,14 @@ export const ProjectsContextProvider = ({
         return null;
       }
     },
-    [toast],
+    [toast]
   );
 
   const updateProject = useCallback(
     async (
       projectId: number,
       props: Partial<IProject>,
-      onDone?: () => void,
+      onDone?: () => void
     ) => {
       try {
         dispatch({
@@ -141,14 +141,16 @@ export const ProjectsContextProvider = ({
           onDone();
         }
 
-        await api.updateProject(projectId, props);
+        const updated = await api.updateProject(projectId, props);
 
         handleSuccessToast(toast, "Project has been updated");
+        return updated;
       } catch (e: unknown) {
         handleApiError(e, toast);
+        return null;
       }
     },
-    [toast],
+    [toast]
   );
 
   const deleteProject = useCallback(
@@ -171,7 +173,7 @@ export const ProjectsContextProvider = ({
         handleApiError(e, toast);
       }
     },
-    [toast],
+    [toast]
   );
 
   const updateOrder = async (sortedProjectIds: number[]) => {

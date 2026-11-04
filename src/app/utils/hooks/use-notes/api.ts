@@ -13,6 +13,6 @@ export const api = {
   getNotes: () => apiClient.get<INote[]>("/notes"),
   createNote: (data: CreateNoteParams) => apiClient.post<INote>("/notes", data),
   updateNote: (id: number, props: Partial<INote>) =>
-    apiClient.patch(getNotesPath(id), props),
+    apiClient.patch<INote, INote>(getNotesPath(id), props),
   deleteNote: (id: number) => apiClient.delete(getNotesPath(id)),
 } as const;
