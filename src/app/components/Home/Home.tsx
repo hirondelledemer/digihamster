@@ -42,7 +42,7 @@ export const Home = (): JSX.Element => {
             </Suspense>
           </div>
 
-          <div className="p-6 pb-12 w-[50%]">
+          <div className="p-6 w-[50%]">
             <Suspense>
               <ActiveSecondaryContext />
             </Suspense>
