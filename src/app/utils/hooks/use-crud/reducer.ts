@@ -7,9 +7,11 @@ export function crudReducer<Entity extends { id: number }>(
 ): CrudState<Entity> {
   switch (action.type) {
     case CrudActionType.StartLoading: {
+      // the rows already in state stay put. Wiping them means every consumer
+      // flashes an empty list for the length of the refetch
       return {
+        ...state,
         isLoading: true,
-        data: [],
       };
     }
     case CrudActionType.FinishLoading: {
@@ -26,8 +28,10 @@ export function crudReducer<Entity extends { id: number }>(
       };
     }
     case CrudActionType.Create: {
+      // the row is added optimistically, so there is nothing to wait for —
+      // saying "loading" here makes consumers hide data that is already usable
       return {
-        isLoading: true,
+        isLoading: false,
         data: [...state.data, action.payload.entity],
       };
     }

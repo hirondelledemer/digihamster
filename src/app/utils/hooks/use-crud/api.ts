@@ -4,7 +4,7 @@ import apiClient from "../../api-client";
 export interface CrudApi<Entity, CreateParams> {
   getAll(): Promise<AxiosResponse<Entity[]>>;
   create(data: CreateParams): Promise<AxiosResponse<Entity>>;
-  update(id: number, props: Partial<Entity>): Promise<AxiosResponse<unknown>>;
+  update(id: number, props: Partial<Entity>): Promise<AxiosResponse<Entity>>;
   delete(id: number): Promise<AxiosResponse<unknown>>;
 }
 
@@ -17,6 +17,6 @@ export const createRestApi = <Entity, CreateParams>(
 ): CrudApi<Entity, CreateParams> => ({
   getAll: () => apiClient.get<Entity[]>(path),
   create: (data) => apiClient.post<Entity>(path, data),
-  update: (id, props) => apiClient.patch(`${path}/${id}`, props),
+  update: (id, props) => apiClient.patch<Entity>(`${path}/${id}`, props),
   delete: (id) => apiClient.delete(`${path}/${id}`),
 });

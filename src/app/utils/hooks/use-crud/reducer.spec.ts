@@ -34,7 +34,23 @@ describe("crudReducer", () => {
     expect(newState).toStrictEqual({
       isLoading: true,
       data: [],
+      errorMessage: undefined,
     });
+  });
+
+  it("should keep the rows it already has while refetching", () => {
+    const entities = generateListOfEntities(2);
+    const initialState = {
+      isLoading: false,
+      data: entities,
+      errorMessage: undefined,
+    };
+
+    const newState = reducer(initialState, {
+      type: CrudActionType.StartLoading,
+    });
+
+    expect(newState.data).toStrictEqual(entities);
   });
 
   it("should handle FINISH_LOADING action", () => {
@@ -77,8 +93,9 @@ describe("crudReducer", () => {
       payload: { entity },
     });
 
+    // the row is there already, so consumers have nothing to wait for
     expect(newState).toStrictEqual({
-      isLoading: true,
+      isLoading: false,
       data: [entity],
     });
   });

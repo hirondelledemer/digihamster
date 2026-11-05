@@ -29,7 +29,7 @@ export interface CrudActions<Entity, CreateParams> {
     id: number,
     props: Partial<Entity>,
     onDone?: () => void
-  ): Promise<Entity | null>; // TODO: review the ts errors because of this
+  ): Promise<Entity | null>;
   delete(id: number, onDone?: () => void): void;
 }
 
@@ -49,10 +49,16 @@ export interface CrudStoreConfig<
   entityName: string;
   api: CrudApi<Entity, CreateParams>;
   /**
-   * Builds the row shown optimistically while `create` is in flight. Only
-   * needed when the entity is more than its create params plus an id.
+   * Builds the row shown optimistically while `create` is in flight.
+   *
+   * Required on purpose. Spreading the create params over a temp id looks
+   * like it would do, but an entity is nearly always more than what you send
+   * to create it - the server fills in timestamps, a starting status, sort
+   * orders. Leaving those undefined for the length of the POST is invisible
+   * to the type checker and shows up as a blank field or a 1970 date in the
+   * UI, so each store is made to say what its half-built row looks like.
    */
-  toOptimistic?: (data: CreateParams, tempId: number) => Entity;
+  toOptimistic: (data: CreateParams, tempId: number) => Entity;
   /** Handles the actions `crudReducer` does not own. */
   extraReducer?: (
     state: CrudState<Entity>,
@@ -94,13 +100,14 @@ export function createCrudStore<
     errorMessage: undefined,
   };
 
-  const DEFAULT_ACTIONS = {
-    // nothing was created without a provider, so there is nothing to hand back
+  const DEFAULT_ACTIONS: ActionsValue = {
+    // nothing was created or saved without a provider, so there is nothing to
+    // hand back
     create: async () => null,
-    update: () => {},
+    update: async () => null,
     delete: () => {},
     ...(config.defaultExtraActions ?? ({} as Extra)),
-  } as ActionsValue;
+  };
 
   const StateContext = createContext<CrudState<Entity>>(DEFAULT_STATE);
   const ActionsContext = createContext<ActionsValue>(DEFAULT_ACTIONS);
@@ -148,9 +155,7 @@ export function createCrudStore<
         // negative so it cannot collide with an id handed out by the backend
         const tempId = -now().valueOf();
 
-        const optimisticEntity =
-          config.toOptimistic?.(data, tempId) ??
-          ({ id: tempId, ...data } as unknown as Entity);
+        const optimisticEntity = config.toOptimistic(data, tempId);
 
         dispatch({
           type: CrudActionType.Create,
@@ -196,11 +201,25 @@ export function createCrudStore<
             onDone();
           }
 
-          await config.api.update(id, props);
+          const response = await config.api.update(id, props);
+
+          // the optimistic patch only knows what the caller passed. Anything
+          // the server derives from it - a timestamp it stamps, a status it
+          // moves on your behalf - is only in its reply, and without this it
+          // would not reach state until the next full fetch
+          if (response.data && typeof response.data === "object") {
+            dispatch({
+              type: CrudActionType.Update,
+              payload: { id, entity: response.data },
+            });
+          }
 
           handleSuccessToast(toast, `${config.entityName} has been updated`);
+
+          return response.data ?? null;
         } catch (e: unknown) {
           handleApiError(e, toast);
+          return null;
         }
       },
       [toast]
@@ -229,14 +248,13 @@ export function createCrudStore<
 
     const extraActions = useExtraActions({ state, dispatch, toast });
 
-    const actions = useMemo(
-      () =>
-        ({
-          create,
-          update,
-          delete: remove,
-          ...extraActions,
-        } as ActionsValue),
+    const actions: ActionsValue = useMemo(
+      () => ({
+        create,
+        update,
+        delete: remove,
+        ...extraActions,
+      }),
       [create, update, remove, extraActions]
     );
 
