@@ -10,6 +10,7 @@ import { RelationshipNavigator } from "../EventRelationships/components/Relation
 import { RelationshipEntityType } from "@/app/utils/types/relationship";
 import { ScrollArea } from "@/app/components/ui/scroll-area";
 import { parseBackendDateTime } from "#utils/date";
+import { ActiveTaskList } from "../ActiveTaskList";
 
 export const ActiveSecondaryContext: FC = (): JSX.Element | null => {
   const selectedEvent = useSelectedEvent();
@@ -25,8 +26,11 @@ export const ActiveSecondaryContext: FC = (): JSX.Element | null => {
   }
 
   return (
-    <div className="w-full h-full">
-      <ScrollArea className="h-full pb-[60px]">
+    <div className="w-full h-full ">
+      <ScrollArea className="h-[50%] pb-5">
+        <ActiveTaskList />
+      </ScrollArea>
+      <ScrollArea className="h-[50%]">
         <RelationshipNavigator
           entityId={selectedEvent.id}
           entityType={RelationshipEntityType.Event}

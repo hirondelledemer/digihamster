@@ -16,7 +16,7 @@ export const api = {
   createProject: (data: FieldsRequired) =>
     apiClient.post<IProject>(PROJECTS_PATH, data),
   updateProject: (id: number, props: Partial<IProject>) =>
-    apiClient.patch(getProjectsPath(id), props),
+    apiClient.patch<IProject, IProject>(getProjectsPath(id), props),
   deleteProject: (id: number) => apiClient.delete(getProjectsPath(id)),
   reorder: (ids: number[]) =>
     apiClient.patch(PROJECTS_ORDER_PATH, { project_ids: ids }),

@@ -22,7 +22,10 @@ export const api = {
   createRelationship: (data: CreateRelationshipParams) =>
     apiClient.post<IRelationship>(RELATIONSHIPS_PATH, data),
   updateRelationship: (id: number, props: Partial<IRelationship>) =>
-    apiClient.patch(getRelationshipsPath(id), props),
+    apiClient.patch<IRelationship, IRelationship>(
+      getRelationshipsPath(id),
+      props
+    ),
   deleteRelationship: (id: number) =>
     apiClient.delete(getRelationshipsPath(id)),
 } as const;

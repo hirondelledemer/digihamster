@@ -10,7 +10,7 @@ type PersonActionsContextValue = ActionsContextValue<
 
 const DEFAULT_PEOPLE_ACTIONS: PersonActionsContextValue = {
   create: async () => null,
-  update: () => {},
+  update: async () => null,
   delete: () => {},
 } as const;
 

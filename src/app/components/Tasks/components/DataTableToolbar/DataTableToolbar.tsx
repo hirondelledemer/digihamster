@@ -6,7 +6,6 @@ import { Input } from "../../../ui/input";
 import { DataTableFacetedFilter } from "../DataTableFacetedFilter/DataTableFacetedFilter";
 import { Button } from "../../../ui/button";
 import { DataTableViewOptions } from "../DataTableViewOptions/DataTableViewOptions";
-import { useTagsState } from "@/app/utils/hooks/use-tags/state-context";
 import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
 
 interface DataTableToolbarProps<TData> {
@@ -20,7 +19,7 @@ export function DataTableToolbar<TData>({
 }: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0;
   const { data: projects, isLoading } = useProjectsState();
-  const { data: tags } = useTagsState();
+  const tags = [] as unknown[];
 
   const projectOptions = projects.map((project) => ({
     label: project.title,

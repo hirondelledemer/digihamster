@@ -11,7 +11,7 @@ type RelationshipActionsContextValue = ActionsContextValue<
 const DEFAULT_RELATIONSHIPS_ACTIONS: RelationshipActionsContextValue = {
   // nothing was created without a provider, so there is nothing to hand back
   create: async () => null,
-  update: () => {},
+  update: async () => null,
   delete: () => {},
 } as const;
 

@@ -1,13 +1,13 @@
 import NotesManager from "../components/NotesManager";
 import { NotesContextProvider } from "../utils/hooks/use-notes/provider";
-import { TagsContextProvider } from "../utils/hooks/use-tags/provider";
+import { PeopleContextProvider } from "../utils/hooks/use-people/provider";
 
 export default function NotesPage() {
   return (
-    <TagsContextProvider>
+    <PeopleContextProvider>
       <NotesContextProvider>
         <NotesManager />
       </NotesContextProvider>
-    </TagsContextProvider>
+    </PeopleContextProvider>
   );
 }

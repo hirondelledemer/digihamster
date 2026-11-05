@@ -33,6 +33,7 @@ import {
   IconEdit,
   IconTrash,
 } from "@tabler/icons-react";
+import { useCompleteEvent } from "@/app/utils/event/event-completion";
 
 interface EventActionsProps {
   event: IEvent;
@@ -50,6 +51,7 @@ export const EventActions: React.FC<EventActionsProps> = ({
     update: updateEvent,
     create,
   } = useEventsActions();
+  const completeEvent = useCompleteEvent(event);
 
   const { updateTask } = useTasksActions();
   const { data: tasks } = useTasksState();
@@ -123,9 +125,7 @@ export const EventActions: React.FC<EventActionsProps> = ({
         <ContextMenuContent className="w-64">
           <ContextMenuGroup>
             {event.status !== EventStatus.Completed && (
-              <ContextMenuItem
-                onClick={() => handleStatusChange(EventStatus.Completed)}
-              >
+              <ContextMenuItem onClick={completeEvent}>
                 <CheckIcon />
                 Complete
               </ContextMenuItem>

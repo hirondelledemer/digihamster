@@ -26,7 +26,7 @@ describe("PeopleContextProvider", () => {
         <div>
           {isLoading
             ? "Loading..."
-            : data.map((person) => <div key={person.id}>{person.title}</div>)}
+            : data.map((person) => <div key={person.id}>{person.name}</div>)}
         </div>
       );
     };
@@ -34,13 +34,13 @@ describe("PeopleContextProvider", () => {
     render(
       <PeopleContextProvider>
         <TestComponent />
-      </PeopleContextProvider>,
+      </PeopleContextProvider>
     );
 
     expect(screen.getByText("Loading...")).toBeInTheDocument();
 
     await waitFor(() =>
-      expect(screen.findByText("Person 0")).resolves.toBeInTheDocument(),
+      expect(screen.findByText("Person 0")).resolves.toBeInTheDocument()
     );
     expect(screen.getByText("Person 1")).toBeInTheDocument();
     expect(screen.getByText("Person 2")).toBeInTheDocument();
@@ -66,19 +66,19 @@ describe("PeopleContextProvider", () => {
     render(
       <PeopleContextProvider>
         <TestComponent />
-      </PeopleContextProvider>,
+      </PeopleContextProvider>
     );
 
     expect(screen.getByText("Loading...")).toBeInTheDocument();
 
     await waitFor(() =>
-      expect(screen.findByText(/Error:/)).resolves.toBeInTheDocument(),
+      expect(screen.findByText(/Error:/)).resolves.toBeInTheDocument()
     );
   });
 
   it("should create a person and update the state", async () => {
     const mockPerson: CreatePersonParams = {
-      title: "new person",
+      name: "new person",
       color: "color1",
     };
 
@@ -94,7 +94,7 @@ describe("PeopleContextProvider", () => {
           </button>
           <div>
             {data.map((person) => (
-              <div key={person.id}>{person.title}</div>
+              <div key={person.id}>{person.name}</div>
             ))}
           </div>
         </div>
@@ -106,14 +106,14 @@ describe("PeopleContextProvider", () => {
         <PeopleContextProvider>
           <TestComponent />
         </PeopleContextProvider>
-      </ToastProvider>,
+      </ToastProvider>
     );
 
     expect(screen.queryByText("new person")).not.toBeInTheDocument();
     await userEvent.click(screen.getByRole("button"));
 
     await waitFor(() =>
-      expect(screen.findByText("new person")).resolves.toBeInTheDocument(),
+      expect(screen.findByText("new person")).resolves.toBeInTheDocument()
     );
     expect(mockAxios.post).toHaveBeenCalledWith(PEOPLE_PATH, mockPerson);
   });

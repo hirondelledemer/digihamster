@@ -3,7 +3,7 @@ import { DEFAULT_TEST_DATE } from "./date";
 
 export const generateTask: (
   i?: number,
-  properties?: Partial<ITask>,
+  properties?: Partial<ITask>
 ) => ITask = (i = 1, properties) => {
   return {
     id: i,
@@ -13,6 +13,7 @@ export const generateTask: (
     project_id: null,
     event_id: null,
     event_sort_order: null,
+    project_sort_order: null,
     completed_at: null,
     activated_at: null,
     created_at: DEFAULT_TEST_DATE,
@@ -26,7 +27,7 @@ export const generateListOfTasks: (count: number) => ITask[] = (count) => {
 };
 
 export const generateCustomTasksList: (
-  taskInfo: Partial<ITask>[],
+  taskInfo: Partial<ITask>[]
 ) => ITask[] = (taskInfo) => {
   return taskInfo.map((taskProperties, i) => ({
     ...generateTask(i, taskProperties),

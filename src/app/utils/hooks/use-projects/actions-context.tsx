@@ -12,13 +12,13 @@ type ProjectActionsContextValue = ActionsContextValue<
 
 const DEFAULT_PROJECTS_ACTIONS: ProjectActionsContextValue = {
   create: async () => null,
-  update: () => {},
+  update: async () => null,
   delete: () => {},
   updateOrder: () => {},
 } as const;
 
 export const ProjectsActionsContext = createContext<ProjectActionsContextValue>(
-  DEFAULT_PROJECTS_ACTIONS,
+  DEFAULT_PROJECTS_ACTIONS
 );
 
 export const useProjectsActions = () => useContext(ProjectsActionsContext);

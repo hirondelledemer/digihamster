@@ -4,7 +4,6 @@ import { EntriesContextProvider } from "@/app/utils/hooks/use-entry/provider";
 import { NotesContextProvider } from "@/app/utils/hooks/use-notes/provider";
 import { EventsContextProvider } from "@/app/utils/hooks/use-events/provider";
 import { ProjectsContextProvider } from "@/app/utils/hooks/use-projects/provider";
-import { TagsContextProvider } from "@/app/utils/hooks/use-tags/provider";
 import { CycleContextProvider } from "@/app/utils/hooks/use-cycle";
 import { TasksContextProvider } from "@/app/utils/hooks/use-tasks/provider";
 import { DraggableTasksContextProvider } from "@/app/utils/hooks/use-draggable-tasks";
@@ -21,7 +20,6 @@ const PROVIDERS: ComponentType<{ children: ReactNode }>[] = [
   NotesContextProvider,
   EventsContextProvider,
   ProjectsContextProvider,
-  TagsContextProvider,
   CycleContextProvider,
   TasksContextProvider,
   DraggableTasksContextProvider,

@@ -16,10 +16,9 @@ import { now } from "../../date/now";
 import { IRelationship } from "../../types/relationship";
 import { DEFAULT_RELATIONSHIP_TYPE } from "../../relationships/relationship-types";
 
-
 const handleApiError = (
   error: unknown,
-  toast: ReturnType<typeof useToast>["toast"],
+  toast: ReturnType<typeof useToast>["toast"]
 ) => {
   toast({
     title: "Error",
@@ -33,7 +32,7 @@ const handleApiError = (
 
 const fetchRelationships = async (
   dispatch: React.Dispatch<RelationshipsStateAction>,
-  toast: ReturnType<typeof useToast>["toast"],
+  toast: ReturnType<typeof useToast>["toast"]
 ) => {
   try {
     dispatch({ type: RelationshipsStateActionType.StartLoading });
@@ -126,7 +125,7 @@ export const RelationshipsContextProvider = ({
         return null;
       }
     },
-    [toast],
+    [toast]
   );
 
   const updateRelationship = useCallback(
@@ -143,12 +142,14 @@ export const RelationshipsContextProvider = ({
           onDone();
         }
 
-        await api.updateRelationship(id, props);
+        const updated = await api.updateRelationship(id, props);
+        return updated;
       } catch (e: unknown) {
         handleApiError(e, toast);
+        return null;
       }
     },
-    [toast],
+    [toast]
   );
 
   const deleteRelationship = useCallback(
@@ -169,7 +170,7 @@ export const RelationshipsContextProvider = ({
         handleApiError(e, toast);
       }
     },
-    [toast],
+    [toast]
   );
 
   return (
