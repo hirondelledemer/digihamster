@@ -26,6 +26,12 @@ export const RelationshipPanel: FC<{
         <div className="mb-4 flex gap-2">
           {entities.map((e, idx) => {
             const isCurrent = idx === entities.length - 1;
+            // the priority is this pane's half of the entity the navigator was
+            // opened on, not a filter for everything behind it. Carrying it
+            // down the stack re-reads an event's split against whatever you
+            // drilled into - a task's own neighbours land in the other half,
+            // and its panel comes back empty.
+            const isRoot = idx === 0;
 
             return (
               <NavigatorColumn key={`${e.type}-${e.id}`} index={idx}>
@@ -40,8 +46,10 @@ export const RelationshipPanel: FC<{
                   <EntityWithRelationships
                     entityId={e.id}
                     entityType={e.type}
-                    compact={!isCurrent}
-                    relationshipPriority={relationshipPriority}
+                    variant={isCurrent ? "full" : "compact"}
+                    relationshipPriority={
+                      isRoot ? relationshipPriority : undefined
+                    }
                   />
                 </div>
               </NavigatorColumn>

@@ -29,10 +29,6 @@ describe("TodayEvent", () => {
         id: EVENT.id,
         type: "event",
         event: EVENT,
-        tasks: [],
-        journalEntries: [],
-        habits: [],
-        people: [],
       },
     },
   };

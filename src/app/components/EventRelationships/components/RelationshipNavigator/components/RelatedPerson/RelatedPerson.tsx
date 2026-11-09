@@ -10,13 +10,19 @@ import {
   CardHeader,
   CardTitle,
 } from "@/app/components/ui/card";
+import { RelatedEntityVariant } from "../RelatedEntity/RelatedEntity";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/app/components/ui/tooltip";
 
 export const RelatedPerson: FC<{
   id: number;
-  compact: boolean;
+  variant: RelatedEntityVariant;
   /** neighbour types behind this one, for the hint row of little icons */
   summary?: RelationshipEntityType[];
-}> = ({ id, compact, summary = [] }) => {
+}> = ({ id, variant, summary = [] }) => {
   const person = usePersonById(id);
 
   const { setActiveEntity, entities } = useNavigator();
@@ -31,7 +37,30 @@ export const RelatedPerson: FC<{
     return null;
   }
 
-  if (compact) {
+  if (variant === "icon") {
+    return (
+      <Tooltip delayDuration={0}>
+        <TooltipTrigger
+          className="pointer-events-auto"
+          onMouseDownCapture={(e) => {
+            // the calendar starts a slot selection on a native mousedown
+            e.stopPropagation();
+          }}
+        >
+          <IconManFilled
+            size={16}
+            color={person.color}
+            aria-label={person.name}
+            className="cursor"
+            onClick={selectEntity}
+          />
+        </TooltipTrigger>
+        <TooltipContent>{person.name}</TooltipContent>
+      </Tooltip>
+    );
+  }
+
+  if (variant === "compact") {
     const relationshipNumber = 3; // todo: move to const
     return (
       <div

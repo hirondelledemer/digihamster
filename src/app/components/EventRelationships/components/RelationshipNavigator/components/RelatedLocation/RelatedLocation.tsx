@@ -17,15 +17,16 @@ import { IconMapPin } from "@tabler/icons-react";
 import { FC } from "react";
 import { RelatedEntity } from "../RelatedEntity";
 import { EntityTypeIcon } from "../../../EntityTypeIcon";
+import { RelatedEntityVariant } from "../RelatedEntity/RelatedEntity";
 
 export const RelatedLocation: FC<{
   id: number;
-  compact: boolean;
+  variant: RelatedEntityVariant;
   /** whatever the walk put under this location; empty when it stopped here */
   related?: RelationshipNode[];
   /** neighbour types behind this one, for the hint row of little icons */
   summary?: RelationshipEntityType[];
-}> = ({ id, compact, related = [], summary = [] }) => {
+}> = ({ id, variant, related = [], summary = [] }) => {
   const location = useLocationById(id);
   const { setActiveEntity } = useNavigator();
 
@@ -39,13 +40,13 @@ export const RelatedLocation: FC<{
     return null;
   }
 
-  if (compact) {
+  if (variant === "compact" || variant === "icon") {
     return (
       <div className="flex flex-col items-center gap-1 w-[20px]">
         <Tooltip delayDuration={0}>
           <TooltipTrigger>
             <IconMapPin
-              size={24}
+              size={variant === "compact" ? 24 : 16}
               color={location.color}
               aria-label="location"
               className="cursor"
@@ -56,9 +57,10 @@ export const RelatedLocation: FC<{
             {location.title}
           </TooltipContent>
         </Tooltip>
-        {summary.map((type, i) => (
-          <EntityTypeIcon key={`${type}-${i}`} type={type} size={16} />
-        ))}
+        {variant === "compact" &&
+          summary.map((type, i) => (
+            <EntityTypeIcon key={`${type}-${i}`} type={type} size={16} />
+          ))}
       </div>
     );
   }
@@ -81,7 +83,7 @@ export const RelatedLocation: FC<{
             <RelatedEntity
               key={child.edge?.id ?? child.entity.id}
               node={child}
-              compact={false}
+              variant="full"
             />
           ))}
         </CardContent>

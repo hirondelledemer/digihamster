@@ -7,7 +7,7 @@ type NoteActionsContextValue = ActionsContextValue<CreateNoteParams, INote>;
 
 const DEFAULT_NOTES_ACTIONS: NoteActionsContextValue = {
   create: async () => null,
-  update: () => {},
+  update: async () => null,
   delete: () => {},
 } as const;
 

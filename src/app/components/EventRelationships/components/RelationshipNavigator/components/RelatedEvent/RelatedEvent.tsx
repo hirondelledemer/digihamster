@@ -8,22 +8,59 @@ import { EntityTypeIcon } from "../../../EntityTypeIcon";
 import { useCalendarDate } from "@/app/utils/hooks/use-calendar-date";
 import { formatDistanceToNow, format } from "date-fns";
 import { Button } from "@/app/components/ui/button";
+import { RelatedEntityVariant } from "../RelatedEntity/RelatedEntity";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/app/components/ui/tooltip";
+import { useNavigator } from "@/app/components/EventRelationships/navigator-context";
 
 export const RelatedEvent: FC<{
   id: number;
-  compact: boolean;
+  variant: RelatedEntityVariant;
   /** neighbour types behind this one, for the hint row of little icons */
   summary?: RelationshipEntityType[];
   depth: number;
-}> = ({ id, compact, summary = [], depth }) => {
+}> = ({ id, variant, summary = [], depth }) => {
   const event = useEventById(id);
   const { setSelectedDate } = useCalendarDate();
+
+  const { setActiveEntity } = useNavigator();
+
+  const selectEntity = () =>
+    setActiveEntity({
+      id,
+      type: RelationshipEntityType.Event,
+    });
 
   if (!event) {
     return null;
   }
 
-  if (compact) {
+  if (variant === "icon") {
+    return (
+      <Tooltip delayDuration={0}>
+        <TooltipTrigger
+          className="pointer-events-auto"
+          onMouseDownCapture={(e) => {
+            // the calendar starts a slot selection on a native mousedown
+            e.stopPropagation();
+          }}
+        >
+          <IconCalendar
+            size={16}
+            aria-label={event.title}
+            className="cursor"
+            onClick={selectEntity}
+          />
+        </TooltipTrigger>
+        <TooltipContent>{event.title}</TooltipContent>
+      </Tooltip>
+    );
+  }
+
+  if (variant === "compact") {
     return (
       <div className="flex flex-col items-center gap-1">
         <IconCalendar size={24} aria-label="event" />

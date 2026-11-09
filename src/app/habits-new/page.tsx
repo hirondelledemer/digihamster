@@ -7,7 +7,6 @@ import { useHabitsNewState } from "@/app/utils/hooks/use-habits-new/state-contex
 import { useHabitsNewActions } from "@/app/utils/hooks/use-habits-new/actions-context";
 import { LifeAspectsContextProvider } from "@/app/utils/hooks/use-life-aspects/provider";
 import { useLifeAspectsState } from "@/app/utils/hooks/use-life-aspects/state-context";
-import { Habit } from "@/models/habit";
 import { getTodayWithZeroHours } from "@/app/utils/date/now";
 import {
   Table,
@@ -28,17 +27,18 @@ import {
   SelectValue,
 } from "@/app/components/ui/select";
 import { TIMES_PER_MONTH } from "@/app/components/HabitForm/HabitForm.consts";
+import { IHabitWithLogs } from "../utils/types/habit";
 
 const DAY_COUNT = 6;
 
 function getDayColumns(today: Date) {
   return Array.from({ length: DAY_COUNT + 1 }, (_, i) =>
-    subDays(today, DAY_COUNT - i),
+    subDays(today, DAY_COUNT - i)
   );
 }
 
 interface HabitRowProps {
-  habit: Habit;
+  habit: IHabitWithLogs;
   days: Date[];
 }
 
@@ -50,11 +50,14 @@ const HabitRow: FC<HabitRowProps> = ({ habit, days }) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const lifeAspect = lifeAspects.find(
-    (la) => la.id.toString() === habit.life_aspect_id.toString(),
+    (la) => la.id.toString() === habit.life_aspect_id.toString()
   );
 
   const handleCheck =
-    (timestamp: number, existingLog: Habit["logs"][number] | undefined) =>
+    (
+      timestamp: number,
+      existingLog: IHabitWithLogs["logs"][number] | undefined
+    ) =>
     (checked: boolean) => {
       addLog(habit.id, { at: timestamp, completed: checked, existingLog });
     };
@@ -99,7 +102,7 @@ const HabitRow: FC<HabitRowProps> = ({ habit, days }) => {
       {days.map((day) => {
         const ts = day.getTime();
         const log = habit.logs.find(
-          (l) => l.log_date.slice(0, 10) === toBackendDate(new Date(ts)),
+          (l) => l.log_date.slice(0, 10) === toBackendDate(new Date(ts))
         );
         return (
           <TableCell className="py-1" key={ts}>
@@ -145,6 +148,7 @@ const NewHabitForm: FC = () => {
       title: title.trim(),
       life_aspect_id: Number(lifeAspectId),
       times_per_month: timesPerMonth,
+      description: "",
     });
     setTitle("");
     setLifeAspectId("");
@@ -224,8 +228,8 @@ const HabitsNewTable: FC = () => {
           {data
             .sort((a, b) =>
               (a.life_aspect_id.toString() ?? "").localeCompare(
-                b.life_aspect_id ?? "",
-              ),
+                b.life_aspect_id.toString() ?? ""
+              )
             )
             .map((habit) => (
               <HabitRow key={habit.id} habit={habit} days={days} />

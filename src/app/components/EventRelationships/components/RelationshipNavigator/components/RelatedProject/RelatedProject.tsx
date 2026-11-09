@@ -7,15 +7,16 @@ import { FC } from "react";
 import { EntityTypeIcon } from "../../../EntityTypeIcon";
 import { ProjectSwitchableTask } from "../RelatedLocation/components/ProjectSwitchableTask";
 import { RelatedEntity } from "../RelatedEntity";
+import { RelatedEntityVariant } from "../RelatedEntity/RelatedEntity";
 
 export const RelatedProject: FC<{
   id: number;
-  compact: boolean;
+  variant: RelatedEntityVariant;
   /** whatever the walk put under this project; empty when it stopped here */
   related?: RelationshipNode[];
   /** neighbour types behind this one, for the hint row of little icons */
   summary?: RelationshipEntityType[];
-}> = ({ id, compact, related = [], summary = [] }) => {
+}> = ({ id, variant, related = [], summary = [] }) => {
   const project = useProjectById(id);
 
   const { entities, setActiveEntity } = useNavigator();
@@ -30,7 +31,7 @@ export const RelatedProject: FC<{
     return null;
   }
 
-  if (compact) {
+  if (variant === "compact") {
     return (
       <div
         className="flex flex-col items-center gap-1"
@@ -69,7 +70,7 @@ export const RelatedProject: FC<{
               : ""
           }
         >
-          <RelatedEntity node={child} compact={false} />
+          <RelatedEntity node={child} variant="full" />
         </div>
       ))}
     </div>

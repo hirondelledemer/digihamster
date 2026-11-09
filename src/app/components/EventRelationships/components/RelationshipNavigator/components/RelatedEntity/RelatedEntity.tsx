@@ -11,6 +11,7 @@ import { RelatedPerson } from "../RelatedPerson";
 import { RelatedProject } from "../RelatedProject/RelatedProject";
 import { RelatedEntityActions } from "../RelatedEntityActions";
 
+export type RelatedEntityVariant = "full" | "compact" | "icon";
 export interface RelatedEntityProps {
   /**
    * The neighbour and whatever the walk decided belongs under it. Nothing
@@ -19,14 +20,14 @@ export interface RelatedEntityProps {
    * rendering.
    */
   node: RelationshipNode;
-  compact: boolean;
+  variant: RelatedEntityVariant;
 }
 
-export const RelatedEntity: FC<RelatedEntityProps> = ({ node, compact }) => {
+export const RelatedEntity: FC<RelatedEntityProps> = ({ node, variant }) => {
   const { entity, children, edge, summary, truncated, depth } = node;
 
   const getComponent = () => {
-    const props = { id: entity.id, compact, summary };
+    const props = { id: entity.id, summary, variant };
 
     switch (entity.type) {
       case RelationshipEntityType.Task:
@@ -51,7 +52,11 @@ export const RelatedEntity: FC<RelatedEntityProps> = ({ node, compact }) => {
   };
 
   // only the root has no edge, and the root is never rendered through here
-  if (compact || entity.type === RelationshipEntityType.Note || !edge) {
+  if (
+    !(variant === "full") ||
+    entity.type === RelationshipEntityType.Note ||
+    !edge
+  ) {
     return getComponent();
   }
 

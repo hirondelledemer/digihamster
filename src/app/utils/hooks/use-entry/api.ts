@@ -20,6 +20,6 @@ export const api = {
   createEntry: (data: JournalRequestParams) =>
     apiClient.post<IJournalEntry>(JOURNAL_ENTRIES_PATH, data),
   updateEntry: (id: number, props: UpdateEntryRequestParams) =>
-    apiClient.patch(getJournalEntriesPath(id), props),
+    apiClient.patch<unknown, IJournalEntry>(getJournalEntriesPath(id), props),
   deleteEntry: (id: number) => apiClient.delete(getJournalEntriesPath(id)),
 } as const;

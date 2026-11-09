@@ -1,14 +1,16 @@
-import { Habit } from "@/models/habit";
 import { updateObjById } from "../../common/update-array";
 import {
   HabitsNewState,
   HabitsNewAction,
   HabitsNewActionType,
 } from "./actions";
+import { IHabitWithLogs } from "../../types/habit";
+import { now } from "../../date/now";
+import { toBackendDate } from "#utils/date";
 
 export function reducer(
   state: HabitsNewState,
-  action: HabitsNewAction,
+  action: HabitsNewAction
 ): HabitsNewState {
   switch (action.type) {
     case HabitsNewActionType.StartLoading: {
@@ -33,10 +35,10 @@ export function reducer(
     case HabitsNewActionType.UpdateHabit: {
       return {
         isLoading: false,
-        data: updateObjById<Habit>(
+        data: updateObjById<IHabitWithLogs>(
           state.data,
           action.payload.id,
-          action.payload.habit,
+          action.payload.habit
         ),
       };
     }
@@ -53,16 +55,27 @@ export function reducer(
         data: state.data.map((habit) => {
           if (habit.id !== habitId) return habit;
           const idx = habit.logs.findIndex((l) =>
-            l.log_date.startsWith(logDate),
+            l.log_date.startsWith(logDate)
           );
           if (idx >= 0) {
             const newLogs = [...habit.logs];
             newLogs[idx] = { ...newLogs[idx], completed };
             return { ...habit, logs: newLogs };
           }
+          const date = now();
+          const tempId = -date.valueOf();
           return {
             ...habit,
-            logs: [...habit.logs, { log_date: logDate, completed }],
+            logs: [
+              ...habit.logs,
+              {
+                log_date: logDate,
+                completed,
+                id: tempId,
+                habit_id: habit.id,
+                created_at: toBackendDate(date),
+              },
+            ],
           };
         }),
       };
