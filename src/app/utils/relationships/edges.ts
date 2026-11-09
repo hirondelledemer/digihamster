@@ -157,10 +157,7 @@ export const VIEWS: Record<RelationshipEntityType, EntityView> = {
       RelationshipEntityType.Habit,
       RelationshipEntityType.Project,
     ],
-    secondary: [
-      RelationshipEntityType.Location,
-      RelationshipEntityType.Person,
-    ],
+    secondary: [RelationshipEntityType.Location, RelationshipEntityType.Person],
   },
   [RelationshipEntityType.Location]: {
     nests: true,
@@ -230,10 +227,7 @@ export const VIEWS: Record<RelationshipEntityType, EntityView> = {
       RelationshipEntityType.Habit,
       RelationshipEntityType.Note,
     ],
-    secondary: [
-      RelationshipEntityType.Person,
-      RelationshipEntityType.Location,
-    ],
+    secondary: [RelationshipEntityType.Person, RelationshipEntityType.Location],
   },
   [RelationshipEntityType.Person]: {
     primary: [
@@ -266,7 +260,8 @@ export const matchesView = (
   entityType: RelationshipEntityType,
   neighbourType: RelationshipEntityType,
   priority?: "primary" | "secondary"
-): boolean => !priority || viewTypes(entityType, priority).includes(neighbourType);
+): boolean =>
+  !priority || viewTypes(entityType, priority).includes(neighbourType);
 
 /** whether a neighbour is worth showing underneath this entity */
 export const isWorthShowingUnder = (
@@ -445,8 +440,7 @@ export const typeOptionsFor = (
     return [];
   }
 
-  const alternatives =
-    EDGE_ALTERNATIVES[edge.source]?.[edge.target] ?? [];
+  const alternatives = EDGE_ALTERNATIVES[edge.source]?.[edge.target] ?? [];
 
   return [edge.type, ...alternatives];
 };
@@ -573,8 +567,8 @@ export const resolveEdge = (
         ? "source"
         : "target"
       : viewer.type === edge.source
-        ? "source"
-        : "target";
+      ? "source"
+      : "target";
 
   return { id: relationship.id, type, viewpoint, other };
 };

@@ -40,7 +40,7 @@ export const RelationshipPanel: FC<{
                   <EntityWithRelationships
                     entityId={e.id}
                     entityType={e.type}
-                    compact={!isCurrent}
+                    variant={isCurrent ? "full" : "compact"}
                     relationshipPriority={relationshipPriority}
                   />
                 </div>

@@ -10,14 +10,15 @@ import {
 } from "@/app/components/ui/tooltip";
 import { useNavigator } from "@/app/components/EventRelationships/navigator-context";
 import { StickyNote } from "@/app/components/notes";
+import { RelatedEntityVariant } from "../RelatedEntity/RelatedEntity";
 
 export const RelatedNote: FC<{
   id: number;
-  compact: boolean;
+  variant: RelatedEntityVariant;
   /** neighbour types behind this one, for the hint row of little icons */
   summary?: RelationshipEntityType[];
   depth: number;
-}> = ({ id, compact, summary = [], depth }) => {
+}> = ({ id, variant, summary = [], depth }) => {
   const note = useNoteById(id);
 
   const { setActiveEntity } = useNavigator();
@@ -32,7 +33,7 @@ export const RelatedNote: FC<{
     return null;
   }
 
-  if (compact) {
+  if (variant === "compact") {
     return (
       <div className="flex flex-col items-center gap-1 w-5">
         <Tooltip delayDuration={0}>

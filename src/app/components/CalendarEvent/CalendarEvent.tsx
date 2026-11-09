@@ -67,7 +67,7 @@ const CalendarEvent: FC<CalendarEventProps> = ({
               <RelatedEntity
                 key={child.edge?.id ?? child.entity.id}
                 node={child}
-                compact
+                variant="compact"
               />
             ))}
           </div>

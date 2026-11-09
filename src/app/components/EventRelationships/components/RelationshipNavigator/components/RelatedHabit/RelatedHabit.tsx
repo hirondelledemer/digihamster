@@ -15,15 +15,16 @@ import { EntityTypeIcon } from "../../../EntityTypeIcon";
 import { Card, CardHeader, CardTitle } from "@/app/components/ui/card";
 import { HabitCard } from "@/app/components/HabitCard";
 import { useEventScheduling } from "@/app/components/EventRelationships/use-event-scheduling";
+import { RelatedEntityVariant } from "../RelatedEntity/RelatedEntity";
 
 export const RelatedHabit: FC<{
   id: number;
-  compact: boolean;
+  variant: RelatedEntityVariant;
   /** neighbour types behind this one, for the hint row of little icons */
   summary?: RelationshipEntityType[];
   /** what was written during it - see VIEWS[Habit].asChild */
   related?: RelationshipNode[];
-}> = ({ id, compact, summary = [], related = [] }) => {
+}> = ({ id, variant, summary = [], related = [] }) => {
   const habit = useHabitById(id);
 
   const icon = useHabitLifeAspectAssetIcon(habit);
@@ -39,7 +40,6 @@ export const RelatedHabit: FC<{
 
   const event = useEventById(eventId);
 
-
   if (!habit) {
     return null;
   }
@@ -50,7 +50,7 @@ export const RelatedHabit: FC<{
       type: RelationshipEntityType.Habit,
     });
 
-  if (compact) {
+  if (variant === "compact") {
     return (
       <div
         className="flex flex-col items-center gap-1 w-[20px]"
@@ -108,7 +108,7 @@ export const RelatedHabit: FC<{
         <RelatedEntity
           key={child.edge?.id ?? child.entity.id}
           node={child}
-          compact={false}
+          variant="full"
         />
       ))}
     </>

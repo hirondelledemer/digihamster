@@ -9,15 +9,17 @@ import { EntityTypeIcon } from "../../../EntityTypeIcon";
 import TaskCard from "@/app/components/TaskCard";
 import { useEventScheduling } from "@/app/components/EventRelationships/use-event-scheduling";
 import { RelatedEntity } from "../RelatedEntity";
+import { matchesView } from "@/app/utils/relationships/edges";
+import { RelatedEntityVariant } from "../RelatedEntity/RelatedEntity";
 
 export const RelatedTask: FC<{
   id: number;
-  compact: boolean;
+  variant: RelatedEntityVariant;
   /** whatever the walk put under this task; empty when it stopped here */
   related?: RelationshipNode[];
   /** neighbour types behind this one, for the hint row of little icons */
   summary?: RelationshipEntityType[];
-}> = ({ id, compact, related = [], summary = [] }) => {
+}> = ({ id, variant, related = [], summary = [] }) => {
   const task = useTaskById(id);
   const { main: color } = useTaskProjectColor(task);
   const { setActiveEntity, entities } = useNavigator();
@@ -36,7 +38,19 @@ export const RelatedTask: FC<{
     return null;
   }
 
-  if (compact) {
+  if (variant === "icon") {
+    return (
+      <IconCheckbox
+        size={24}
+        color={color || "#fff"}
+        aria-label={task.title}
+        className="cursor-pointer"
+        onClick={selectEntity}
+      />
+    );
+  }
+
+  if (variant === "compact") {
     return (
       <div
         className="flex flex-col items-center gap-1"
@@ -63,13 +77,42 @@ export const RelatedTask: FC<{
   }
 
   return (
-    <>
-      <TaskCard task={task} scheduled={scheduled} additionalActions={actions} />
-      {related.map((child) => (
-        <div key={child.edge?.id ?? child.entity.id}>
-          <RelatedEntity node={child} compact={false} />
-        </div>
-      ))}
-    </>
+    <div className="flex">
+      <div className="grow">
+        <TaskCard
+          task={task}
+          scheduled={scheduled}
+          additionalActions={actions}
+        />
+        {related
+          .filter((child) =>
+            matchesView(
+              RelationshipEntityType.Task,
+              child.entity.type,
+              "primary"
+            )
+          )
+          .map((child) => (
+            <div key={child.edge?.id ?? child.entity.id}>
+              <RelatedEntity node={child} variant="full" />
+            </div>
+          ))}
+      </div>
+      <div>
+        {related
+          .filter((child) =>
+            matchesView(
+              RelationshipEntityType.Task,
+              child.entity.type,
+              "secondary"
+            )
+          )
+          .map((child) => (
+            <div key={child.edge?.id ?? child.entity.id}>
+              <RelatedEntity node={child} variant="icon" />
+            </div>
+          ))}
+      </div>
+    </div>
   );
 };

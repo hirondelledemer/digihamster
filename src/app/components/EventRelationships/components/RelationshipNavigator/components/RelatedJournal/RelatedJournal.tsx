@@ -8,15 +8,16 @@ import { FC } from "react";
 import { EntityTypeIcon } from "../../../EntityTypeIcon";
 import { Card } from "@/app/components/ui/card";
 import { MinimalNote } from "@/app/components/notes";
+import { RelatedEntityVariant } from "../RelatedEntity/RelatedEntity";
 
 export const RelatedJournal: FC<{
   id: number;
-  compact: boolean;
+  variant: RelatedEntityVariant;
   /** neighbour types behind this one, for the hint row of little icons */
   summary?: RelationshipEntityType[];
   /** the thread this entry picks up, and what it was written about */
   related?: RelationshipNode[];
-}> = ({ id, compact, summary = [], related = [] }) => {
+}> = ({ id, variant, summary = [], related = [] }) => {
   const journal = useJournalEntryById(id);
 
   const { setActiveEntity, entities } = useNavigator();
@@ -31,7 +32,7 @@ export const RelatedJournal: FC<{
     return null;
   }
 
-  if (compact) {
+  if (variant === "compact") {
     return (
       <div
         className="flex flex-col items-center gap-1"
@@ -65,7 +66,7 @@ export const RelatedJournal: FC<{
         <RelatedEntity
           key={child.edge?.id ?? child.entity.id}
           node={child}
-          compact={false}
+          variant="full"
         />
       ))}
     </>

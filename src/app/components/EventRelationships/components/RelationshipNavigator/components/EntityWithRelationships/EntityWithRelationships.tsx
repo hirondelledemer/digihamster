@@ -2,18 +2,21 @@ import { useRelationshipTree } from "@/app/utils/hooks/use-relationships/use-rel
 import { RelationshipEntityType } from "@/app/utils/types/relationship";
 import { FC, useContext } from "react";
 import { RelationshipNavigatorContext } from "@/app/components/EventRelationships/navigator-context";
-import { RelatedEntity } from "../RelatedEntity/RelatedEntity";
+import {
+  RelatedEntity,
+  RelatedEntityVariant,
+} from "../RelatedEntity/RelatedEntity";
 
 export interface RelationshipPanelProps {
   entityId: number;
   entityType: RelationshipEntityType;
-  compact: boolean;
+  variant: RelatedEntityVariant;
   relationshipPriority?: "primary" | "secondary";
 }
 export const EntityWithRelationships: FC<RelationshipPanelProps> = ({
   entityId,
   entityType,
-  compact,
+  variant,
   relationshipPriority,
 }) => {
   const { day } = useContext(RelationshipNavigatorContext);
@@ -23,7 +26,7 @@ export const EntityWithRelationships: FC<RelationshipPanelProps> = ({
     {
       // a compact column draws one icon per neighbour and nothing below it,
       // so there is no point walking further than the first level
-      depth: compact ? 1 : 2,
+      depth: variant === "compact" ? 1 : 2,
       priority: relationshipPriority,
       on: day,
     }
@@ -35,7 +38,7 @@ export const EntityWithRelationships: FC<RelationshipPanelProps> = ({
         <RelatedEntity
           key={child.edge?.id ?? `${child.entity.type}-${child.entity.id}`}
           node={child}
-          compact={compact}
+          variant={variant}
         />
       ))}
       {!tree.children.length && <div className="w-full">no stuff here</div>}
