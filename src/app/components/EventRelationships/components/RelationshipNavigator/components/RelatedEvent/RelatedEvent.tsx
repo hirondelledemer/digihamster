@@ -50,7 +50,6 @@ export const RelatedEvent: FC<{
         >
           <IconCalendar
             size={16}
-            // color={person.color}
             aria-label={event.title}
             className="cursor"
             onClick={selectEntity}
