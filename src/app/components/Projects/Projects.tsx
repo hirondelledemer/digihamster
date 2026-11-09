@@ -29,7 +29,7 @@ import { useProjectsActions } from "@/app/utils/hooks/use-projects/actions-conte
 import { useTasksState } from "@/app/utils/hooks/use-tasks/state-context";
 import CreateTaskForm from "../CreateTaskForm";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "../ui/sheet";
-import { ITask } from "@/app/utils/types/task";
+import { ITask, TaskStatus } from "@/app/utils/types/task";
 import { Card, CardHeader, CardTitle } from "../ui/card";
 import { ProjectStatus } from "@/app/utils/types/project";
 
@@ -76,7 +76,7 @@ const Projects: FC = (): JSX.Element => {
     }
     return task.project_id === selectedProjectId;
   });
-  const columns = getColumns(projects, []);
+  const columns = getColumns();
 
   const closeTaskForm = () => {
     setOpenTaskForm({ selectedTask: null, open: false });
@@ -202,7 +202,16 @@ const Projects: FC = (): JSX.Element => {
           </DndContext>
         </div>
         <div className="grow">
-          <DataTable data={filteredTasks} columns={columns} />
+          <DataTable
+            data={filteredTasks}
+            columns={columns}
+            rowClassName={(task: ITask) =>
+              task.status === TaskStatus.Done ||
+              task.status === TaskStatus.Cancelled
+                ? "line-through text-muted-foreground opacity-40"
+                : undefined
+            }
+          />
         </div>
       </div>
     </div>

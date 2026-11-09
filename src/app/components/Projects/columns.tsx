@@ -2,17 +2,11 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
-import { Tag } from "@/models/tag";
 import { DataTableColumnHeader } from "../Tasks/components/DataTableColumnHeader/DataTableColumnHeader";
-import { Badge } from "../ui/badge";
 import { DataTableRowActions } from "../Tasks/components/DataTableRowActions/DataTableRowActions";
-import { IProject } from "@/app/utils/types/project";
 import { ITask } from "@/app/utils/types/task";
 
-export const getColumns: (
-  projects: IProject[],
-  tags: Tag[],
-) => ColumnDef<ITask>[] = (_projects, _tags) => [
+export const getColumns: () => ColumnDef<ITask>[] = () => [
   {
     accessorKey: "title",
     header: ({ column }) => (
@@ -23,9 +17,6 @@ export const getColumns: (
         <div className="flex">
           <span className="max-w-[300px] truncate font-medium space-x-2">
             <span>{row.getValue("title")}</span>
-            {row.original.deadline && (
-              <Badge variant="destructive">Deadline</Badge>
-            )}
           </span>
         </div>
       );
