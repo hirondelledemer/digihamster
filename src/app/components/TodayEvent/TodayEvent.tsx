@@ -16,9 +16,7 @@ import CalendarWeatherEvent from "../CalendarWeatherEvent";
 import { useTaskProject } from "@/app/utils/hooks/use-projects/selectors";
 import { TaskActions } from "../TaskActions";
 import { EventActions } from "../EventActions";
-import { DraggableTaskCard } from "../TaskCard/DraggableTaskCard";
 import { EventStatus } from "@/app/utils/types/event";
-import { sortInTheEvent } from "@/app/utils/tasks/sort";
 
 export interface TodayEventProps {
   showDate?: boolean;
@@ -54,14 +52,14 @@ const TodayEvent: FC<TodayEventProps> = ({
   });
 
   const project = useTaskProject(
-    isCalendarDeadlineEntry(event) ? event.resource.task : null,
+    isCalendarDeadlineEntry(event) ? event.resource.task : null
   );
 
   const eventIsCompleted = isCalendarDeadlineEntry(event)
     ? event.resource.completed
     : isCalendarEventEntry(event)
-      ? event.resource.event.status === EventStatus.Completed
-      : false;
+    ? event.resource.event.status === EventStatus.Completed
+    : false;
 
   return (
     <div ref={setNodeRef} className={cn(isOver ? "border border-primary" : "")}>
@@ -130,13 +128,13 @@ const TodayEvent: FC<TodayEventProps> = ({
             {isCalendarDeadlineEntry(event) && (
               <span className="text-xs">{event.resource.task.description}</span>
             )}
-            {isCalendarEventEntry(event) && (
+            {/* {isCalendarEventEntry(event) && (
               <div className="grid gap-2">
                 {sortInTheEvent(event.resource.tasks).map((t) => (
                   <DraggableTaskCard key={t.id} task={t} dragId={t.id} />
                 ))}
               </div>
-            )}
+            )} */}
           </div>
         </div>
       </div>

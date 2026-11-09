@@ -9,7 +9,7 @@ import { useEntriesState } from "./state-context";
 import { EntriesContextProvider } from "./provider";
 import { useEntriesActions } from "./actions-context";
 import { generateListOfJournalEntries } from "../../mocks/journal-entry";
-import { CreateEntryRequestParams, JOURNAL_ENTRIES_PATH } from "./api";
+import { JournalRequestParams, JOURNAL_ENTRIES_PATH } from "./api";
 
 describe("EntriesContextProvider", () => {
   afterEach(() => {
@@ -76,10 +76,11 @@ describe("EntriesContextProvider", () => {
   });
 
   it("should create an entry and update the state", async () => {
-    const mockEntry: CreateEntryRequestParams = {
+    const mockEntry: JournalRequestParams = {
       title: "new entry",
       note: "",
       json_note: {},
+      mentioned_people_ids: [],
     };
 
     mockAxios.post.mockResolvedValueOnce({ data: [] });

@@ -10,7 +10,7 @@ type EntryActionsContextValue = ActionsContextValue<
 
 const DEFAULT_ENTRIES_ACTIONS: EntryActionsContextValue = {
   create: async () => null,
-  update: () => {},
+  update: async () => null,
   delete: () => {},
 } as const;
 

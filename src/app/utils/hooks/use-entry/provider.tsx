@@ -5,7 +5,7 @@ import { useToast } from "@/app/components/ui/use-toast";
 import { reducer } from "./reducer";
 
 import { EntriesStateAction, EntriesStateActionType } from "./actions";
-import { api, CreateEntryRequestParams } from "./api";
+import { api, JournalRequestParams } from "./api";
 import { EntriesStateContext } from "./state-context";
 import { EntriesActionsContext } from "./actions-context";
 import { IJournalEntry } from "../../types/journal-entry";
@@ -76,7 +76,7 @@ export const EntriesContextProvider = ({
   }, [fetchDataMemoized]);
 
   const createEntry = useCallback(
-    async (data: CreateEntryRequestParams, onDone?: () => void) => {
+    async (data: JournalRequestParams, onDone?: () => void) => {
       const nowDate = now();
       const tempId = -nowDate.valueOf();
 
@@ -138,11 +138,13 @@ export const EntriesContextProvider = ({
           onDone();
         }
 
-        await api.updateEntry(id, props);
+        const updated = await api.updateEntry(id, props);
+        return updated;
 
         handleSuccessToast(toast, "Entry has been updated");
       } catch (e: unknown) {
         handleApiError(getApiErrorMessage(e), toast);
+        return null;
       }
     },
     [toast]
