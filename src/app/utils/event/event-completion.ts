@@ -7,6 +7,7 @@ import { useTasksActions } from "../hooks/use-tasks/actions-context";
 import { EventStatus, IEvent } from "../types/event";
 import { RelationshipEntityType } from "../types/relationship";
 import { TaskStatus } from "../types/task";
+import { useTasksByIds } from "../hooks/use-tasks/selectors";
 
 export const useCompleteEvent = (event: IEvent) => {
   const { update: updateEvent } = useEventsActions();
@@ -22,12 +23,17 @@ export const useCompleteEvent = (event: IEvent) => {
   const relatedTasksEdges = relationships.filter(
     (r) => r.target_type === RelationshipEntityType.Task
   );
+  const taskIds = relatedTasksEdges.map((r) => r.target_id);
+
+  const tasks = useTasksByIds(taskIds);
+
+  const activeTasks = tasks.filter((t) => t.status === TaskStatus.Todo);
 
   const handleEventCompletion = async () => {
     await updateEvent(event.id, { status: EventStatus.Completed });
 
-    relatedTasksEdges.forEach(async (r) => {
-      updateTask(r.target_id, { status: TaskStatus.Doing });
+    activeTasks.forEach(async (t) => {
+      updateTask(t.id, { status: TaskStatus.Doing });
 
       const note = await createNote({
         title: "",
@@ -53,8 +59,8 @@ export const useCompleteEvent = (event: IEvent) => {
 
       if (!!note) {
         createRelationship({
-          source_id: r.target_id,
-          source_type: r.target_type,
+          source_id: t.id,
+          source_type: RelationshipEntityType.Task,
           target_id: note.id,
           target_type: RelationshipEntityType.Note,
         });

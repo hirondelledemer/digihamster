@@ -61,3 +61,9 @@ export const useTaskById = (id: number | null | undefined): ITask | null => {
 
   return data.find((task) => task.id === id) ?? null;
 };
+
+export const useTasksByIds = (ids: number[]): ITask[] => {
+  const { data } = useTasksState();
+
+  return data.filter((task) => ids.includes(task.id));
+};
