@@ -14,7 +14,7 @@ export interface LifeAspectBoost {
   life_aspect_id: number;
   value: number;
   source_type: "task" | "habit" | "event" | "manual" | "ai";
-  source_id: string;
+  source_id: number;
   created_at: string;
 }
 
@@ -23,5 +23,5 @@ export interface ILifeAspect {
   title: string;
   description?: string;
   asset: LifeAspectAsset;
-  boosts: { value: number; expires: string }[];
+  boosts: LifeAspectBoost[];
 }

@@ -1,7 +1,4 @@
-import {
-  getHabitWindow,
-  HabitWindow,
-} from "../../habits/habit-progress";
+import { getHabitWindow, HabitWindow } from "../../habits/habit-progress";
 import { isOccurrence } from "../../relationships/relationship-types";
 import { EventStatus } from "../../types/event";
 import { IHabitWithLogs } from "../../types/habit";
@@ -15,6 +12,7 @@ type GroupedHabits = {
   [k in number]: IHabitWithLogs[];
 };
 
+/** @deprecated feature is gone */
 export const useHabitsGroupedByEvents = (): GroupedHabits | undefined => {
   const { data: habits, isLoading: isHabitsLoading } = useHabitsNewState();
   const { data: relationships, isLoading: isRelationshipsLoading } =
@@ -56,6 +54,7 @@ export const useHabitsGroupedByEvents = (): GroupedHabits | undefined => {
   return groupedHabits;
 };
 
+/** @deprecated feature is gone */
 export const useHabitsForEvent = (eventId: number): IHabitWithLogs[] => {
   const { data: habits, isLoading: isHabitsLoading } = useHabitsNewState();
   const { data: relationships, isLoading: isRelationshipsLoading } =
@@ -135,4 +134,11 @@ export const useHabitWindow = (
   }
 
   return getHabitWindow({ habit, scheduled });
+};
+
+export const useHabitsByLifeAspectId = (
+  lifeAspectId: number | undefined
+): IHabitWithLogs[] => {
+  const { data: habits } = useHabitsNewState();
+  return habits.filter((h) => h.life_aspect_id === lifeAspectId);
 };

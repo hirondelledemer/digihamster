@@ -57,3 +57,13 @@ export const useHabitLifeAspectAssetIcon = (
   }
   return mapAssetToAnimal[asset];
 };
+
+export const useLifeAspectAssetIcon = (
+  id: number | null | undefined
+): string | undefined => {
+  const asset = useLifeAspectById(id)?.asset;
+  if (!asset) {
+    return undefined;
+  }
+  return mapAssetToAnimal[asset];
+};
