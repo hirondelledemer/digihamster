@@ -24,10 +24,6 @@ export const useHabitLifeAspect = (
   habit: IHabitWithLogs | null
 ): ILifeAspect | null => useLifeAspectById(habit?.life_aspect_id);
 
-export const useProjectLifeAspectAsset = (
-  project: IProject | null
-): LifeAspectAsset | undefined => useProjectLifeAspect(project)?.asset;
-
 const mapAssetToAnimal: Record<LifeAspectAsset, string> = {
   tree: "\u{1F43F}",
   house: "\u{1F415}",
@@ -38,32 +34,17 @@ const mapAssetToAnimal: Record<LifeAspectAsset, string> = {
   shed: "\u{1F400}",
 };
 
+/** Use this when the life aspect is already in hand — no extra lookup needed. */
+export const getLifeAspectAssetIcon = (
+  asset: LifeAspectAsset | undefined
+): string | undefined => (asset ? mapAssetToAnimal[asset] : undefined);
+
 export const useProjectLifeAspectAssetIcon = (
   project: IProject | null
-): string | undefined => {
-  const asset = useProjectLifeAspect(project)?.asset;
-  if (!asset) {
-    return undefined;
-  }
-  return mapAssetToAnimal[asset];
-};
+): string | undefined =>
+  getLifeAspectAssetIcon(useProjectLifeAspect(project)?.asset);
 
 export const useHabitLifeAspectAssetIcon = (
   habit: IHabitWithLogs | null
-): string | undefined => {
-  const asset = useHabitLifeAspect(habit)?.asset;
-  if (!asset) {
-    return undefined;
-  }
-  return mapAssetToAnimal[asset];
-};
-
-export const useLifeAspectAssetIcon = (
-  id: number | null | undefined
-): string | undefined => {
-  const asset = useLifeAspectById(id)?.asset;
-  if (!asset) {
-    return undefined;
-  }
-  return mapAssetToAnimal[asset];
-};
+): string | undefined =>
+  getLifeAspectAssetIcon(useHabitLifeAspect(habit)?.asset);

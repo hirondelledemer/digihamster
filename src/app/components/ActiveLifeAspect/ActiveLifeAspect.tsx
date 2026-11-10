@@ -5,7 +5,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "../ui/sheet";
 import { useSearchParams } from "next/navigation";
 import { useSetSearchParams } from "@/app/utils/url/search-params";
 import {
-  useLifeAspectAssetIcon,
+  getLifeAspectAssetIcon,
   useLifeAspectById,
 } from "@/app/utils/hooks/use-life-aspects/selectors";
 import { useHabitsByLifeAspectId } from "@/app/utils/hooks/use-habits-new/selectors";
@@ -32,7 +32,7 @@ export const ActiveLifeAspect: FC = (): JSX.Element | null => {
     lifeAspectId ? Number(lifeAspectId) : null
   );
 
-  const icon = useLifeAspectAssetIcon(selectedLifeAspect?.id);
+  const icon = getLifeAspectAssetIcon(selectedLifeAspect?.asset);
 
   const habits = useHabitsByLifeAspectId(selectedLifeAspect?.id);
 

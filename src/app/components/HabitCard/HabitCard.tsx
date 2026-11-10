@@ -8,12 +8,13 @@ import { HabitActions } from "./HabitActions";
 import { AdditionalAction } from "../AdditionalActions";
 import { ScheduledIndicator } from "../ScheduledIndicator";
 import {
+  getLifeAspectAssetIcon,
   useHabitLifeAspect,
-  useHabitLifeAspectAssetIcon,
 } from "@/app/utils/hooks/use-life-aspects/selectors";
 import { useHabitWindow } from "@/app/utils/hooks/use-habits-new/selectors";
 import { HabitProgress } from "./HabitProgress";
 import { useSetSearchParams } from "@/app/utils/url/search-params";
+import { QUERY_KEYS } from "@/app/utils/url/constants";
 
 export const titleTestId = "TaskCard-title-testid";
 export const cardTestId = "TaskCard-card-testid";
@@ -35,8 +36,8 @@ export const HabitCard: FC<HabitCardProps> = ({
   const date = new Date(event.start_at);
   const log = getHabitLogForADay(habit, date);
   const isCompleted = log?.completed;
-  const icon = useHabitLifeAspectAssetIcon(habit);
   const lifeAspect = useHabitLifeAspect(habit);
+  const icon = getLifeAspectAssetIcon(lifeAspect?.asset);
   const habitWindow = useHabitWindow(habit.id);
   const setParams = useSetSearchParams();
 
@@ -63,7 +64,7 @@ export const HabitCard: FC<HabitCardProps> = ({
                   className="hover:animate-wiggle cursor-pointer"
                   onClick={() =>
                     lifeAspect &&
-                    setParams("lifeAspectId", lifeAspect?.id.toString())
+                    setParams(QUERY_KEYS.lifeAspect, lifeAspect?.id.toString())
                   }
                 >
                   {icon}
