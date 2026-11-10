@@ -1,6 +1,6 @@
 "use client";
 
-import { CSSProperties, FC } from "react";
+import { CSSProperties, FC, ReactNode, SVGProps } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "../ui/sheet";
 import { useSearchParams } from "next/navigation";
 import { useSetSearchParams } from "@/app/utils/url/search-params";
@@ -14,14 +14,47 @@ import {
   useHabitsByLifeAspectId,
 } from "@/app/utils/hooks/use-habits-new/selectors";
 import { ScrollArea } from "../ui/scroll-area";
-import { LifeAspectBoost } from "@/app/utils/types/life-aspect";
+import {
+  LifeAspectAsset,
+  LifeAspectBoost,
+} from "@/app/utils/types/life-aspect";
 import { useTaskById } from "@/app/utils/hooks/use-tasks/selectors";
 import { compareAsc, compareDesc, format, subMonths } from "date-fns";
 import { useTaskProjectColor } from "@/app/utils/hooks/use-projects/selectors";
 import { HabitLog } from "@/app/utils/types/habit";
 import { cn } from "../utils";
 import { now } from "@/app/utils/date/now";
+import { River } from "../Garden/components/River";
+import { Mountains } from "../Garden/components/Mountains";
+import { House } from "../Garden/components/House";
+import { Tree } from "../Garden/components/Tree";
+import { Shed } from "../Garden/components/Shed";
+import { Animals } from "../Garden/components/Animals";
+import { PumpkinGarden } from "../Garden/components/PumkinGarden"; // TODO: fix folder typo
+import { getHabitProgressForLifeAspect } from "@/app/utils/habits/habit-progress";
 
+type GardenAsset = (
+  props: { stage: number; withBoosts: boolean } & SVGProps<SVGSVGElement>
+) => ReactNode;
+
+/**
+ * Each asset is drawn in the Garden scene's coordinates, so on its own it needs
+ * a viewBox framing just that asset. These are the artwork bounds at stages
+ * 2-10 plus 4% padding — the haunted-stage mist decorations sit at fixed
+ * coordinates well outside the artwork and are deliberately left out of frame.
+ */
+const ASPECT_TO_ASSET_MAP: Record<
+  LifeAspectAsset,
+  { Component: GardenAsset; viewBox: string }
+> = {
+  house: { Component: House, viewBox: "457 46 335 310" },
+  tree: { Component: Tree, viewBox: "-21 59 388 405" },
+  shed: { Component: Shed, viewBox: "-2 74 516 455" },
+  animals: { Component: Animals, viewBox: "1 57 631 442" },
+  river: { Component: River, viewBox: "11 -24 708 621" },
+  mountains: { Component: Mountains, viewBox: "17 -10 708 279" },
+  pumpkinGarden: { Component: PumpkinGarden, viewBox: "617 255 814 386" },
+};
 const LogContainer: FC<{
   value: number;
   title: string;
@@ -117,6 +150,15 @@ export const ActiveLifeAspect: FC = (): JSX.Element | null => {
       .filter((log) => compareAsc(log.created_at, monthAgo) > 0),
   ].sort((a, b) => compareDesc(a.created_at, b.created_at));
 
+  const { Component: AssetComponent, viewBox } =
+    ASPECT_TO_ASSET_MAP[selectedLifeAspect.asset];
+
+  // const treeLifeAspect = lifeAspects.find((la) => la.asset === "tree");
+
+  const assetScore = Math.floor(
+    getHabitProgressForLifeAspect(habits, selectedLifeAspect || [], true) / 10
+  );
+
   return (
     <Sheet open>
       <SheetContent
@@ -128,7 +170,13 @@ export const ActiveLifeAspect: FC = (): JSX.Element | null => {
         <SheetHeader>
           <SheetTitle>{selectedLifeAspect.title}</SheetTitle>
         </SheetHeader>
-        <div className="mt-4 w-full h-[20%] border border-[4px] border-dotted flex items-center justify-center text-2xl">
+        <div className="mt-4 w-full h-[20%] border border-[4px] border-dotted flex items-baseline justify-center text-4xl">
+          <AssetComponent
+            stage={assetScore}
+            withBoosts={false}
+            viewBox={viewBox}
+            className="h-full w-auto"
+          />
           {icon}
         </div>
         <div className="mt-4 p-4 pl-0 w-full h-[30%] border border-[4px] border-dotted">

@@ -16,13 +16,19 @@ import {
   HoverWrapper,
   MagicalWrapper,
 } from "../MagicalWrapper";
+import { cn } from "@/app/components/utils";
 
 export type TreeProps = {
   stage: number;
   withBoosts?: boolean;
 } & SVGProps<SVGSVGElement>;
 
-export const Tree = ({ stage, withBoosts, ...props }: TreeProps) => {
+export const Tree = ({
+  stage,
+  withBoosts,
+  className,
+  ...props
+}: TreeProps) => {
   const mainTree = React.useMemo(
     () => (
       <HoverWrapper>
@@ -40,7 +46,7 @@ export const Tree = ({ stage, withBoosts, ...props }: TreeProps) => {
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 -10 900 450"
       {...props}
-      className="tree"
+      className={cn("tree", className)}
     >
       <Shadow />
       {stage < 3 ? <HauntedWrapper>{mainTree}</HauntedWrapper> : mainTree}

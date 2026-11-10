@@ -13,6 +13,7 @@ import {
   HoverWrapper,
   MagicalWrapper,
 } from "../MagicalWrapper";
+import { AssetRoot } from "../AssetRoot";
 
 export interface MountainsProps extends SVGProps<SVGSVGElement> {
   withBoosts: boolean;
@@ -23,7 +24,7 @@ export const Mountains: FC<MountainsProps> = ({
   withBoosts,
   ...props
 }) => (
-  <g {...props}>
+  <AssetRoot {...props}>
     <HoverWrapper>
       <MagicalWrapper disabled={!withBoosts}>
         <title>{"Mountains"}</title>
@@ -51,5 +52,5 @@ export const Mountains: FC<MountainsProps> = ({
         <SmallMountains />
       </MagicalWrapper>
     </HoverWrapper>
-  </g>
+  </AssetRoot>
 );

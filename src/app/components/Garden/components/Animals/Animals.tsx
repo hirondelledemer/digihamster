@@ -13,6 +13,7 @@ import {
   HoverWrapper,
   MagicalWrapper,
 } from "../MagicalWrapper";
+import { AssetRoot } from "../AssetRoot";
 
 export type AnimalProps = {
   stage: number;
@@ -24,7 +25,7 @@ export const Animals = ({
   withBoosts = false,
   ...props
 }: AnimalProps) => (
-  <g {...props}>
+  <AssetRoot {...props}>
     <title>{"Animals"}</title>
     <HoverWrapper>
       <MagicalWrapper disabled={!withBoosts}>
@@ -44,5 +45,5 @@ export const Animals = ({
         {stage > 8 && <Foxes />}
       </MagicalWrapper>
     </HoverWrapper>
-  </g>
+  </AssetRoot>
 );
