@@ -43,8 +43,15 @@ export const ActiveLifeAspect: FC = (): JSX.Element | null => {
         ...habits
           .map((h) => h.logs)
           .flat()
-          .filter((log) => compareAsc(log.created_at, MONTH_AGO) > 0),
-      ].sort((a, b) => compareDesc(a.created_at, b.created_at)),
+          .filter(
+            (log) => compareAsc(log.log_date, MONTH_AGO) > 0 && log.completed
+          ),
+      ].sort((a, b) =>
+        compareDesc(
+          "log_date" in a ? a.log_date : a.created_at,
+          "log_date" in b ? b.log_date : b.created_at
+        )
+      ),
     [habits, selectedLifeAspect]
   );
 
@@ -57,7 +64,7 @@ export const ActiveLifeAspect: FC = (): JSX.Element | null => {
 
   const assetScore = getHabitScoreForLifeAspect(
     habits,
-    selectedLifeAspect || [],
+    selectedLifeAspect,
     true
   );
 
@@ -86,16 +93,21 @@ export const ActiveLifeAspect: FC = (): JSX.Element | null => {
         </div>
         <ScrollArea className="h-[40%] mt-4 border border-[4px] border-dotted">
           <table className="w-full text-2 text-xs [&_tr:first-child_td]:border-t-0 [&_tr:last-child_td]:border-b-0">
-            {allLogs.map((generalLog, idx) =>
-              isBoostEntry(generalLog) ? (
-                <BoostEntry
-                  key={`${generalLog.id}-${idx}`}
-                  boost={generalLog}
-                />
-              ) : (
-                <HabitEntry key={`${generalLog.id}-${idx}`} log={generalLog} />
-              )
-            )}
+            <tbody>
+              {allLogs.map((generalLog, idx) =>
+                isBoostEntry(generalLog) ? (
+                  <BoostEntry
+                    key={`${generalLog.id}-${idx}`}
+                    boost={generalLog}
+                  />
+                ) : (
+                  <HabitEntry
+                    key={`${generalLog.id}-${idx}`}
+                    log={generalLog}
+                  />
+                )
+              )}
+            </tbody>
           </table>
         </ScrollArea>
       </SheetContent>

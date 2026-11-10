@@ -62,7 +62,7 @@ export const getHabitProgressForLifeAspect = (
  */
 export const getHabitScoreForLifeAspect = (
   ...params: Parameters<typeof getHabitProgressForLifeAspect>
-) => Math.floor(getHabitProgressForLifeAspect(...params)) / 10;
+) => Math.floor(getHabitProgressForLifeAspect(...params) / 10);
 
 /**
  * How a habit is doing, split into the parts that mean different things.

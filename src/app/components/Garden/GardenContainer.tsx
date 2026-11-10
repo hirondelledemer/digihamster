@@ -2,7 +2,10 @@
 import React, { FC, useState } from "react";
 import "./style.css";
 
-import { getHabitProgressForLifeAspect } from "@/app/utils/habits/habit-progress";
+import {
+  getHabitProgressForLifeAspect,
+  getHabitScoreForLifeAspect,
+} from "@/app/utils/habits/habit-progress";
 import { Button } from "../ui/button";
 
 import { IconMinus, IconPlus } from "@tabler/icons-react";
@@ -30,30 +33,43 @@ export const GardenContainer: FC<{
     (la) => la.asset === "pumpkinGarden"
   );
 
-  const treeScore = Math.floor(
-    getHabitProgressForLifeAspect(habits, treeLifeAspect || [], true) / 10
+  const treeScore = getHabitScoreForLifeAspect(
+    habits,
+    treeLifeAspect || [],
+    true
   );
-  const houseScore = Math.floor(
-    getHabitProgressForLifeAspect(habits, houseLifeAspect || [], true) / 10
+  const houseScore = getHabitScoreForLifeAspect(
+    habits,
+    houseLifeAspect || [],
+    true
   );
-  const shedScore = Math.floor(
-    getHabitProgressForLifeAspect(habits, shedLifeAspect || [], true) / 10
-  );
-
-  console.log("shedScore", shedScore);
-  const animalsScore = Math.floor(
-    getHabitProgressForLifeAspect(habits, animalsLifeAspect || [], true) / 10
-  );
-  const riverScore = Math.floor(
-    getHabitProgressForLifeAspect(habits, riverLifeAspect || [], true) / 10
+  const shedScore = getHabitScoreForLifeAspect(
+    habits,
+    shedLifeAspect || [],
+    true
   );
 
-  const mountainsScore = Math.floor(
-    getHabitProgressForLifeAspect(habits, mountainsLifeAspect || [], true) / 10
+  const animalsScore = getHabitScoreForLifeAspect(
+    habits,
+    animalsLifeAspect || [],
+    true
+  );
+  const riverScore = getHabitScoreForLifeAspect(
+    habits,
+    riverLifeAspect || [],
+    true
   );
 
-  const pumpkinGardenScore = Math.floor(
-    getHabitProgressForLifeAspect(habits, pumpkinsLifeAspect || [], true) / 10
+  const mountainsScore = getHabitScoreForLifeAspect(
+    habits,
+    mountainsLifeAspect || [],
+    true
+  );
+
+  const pumpkinGardenScore = getHabitScoreForLifeAspect(
+    habits,
+    pumpkinsLifeAspect || [],
+    true
   );
 
   const config: GardenConfig = {

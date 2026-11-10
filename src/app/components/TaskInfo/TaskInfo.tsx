@@ -6,7 +6,6 @@ import CreateTaskForm from "../CreateTaskForm";
 import { ScrollArea } from "../ui/scroll-area";
 import { useProjectById } from "@/app/utils/hooks/use-projects/selectors";
 import { MinimalNote } from "../notes";
-import { useSearchParams } from "#lib/navigation";
 import { useTasksState } from "@/app/utils/hooks/use-tasks/state-context";
 import { DraggableTaskCard } from "../TaskCard/DraggableTaskCard";
 import {
@@ -30,6 +29,7 @@ import { Label } from "../ui/label";
 import { useTasksActions } from "@/app/utils/hooks/use-tasks/actions-context";
 import { TaskStatus } from "@/app/utils/types/task";
 import { useSetSearchParams } from "@/app/utils/url/search-params";
+import { useSearchParams } from "next/navigation";
 
 export interface TaskInfoProps {
   testId?: string;
