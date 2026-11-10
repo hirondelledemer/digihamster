@@ -1,6 +1,6 @@
 "use client";
 
-import { FC } from "react";
+import { FC, useMemo } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "../ui/sheet";
 import { useSearchParams } from "next/navigation";
 import { useSetSearchParams } from "@/app/utils/url/search-params";
@@ -13,19 +13,20 @@ import { useHabitsByLifeAspectId } from "@/app/utils/hooks/use-habits-new/select
 import { ScrollArea } from "../ui/scroll-area";
 import { compareAsc, compareDesc, subMonths } from "date-fns";
 import { now } from "@/app/utils/date/now";
-import { getHabitProgressForLifeAspect } from "@/app/utils/habits/habit-progress";
+import { getHabitScoreForLifeAspect } from "@/app/utils/habits/habit-progress";
 import { ASPECT_TO_ASSET_MAP } from "./contants";
 import { BoostEntry } from "./components/BoostEntry";
 import { HabitEntry } from "./components/HabitEntry";
+import { QUERY_KEYS } from "@/app/utils/url/constants";
+import { isBoostEntry } from "./utils";
+
+const MONTH_AGO = subMonths(now(), 1);
 
 export const ActiveLifeAspect: FC = (): JSX.Element | null => {
   const searchParams = useSearchParams();
   const setParams = useSetSearchParams();
 
-  const nowDate = now();
-  const monthAgo = subMonths(nowDate, 1);
-
-  const lifeAspectId = searchParams.get("lifeAspectId");
+  const lifeAspectId = searchParams.get(QUERY_KEYS.lifeAspect);
 
   const selectedLifeAspect = useLifeAspectById(
     lifeAspectId ? Number(lifeAspectId) : null
@@ -35,25 +36,29 @@ export const ActiveLifeAspect: FC = (): JSX.Element | null => {
 
   const habits = useHabitsByLifeAspectId(selectedLifeAspect?.id);
 
+  const allLogs = useMemo(
+    () =>
+      [
+        ...(selectedLifeAspect?.boosts || []),
+        ...habits
+          .map((h) => h.logs)
+          .flat()
+          .filter((log) => compareAsc(log.created_at, MONTH_AGO) > 0),
+      ].sort((a, b) => compareDesc(a.created_at, b.created_at)),
+    [habits, selectedLifeAspect]
+  );
+
   if (!selectedLifeAspect) {
     return null;
   }
 
-  const allLogs = [
-    ...selectedLifeAspect.boosts,
-    ...habits
-      .map((h) => h.logs)
-      .flat()
-      .filter((log) => compareAsc(log.created_at, monthAgo) > 0),
-  ].sort((a, b) => compareDesc(a.created_at, b.created_at));
-
   const { Component: AssetComponent, viewBox } =
     ASPECT_TO_ASSET_MAP[selectedLifeAspect.asset];
 
-  // const treeLifeAspect = lifeAspects.find((la) => la.asset === "tree");
-
-  const assetScore = Math.floor(
-    getHabitProgressForLifeAspect(habits, selectedLifeAspect || [], true) / 10
+  const assetScore = getHabitScoreForLifeAspect(
+    habits,
+    selectedLifeAspect || [],
+    true
   );
 
   return (
@@ -82,7 +87,7 @@ export const ActiveLifeAspect: FC = (): JSX.Element | null => {
         <ScrollArea className="h-[40%] mt-4 border border-[4px] border-dotted">
           <table className="w-full text-2 text-xs [&_tr:first-child_td]:border-t-0 [&_tr:last-child_td]:border-b-0">
             {allLogs.map((generalLog, idx) =>
-              "source_type" in generalLog ? (
+              isBoostEntry(generalLog) ? (
                 <BoostEntry
                   key={`${generalLog.id}-${idx}`}
                   boost={generalLog}
