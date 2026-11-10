@@ -18,7 +18,7 @@ import { BoostEntry } from "./components/BoostEntry";
 import { HabitEntry } from "./components/HabitEntry";
 import { QUERY_KEYS } from "@/app/utils/url/constants";
 import { isBoostEntry } from "./utils";
-import { LifeAspectBarChart } from "@/app/llife-aspects/LifeAspectBarChart";
+import { LifeAspectBarChart } from "@/app/components/molcules/life-aspects/LifeAspectBarChart";
 
 const MONTH_AGO = subMonths(now(), 1);
 
