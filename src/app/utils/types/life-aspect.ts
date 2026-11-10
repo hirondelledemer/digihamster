@@ -9,11 +9,13 @@ export type LifeAspectAsset =
 
 export type LifeAspectScore = LifeAspectAsset | "defaultScore";
 
+export type BoostSource = "task" | "habit" | "event" | "manual" | "ai";
+
 export interface LifeAspectBoost {
   id: number;
   life_aspect_id: number;
   value: number;
-  source_type: "task" | "habit" | "event" | "manual" | "ai";
+  source_type: BoostSource;
   source_id: number;
   created_at: string;
 }

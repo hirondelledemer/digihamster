@@ -21,7 +21,7 @@ const ASSETS: LifeAspectAsset[] = [
 function serialize(lifeAspects: LifeAspect[]): string {
   return lifeAspects
     .map(
-      (la) => `${la.id} / ${la.title} / ${la.description ?? ""} / ${la.asset}`,
+      (la) => `${la.id} / ${la.title} / ${la.description ?? ""} / ${la.asset}`
     )
     .join("\n");
 }
@@ -71,10 +71,10 @@ export function LifeAspectsEditor() {
 
       // Delete life aspects removed from the textarea
       const toDelete = lifeAspects.filter(
-        (la) => !parsedIds.has(la.id.toString()),
+        (la) => !parsedIds.has(la.id.toString())
       );
       await Promise.all(
-        toDelete.map((la) => api.deleteLifeAspect(la.id.toString())),
+        toDelete.map((la) => api.deleteLifeAspect(la.id.toString()))
       );
 
       // Create or update
@@ -88,7 +88,7 @@ export function LifeAspectsEditor() {
             });
           }
           return api.updateLifeAspect(item.id.toString(), item);
-        }),
+        })
       );
     } finally {
       setSaving(false);

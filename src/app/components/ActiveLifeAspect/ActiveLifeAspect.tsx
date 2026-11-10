@@ -1,6 +1,6 @@
 "use client";
 
-import { CSSProperties, FC, ReactNode, SVGProps } from "react";
+import { FC } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "../ui/sheet";
 import { useSearchParams } from "next/navigation";
 import { useSetSearchParams } from "@/app/utils/url/search-params";
@@ -9,117 +9,14 @@ import {
   useLifeAspectById,
 } from "@/app/utils/hooks/use-life-aspects/selectors";
 import { LifeAspectBarChart } from "./LifeAspectBarChart";
-import {
-  useHabitById,
-  useHabitsByLifeAspectId,
-} from "@/app/utils/hooks/use-habits-new/selectors";
+import { useHabitsByLifeAspectId } from "@/app/utils/hooks/use-habits-new/selectors";
 import { ScrollArea } from "../ui/scroll-area";
-import {
-  LifeAspectAsset,
-  LifeAspectBoost,
-} from "@/app/utils/types/life-aspect";
-import { useTaskById } from "@/app/utils/hooks/use-tasks/selectors";
-import { compareAsc, compareDesc, format, subMonths } from "date-fns";
-import { useTaskProjectColor } from "@/app/utils/hooks/use-projects/selectors";
-import { HabitLog } from "@/app/utils/types/habit";
-import { cn } from "../utils";
+import { compareAsc, compareDesc, subMonths } from "date-fns";
 import { now } from "@/app/utils/date/now";
-import { River } from "../Garden/components/River";
-import { Mountains } from "../Garden/components/Mountains";
-import { House } from "../Garden/components/House";
-import { Tree } from "../Garden/components/Tree";
-import { Shed } from "../Garden/components/Shed";
-import { Animals } from "../Garden/components/Animals";
-import { PumpkinGarden } from "../Garden/components/PumkinGarden"; // TODO: fix folder typo
 import { getHabitProgressForLifeAspect } from "@/app/utils/habits/habit-progress";
-
-type GardenAsset = (
-  props: { stage: number; withBoosts: boolean } & SVGProps<SVGSVGElement>
-) => ReactNode;
-
-/**
- * Each asset is drawn in the Garden scene's coordinates, so on its own it needs
- * a viewBox framing just that asset. These are the artwork bounds at stages
- * 2-10 plus 4% padding — the haunted-stage mist decorations sit at fixed
- * coordinates well outside the artwork and are deliberately left out of frame.
- */
-const ASPECT_TO_ASSET_MAP: Record<
-  LifeAspectAsset,
-  { Component: GardenAsset; viewBox: string }
-> = {
-  house: { Component: House, viewBox: "457 46 335 310" },
-  tree: { Component: Tree, viewBox: "-21 59 388 405" },
-  shed: { Component: Shed, viewBox: "-2 74 516 455" },
-  animals: { Component: Animals, viewBox: "1 57 631 442" },
-  river: { Component: River, viewBox: "11 -24 708 621" },
-  mountains: { Component: Mountains, viewBox: "17 -10 708 279" },
-  pumpkinGarden: { Component: PumpkinGarden, viewBox: "617 255 814 386" },
-};
-const LogContainer: FC<{
-  value: number;
-  title: string;
-  date: string;
-  style?: CSSProperties;
-}> = ({ value, title, date, style }) => {
-  return (
-    <tr className={cn("py-[3px] leading-2")} style={style}>
-      <td className="w-6 border border-[2px] border-dotted border-l-0">
-        {value}
-      </td>
-      <td className="max-w-12 truncate border border-[2px] border-dotted">
-        {title}
-      </td>
-      <td className="border border-[2px] border-dotted borderrl-0">
-        {format(date, "MMM d")}
-      </td>
-    </tr>
-  );
-};
-
-const BoostEntry: FC<{ boost: LifeAspectBoost }> = ({ boost }) => {
-  const task = useTaskById(
-    boost.source_type === "task" ? boost.source_id : null
-  );
-  const color = useTaskProjectColor(task);
-
-  return (
-    <LogContainer
-      style={task ? { color: color.main } : undefined}
-      value={boost.value}
-      title={boost.source_type === "task" && task ? task.title : "unknown"}
-      date={boost.created_at}
-    />
-  );
-  // return (
-  //   <div className="flex">
-  //     <div>{boost.value}</div>
-  //     <div>{boost.source_type === "task" && task ? task.title : "unknown"}</div>
-  //     <div>{format(boost.created_at, "MMM d")}</div>
-  //   </div>
-  // );
-};
-
-const LogEntry: FC<{ log: HabitLog }> = ({ log }) => {
-  // const task = useTaskById(
-  //   boost.source_type === "task" ? boost.source_id : null
-  // );
-  // const color = useTaskProjectColor(task);
-
-  const habit = useHabitById(log.habit_id);
-
-  if (!habit) {
-    return <div>No habit. Smth wrong?</div>;
-  }
-
-  return <LogContainer value={1} title={habit.title} date={log.created_at} />;
-  // return (
-  //   <div className="flex">
-  //     <div>+1</div>
-  //     <div>{habit.title}</div>
-  //     <div>{format(log.created_at, "MM d")}</div>
-  //   </div>
-  // );
-};
+import { ASPECT_TO_ASSET_MAP } from "./contants";
+import { BoostEntry } from "./components/BoostEntry";
+import { HabitEntry } from "./components/HabitEntry";
 
 export const ActiveLifeAspect: FC = (): JSX.Element | null => {
   const searchParams = useSearchParams();
@@ -191,7 +88,7 @@ export const ActiveLifeAspect: FC = (): JSX.Element | null => {
                   boost={generalLog}
                 />
               ) : (
-                <LogEntry key={`${generalLog.id}-${idx}`} log={generalLog} />
+                <HabitEntry key={`${generalLog.id}-${idx}`} log={generalLog} />
               )
             )}
           </table>
