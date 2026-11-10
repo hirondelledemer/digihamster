@@ -8,7 +8,6 @@ import {
   useLifeAspectAssetIcon,
   useLifeAspectById,
 } from "@/app/utils/hooks/use-life-aspects/selectors";
-import { LifeAspectBarChart } from "./LifeAspectBarChart";
 import { useHabitsByLifeAspectId } from "@/app/utils/hooks/use-habits-new/selectors";
 import { ScrollArea } from "../ui/scroll-area";
 import { compareAsc, compareDesc, subMonths } from "date-fns";
@@ -19,6 +18,7 @@ import { BoostEntry } from "./components/BoostEntry";
 import { HabitEntry } from "./components/HabitEntry";
 import { QUERY_KEYS } from "@/app/utils/url/constants";
 import { isBoostEntry } from "./utils";
+import { LifeAspectBarChart } from "@/app/llife-aspects/LifeAspectBarChart";
 
 const MONTH_AGO = subMonths(now(), 1);
 

@@ -1,5 +1,6 @@
 import { toBackendDate } from "#utils/date";
 import { BarChart } from "@/app/charts/BarChart";
+import { ChartConfig } from "@/app/components/ui/chart";
 import { getTodayWithZeroHours } from "@/app/utils/date/now";
 import { getHabitProgress } from "@/app/utils/habits/habit-progress";
 import { useHabitsNewActions } from "@/app/utils/hooks/use-habits-new/actions-context";
@@ -7,7 +8,6 @@ import { useHabitsNewState } from "@/app/utils/hooks/use-habits-new/state-contex
 import { IHabitWithLogs } from "@/app/utils/types/habit";
 import { subDays } from "date-fns";
 import { FC, useCallback } from "react";
-import { ChartConfig } from "../ui/chart";
 
 export const LifeAspectBarChart: FC<{ lifeAspectId: number }> = ({
   lifeAspectId,
