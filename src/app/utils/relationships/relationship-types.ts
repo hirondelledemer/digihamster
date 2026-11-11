@@ -52,6 +52,7 @@ const isHabitEventPair = (
  * rather than guessing from the pair of types forever after.
  */
 export const relationshipTypeFor = (
+  //TODO: fix this one. WE should have a different one.
   sourceType: RelationshipEntityType,
   targetType: RelationshipEntityType
 ): RelationshipType =>

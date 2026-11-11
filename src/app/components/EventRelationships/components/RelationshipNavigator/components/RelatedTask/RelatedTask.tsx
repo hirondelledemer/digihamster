@@ -23,10 +23,7 @@ export const RelatedTask: FC<{
   const task = useTaskById(id);
   const { main: color } = useTaskProjectColor(task);
   const { setActiveEntity, entities } = useNavigator();
-  const { scheduled, actions } = useEventScheduling(
-    RelationshipEntityType.Task,
-    id
-  );
+  const { scheduled } = useEventScheduling(RelationshipEntityType.Task, id);
 
   const selectEntity = () =>
     setActiveEntity({
@@ -79,11 +76,7 @@ export const RelatedTask: FC<{
   return (
     <div className="flex">
       <div className="grow">
-        <TaskCard
-          task={task}
-          scheduled={scheduled}
-          additionalActions={actions}
-        />
+        <TaskCard task={task} scheduled={scheduled} />
         {related
           .filter((child) =>
             matchesView(

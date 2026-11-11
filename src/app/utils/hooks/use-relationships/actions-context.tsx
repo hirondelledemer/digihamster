@@ -3,7 +3,7 @@ import { CreateRelationshipParams } from "./api";
 import { ActionsContextValue } from "../use-crud/actions-context";
 import { IRelationship } from "../../types/relationship";
 
-type RelationshipActionsContextValue = ActionsContextValue<
+export type RelationshipActionsContextValue = ActionsContextValue<
   CreateRelationshipParams,
   IRelationship
 >;

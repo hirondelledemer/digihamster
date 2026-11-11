@@ -6,33 +6,71 @@ import {
   TasksActionsContext,
   TasksActionsContextValue,
 } from "@/app/utils/hooks/use-tasks/actions-context";
+import { EventsStateContext } from "@/app/utils/hooks/use-events/state-context";
+import { generateEvent } from "@/app/utils/mocks/event";
+import {
+  RelationshipActionsContextValue,
+  RelationshipsActionsContext,
+} from "@/app/utils/hooks/use-relationships/actions-context";
+import { RelationshipEntityType } from "@/app/utils/types/relationship";
+import { RelationshipType } from "@/app/utils/relationships/relationship-types";
+
+const getSearchParamsMock = jest.fn();
+
+jest.mock("next/navigation", () => ({
+  ...jest.requireActual("next/navigation"),
+  useSearchParams: () => ({
+    get: getSearchParamsMock,
+  }),
+  useRouter: () => ({
+    replace: jest.fn(),
+    push: jest.fn(),
+  }),
+}));
+
+const DEFAULT_EVENT = generateEvent();
 
 const renderComponent = (
+  // TODO: maybe create a wrappers for that?
   task: ITask,
-  actions: Partial<TasksActionsContextValue> = {}
+  taskActions: Partial<TasksActionsContextValue> = {},
+  rActions: Partial<RelationshipActionsContextValue> = {}
 ) => {
   const updateTask = jest.fn();
   const deleteTask = jest.fn();
-  const contextValue: TasksActionsContextValue = {
+  const tasksContextValue: TasksActionsContextValue = {
     createTask: jest.fn(),
     updateTask,
     deleteTask,
     reorderTasksInTheEvent: jest.fn(),
     reorderTasksInTheProject: jest.fn(),
-    ...actions,
+    ...taskActions,
+  };
+  const createRelationship = jest.fn();
+  const relationshipsContextValue: RelationshipActionsContextValue = {
+    create: createRelationship,
+    update: jest.fn(),
+    delete: jest.fn(),
+    ...rActions,
   };
 
   render(
-    <TasksActionsContext.Provider value={contextValue}>
-      <TaskActions task={task}>
-        <span>trigger</span>
-      </TaskActions>
+    <TasksActionsContext.Provider value={tasksContextValue}>
+      <EventsStateContext.Provider
+        value={{ data: [DEFAULT_EVENT], isLoading: false }}
+      >
+        <RelationshipsActionsContext.Provider value={relationshipsContextValue}>
+          <TaskActions task={task}>
+            <span>trigger</span>
+          </TaskActions>
+        </RelationshipsActionsContext.Provider>
+      </EventsStateContext.Provider>
     </TasksActionsContext.Provider>
   );
 
   const openMenu = () => fireEvent.contextMenu(screen.getByText("trigger"));
 
-  return { updateTask, deleteTask, openMenu };
+  return { updateTask, deleteTask, openMenu, createRelationship };
 };
 
 describe("TaskActions", () => {
@@ -219,6 +257,28 @@ describe("TaskActions", () => {
       fireEvent.click(await screen.findByRole("menuitem", { name: "Delete" }));
 
       expect(deleteTask).toHaveBeenCalledWith(task.id);
+    });
+  });
+
+  describe("active event is present", () => {
+    it('should show "Add to the active event" action', async () => {
+      getSearchParamsMock.mockImplementation(() => DEFAULT_EVENT.id);
+      const task = generateTask(1);
+
+      const { openMenu, createRelationship } = renderComponent(task);
+      openMenu();
+
+      fireEvent.click(
+        await screen.findByRole("menuitem", { name: "Add to the active event" })
+      );
+
+      expect(createRelationship).toHaveBeenCalledWith({
+        relationship_type: RelationshipType.Contains,
+        source_id: DEFAULT_EVENT.id,
+        source_type: RelationshipEntityType.Event,
+        target_id: task.id,
+        target_type: RelationshipEntityType.Task,
+      });
     });
   });
 });

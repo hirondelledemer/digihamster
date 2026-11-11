@@ -13,12 +13,17 @@ import { AdditionalAction, AdditionalActions } from "../AdditionalActions";
 import {
   IconBackspace,
   IconCalendarCancel,
+  IconCalendarPlus,
   IconCheck,
   IconEdit,
   IconProgressCheck,
   IconProgressDown,
   IconTrash,
 } from "@tabler/icons-react";
+import { useSelectedEvent } from "../ActiveContext/use-selected-event";
+import { useRelationshipsActions } from "@/app/utils/hooks/use-relationships/actions-context";
+import { RelationshipEntityType } from "@/app/utils/types/relationship";
+import { RelationshipType } from "@/app/utils/relationships/relationship-types";
 
 interface TaskActionProps {
   children: ReactNode;
@@ -35,6 +40,8 @@ export const TaskActions: React.FC<TaskActionProps> = ({
   const { updateTask: editTask, deleteTask } = useTasksActions();
 
   const closeTaskForm = () => setTaskFormOpen(false);
+  const selectedEvent = useSelectedEvent(); // TODO: move this hook to the utils or smht. maybe to the utils/events
+  const { create: createRelationship } = useRelationshipsActions();
 
   return (
     <>
@@ -49,12 +56,32 @@ export const TaskActions: React.FC<TaskActionProps> = ({
         <ContextMenuTrigger>{children}</ContextMenuTrigger>
         <ContextMenuContent className="w-64">
           <AdditionalActions actions={additionalActions} />
+          {selectedEvent && (
+            <>
+              <ContextMenuItem
+                inset
+                onClick={() =>
+                  createRelationship({
+                    source_id: selectedEvent.id,
+                    source_type: RelationshipEntityType.Event,
+                    target_id: task.id,
+                    target_type: RelationshipEntityType.Task,
+                    relationship_type: RelationshipType.Contains,
+                  })
+                }
+              >
+                <IconCalendarPlus />
+                Add to the active event
+              </ContextMenuItem>
+              <ContextMenuSeparator />
+            </>
+          )}
           {task.status === "done" && (
             <ContextMenuItem
               inset
               onClick={() =>
                 editTask(task.id, { status: TaskStatus.Doing }, () =>
-                  setTaskFormOpen(false),
+                  setTaskFormOpen(false)
                 )
               }
             >
@@ -67,7 +94,7 @@ export const TaskActions: React.FC<TaskActionProps> = ({
               inset
               onClick={() =>
                 editTask(task.id, { status: TaskStatus.Done }, () =>
-                  setTaskFormOpen(false),
+                  setTaskFormOpen(false)
                 )
               }
             >
@@ -80,7 +107,7 @@ export const TaskActions: React.FC<TaskActionProps> = ({
               inset
               onClick={() =>
                 editTask(task.id, { status: TaskStatus.Todo }, () =>
-                  setTaskFormOpen(false),
+                  setTaskFormOpen(false)
                 )
               }
             >
@@ -93,7 +120,7 @@ export const TaskActions: React.FC<TaskActionProps> = ({
               inset
               onClick={() =>
                 editTask(task.id, { status: TaskStatus.Doing }, () =>
-                  setTaskFormOpen(false),
+                  setTaskFormOpen(false)
                 )
               }
             >
