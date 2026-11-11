@@ -17,6 +17,7 @@ import {
   HoverWrapper,
   MagicalWrapper,
 } from "../MagicalWrapper";
+import { AssetRoot } from "../AssetRoot";
 
 export type RiverProps = {
   stage: number;
@@ -24,10 +25,9 @@ export type RiverProps = {
 } & SVGProps<SVGSVGElement>;
 
 export const River: FC<RiverProps> = ({ stage, withBoosts, ...props }) => (
-  <g
+  <AssetRoot
     id="freepik--River--inject-256"
-    transform="matrix(0.971519, 0, 0, 1, -1.409726, -51.132309)"
-    style={{}}
+    placement="matrix(0.971519, 0, 0, 1, -1.409726, -51.132309)"
     {...props}
   >
     <HoverWrapper>
@@ -54,5 +54,5 @@ export const River: FC<RiverProps> = ({ stage, withBoosts, ...props }) => (
         {stage < 4 && <Trash />}
       </MagicalWrapper>
     </HoverWrapper>
-  </g>
+  </AssetRoot>
 );

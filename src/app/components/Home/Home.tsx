@@ -10,12 +10,14 @@ import CommandTool from "../CommandTool";
 import TaskInfo from "../TaskInfo";
 import { ActiveContext } from "../ActiveContext";
 import { ActiveSecondaryContext } from "../ActiveContext/ActiveSecondaryContext";
+import { ActiveLifeAspect } from "../ActiveLifeAspect";
 
 export const Home = (): JSX.Element => {
   return (
     <ResizablePanelGroup direction="horizontal" className="rounded-lg border">
       <Suspense>
         <TaskInfo />
+        <ActiveLifeAspect />
       </Suspense>
       <ResizablePanel>
         <ResizablePanelGroup direction="vertical">

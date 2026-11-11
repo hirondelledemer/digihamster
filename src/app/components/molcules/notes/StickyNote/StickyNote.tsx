@@ -3,8 +3,8 @@ import React, { FC } from "react";
 
 import { StickyNoteWrapper } from "../StickyNoteWrapper/StickyNoteWrapper";
 import { MinimalNote } from "../MinimalNote";
-import { cn } from "../../utils";
 import { INote, StickyNoteVariant } from "@/app/utils/types/note";
+import { cn } from "@/app/components/utils";
 
 export const StickyNote: FC<{
   note: INote;

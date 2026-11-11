@@ -1,0 +1,1 @@
+export { LifeAspectBarChart } from "./LifeAspectBarChart";

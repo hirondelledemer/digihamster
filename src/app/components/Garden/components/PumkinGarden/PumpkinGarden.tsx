@@ -12,6 +12,7 @@ import {
   HoverWrapper,
   MagicalWrapper,
 } from "../MagicalWrapper";
+import { AssetRoot } from "../AssetRoot";
 
 export interface PumpkinGardenProps extends SVGProps<SVGSVGElement> {
   stage: number;
@@ -22,9 +23,8 @@ export const PumpkinGarden: FC<PumpkinGardenProps> = ({
   withBoosts = false,
   ...props
 }) => (
-  <g
-    style={{}}
-    transform="matrix(0.310036, 0, 0, 0.352693, 285.810394, 243.426086)"
+  <AssetRoot
+    placement="matrix(0.310036, 0, 0, 0.352693, 285.810394, 243.426086)"
     {...props}
   >
     <title>{"Garden"}</title>
@@ -53,5 +53,5 @@ export const PumpkinGarden: FC<PumpkinGardenProps> = ({
         {stage === 5 && <BackgroundPumpkins />}
       </MagicalWrapper>
     </HoverWrapper>
-  </g>
+  </AssetRoot>
 );

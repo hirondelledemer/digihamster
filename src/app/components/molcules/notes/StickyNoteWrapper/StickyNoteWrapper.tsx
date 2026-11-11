@@ -2,7 +2,7 @@
 import React, { FC, ReactNode } from "react";
 
 import { StickyNoteVariant } from "@/app/utils/types/note";
-import { cn } from "../../utils";
+import { cn } from "@/app/components/utils";
 
 type StickyNoteWrapperProps = {
   children: ReactNode;

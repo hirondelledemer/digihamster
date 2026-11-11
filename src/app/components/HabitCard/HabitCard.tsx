@@ -7,9 +7,14 @@ import { IEvent } from "@/app/utils/types/event";
 import { HabitActions } from "./HabitActions";
 import { AdditionalAction } from "../AdditionalActions";
 import { ScheduledIndicator } from "../ScheduledIndicator";
-import { useHabitLifeAspectAssetIcon } from "@/app/utils/hooks/use-life-aspects/selectors";
+import {
+  getLifeAspectAssetIcon,
+  useHabitLifeAspect,
+} from "@/app/utils/hooks/use-life-aspects/selectors";
 import { useHabitWindow } from "@/app/utils/hooks/use-habits-new/selectors";
 import { HabitProgress } from "./HabitProgress";
+import { useSetSearchParams } from "@/app/utils/url/search-params";
+import { QUERY_KEYS } from "@/app/utils/url/constants";
 
 export const titleTestId = "TaskCard-title-testid";
 export const cardTestId = "TaskCard-card-testid";
@@ -31,8 +36,10 @@ export const HabitCard: FC<HabitCardProps> = ({
   const date = new Date(event.start_at);
   const log = getHabitLogForADay(habit, date);
   const isCompleted = log?.completed;
-  const icon = useHabitLifeAspectAssetIcon(habit);
+  const lifeAspect = useHabitLifeAspect(habit);
+  const icon = getLifeAspectAssetIcon(lifeAspect?.asset);
   const habitWindow = useHabitWindow(habit.id);
+  const setParams = useSetSearchParams();
 
   return (
     <div className="w-full">
@@ -52,8 +59,17 @@ export const HabitCard: FC<HabitCardProps> = ({
               data-testid={titleTestId}
               className="font-normal flex items-center justify-between"
             >
-              <div>
-                {icon} {habit.title}
+              <div className="flex gap-1">
+                <div
+                  className="hover:animate-wiggle cursor-pointer"
+                  onClick={() =>
+                    lifeAspect &&
+                    setParams(QUERY_KEYS.lifeAspect, lifeAspect?.id.toString())
+                  }
+                >
+                  {icon}
+                </div>
+                {habit.title}
               </div>
               {scheduled && <ScheduledIndicator />}
             </CardTitle>
