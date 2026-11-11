@@ -1,3 +1,4 @@
 export const QUERY_KEYS = {
-  lifeAspect: "lifeAspectId",
+  lifeAspectId: "lifeAspectId",
+  eventId: "eventId",
 };
