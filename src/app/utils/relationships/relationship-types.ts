@@ -47,12 +47,12 @@ const isHabitEventPair = (
   (a === RelationshipEntityType.Event && b === RelationshipEntityType.Habit);
 
 /**
+ * @todo rethink if this still is relevant, or needs to be deprecated.
  * The type to stamp on a new edge. Linking a habit and an event always means
  * "I did/will do this here", so it is worth deciding at the point of writing
  * rather than guessing from the pair of types forever after.
  */
 export const relationshipTypeFor = (
-  //TODO: fix this one. WE should have a different one.
   sourceType: RelationshipEntityType,
   targetType: RelationshipEntityType
 ): RelationshipType =>
