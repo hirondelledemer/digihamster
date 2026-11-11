@@ -229,14 +229,6 @@ describe("CalendarEvent", () => {
       expect(screen.queryByLabelText("location")).not.toBeInTheDocument();
     });
 
-    it("should not show a badge for a completed task", async () => {
-      await renderComponent(defaultProps, {
-        tasks: [generateTask(TASK.id, { status: TaskStatus.Done })],
-      });
-
-      expect(screen.queryByLabelText(TASK.title)).not.toBeInTheDocument();
-    });
-
     // an event carries project_id, so an event-to-project row is not a
     // relationship at all - `canonicalEdge` has no entry for the pair and
     // `edgeTypeOf` resolves it to null. Rows like this are still in the

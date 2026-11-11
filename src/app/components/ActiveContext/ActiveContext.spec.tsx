@@ -1,7 +1,5 @@
 import { fireEvent, render, screen } from "@/config/utils/test-utils";
-import { ActiveContext, eventTitleTestId, QUERY_PARAMS } from "./ActiveContext";
-import { EventsStateContext } from "@/app/utils/hooks/use-events/state-context";
-import { EventsState } from "@/app/utils/hooks/use-events/actions";
+import { ActiveContext, eventTitleTestId } from "./ActiveContext";
 import { generateEvent } from "@/app/utils/mocks/event";
 import { now } from "@/app/utils/date/now";
 import { toBackendDateTime } from "#utils/date";
@@ -24,26 +22,39 @@ jest.mock("@/app/utils/url/search-params", () => ({
 }));
 
 import { useSetSearchParams } from "@/app/utils/url/search-params";
+import { eventsState, providers } from "@/app/utils/tests/wrappers";
+import { IEvent } from "@/app/utils/types/event";
+import { QUERY_KEYS } from "@/app/utils/url/constants";
+
+const renderComponent = (events: IEvent[]) => {
+  const updateTask = jest.fn();
+  const deleteTask = jest.fn();
+  const createRelationship = jest.fn();
+
+  render(<ActiveContext />, {
+    wrapper: providers(eventsState({ data: events })),
+  });
+
+  const openMenu = () => fireEvent.contextMenu(screen.getByText("trigger"));
+
+  return { updateTask, deleteTask, openMenu, createRelationship };
+};
 
 describe("ActiveContext", () => {
+  beforeEach(() => {
+    routerPushSpy.mockReset();
+  });
+
   describe("default view", () => {
     describe("event is is present in query params", () => {
       const EVENT = generateEvent();
-      const contextValue: EventsState = {
-        data: [EVENT],
-        isLoading: false,
-      };
 
       it("should show the event from query params, even if currentEvent is different", async () => {
         (useSearchParams as jest.Mock).mockReturnValue({
           get: () => String(EVENT.id),
         });
 
-        render(
-          <EventsStateContext.Provider value={contextValue}>
-            <ActiveContext />
-          </EventsStateContext.Provider>
-        );
+        renderComponent([EVENT]);
 
         expect(screen.getByTestId(eventTitleTestId)).toHaveTextContent(
           EVENT.title
@@ -58,15 +69,11 @@ describe("ActiveContext", () => {
         const mockSet = jest.fn();
         (useSetSearchParams as jest.Mock).mockReturnValue(mockSet);
 
-        render(
-          <EventsStateContext.Provider value={contextValue}>
-            <ActiveContext />
-          </EventsStateContext.Provider>
-        );
+        renderComponent([EVENT]);
 
         fireEvent.click(screen.getByRole("button", { name: /back/i }));
 
-        expect(mockSet).toHaveBeenCalledWith(QUERY_PARAMS.eventId, null);
+        expect(mockSet).toHaveBeenCalledWith(QUERY_KEYS.eventId, null);
       });
     });
 
@@ -78,17 +85,9 @@ describe("ActiveContext", () => {
         start_at: toBackendDateTime(TEST_DATE_START),
         end_at: toBackendDateTime(TEST_DATE_END),
       });
-      const contextValue: EventsState = {
-        data: [CURRENT_EVENT],
-        isLoading: false,
-      };
 
       it("should show the info of current event", () => {
-        render(
-          <EventsStateContext.Provider value={contextValue}>
-            <ActiveContext />
-          </EventsStateContext.Provider>
-        );
+        renderComponent([CURRENT_EVENT]);
 
         expect(screen.getByTestId(eventTitleTestId)).toHaveTextContent(
           CURRENT_EVENT.title
@@ -102,21 +101,13 @@ describe("ActiveContext", () => {
         start_at: toBackendDateTime(TEST_DATE),
         end_at: toBackendDateTime(TEST_DATE),
       });
-      const contextValue: EventsState = {
-        data: [CURRENT_EVENT],
-        isLoading: false,
-      };
 
       it("should show active tasks", () => {
         (useSearchParams as jest.Mock).mockReturnValue({
           get: () => undefined,
         });
 
-        render(
-          <EventsStateContext.Provider value={contextValue}>
-            <ActiveContext />
-          </EventsStateContext.Provider>
-        );
+        renderComponent([CURRENT_EVENT]);
 
         expect(screen.queryByText(CURRENT_EVENT.title)).not.toBeInTheDocument();
       });

@@ -54,7 +54,7 @@ const renderComponent = (task: ITask) => {
 
 describe("TaskActions", () => {
   afterEach(() => {
-    getSearchParamsMock.mockReset();
+    getSearchParamsMock.mockRestore();
   });
 
   describe("todo task (no event, no deadline)", () => {
@@ -246,7 +246,7 @@ describe("TaskActions", () => {
   describe("active event is present", () => {
     const TASK = generateTask(1);
     it('should show "Add to the active event" action', async () => {
-      getSearchParamsMock.mockImplementation(() => DEFAULT_EVENT.id);
+      getSearchParamsMock.mockImplementation(() => String(DEFAULT_EVENT.id));
 
       const { openMenu, createRelationship } = renderComponent(TASK);
       openMenu();

@@ -9,7 +9,17 @@ import { TASKS_PATH } from "@/app/utils/hooks/use-tasks/api";
 import { DndContext } from "@dnd-kit/core";
 import { TooltipProvider } from "../ui/tooltip";
 
-jest.mock("next/navigation");
+jest.mock("next/navigation", () => ({
+  ...jest.requireActual("next/navigation"),
+  useSearchParams: () => ({
+    get: jest.fn(),
+  }),
+  useRouter: () => ({
+    replace: jest.fn(),
+    push: jest.fn(),
+  }),
+}));
+
 jest.mock("../../utils/date/now");
 
 const TASKS = generateCustomTasksList([

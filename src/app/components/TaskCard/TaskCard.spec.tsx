@@ -25,7 +25,16 @@ import {
 import { DraggableAttributes } from "@dnd-kit/core";
 
 jest.mock("../../utils/date/now");
-jest.mock("next/navigation");
+jest.mock("next/navigation", () => ({
+  ...jest.requireActual("next/navigation"),
+  useSearchParams: () => ({
+    get: jest.fn(),
+  }),
+  useRouter: () => ({
+    replace: jest.fn(),
+    push: jest.fn(),
+  }),
+}));
 
 const selectedDateTestId = "selected-date-testid";
 
