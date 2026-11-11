@@ -4,7 +4,6 @@ import React, { useMemo, useState } from "react";
 import { Navigate, View } from "react-big-calendar";
 import * as dates from "date-arithmetic";
 import TodayEvent from "../TodayEvent";
-import { MinimalNote } from "../notes";
 import {
   Collapsible,
   CollapsibleContent,
@@ -20,6 +19,7 @@ import {
   isCalendarWeatherEntry,
 } from "../CalendarEvent/CalendarEvent.types";
 import useHotKeys from "@/app/utils/hooks/use-hotkeys";
+import { MinimalNote } from "../molcules/notes";
 
 export interface TodayProps {
   testId?: string;

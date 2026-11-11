@@ -1,9 +1,9 @@
 "use client";
 import React, { FC, useEffect } from "react";
-import RichTextEditor from "../../RichTextEditor";
 import { useRte } from "@/app/utils/rte/rte-hook";
-import { useToast } from "../../ui/use-toast";
 import { Content } from "@tiptap/react";
+import { useToast } from "@/app/components/ui/use-toast";
+import RichTextEditor from "@/app/components/RichTextEditor";
 
 interface RegularProps {
   editable?: false;

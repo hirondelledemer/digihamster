@@ -7,8 +7,8 @@ import { IconFeather } from "@tabler/icons-react";
 import { FC } from "react";
 import { EntityTypeIcon } from "../../../EntityTypeIcon";
 import { Card } from "@/app/components/ui/card";
-import { MinimalNote } from "@/app/components/notes";
 import { RelatedEntityVariant } from "../RelatedEntity/RelatedEntity";
+import { MinimalNote } from "@/app/components/molcules/notes";
 
 export const RelatedJournal: FC<{
   id: number;

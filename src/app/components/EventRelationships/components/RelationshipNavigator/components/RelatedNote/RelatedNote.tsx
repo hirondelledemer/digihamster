@@ -9,8 +9,8 @@ import {
   TooltipTrigger,
 } from "@/app/components/ui/tooltip";
 import { useNavigator } from "@/app/components/EventRelationships/navigator-context";
-import { StickyNote } from "@/app/components/notes";
 import { RelatedEntityVariant } from "../RelatedEntity/RelatedEntity";
+import { StickyNote } from "@/app/components/molcules/notes";
 
 export const RelatedNote: FC<{
   id: number;

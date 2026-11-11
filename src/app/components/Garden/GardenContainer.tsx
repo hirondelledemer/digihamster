@@ -2,10 +2,7 @@
 import React, { FC, useState } from "react";
 import "./style.css";
 
-import {
-  getHabitProgressForLifeAspect,
-  getHabitScoreForLifeAspect,
-} from "@/app/utils/habits/habit-progress";
+import { getHabitScoreForLifeAspect } from "@/app/utils/habits/habit-progress";
 import { Button } from "../ui/button";
 
 import { IconMinus, IconPlus } from "@tabler/icons-react";
