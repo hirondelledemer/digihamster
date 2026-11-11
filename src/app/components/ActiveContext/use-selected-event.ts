@@ -8,6 +8,7 @@ import {
   useEventById,
 } from "@/app/utils/hooks/use-events/selectors";
 import { IEvent } from "@/app/utils/types/event";
+import { QUERY_KEYS } from "@/app/utils/url/constants";
 
 /**
  * The event the panels are looking at, defaulting to whatever is happening
@@ -25,7 +26,7 @@ export const useSelectedEvent = (): IEvent | null => {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const selectedEventId = searchParams.get("eventId");
+  const selectedEventId = searchParams.get(QUERY_KEYS.eventId);
 
   useEffect(() => {
     if (!selectedEventId && currentEvent) {

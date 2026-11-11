@@ -20,10 +20,11 @@ import {
   IconProgressDown,
   IconTrash,
 } from "@tabler/icons-react";
-import { useSelectedEvent } from "../ActiveContext/use-selected-event";
 import { useRelationshipsActions } from "@/app/utils/hooks/use-relationships/actions-context";
 import { RelationshipEntityType } from "@/app/utils/types/relationship";
 import { RelationshipType } from "@/app/utils/relationships/relationship-types";
+import { QUERY_KEYS } from "@/app/utils/url/constants";
+import { useSearchParams } from "next/navigation";
 
 interface TaskActionProps {
   children: ReactNode;
@@ -39,8 +40,10 @@ export const TaskActions: React.FC<TaskActionProps> = ({
   const [taskFormOpen, setTaskFormOpen] = useState<boolean>(false);
   const { updateTask: editTask, deleteTask } = useTasksActions();
 
+  const searchParams = useSearchParams();
   const closeTaskForm = () => setTaskFormOpen(false);
-  const selectedEvent = useSelectedEvent(); // TODO: move this hook to the utils or smht. maybe to the utils/events
+  const selectedEventId = searchParams.get(QUERY_KEYS.eventId);
+
   const { create: createRelationship } = useRelationshipsActions();
 
   return (
@@ -56,13 +59,13 @@ export const TaskActions: React.FC<TaskActionProps> = ({
         <ContextMenuTrigger>{children}</ContextMenuTrigger>
         <ContextMenuContent className="w-64">
           <AdditionalActions actions={additionalActions} />
-          {selectedEvent && (
+          {selectedEventId && (
             <>
               <ContextMenuItem
                 inset
                 onClick={() =>
                   createRelationship({
-                    source_id: selectedEvent.id,
+                    source_id: Number(selectedEventId),
                     source_type: RelationshipEntityType.Event,
                     target_id: task.id,
                     target_type: RelationshipEntityType.Task,

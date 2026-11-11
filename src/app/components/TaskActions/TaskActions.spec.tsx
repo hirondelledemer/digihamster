@@ -53,6 +53,10 @@ const renderComponent = (task: ITask) => {
 };
 
 describe("TaskActions", () => {
+  afterEach(() => {
+    getSearchParamsMock.mockReset();
+  });
+
   describe("todo task (no event, no deadline)", () => {
     const TASK = generateTask(1, { status: TaskStatus.Todo });
 

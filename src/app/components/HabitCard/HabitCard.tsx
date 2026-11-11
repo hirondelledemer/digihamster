@@ -64,7 +64,10 @@ export const HabitCard: FC<HabitCardProps> = ({
                   className="hover:animate-wiggle cursor-pointer"
                   onClick={() =>
                     lifeAspect &&
-                    setParams(QUERY_KEYS.lifeAspect, lifeAspect?.id.toString())
+                    setParams(
+                      QUERY_KEYS.lifeAspectId,
+                      lifeAspect?.id.toString()
+                    )
                   }
                 >
                   {icon}

@@ -26,7 +26,7 @@ export const ActiveLifeAspect: FC = (): JSX.Element | null => {
   const searchParams = useSearchParams();
   const setParams = useSetSearchParams();
 
-  const lifeAspectId = searchParams.get(QUERY_KEYS.lifeAspect);
+  const lifeAspectId = searchParams.get(QUERY_KEYS.lifeAspectId);
 
   const selectedLifeAspect = useLifeAspectById(
     lifeAspectId ? Number(lifeAspectId) : null
