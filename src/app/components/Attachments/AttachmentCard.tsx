@@ -1,12 +1,12 @@
 "use client";
 import React, { FC, useEffect, useRef, useState } from "react";
 import { Download, FileText, Trash2 } from "lucide-react";
-import { Attachment } from "@/models/attachment";
+import { IAttachment } from "@/app/utils/types/attachment";
 import { Card } from "../ui/card";
 import { Button } from "../ui/button";
 
 interface AttachmentCardProps {
-  attachment: Attachment;
+  attachment: IAttachment;
   ensureUrl(id: number): Promise<string | null>;
   onPreview(): void;
   onDownload(): void;

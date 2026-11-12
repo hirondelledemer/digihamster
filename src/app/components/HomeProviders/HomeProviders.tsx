@@ -14,6 +14,7 @@ import { RelationshipsContextProvider } from "@/app/utils/hooks/use-relationship
 import { TooltipProvider } from "../ui/tooltip";
 import { PeopleContextProvider } from "@/app/utils/hooks/use-people/provider";
 import { LocationsContextProvider } from "@/app/utils/hooks/use-location/provider";
+import { AttachmentsContextProvider } from "@/app/utils/hooks/use-attachments/provider";
 
 const PROVIDERS: ComponentType<{ children: ReactNode }>[] = [
   EntriesContextProvider,
@@ -30,6 +31,7 @@ const PROVIDERS: ComponentType<{ children: ReactNode }>[] = [
   PeopleContextProvider,
   TooltipProvider,
   LocationsContextProvider,
+  AttachmentsContextProvider,
 ];
 
 export const HomeProviders = ({ children }: { children: ReactNode }) => {

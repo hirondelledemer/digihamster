@@ -13,6 +13,7 @@ import { getRteValue } from "./get-rte-value";
 import { TasksList } from "./TasksList";
 import { HabitsList } from "./HabitsList";
 import { LocationList } from "./LocationList";
+import { AttachmentsList } from "./AttachmentsList";
 
 export interface RteValue {
   title: string;
@@ -90,6 +91,16 @@ const HabitMention = Mention.extend({
   },
 });
 
+const AttachmentMention = Mention.extend({
+  name: "attachmentMention",
+}).configure({
+  suggestion: {
+    char: "/a ",
+    pluginKey: new PluginKey("attachmentSuggestion"),
+    allowSpaces: true,
+  },
+});
+
 const ParamsMention = Mention.extend({
   name: "paramsMention",
 }).configure({
@@ -137,6 +148,12 @@ export function useRte({
           class: styles.project,
         },
         suggestion: getMentionsConfig(HabitsList),
+      }),
+      AttachmentMention.configure({
+        HTMLAttributes: {
+          class: styles.project, // TODO: check the style and remove or change
+        },
+        suggestion: getMentionsConfig(AttachmentsList),
       }),
       LocationMention.configure({
         HTMLAttributes: {
