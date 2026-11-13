@@ -10,5 +10,5 @@ export const useAttachmentById = (
     return null;
   }
 
-  return data.find((project) => project.id === id) ?? null;
+  return data.find((att) => att.id === id) ?? null;
 };
