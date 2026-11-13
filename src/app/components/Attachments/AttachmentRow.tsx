@@ -1,12 +1,12 @@
 "use client";
 import React, { FC } from "react";
 import { Download, FileText, Trash2 } from "lucide-react";
-import { Attachment } from "@/models/attachment";
+import { IAttachment } from "@/app/utils/types/attachment";
 import { Button } from "../ui/button";
 import { formatSize } from "./AttachmentCard";
 
 interface AttachmentRowProps {
-  attachment: Attachment;
+  attachment: IAttachment;
   onPreview(): void;
   onDownload(): void;
   onDelete(): void;

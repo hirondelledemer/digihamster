@@ -19,7 +19,7 @@ import { useMemo } from "react";
 import { sort } from "remeda";
 interface Option {
   label: string;
-  value: string;
+  value: number;
   icon?: React.ComponentType<{ className?: string }>;
 }
 
@@ -36,9 +36,8 @@ export function DataTableFacetedFilter<TData, TValue>({
 }: DataTableFacetedFilterProps<TData, TValue>) {
   const facets = column?.getFacetedUniqueValues();
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const selectedValues = useMemo(
-    () => new Set(column?.getFilterValue() as string[]),
+    () => new Set(column?.getFilterValue() as number[]),
     [column]
   );
 

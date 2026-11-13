@@ -1,4 +1,4 @@
-export interface Attachment {
+export interface IAttachment {
   id: number;
   user_id: number;
   entity_type: string;

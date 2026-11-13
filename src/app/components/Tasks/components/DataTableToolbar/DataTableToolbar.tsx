@@ -19,16 +19,10 @@ export function DataTableToolbar<TData>({
 }: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0;
   const { data: projects, isLoading } = useProjectsState();
-  const tags = [] as unknown[];
 
   const projectOptions = projects.map((project) => ({
     label: project.title,
-    value: project._id,
-  }));
-
-  const tagOptions = tags.map((tag) => ({
-    label: tag.title,
-    value: tag._id,
+    value: project.id,
   }));
 
   if (isLoading || !projects) {
@@ -51,13 +45,6 @@ export function DataTableToolbar<TData>({
             column={table.getColumn("projectId")}
             title="Projects"
             options={projectOptions}
-          />
-        )}
-        {table.getColumn("description") && (
-          <DataTableFacetedFilter
-            column={table.getColumn("description")}
-            title="Tags"
-            options={tagOptions}
           />
         )}
         {isFiltered && (

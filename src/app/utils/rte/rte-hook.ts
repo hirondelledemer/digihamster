@@ -1,4 +1,9 @@
-import { Content, JSONContent, useEditor } from "@tiptap/react";
+import {
+  Content,
+  JSONContent,
+  useEditor,
+  ReactNodeViewRenderer,
+} from "@tiptap/react";
 import Mention from "@tiptap/extension-mention";
 import StarterKit from "@tiptap/starter-kit";
 import { reduce } from "remeda";
@@ -13,6 +18,8 @@ import { getRteValue } from "./get-rte-value";
 import { TasksList } from "./TasksList";
 import { HabitsList } from "./HabitsList";
 import { LocationList } from "./LocationList";
+import { AttachmentsList } from "./AttachmentsList";
+import { AttachmentChip } from "./AttachmentChip";
 
 export interface RteValue {
   title: string;
@@ -90,6 +97,22 @@ const HabitMention = Mention.extend({
   },
 });
 
+const AttachmentMention = Mention.extend({
+  name: "attachmentMention",
+})
+  .configure({
+    suggestion: {
+      char: "/a ",
+      pluginKey: new PluginKey("attachmentSuggestion"),
+      allowSpaces: true,
+    },
+  })
+  .extend({
+    addNodeView() {
+      return ReactNodeViewRenderer(AttachmentChip);
+    },
+  });
+
 const ParamsMention = Mention.extend({
   name: "paramsMention",
 }).configure({
@@ -137,6 +160,9 @@ export function useRte({
           class: styles.project,
         },
         suggestion: getMentionsConfig(HabitsList),
+      }),
+      AttachmentMention.configure({
+        suggestion: getMentionsConfig(AttachmentsList),
       }),
       LocationMention.configure({
         HTMLAttributes: {

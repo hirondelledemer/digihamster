@@ -1,7 +1,7 @@
 "use client";
 import React, { FC, useCallback, useEffect, useRef, useState } from "react";
 import { LayoutGrid, List, Upload } from "lucide-react";
-import { Attachment } from "@/models/attachment";
+import { IAttachment } from "@/app/utils/types/attachment";
 import { api } from "@/app/utils/hooks/use-attachments/api";
 import { useToast } from "../ui/use-toast";
 import { Button } from "../ui/button";
@@ -20,11 +20,11 @@ const Attachments: FC = (): JSX.Element => {
 
   const [entityType, setEntityType] = useState<string>("");
   const [entityId, setEntityId] = useState<string>("");
-  const [attachments, setAttachments] = useState<Attachment[]>([]);
+  const [attachments, setAttachments] = useState<IAttachment[]>([]);
   const [viewMode, setViewMode] = useState<ViewMode>("list");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isUploading, setIsUploading] = useState<boolean>(false);
-  const [preview, setPreview] = useState<Attachment | null>(null);
+  const [preview, setPreview] = useState<IAttachment | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const handleError = useCallback(
@@ -102,7 +102,7 @@ const Attachments: FC = (): JSX.Element => {
   );
 
   const handleDownload = useCallback(
-    async (attachment: Attachment) => {
+    async (attachment: IAttachment) => {
       const url = await ensureUrl(attachment.id);
       if (!url) return;
       const link = document.createElement("a");
@@ -116,7 +116,7 @@ const Attachments: FC = (): JSX.Element => {
   );
 
   const handleDelete = useCallback(
-    async (attachment: Attachment) => {
+    async (attachment: IAttachment) => {
       if (!window.confirm(`Delete "${attachment.file_name}"?`)) return;
       try {
         await api.remove(attachment.id);
@@ -135,7 +135,7 @@ const Attachments: FC = (): JSX.Element => {
   );
 
   const openPreview = useCallback(
-    async (attachment: Attachment) => {
+    async (attachment: IAttachment) => {
       setPreview(attachment);
       setPreviewUrl(null);
       const url = await ensureUrl(attachment.id);
