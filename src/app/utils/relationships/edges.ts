@@ -23,6 +23,7 @@ export const EDGES: Partial<
     [RelationshipEntityType.Task]: RelationshipType.Blocks,
     [RelationshipEntityType.Location]: RelationshipType.At,
     [RelationshipEntityType.Person]: RelationshipType.Includes,
+    [RelationshipEntityType.Attachment]: RelationshipType.Contains,
   },
   [RelationshipEntityType.Event]: {
     [RelationshipEntityType.Event]: RelationshipType.Related,
@@ -30,12 +31,14 @@ export const EDGES: Partial<
     [RelationshipEntityType.Habit]: RelationshipType.OccurrenceOf,
     [RelationshipEntityType.Location]: RelationshipType.At,
     [RelationshipEntityType.Person]: RelationshipType.Includes,
+    [RelationshipEntityType.Attachment]: RelationshipType.Contains,
   },
   [RelationshipEntityType.Project]: {
     [RelationshipEntityType.Project]: RelationshipType.Blocks,
     [RelationshipEntityType.Habit]: RelationshipType.Contains,
     [RelationshipEntityType.Location]: RelationshipType.At,
     [RelationshipEntityType.Person]: RelationshipType.Includes,
+    [RelationshipEntityType.Attachment]: RelationshipType.Contains,
   },
   [RelationshipEntityType.Habit]: {
     [RelationshipEntityType.Location]: RelationshipType.At,
@@ -48,6 +51,7 @@ export const EDGES: Partial<
     [RelationshipEntityType.Habit]: RelationshipType.During,
     [RelationshipEntityType.Location]: RelationshipType.At,
     [RelationshipEntityType.Person]: RelationshipType.Includes,
+    [RelationshipEntityType.Attachment]: RelationshipType.Contains,
   },
   [RelationshipEntityType.Note]: {
     [RelationshipEntityType.Note]: RelationshipType.Related,
@@ -57,6 +61,9 @@ export const EDGES: Partial<
     [RelationshipEntityType.Habit]: RelationshipType.Annotates,
     [RelationshipEntityType.Person]: RelationshipType.Annotates,
     [RelationshipEntityType.Location]: RelationshipType.Annotates,
+    // not `annotates` like the rest of the row: a note is *about* the things
+    // above it, but a file is part of the note itself
+    [RelationshipEntityType.Attachment]: RelationshipType.Contains,
   },
   [RelationshipEntityType.Person]: {
     [RelationshipEntityType.Person]: RelationshipType.Related,
@@ -131,6 +138,7 @@ export const VIEWS: Record<RelationshipEntityType, EntityView> = {
       RelationshipEntityType.Location,
       // added: the event this task is part of
       RelationshipEntityType.Event,
+      RelationshipEntityType.Attachment,
     ],
   },
   [RelationshipEntityType.Event]: {
@@ -146,7 +154,10 @@ export const VIEWS: Record<RelationshipEntityType, EntityView> = {
     ],
     // Project is gone: an event carries project_id, so it was never a
     // relationship to begin with
-    secondary: [RelationshipEntityType.Location],
+    secondary: [
+      RelationshipEntityType.Location,
+      RelationshipEntityType.Attachment,
+    ],
   },
   [RelationshipEntityType.Project]: {
     nests: true,
@@ -156,6 +167,7 @@ export const VIEWS: Record<RelationshipEntityType, EntityView> = {
       // added: a project's habits are the recurring half of doing it
       RelationshipEntityType.Habit,
       RelationshipEntityType.Project,
+      RelationshipEntityType.Attachment,
     ],
     secondary: [RelationshipEntityType.Location, RelationshipEntityType.Person],
   },
@@ -214,6 +226,7 @@ export const VIEWS: Record<RelationshipEntityType, EntityView> = {
       RelationshipEntityType.Journal,
       RelationshipEntityType.Task,
       RelationshipEntityType.Habit,
+      RelationshipEntityType.Attachment,
     ],
     secondary: [RelationshipEntityType.Location],
   },
@@ -226,6 +239,7 @@ export const VIEWS: Record<RelationshipEntityType, EntityView> = {
       RelationshipEntityType.Project,
       RelationshipEntityType.Habit,
       RelationshipEntityType.Note,
+      RelationshipEntityType.Attachment,
     ],
     secondary: [RelationshipEntityType.Person, RelationshipEntityType.Location],
   },
@@ -243,6 +257,21 @@ export const VIEWS: Record<RelationshipEntityType, EntityView> = {
       RelationshipEntityType.Location,
       RelationshipEntityType.Project,
     ],
+  },
+  [RelationshipEntityType.Attachment]: {
+    // a file has no content of its own to show, so what it hangs off is the
+    // whole panel rather than context in the margin. Empty `primary` is the
+    // "no stuff here" bug Note had.
+    primary: [
+      RelationshipEntityType.Task,
+      RelationshipEntityType.Event,
+      RelationshipEntityType.Project,
+      RelationshipEntityType.Journal,
+      RelationshipEntityType.Note,
+    ],
+    secondary: [],
+    // deliberately not nesting: `contains` expands, so an attachment under a
+    // task would otherwise draw every other task holding the same file
   },
 };
 

@@ -7,6 +7,7 @@ import {
   IconManFilled,
   IconMapPin,
   IconNote,
+  IconPaperclip,
   IconProgress,
   IconProps,
 } from "@tabler/icons-react";
@@ -23,6 +24,9 @@ const ICONS: {
   [RelationshipEntityType.Person]: IconManFilled,
   [RelationshipEntityType.Project]: IconFolder,
   [RelationshipEntityType.Task]: IconProgress,
+  // same glyph the /a mention chip uses, so a file reads the same in the
+  // editor and in the hint row
+  [RelationshipEntityType.Attachment]: IconPaperclip,
 };
 
 export interface EntityTypeIconProps {
