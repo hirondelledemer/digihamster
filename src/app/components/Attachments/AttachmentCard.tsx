@@ -4,6 +4,7 @@ import { Download, FileText, Trash2 } from "lucide-react";
 import { IAttachment } from "@/app/utils/types/attachment";
 import { Card } from "../ui/card";
 import { Button } from "../ui/button";
+import Image from "next/image";
 
 interface AttachmentCardProps {
   attachment: IAttachment;
@@ -28,6 +29,7 @@ const AttachmentCard: FC<AttachmentCardProps> = ({
   onDelete,
 }): JSX.Element => {
   const isPdf = attachment.mime_type === "application/pdf";
+  const isImage = attachment.mime_type.includes("image");
   const ref = useRef<HTMLDivElement>(null);
   const [url, setUrl] = useState<string | null>(null);
 
@@ -44,7 +46,7 @@ const AttachmentCard: FC<AttachmentCardProps> = ({
           });
         }
       },
-      { rootMargin: "200px" },
+      { rootMargin: "200px" }
     );
     observer.observe(node);
     return () => observer.disconnect();
@@ -71,6 +73,14 @@ const AttachmentCard: FC<AttachmentCardProps> = ({
               <FileText className="h-12 w-12 text-muted-foreground" />
             </div>
           </object>
+        ) : isImage && url ? (
+          <Image
+            src={`${url}#toolbar=0&navpanes=0&view=FitH`}
+            alt="image"
+            className="pointer-events-none h-full w-full"
+            width={500}
+            height={500}
+          />
         ) : (
           <div className="flex h-full w-full items-center justify-center">
             <FileText className="h-12 w-12 text-muted-foreground" />
@@ -80,7 +90,10 @@ const AttachmentCard: FC<AttachmentCardProps> = ({
 
       <div className="flex items-center justify-between gap-2 p-3">
         <div className="min-w-0">
-          <p className="truncate text-sm font-medium" title={attachment.file_name}>
+          <p
+            className="truncate text-sm font-medium"
+            title={attachment.file_name}
+          >
             {attachment.file_name}
           </p>
           <p className="text-xs text-muted-foreground">

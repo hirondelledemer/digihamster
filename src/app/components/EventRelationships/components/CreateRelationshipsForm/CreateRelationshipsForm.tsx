@@ -117,6 +117,10 @@ export const CreateRelationshipsForm: FC<CreateEventFormProps> = ({
       id: Number(id),
       type: RelationshipEntityType.Project,
     })),
+    ...line.attachments.map((id) => ({
+      id: Number(id),
+      type: RelationshipEntityType.Attachment,
+    })),
   ];
 
   const applyNote = async (line: ParsedLine) => {

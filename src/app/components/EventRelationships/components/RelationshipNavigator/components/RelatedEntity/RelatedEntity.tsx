@@ -10,6 +10,7 @@ import { RelatedNote } from "../RelatedNote";
 import { RelatedPerson } from "../RelatedPerson";
 import { RelatedProject } from "../RelatedProject/RelatedProject";
 import { RelatedEntityActions } from "../RelatedEntityActions";
+import { RelatedAttachment } from "../RelatedAttachment";
 
 export type RelatedEntityVariant = "full" | "compact" | "icon";
 export interface RelatedEntityProps {
@@ -46,6 +47,8 @@ export const RelatedEntity: FC<RelatedEntityProps> = ({ node, variant }) => {
         return <RelatedPerson {...props} />;
       case RelationshipEntityType.Project:
         return <RelatedProject {...props} related={children} />;
+      case RelationshipEntityType.Attachment:
+        return <RelatedAttachment {...props} related={children} />;
       default:
         return <div>error</div>;
     }

@@ -36,7 +36,6 @@ export const EDGES: Partial<
   [RelationshipEntityType.Project]: {
     [RelationshipEntityType.Project]: RelationshipType.Blocks,
     [RelationshipEntityType.Habit]: RelationshipType.Contains,
-    [RelationshipEntityType.Location]: RelationshipType.At,
     [RelationshipEntityType.Person]: RelationshipType.Includes,
     [RelationshipEntityType.Attachment]: RelationshipType.Contains,
   },
@@ -169,7 +168,7 @@ export const VIEWS: Record<RelationshipEntityType, EntityView> = {
       RelationshipEntityType.Project,
       RelationshipEntityType.Attachment,
     ],
-    secondary: [RelationshipEntityType.Location, RelationshipEntityType.Person],
+    secondary: [RelationshipEntityType.Person],
   },
   [RelationshipEntityType.Location]: {
     nests: true,

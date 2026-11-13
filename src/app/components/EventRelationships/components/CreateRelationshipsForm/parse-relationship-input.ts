@@ -26,9 +26,16 @@ export interface ParsedLine {
   locations: string[];
   habits: string[];
   projects: string[];
+  attachments: string[];
 }
 
-type MentionBucket = "tasks" | "people" | "locations" | "habits" | "projects";
+type MentionBucket =
+  | "tasks"
+  | "people"
+  | "locations"
+  | "habits"
+  | "projects"
+  | "attachments";
 
 /** tiptap node name -> the field its ids land in */
 const MENTION_BUCKETS: Record<string, MentionBucket> = {
@@ -37,6 +44,7 @@ const MENTION_BUCKETS: Record<string, MentionBucket> = {
   locationMention: "locations",
   habitMention: "habits",
   projectMention: "projects",
+  attachmentMention: "attachments",
 };
 
 /** people and locations encode their colour into the mention id: `12:#f97316` */
@@ -75,6 +83,7 @@ const parseParagraph = (paragraph: JSONContent): ParsedLine | null => {
     locations: [],
     habits: [],
     projects: [],
+    attachments: [],
   };
 
   const text = nodes
