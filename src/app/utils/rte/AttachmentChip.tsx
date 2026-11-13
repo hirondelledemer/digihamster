@@ -8,7 +8,7 @@ export const AttachmentChip: React.FC<NodeViewProps> = ({ node }) => {
     <NodeViewWrapper
       as="span"
       data-mention-id={id}
-      className="text-xs flex items-center text-[hsl(var(--chart-1))]"
+      className="text-xs flex items-center text-[hsl(var(--attachment-mention))]"
     >
       <IconPaperclip size={16} />
       <span>{label ?? id}</span>

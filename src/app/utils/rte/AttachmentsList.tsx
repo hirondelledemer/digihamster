@@ -2,13 +2,13 @@ import React, { forwardRef } from "react";
 import { Card, CardContent } from "@/app/components/ui/card";
 import { MentionsConfigProps } from "./types";
 import { useAttachmentsState } from "../hooks/use-attachments/state-context";
-import { useItemSelectorHandler } from "./use-handler";
+import { useItemSelectorHandler } from "./use-item-selector-handler";
 import { Item, SelectableItem } from "./SelectableItem";
 
-export type HabitsListProps = MentionsConfigProps;
+export type AttachmentsListProps = MentionsConfigProps;
 
 export const AttachmentsList = forwardRef(
-  ({ command, query }: HabitsListProps, ref) => {
+  ({ command, query }: AttachmentsListProps, ref) => {
     const { data: attachments } = useAttachmentsState();
     const items = attachments
       .filter((att) =>
