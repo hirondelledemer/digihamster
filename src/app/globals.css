@@ -33,7 +33,7 @@
     --chart-2: 173 58% 39%;
     /* yellow */
     --chart-3: 197 37% 24%;
-    /* purple  */
+    /* amber  */
     --chart-4: 43 74% 66%;
     /* red */
     --chart-5: 27 87% 67%;
@@ -51,8 +51,7 @@
     --scale-color-10: 152 72% 35%;  /* emerald-600 */
 
     /* random colors */
-    --purple: 43 74% 66%; 
-    /* TODO: fix colors. Organize it. also this is not purlple. it is amber */
+    --attachment-mention: 12 76% 61%; 
   }
 
   .dark {

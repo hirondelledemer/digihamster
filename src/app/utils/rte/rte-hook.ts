@@ -1,9 +1,7 @@
 import {
   Content,
   JSONContent,
-  type NodeViewProps,
   useEditor,
-  NodeViewWrapper,
   ReactNodeViewRenderer,
 } from "@tiptap/react";
 import Mention from "@tiptap/extension-mention";
@@ -21,7 +19,7 @@ import { TasksList } from "./TasksList";
 import { HabitsList } from "./HabitsList";
 import { LocationList } from "./LocationList";
 import { AttachmentsList } from "./AttachmentsList";
-import { IconPaperclip } from "@tabler/icons-react";
+import { AttachmentChip } from "./AttachmentChip";
 
 export interface RteValue {
   title: string;
@@ -99,21 +97,6 @@ const HabitMention = Mention.extend({
   },
 });
 
-export const MentionChip: React.FC<NodeViewProps> = ({ node }) => {
-  const { id, label } = node.attrs;
-
-  return (
-    <NodeViewWrapper
-      as="span"
-      data-mention-id={id}
-      className="text-xs flex items-center text-[hsl(var(--purple))]"
-    >
-      <IconPaperclip size={16} />
-      <span>{label ?? id}</span>
-    </NodeViewWrapper>
-  );
-};
-
 const AttachmentMention = Mention.extend({
   name: "attachmentMention",
 })
@@ -126,7 +109,7 @@ const AttachmentMention = Mention.extend({
   })
   .extend({
     addNodeView() {
-      return ReactNodeViewRenderer(MentionChip);
+      return ReactNodeViewRenderer(AttachmentChip);
     },
   });
 
@@ -179,9 +162,6 @@ export function useRte({
         suggestion: getMentionsConfig(HabitsList),
       }),
       AttachmentMention.configure({
-        HTMLAttributes: {
-          class: styles.attachment,
-        },
         suggestion: getMentionsConfig(AttachmentsList),
       }),
       LocationMention.configure({
