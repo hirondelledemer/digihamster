@@ -1,8 +1,7 @@
 import { SuggestionKeyDownProps } from "@tiptap/suggestion";
 import { useEffect, useImperativeHandle, useState } from "react";
 
-export const useHandler = ({
-  // TODO: rename
+export const useItemSelectorHandler = ({
   items,
   command,
   query,

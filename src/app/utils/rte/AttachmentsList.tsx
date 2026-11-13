@@ -2,7 +2,7 @@ import React, { forwardRef } from "react";
 import { Card, CardContent } from "@/app/components/ui/card";
 import { MentionsConfigProps } from "./types";
 import { useAttachmentsState } from "../hooks/use-attachments/state-context";
-import { useHandler } from "./use-handler";
+import { useItemSelectorHandler } from "./use-handler";
 import { Item, SelectableItem } from "./SelectableItem";
 
 export type HabitsListProps = MentionsConfigProps;
@@ -17,7 +17,7 @@ export const AttachmentsList = forwardRef(
       .slice(0, 5)
       .map<Item>((att) => ({ id: att.id, label: att.file_name }));
 
-    const { selectedIndex, selectItem } = useHandler({
+    const { selectedIndex, selectItem } = useItemSelectorHandler({
       command,
       query,
       ref,
