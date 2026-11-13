@@ -36,6 +36,7 @@ export const EDGES: Partial<
   [RelationshipEntityType.Project]: {
     [RelationshipEntityType.Project]: RelationshipType.Blocks,
     [RelationshipEntityType.Habit]: RelationshipType.Contains,
+    [RelationshipEntityType.Location]: RelationshipType.At,
     [RelationshipEntityType.Person]: RelationshipType.Includes,
     [RelationshipEntityType.Attachment]: RelationshipType.Contains,
   },
