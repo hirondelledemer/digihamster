@@ -25,6 +25,8 @@
     --input: 240 5.9% 90%;
     --ring: 346.8 77.2% 49.8%;
     --radius: 0.5rem;
+
+    /* chart colors */
     /* blue */
     --chart-1: 12 76% 61%;
     /* green */
@@ -36,6 +38,7 @@
     /* red */
     --chart-5: 27 87% 67%;
     
+    /* chart colors */
     --scale-color-1: 0 83% 47%;     /* red-600 */
     --scale-color-2: 18 89% 48%;    /* orange-600 */
     --scale-color-3: 24 94% 50%;    /* orange-500 */
@@ -46,6 +49,10 @@
     --scale-color-8: 142 76% 36%;   /* green-400 */
     --scale-color-9: 142 71% 45%;   /* green-500 */
     --scale-color-10: 152 72% 35%;  /* emerald-600 */
+
+    /* random colors */
+    --purple: 43 74% 66%; 
+    /* TODO: fix colors. Organize it. also this is not purlple. it is amber */
   }
 
   .dark {
