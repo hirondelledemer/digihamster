@@ -30,18 +30,30 @@ import { TaskStatus } from "@/app/utils/types/task";
 import { useSetSearchParams } from "@/app/utils/url/search-params";
 import { useSearchParams } from "next/navigation";
 import { MinimalNote } from "../molcules/notes";
+import { useRelevantRelationshipsForEntity } from "@/app/utils/hooks/use-relationships/selectors";
+import { RelationshipEntityType } from "@/app/utils/types/relationship";
+import { Attachment } from "../molcules/attachments/Attachment";
 
-export interface TaskInfoProps {
+export interface ProjectInfoProps {
   testId?: string;
 }
 
-const TaskInfo: FC<TaskInfoProps> = (): JSX.Element | null => {
+export const ProjectInfo: FC<ProjectInfoProps> = (): JSX.Element | null => {
   const searchParams = useSearchParams();
   const setParams = useSetSearchParams();
   const [allowSorting, setAllowSorting] = useState<boolean>(false);
   const { reorderTasksInTheProject } = useTasksActions();
 
   const projectId = searchParams.get("projectId"); // TODO: convert to number
+
+  const relationships = useRelevantRelationshipsForEntity({
+    entityId: Number(projectId),
+    entityType: RelationshipEntityType.Project,
+  });
+
+  const attachmentRelationships = relationships.filter(
+    (r) => r.target_type === RelationshipEntityType.Attachment
+  );
 
   const { data: tasks } = useTasksState();
 
@@ -104,6 +116,10 @@ const TaskInfo: FC<TaskInfoProps> = (): JSX.Element | null => {
                 <MinimalNote note={selectedProject.description} />
               </div>
             )}
+            {!!attachmentRelationships.length &&
+              attachmentRelationships.map((att) => (
+                <Attachment key={att.id} id={att.target_id} />
+              ))}
             <div className="space-x-2 flex items-center">
               <Label>Sort:</Label>
               <Switch
@@ -150,5 +166,3 @@ const TaskInfo: FC<TaskInfoProps> = (): JSX.Element | null => {
     </Sheet>
   );
 };
-
-export default TaskInfo;

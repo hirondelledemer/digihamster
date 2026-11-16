@@ -1,5 +1,5 @@
 import { render, screen, userEvent, waitFor } from "@/config/utils/test-utils";
-import TaskInfo, { TaskInfoProps } from "./TaskInfo";
+import { ProjectInfo, ProjectInfoProps } from "./ProjectInfo";
 import { generateCustomTasksList } from "@/app/utils/mocks/task";
 import { getRichTextEditorTestkit } from "../RichTextEditor/RichTextEditor.testkit";
 import { rteTestId } from "../CreateTaskForm/CreateTaskForm";
@@ -23,8 +23,8 @@ jest.mock("next/navigation", () => ({
   }),
 }));
 
-describe("TaskInfo", () => {
-  const defaultProps: TaskInfoProps = {};
+describe("ProjectInfo", () => {
+  const defaultProps: ProjectInfoProps = {};
   const DEFAULT_PROJECTS = generateListOfProjects(3);
 
   const SELECTED_PROJECT = DEFAULT_PROJECTS[1];
@@ -43,13 +43,13 @@ describe("TaskInfo", () => {
     render(
       <TasksContextProvider>
         <ProjectsContextProvider>
-          <TaskInfo {...props} />
+          <ProjectInfo {...props} />
         </ProjectsContextProvider>
       </TasksContextProvider>
     );
 
   describe("projectId is present in the query params", () => {
-    it("should render TaskInfo", async () => {
+    it("should render ProjectInfo", async () => {
       (useSearchParams as jest.Mock).mockReturnValue({
         get: () => String(SELECTED_PROJECT.id),
       });
