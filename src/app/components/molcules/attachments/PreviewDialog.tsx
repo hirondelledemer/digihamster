@@ -1,47 +1,12 @@
-import { FC, useState } from "react";
+import { FC } from "react";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "../../ui/dialog";
-import { useAttachmentsActions } from "@/app/utils/hooks/use-attachments/actions-context";
-import { Button } from "../../ui/button";
-import { IconCheckbox, IconPencil } from "@tabler/icons-react";
-import { Input } from "../../ui/input";
 import { IAttachment } from "@/app/utils/types/attachment";
-
-const FileTitle: FC<{ id: number; title: string }> = ({ id, title }) => {
-  const [allowEdit, setAllowEdit] = useState<boolean>(false);
-  const [value, setValue] = useState<string>(title);
-
-  const { update } = useAttachmentsActions();
-
-  const handleSave = async () => {
-    await update(id, { file_name: value });
-    setAllowEdit(false);
-  };
-
-  if (!allowEdit) {
-    return (
-      <div className="flex gap-2 items-center">
-        {title}
-        <Button size="icon">
-          <IconPencil onClick={() => setAllowEdit(true)} />
-        </Button>
-      </div>
-    );
-  }
-
-  return (
-    <div className="flex gap-2 items-center">
-      <Input value={value} onChange={(e) => setValue(e.target.value)} />
-      <Button size="icon">
-        <IconCheckbox onClick={handleSave} />
-      </Button>
-    </div>
-  );
-};
+import { EditableFileName } from "./EditableFileName";
 
 export const PreviewDialog: FC<{
   onClose(open: boolean): void;
@@ -53,7 +18,7 @@ export const PreviewDialog: FC<{
       <DialogContent className="max-w-4xl">
         <DialogHeader>
           <DialogTitle className="truncate pr-8">
-            <FileTitle id={attachment.id} title={attachment.file_name} />
+            <EditableFileName id={attachment.id} title={attachment.file_name} />
           </DialogTitle>
         </DialogHeader>
         {attachment && previewUrl ? (
