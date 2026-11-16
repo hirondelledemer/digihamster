@@ -5,6 +5,7 @@ import {
 } from "../hooks/use-tasks/actions-context";
 import { EventsStateContext } from "../hooks/use-events/state-context";
 import { RelationshipsActionsContext } from "../hooks/use-relationships/actions-context";
+import { AttachmentsActionsContext } from "../hooks/use-attachments/actions-context";
 
 type Wrapper = (children: ReactNode) => ReactElement;
 
@@ -64,6 +65,26 @@ export const relationshipsActions = (
       >
         {children}
       </RelationshipsActionsContext.Provider>
+    );
+  };
+
+export const attachmentActions = (
+  value: Partial<
+    ComponentProps<typeof AttachmentsActionsContext.Provider>["value"]
+  > = {}
+): Wrapper =>
+  function TaskActionsWrapper(children) {
+    return (
+      <AttachmentsActionsContext.Provider
+        value={{
+          create: jest.fn(),
+          update: jest.fn(),
+          delete: jest.fn(),
+          ...value,
+        }}
+      >
+        {children}
+      </AttachmentsActionsContext.Provider>
     );
   };
 

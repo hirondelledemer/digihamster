@@ -3,14 +3,9 @@ import { useAttachmentById } from "@/app/utils/hooks/use-attachments/selectors";
 import { FC, useCallback, useState } from "react";
 import { useToast } from "../../ui/use-toast";
 import { getApiErrorMessage } from "@/app/utils/axios";
-import AttachmentCard from "../../Attachments/AttachmentCard";
+import AttachmentCard from "./AttachmentCard";
 import { IAttachment } from "@/app/utils/types/attachment";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "../../ui/dialog";
+import { PreviewDialog } from "./PreviewDialog";
 
 export const Attachment: FC<{ id: number }> = ({ id }) => {
   const attachment = useAttachmentById(id);
@@ -52,45 +47,19 @@ export const Attachment: FC<{ id: number }> = ({ id }) => {
 
   return (
     <>
-      <Dialog
-        open={!!preview}
-        onOpenChange={(open) => {
-          if (!open) {
-            setPreview(null);
-            setPreviewUrl(null);
-          }
-        }}
-      >
-        <DialogContent className="max-w-4xl">
-          <DialogHeader>
-            <DialogTitle className="truncate pr-8">
-              {preview?.file_name}
-            </DialogTitle>
-          </DialogHeader>
-          {preview && previewUrl ? (
-            preview.mime_type === "application/pdf" ? (
-              <iframe
-                src={previewUrl}
-                title={preview.file_name}
-                className="h-[70vh] w-full rounded-md border"
-              />
-            ) : preview.mime_type.startsWith("image/") ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={previewUrl}
-                alt={preview.file_name}
-                className="max-h-[70vh] w-full rounded-md object-contain"
-              />
-            ) : (
-              <p className="text-muted-foreground">
-                Preview not available for this file type.
-              </p>
-            )
-          ) : (
-            <p className="text-muted-foreground">Loading preview…</p>
-          )}
-        </DialogContent>
-      </Dialog>
+      {!!preview && !!previewUrl && (
+        <PreviewDialog
+          onClose={(open) => {
+            if (!open) {
+              setPreview(null);
+              setPreviewUrl(null);
+            }
+          }}
+          attachment={preview}
+          previewUrl={previewUrl}
+        />
+      )}
+
       <AttachmentCard
         attachment={attachment}
         ensureUrl={ensureUrl}

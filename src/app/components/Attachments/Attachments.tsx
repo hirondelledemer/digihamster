@@ -7,9 +7,9 @@ import { useToast } from "../ui/use-toast";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
-import AttachmentCard from "./AttachmentCard";
+import AttachmentCard from "../molcules/attachments/AttachmentCard";
 import AttachmentRow from "./AttachmentRow";
+import { PreviewDialog } from "../molcules/attachments/PreviewDialog";
 
 type ViewMode = "list" | "grid";
 
@@ -32,7 +32,7 @@ const Attachments: FC = (): JSX.Element => {
       const message = error?.response?.data?.message || fallback;
       toast({ title: "Error", description: message, variant: "destructive" });
     },
-    [toast],
+    [toast]
   );
 
   // Fetch + cache an object URL for a file, downloading lazily and only once.
@@ -49,7 +49,7 @@ const Attachments: FC = (): JSX.Element => {
         return null;
       }
     },
-    [handleError],
+    [handleError]
   );
 
   const revokeAll = useCallback(() => {
@@ -98,7 +98,7 @@ const Attachments: FC = (): JSX.Element => {
         if (fileInputRef.current) fileInputRef.current.value = "";
       }
     },
-    [entityType, entityId, load, handleError, toast],
+    [entityType, entityId, load, handleError, toast]
   );
 
   const handleDownload = useCallback(
@@ -112,7 +112,7 @@ const Attachments: FC = (): JSX.Element => {
       link.click();
       link.remove();
     },
-    [ensureUrl],
+    [ensureUrl]
   );
 
   const handleDelete = useCallback(
@@ -131,7 +131,7 @@ const Attachments: FC = (): JSX.Element => {
         handleError(error, "Delete failed");
       }
     },
-    [handleError, toast],
+    [handleError, toast]
   );
 
   const openPreview = useCallback(
@@ -141,7 +141,7 @@ const Attachments: FC = (): JSX.Element => {
       const url = await ensureUrl(attachment.id);
       setPreviewUrl(url);
     },
-    [ensureUrl],
+    [ensureUrl]
   );
 
   // Initial load (whole list, no filters) + cleanup on unmount.
@@ -250,50 +250,18 @@ const Attachments: FC = (): JSX.Element => {
         </div>
       )}
 
-      <Dialog
-        open={!!preview}
-        onOpenChange={(open) => {
-          if (!open) {
-            setPreview(null);
-            setPreviewUrl(null);
-          }
-        }}
-      >
-        <DialogContent className="max-w-4xl">
-          <DialogHeader>
-            <DialogTitle className="truncate pr-8">
-              {preview?.file_name}
-            </DialogTitle>
-          </DialogHeader>
-          {preview && previewUrl ? (
-            preview.mime_type === "application/pdf" ? (
-              <iframe
-                src={previewUrl}
-                title={preview.file_name}
-                className="h-[70vh] w-full rounded-md border"
-              />
-            ) : preview.mime_type.startsWith("image/") ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={previewUrl}
-                alt={preview.file_name}
-                className="max-h-[70vh] w-full rounded-md object-contain"
-              />
-            ) : (
-              <p className="text-muted-foreground">
-                Preview not available for this file type.
-              </p>
-            )
-          ) : (
-            <p className="text-muted-foreground">Loading preview…</p>
-          )}
-          {preview && (
-            <div className="flex justify-end">
-              <Button onClick={() => handleDownload(preview)}>Download</Button>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+      {!!preview && !!previewUrl && (
+        <PreviewDialog
+          onClose={(open) => {
+            if (!open) {
+              setPreview(null);
+              setPreviewUrl(null);
+            }
+          }}
+          attachment={preview}
+          previewUrl={previewUrl}
+        />
+      )}
     </div>
   );
 };
