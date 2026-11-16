@@ -1,9 +1,9 @@
 import { api } from "@/app/utils/hooks/use-attachments/api";
 import { useAttachmentById } from "@/app/utils/hooks/use-attachments/selectors";
 import { FC, useCallback } from "react";
-import { useToast } from "../ui/use-toast";
+import { useToast } from "../../ui/use-toast";
 import { getApiErrorMessage } from "@/app/utils/axios";
-import AttachmentCard from "../Attachments/AttachmentCard";
+import AttachmentCard from "../../Attachments/AttachmentCard";
 
 export const Attachment: FC<{ id: number }> = ({ id }) => {
   const attachment = useAttachmentById(id);

@@ -32,7 +32,7 @@ import { useSearchParams } from "next/navigation";
 import { MinimalNote } from "../molcules/notes";
 import { useRelevantRelationshipsForEntity } from "@/app/utils/hooks/use-relationships/selectors";
 import { RelationshipEntityType } from "@/app/utils/types/relationship";
-import { Attachment } from "./Attachment";
+import { Attachment } from "../molcules/attachments/Attachment";
 
 export interface TaskInfoProps {
   testId?: string;
@@ -167,4 +167,4 @@ const TaskInfo: FC<TaskInfoProps> = (): JSX.Element | null => {
   );
 };
 
-export default TaskInfo; // TODO: fix
+export default TaskInfo; // TODO: fix name

@@ -13,15 +13,12 @@ import {
 import { RelationshipNode } from "@/app/utils/hooks/use-relationships/use-relationship-tree";
 import { RelationshipEntityType } from "@/app/utils/types/relationship";
 import { IconPaperclip } from "@tabler/icons-react";
-import { FC, useCallback } from "react";
+import { FC } from "react";
 import { RelatedEntity } from "../RelatedEntity";
 import { EntityTypeIcon } from "../../../EntityTypeIcon";
 import { RelatedEntityVariant } from "../RelatedEntity/RelatedEntity";
 import { useAttachmentById } from "@/app/utils/hooks/use-attachments/selectors";
-import { api } from "@/app/utils/hooks/use-attachments/api";
-import AttachmentCard from "@/app/components/Attachments/AttachmentCard";
-import { useToast } from "@/app/components/ui/use-toast";
-import { getApiErrorMessage } from "@/app/utils/axios";
+import { Attachment } from "@/app/components/molcules/attachments/Attachment";
 
 export const RelatedAttachment: FC<{
   id: number;
@@ -33,31 +30,12 @@ export const RelatedAttachment: FC<{
 }> = ({ id, variant, related = [], summary = [] }) => {
   const attachment = useAttachmentById(id);
   const { setActiveEntity } = useNavigator();
-  const { toast } = useToast();
 
   const selectEntity = () =>
     setActiveEntity({
       id,
       type: RelationshipEntityType.Location,
     });
-
-  const ensureUrl = useCallback(
-    async (id: number): Promise<string | null> => {
-      try {
-        const response = await api.download(id);
-        const url = URL.createObjectURL(response.data);
-        return url;
-      } catch (e: unknown) {
-        toast({
-          title: "Failed to load a file",
-          description: getApiErrorMessage(e),
-          variant: "destructive",
-        });
-        return null;
-      }
-    },
-    [toast]
-  );
 
   if (!attachment) {
     return null;
@@ -96,13 +74,7 @@ export const RelatedAttachment: FC<{
               <IconPaperclip size={16} aria-label="attachment" />
               <div>{attachment.file_name}</div>
             </div>
-            <AttachmentCard
-              attachment={attachment}
-              ensureUrl={ensureUrl}
-              onDelete={() => {}}
-              onDownload={() => {}}
-              onPreview={() => {}}
-            />
+            <Attachment id={attachment.id} />
           </CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-2">
