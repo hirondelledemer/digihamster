@@ -22,6 +22,7 @@ export const formatSize = (bytes: number): string => {
 };
 
 const AttachmentCard: FC<AttachmentCardProps> = ({
+  // TODO: move next to Attachment
   attachment,
   ensureUrl,
   onPreview,
