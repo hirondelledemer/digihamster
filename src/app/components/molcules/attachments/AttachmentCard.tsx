@@ -2,8 +2,8 @@
 import React, { FC, useEffect, useRef, useState } from "react";
 import { Download, FileText, Trash2 } from "lucide-react";
 import { IAttachment } from "@/app/utils/types/attachment";
-import { Card } from "../ui/card";
-import { Button } from "../ui/button";
+import { Card } from "../../ui/card";
+import { Button } from "../../ui/button";
 import Image from "next/image";
 
 interface AttachmentCardProps {
@@ -22,7 +22,6 @@ export const formatSize = (bytes: number): string => {
 };
 
 const AttachmentCard: FC<AttachmentCardProps> = ({
-  // TODO: move next to Attachment
   attachment,
   ensureUrl,
   onPreview,

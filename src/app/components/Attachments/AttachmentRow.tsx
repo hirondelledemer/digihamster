@@ -3,7 +3,7 @@ import React, { FC } from "react";
 import { Download, FileText, Trash2 } from "lucide-react";
 import { IAttachment } from "@/app/utils/types/attachment";
 import { Button } from "../ui/button";
-import { formatSize } from "./AttachmentCard";
+import { formatSize } from "../molcules/attachments/AttachmentCard";
 
 interface AttachmentRowProps {
   attachment: IAttachment;
@@ -26,7 +26,10 @@ const AttachmentRow: FC<AttachmentRowProps> = ({
         className="flex min-w-0 flex-1 items-center gap-3 text-left"
       >
         <FileText className="h-5 w-5 shrink-0 text-muted-foreground" />
-        <span className="truncate text-sm font-medium" title={attachment.file_name}>
+        <span
+          className="truncate text-sm font-medium"
+          title={attachment.file_name}
+        >
           {attachment.file_name}
         </span>
       </button>
