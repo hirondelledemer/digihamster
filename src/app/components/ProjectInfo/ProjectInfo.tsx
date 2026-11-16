@@ -34,11 +34,11 @@ import { useRelevantRelationshipsForEntity } from "@/app/utils/hooks/use-relatio
 import { RelationshipEntityType } from "@/app/utils/types/relationship";
 import { Attachment } from "../molcules/attachments/Attachment";
 
-export interface TaskInfoProps {
+export interface ProjectInfoProps {
   testId?: string;
 }
 
-const TaskInfo: FC<TaskInfoProps> = (): JSX.Element | null => {
+export const ProjectInfo: FC<ProjectInfoProps> = (): JSX.Element | null => {
   const searchParams = useSearchParams();
   const setParams = useSetSearchParams();
   const [allowSorting, setAllowSorting] = useState<boolean>(false);
@@ -166,5 +166,3 @@ const TaskInfo: FC<TaskInfoProps> = (): JSX.Element | null => {
     </Sheet>
   );
 };
-
-export default TaskInfo; // TODO: fix name

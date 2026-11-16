@@ -8,13 +8,13 @@ import {
 
 import CommandTool from "../CommandTool";
 
-import TaskInfo from "../TaskInfo";
+import { ProjectInfo } from "../ProjectInfo";
 
 export const Wiki = (): JSX.Element => {
   return (
     <ResizablePanelGroup direction="horizontal" className="rounded-lg border">
       <Suspense>
-        <TaskInfo />
+        <ProjectInfo />
       </Suspense>
       <ResizablePanel>
         <ResizablePanelGroup direction="vertical">
