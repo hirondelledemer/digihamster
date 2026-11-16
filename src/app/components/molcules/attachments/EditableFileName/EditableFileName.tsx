@@ -1,7 +1,7 @@
 import { useAttachmentsActions } from "@/app/utils/hooks/use-attachments/actions-context";
 import { FC, useState } from "react";
-import { Input } from "../../ui/input";
-import { Button } from "../../ui/button";
+import { Input } from "../../../ui/input";
+import { Button } from "../../../ui/button";
 import { IconCheckbox, IconPencil } from "@tabler/icons-react";
 
 export const EditableFileName: FC<{ id: number; title: string }> = ({
@@ -22,8 +22,12 @@ export const EditableFileName: FC<{ id: number; title: string }> = ({
     return (
       <div className="flex gap-2 items-center">
         {title}
-        <Button size="icon">
-          <IconPencil onClick={() => setAllowEdit(true)} />
+        <Button
+          size="icon"
+          aria-label="Edit file name"
+          onClick={() => setAllowEdit(true)}
+        >
+          <IconPencil />
         </Button>
       </div>
     );
@@ -32,8 +36,8 @@ export const EditableFileName: FC<{ id: number; title: string }> = ({
   return (
     <div className="flex gap-2 items-center">
       <Input value={value} onChange={(e) => setValue(e.target.value)} />
-      <Button size="icon">
-        <IconCheckbox onClick={handleSave} />
+      <Button size="icon" aria-label="Save" onClick={handleSave}>
+        <IconCheckbox />
       </Button>
     </div>
   );
