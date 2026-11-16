@@ -6,9 +6,11 @@ import { getApiErrorMessage } from "@/app/utils/axios";
 import AttachmentCard from "./AttachmentCard";
 import { IAttachment } from "@/app/utils/types/attachment";
 import { PreviewDialog } from "./PreviewDialog";
+import { useAttachmentsActions } from "@/app/utils/hooks/use-attachments/actions-context";
 
 export const Attachment: FC<{ id: number }> = ({ id }) => {
   const attachment = useAttachmentById(id);
+  const { delete: deleteAttachment } = useAttachmentsActions();
   const { toast } = useToast();
   const [preview, setPreview] = useState<IAttachment | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -41,6 +43,20 @@ export const Attachment: FC<{ id: number }> = ({ id }) => {
     [ensureUrl]
   );
 
+  const handleDownload = useCallback(
+    async (attachment: IAttachment) => {
+      const url = await ensureUrl(attachment.id);
+      if (!url) return;
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = attachment.file_name;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    },
+    [ensureUrl]
+  );
+
   if (!attachment) {
     return null;
   }
@@ -63,8 +79,8 @@ export const Attachment: FC<{ id: number }> = ({ id }) => {
       <AttachmentCard
         attachment={attachment}
         ensureUrl={ensureUrl}
-        onDelete={() => {}}
-        onDownload={() => {}}
+        onDelete={() => deleteAttachment(attachment.id)}
+        onDownload={() => handleDownload(attachment)}
         onPreview={() => openPreview(attachment)}
       />
     </>
