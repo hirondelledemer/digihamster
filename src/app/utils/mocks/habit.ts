@@ -13,6 +13,7 @@ export const generateHabit: (
     logs: [],
     times_per_month: 4,
     description: `Habit desc ${i}`,
+    encouragement: `Habit encouragement ${i}`,
     created_at: DEFAULT_TEST_DATE,
     ...properties,
   };

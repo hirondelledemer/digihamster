@@ -24,7 +24,11 @@ const HabitFormModal: FC<HabitFormModalProps & HabitFormProps> = ({
           aria-describedby="Task Modal"
         >
           <SheetHeader>
-            <SheetTitle>Create Task</SheetTitle>
+            <SheetTitle>
+              {restProps.editMode
+                ? `Edit "${restProps.habit.title}"`
+                : "Create Habit"}
+            </SheetTitle>
           </SheetHeader>
           <HabitForm {...restProps} />
         </SheetContent>
