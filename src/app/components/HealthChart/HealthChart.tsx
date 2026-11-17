@@ -3,7 +3,7 @@ import React, { FC, useMemo, useState } from "react";
 
 import { ChartConfig } from "../ui/chart";
 import { Card, CardContent, CardHeader } from "../ui/card";
-import { useHabitsNewState } from "@/app/utils/hooks/use-habits-new/state-context";
+import { useHabitsState } from "@/app/utils/hooks/use-habits/state-context";
 import "./style.css";
 import { Button } from "../ui/button";
 import { IconArrowLeft } from "@tabler/icons-react";
@@ -25,7 +25,7 @@ export interface HealthChartProps {
 }
 
 const HealthChart: FC<HealthChartProps> = (): JSX.Element => {
-  const { data: habits = [] } = useHabitsNewState();
+  const { data: habits = [] } = useHabitsState();
 
   const { data: lifeAspects = [] } = useLifeAspectsState();
   const [selectedCategory, setSelectedCategory] = useState<

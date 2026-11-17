@@ -6,27 +6,30 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "../ui/form";
+} from "../../ui/form";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Input } from "../ui/input";
+import { Input } from "../../ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../ui/select";
-import { TIMES_PER_MONTH } from "./HabitForm.consts";
-import { Button } from "../ui/button";
+} from "../../ui/select";
+import { TIMES_PER_MONTH } from "./constants";
+import { Button } from "../../ui/button";
 import { useLifeAspectsState } from "@/app/utils/hooks/use-life-aspects/state-context";
-import { useHabitsNewActions } from "@/app/utils/hooks/use-habits-new/actions-context";
+import { useHabitsActions } from "@/app/utils/hooks/use-habits/actions-context";
 import { IHabitWithLogs } from "@/app/utils/types/habit";
+import { Textarea } from "../../ui/textarea";
 
 const FormSchema = z.object({
   title: z.string().min(1, { message: "This field has to be filled." }),
-  category: z.number().min(1, { message: "Required" }),
+  description: z.string(),
+  encouragement: z.string(),
+  lifeAspectId: z.number().min(1, { message: "Required" }),
   timesPerMonth: z.number().min(1, { message: "Required" }),
 });
 
@@ -47,21 +50,24 @@ export interface HabitFormEditModeProps extends CommonProps {
 }
 export type HabitFormProps = HabitFormRegularProps | HabitFormEditModeProps;
 
-// TODO: use this
 const HabitForm: FC<HabitFormProps> = ({
   testId,
   onDone,
   ...restProps
 }): JSX.Element => {
-  const { updateHabit, createHabit, deleteHabit } = useHabitsNewActions();
+  const { updateHabit, createHabit, deleteHabit } = useHabitsActions();
   const { data: lifeAspects } = useLifeAspectsState();
+
+  console.log("lifeAspects", lifeAspects);
 
   const getInitialValues = useCallback(() => {
     if (restProps.editMode) {
       return {
         title: restProps.habit.title || "",
-        category: restProps.habit.life_aspect_id || undefined,
+        lifeAspectId: restProps.habit.life_aspect_id || undefined,
         timesPerMonth: restProps.habit.times_per_month || 0,
+        description: restProps.habit.description || "",
+        encouragement: restProps.habit.encouragement || "",
       };
     }
     return restProps.initialValues;
@@ -71,7 +77,9 @@ const HabitForm: FC<HabitFormProps> = ({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       title: "",
-      category: lifeAspects[0].id,
+      description: "",
+      encouragement: "",
+      lifeAspectId: lifeAspects[0].id,
       timesPerMonth: 0,
       ...getInitialValues(),
     },
@@ -92,15 +100,18 @@ const HabitForm: FC<HabitFormProps> = ({
     if (restProps.editMode) {
       updateHabit(restProps.habit.id, {
         title: values.title,
-        life_aspect_id: values.category,
+        life_aspect_id: values.lifeAspectId,
         times_per_month: values.timesPerMonth,
+        description: values.description,
+        encouragement: values.encouragement,
       });
     } else {
       const habitData = {
         title: values.title,
-        life_aspect_id: values.category,
+        life_aspect_id: values.lifeAspectId,
         times_per_month: values.timesPerMonth,
-        description: "",
+        description: values.description,
+        encouragement: values.encouragement,
       };
       createHabit(habitData);
     }
@@ -126,10 +137,10 @@ const HabitForm: FC<HabitFormProps> = ({
 
         <FormField
           control={form.control}
-          name="category"
+          name="lifeAspectId"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Category</FormLabel>
+              <FormLabel>Life aspect</FormLabel>
               <Select
                 onValueChange={(val) => field.onChange(Number(val))}
                 defaultValue={field.value.toString()}
@@ -153,6 +164,32 @@ const HabitForm: FC<HabitFormProps> = ({
                 </SelectContent>
               </Select>
               <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="description"
+          render={({ field }) => (
+            <FormItem className="flex flex-col">
+              <FormLabel>Description</FormLabel>
+              <FormControl>
+                <Textarea placeholder="description" {...field} />
+              </FormControl>
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="encouragement"
+          render={({ field }) => (
+            <FormItem className="flex flex-col">
+              <FormLabel>Encouragement</FormLabel>
+              <FormControl>
+                <Textarea placeholder="encouragement" {...field} />
+              </FormControl>
             </FormItem>
           )}
         />

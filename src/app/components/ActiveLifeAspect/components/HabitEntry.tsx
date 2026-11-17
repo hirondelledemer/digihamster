@@ -1,4 +1,4 @@
-import { useHabitById } from "@/app/utils/hooks/use-habits-new/selectors";
+import { useHabitById } from "@/app/utils/hooks/use-habits/selectors";
 import { HabitLog } from "@/app/utils/types/habit";
 import { FC } from "react";
 import { EntryContainer } from "./EntryContainer";

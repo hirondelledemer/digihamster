@@ -4,6 +4,6 @@ export const LOGIN = "/login";
 export const SIGNUP = "/signup";
 export const VERIFY_EMAIL = "/verifyemail";
 export const HOME = "/";
-export const HABITS = "/habits-new"; // TODO: rename
+export const HABITS = "/habits";
 export const PROJECTS = "/projects";
 export const WIKI = "/wiki";

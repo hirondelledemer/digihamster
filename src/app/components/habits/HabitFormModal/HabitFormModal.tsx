@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "../ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "../../ui/sheet";
 import HabitForm, { HabitFormProps } from "../HabitForm/HabitForm";
 
 export interface HabitFormModalProps {
@@ -16,7 +16,6 @@ const HabitFormModal: FC<HabitFormModalProps & HabitFormProps> = ({
 }): JSX.Element => {
   return (
     <div data-testid={testId}>
-      {/* <TaskModal open={open} onClose={onClose}> */}
       <Sheet open={open}>
         <SheetContent
           side="left"
@@ -25,7 +24,11 @@ const HabitFormModal: FC<HabitFormModalProps & HabitFormProps> = ({
           aria-describedby="Task Modal"
         >
           <SheetHeader>
-            <SheetTitle>Create Task</SheetTitle>
+            <SheetTitle>
+              {restProps.editMode
+                ? `Edit "${restProps.habit.title}"`
+                : "Create Habit"}
+            </SheetTitle>
           </SheetHeader>
           <HabitForm {...restProps} />
         </SheetContent>

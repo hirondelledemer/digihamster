@@ -8,7 +8,7 @@ import {
   getLifeAspectAssetIcon,
   useLifeAspectById,
 } from "@/app/utils/hooks/use-life-aspects/selectors";
-import { useHabitsByLifeAspectId } from "@/app/utils/hooks/use-habits-new/selectors";
+import { useHabitsByLifeAspectId } from "@/app/utils/hooks/use-habits/selectors";
 import { ScrollArea } from "../ui/scroll-area";
 import { compareAsc, compareDesc, subMonths } from "date-fns";
 import { now } from "@/app/utils/date/now";

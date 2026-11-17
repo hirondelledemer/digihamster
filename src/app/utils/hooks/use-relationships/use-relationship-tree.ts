@@ -26,7 +26,7 @@ import { useRelationshipsState } from "./state-context";
 import { ITask, TaskStatus } from "../../types/task";
 import { IProject } from "../../types/project";
 import { IHabitWithLogs } from "../../types/habit";
-import { useHabitsNewState } from "../use-habits-new/state-context";
+import { useHabitsState } from "../use-habits/state-context";
 import { getHabitLogForADay } from "../../habits/habit-log";
 import { toBackendDate } from "#utils/date";
 
@@ -420,7 +420,7 @@ export const useRelationshipTree = (
   const { data: relationships, isLoading } = useRelationshipsState();
   const { data: tasks } = useTasksState();
   const { data: projects } = useProjectsState();
-  const { data: habits } = useHabitsNewState();
+  const { data: habits } = useHabitsState();
 
   // callers pass a fresh { id, type } literal every render, so the memo has
   // to key on the two values rather than the object. `on` is a Date and has

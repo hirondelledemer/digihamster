@@ -2,9 +2,9 @@ import { render, screen, fireEvent } from "@/config/utils/test-utils";
 import { EventHabit } from "./EventHabit";
 import { generateHabit } from "@/app/utils/mocks/habit";
 import {
-  HabitsNewActionsContext,
-  HabitsNewActionsContextValue,
-} from "@/app/utils/hooks/use-habits-new/actions-context";
+  HabitsActionsContext,
+  HabitsActionsContextValue,
+} from "@/app/utils/hooks/use-habits/actions-context";
 import { getHabitLogDate } from "@/app/utils/habits/habit-log";
 
 const TEST_DATE = new Date("2024-03-15T10:00:00");
@@ -12,10 +12,10 @@ const TEST_DATE = new Date("2024-03-15T10:00:00");
 const renderComponent = (
   habit = generateHabit(),
   date = TEST_DATE,
-  actions: Partial<HabitsNewActionsContextValue> = {},
+  actions: Partial<HabitsActionsContextValue> = {}
 ) => {
   const addLog = jest.fn();
-  const contextValue: HabitsNewActionsContextValue = {
+  const contextValue: HabitsActionsContextValue = {
     createHabit: jest.fn(),
     updateHabit: jest.fn(),
     deleteHabit: jest.fn(),
@@ -24,9 +24,9 @@ const renderComponent = (
   };
 
   render(
-    <HabitsNewActionsContext.Provider value={contextValue}>
+    <HabitsActionsContext.Provider value={contextValue}>
       <EventHabit habit={habit} onCompletedChange={jest.fn()} date={date} />
-    </HabitsNewActionsContext.Provider>,
+    </HabitsActionsContext.Provider>
   );
 
   return { addLog };

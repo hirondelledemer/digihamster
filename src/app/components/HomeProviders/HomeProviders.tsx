@@ -9,7 +9,7 @@ import { TasksContextProvider } from "@/app/utils/hooks/use-tasks/provider";
 import { DraggableTasksContextProvider } from "@/app/utils/hooks/use-draggable-tasks";
 import { CalendarDateContextProvider } from "@/app/utils/hooks/use-calendar-date";
 import { LifeAspectsContextProvider } from "@/app/utils/hooks/use-life-aspects/provider";
-import { HabitsNewContextProvider } from "@/app/utils/hooks/use-habits-new/provider";
+import { HabitsContextProvider } from "@/app/utils/hooks/use-habits/provider";
 import { RelationshipsContextProvider } from "@/app/utils/hooks/use-relationships/provider";
 import { TooltipProvider } from "../ui/tooltip";
 import { PeopleContextProvider } from "@/app/utils/hooks/use-people/provider";
@@ -26,7 +26,7 @@ const PROVIDERS: ComponentType<{ children: ReactNode }>[] = [
   DraggableTasksContextProvider,
   CalendarDateContextProvider,
   LifeAspectsContextProvider,
-  HabitsNewContextProvider,
+  HabitsContextProvider,
   RelationshipsContextProvider,
   PeopleContextProvider,
   TooltipProvider,

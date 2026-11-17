@@ -1,38 +1,31 @@
 import { updateObjById } from "../../common/update-array";
-import {
-  HabitsNewState,
-  HabitsNewAction,
-  HabitsNewActionType,
-} from "./actions";
+import { HabitsState, HabitsAction, HabitsActionType } from "./actions";
 import { IHabitWithLogs } from "../../types/habit";
 import { now } from "../../date/now";
 import { toBackendDate } from "#utils/date";
 
-export function reducer(
-  state: HabitsNewState,
-  action: HabitsNewAction
-): HabitsNewState {
+export function reducer(state: HabitsState, action: HabitsAction): HabitsState {
   switch (action.type) {
-    case HabitsNewActionType.StartLoading: {
+    case HabitsActionType.StartLoading: {
       return { isLoading: true, data: [] };
     }
-    case HabitsNewActionType.FinishLoading: {
+    case HabitsActionType.FinishLoading: {
       return { isLoading: false, data: action.payload.data };
     }
-    case HabitsNewActionType.Error: {
+    case HabitsActionType.Error: {
       return {
         isLoading: false,
         data: [],
         errorMessage: action.payload.errorMessage,
       };
     }
-    case HabitsNewActionType.CreateHabit: {
+    case HabitsActionType.CreateHabit: {
       return {
         isLoading: true,
         data: [...state.data, action.payload.habit],
       };
     }
-    case HabitsNewActionType.UpdateHabit: {
+    case HabitsActionType.UpdateHabit: {
       return {
         isLoading: false,
         data: updateObjById<IHabitWithLogs>(
@@ -42,13 +35,13 @@ export function reducer(
         ),
       };
     }
-    case HabitsNewActionType.DeleteHabit: {
+    case HabitsActionType.DeleteHabit: {
       return {
         isLoading: false,
         data: state.data.filter((h) => h.id !== action.payload.id),
       };
     }
-    case HabitsNewActionType.UpsertLog: {
+    case HabitsActionType.UpsertLog: {
       const { habitId, logDate, completed } = action.payload;
       return {
         isLoading: false,

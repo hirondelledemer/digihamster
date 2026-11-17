@@ -6,6 +6,9 @@ import {
 import { EventsStateContext } from "../hooks/use-events/state-context";
 import { RelationshipsActionsContext } from "../hooks/use-relationships/actions-context";
 import { AttachmentsActionsContext } from "../hooks/use-attachments/actions-context";
+import { LifeAspectsStateContext } from "../hooks/use-life-aspects/state-context";
+import { HabitsActionsContext } from "../hooks/use-habits/actions-context";
+import { TasksStateContext } from "../hooks/use-tasks/state-context";
 
 type Wrapper = (children: ReactNode) => ReactElement;
 
@@ -85,6 +88,65 @@ export const attachmentActions = (
       >
         {children}
       </AttachmentsActionsContext.Provider>
+    );
+  };
+
+export const lifeAspectsState = (
+  value: Partial<
+    ComponentProps<typeof LifeAspectsStateContext.Provider>["value"]
+  > = {}
+): Wrapper =>
+  function LifeAspectsStateWrapper(children) {
+    return (
+      <LifeAspectsStateContext.Provider
+        value={{
+          data: [],
+          isLoading: false,
+          ...value,
+        }}
+      >
+        {children}
+      </LifeAspectsStateContext.Provider>
+    );
+  };
+
+export const tasksState = (
+  value: Partial<
+    ComponentProps<typeof TasksStateContext.Provider>["value"]
+  > = {}
+): Wrapper =>
+  function TasksStateWrapper(children) {
+    return (
+      <TasksStateContext.Provider
+        value={{
+          data: [],
+          isLoading: false,
+          ...value,
+        }}
+      >
+        {children}
+      </TasksStateContext.Provider>
+    );
+  };
+
+export const habitActions = (
+  value: Partial<
+    ComponentProps<typeof HabitsActionsContext.Provider>["value"]
+  > = {}
+): Wrapper =>
+  function TaskActionsWrapper(children) {
+    return (
+      <HabitsActionsContext.Provider
+        value={{
+          createHabit: jest.fn(),
+          updateHabit: jest.fn(),
+          deleteHabit: jest.fn(),
+          addLog: jest.fn(),
+          ...value,
+        }}
+      >
+        {children}
+      </HabitsActionsContext.Provider>
     );
   };
 

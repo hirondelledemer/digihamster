@@ -10,7 +10,7 @@ import { Badge } from "@/app/components/ui/badge";
 import { MentionsConfigProps } from "./types";
 import { SuggestionKeyDownProps } from "@tiptap/suggestion";
 
-import { useHabitsNewState } from "../hooks/use-habits-new/state-context";
+import { useHabitsState } from "../hooks/use-habits/state-context";
 import { IHabitWithLogs } from "../types/habit";
 
 export type HabitsListProps = MentionsConfigProps;
@@ -37,7 +37,7 @@ export const HabitsList = forwardRef(
   ({ command, query }: HabitsListProps, ref) => {
     const [selectedIndex, setSelectedIndex] = useState(0);
 
-    const { data: habits } = useHabitsNewState();
+    const { data: habits } = useHabitsState();
 
     useEffect(() => {
       setSelectedIndex(0);

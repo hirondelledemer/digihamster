@@ -6,7 +6,7 @@ import { RelationshipEntityType } from "../../types/relationship";
 import { useEventsState } from "../use-events/state-context";
 import { useAllRelationshipsForEntity } from "../use-relationships/selectors";
 import { useRelationshipsState } from "../use-relationships/state-context";
-import { useHabitsNewState } from "./state-context";
+import { useHabitsState } from "./state-context";
 
 type GroupedHabits = {
   [k in number]: IHabitWithLogs[];
@@ -14,7 +14,7 @@ type GroupedHabits = {
 
 /** @deprecated feature is gone */
 export const useHabitsGroupedByEvents = (): GroupedHabits | undefined => {
-  const { data: habits, isLoading: isHabitsLoading } = useHabitsNewState();
+  const { data: habits, isLoading: isHabitsLoading } = useHabitsState();
   const { data: relationships, isLoading: isRelationshipsLoading } =
     useRelationshipsState();
 
@@ -56,7 +56,7 @@ export const useHabitsGroupedByEvents = (): GroupedHabits | undefined => {
 
 /** @deprecated feature is gone */
 export const useHabitsForEvent = (eventId: number): IHabitWithLogs[] => {
-  const { data: habits, isLoading: isHabitsLoading } = useHabitsNewState();
+  const { data: habits, isLoading: isHabitsLoading } = useHabitsState();
   const { data: relationships, isLoading: isRelationshipsLoading } =
     useRelationshipsState();
 
@@ -84,7 +84,7 @@ export const useHabitsForEvent = (eventId: number): IHabitWithLogs[] => {
 export const useHabitById = (
   id: number | null | undefined
 ): IHabitWithLogs | null => {
-  const { data } = useHabitsNewState();
+  const { data } = useHabitsState();
 
   if (id === null || id === undefined) {
     return null;
@@ -139,6 +139,6 @@ export const useHabitWindow = (
 export const useHabitsByLifeAspectId = (
   lifeAspectId: number | undefined
 ): IHabitWithLogs[] => {
-  const { data: habits } = useHabitsNewState();
+  const { data: habits } = useHabitsState();
   return habits.filter((h) => h.life_aspect_id === lifeAspectId);
 };

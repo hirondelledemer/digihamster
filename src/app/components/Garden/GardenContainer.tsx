@@ -9,13 +9,13 @@ import { IconMinus, IconPlus } from "@tabler/icons-react";
 import { Garden, GardenConfig } from "./Garden";
 import { useLifeAspectsState } from "@/app/utils/hooks/use-life-aspects/state-context";
 
-import { useHabitsNewState } from "@/app/utils/hooks/use-habits-new/state-context";
+import { useHabitsState } from "@/app/utils/hooks/use-habits/state-context";
 
 export const GardenContainer: FC<{
   onAssetClickAction: (category?: number) => void;
 }> = ({ onAssetClickAction: onAssetClick }) => {
   const [score, setScore] = useState(100);
-  const { data: habits } = useHabitsNewState();
+  const { data: habits } = useHabitsState();
   const { data: lifeAspects } = useLifeAspectsState();
 
   const treeLifeAspect = lifeAspects.find((la) => la.asset === "tree");
