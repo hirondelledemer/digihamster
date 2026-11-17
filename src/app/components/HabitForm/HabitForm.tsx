@@ -60,6 +60,8 @@ const HabitForm: FC<HabitFormProps> = ({
   const { updateHabit, createHabit, deleteHabit } = useHabitsNewActions();
   const { data: lifeAspects } = useLifeAspectsState();
 
+  console.log("lifeAspects", lifeAspects);
+
   const getInitialValues = useCallback(() => {
     if (restProps.editMode) {
       return {
@@ -140,7 +142,7 @@ const HabitForm: FC<HabitFormProps> = ({
           name="lifeAspectId"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Category</FormLabel>
+              <FormLabel>Life aspect</FormLabel>
               <Select
                 onValueChange={(val) => field.onChange(Number(val))}
                 defaultValue={field.value.toString()}

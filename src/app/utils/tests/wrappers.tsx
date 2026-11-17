@@ -6,6 +6,8 @@ import {
 import { EventsStateContext } from "../hooks/use-events/state-context";
 import { RelationshipsActionsContext } from "../hooks/use-relationships/actions-context";
 import { AttachmentsActionsContext } from "../hooks/use-attachments/actions-context";
+import { LifeAspectsStateContext } from "../hooks/use-life-aspects/state-context";
+import { HabitsNewActionsContext } from "../hooks/use-habits-new/actions-context";
 
 type Wrapper = (children: ReactNode) => ReactElement;
 
@@ -85,6 +87,46 @@ export const attachmentActions = (
       >
         {children}
       </AttachmentsActionsContext.Provider>
+    );
+  };
+
+export const lifeAspectsState = (
+  value: Partial<
+    ComponentProps<typeof LifeAspectsStateContext.Provider>["value"]
+  > = {}
+): Wrapper =>
+  function LifeAspectsStateWrapper(children) {
+    return (
+      <LifeAspectsStateContext.Provider
+        value={{
+          data: [],
+          isLoading: false,
+          ...value,
+        }}
+      >
+        {children}
+      </LifeAspectsStateContext.Provider>
+    );
+  };
+
+export const habitActions = (
+  value: Partial<
+    ComponentProps<typeof HabitsNewActionsContext.Provider>["value"]
+  > = {}
+): Wrapper =>
+  function TaskActionsWrapper(children) {
+    return (
+      <HabitsNewActionsContext.Provider
+        value={{
+          createHabit: jest.fn(),
+          updateHabit: jest.fn(),
+          deleteHabit: jest.fn(),
+          addLog: jest.fn(),
+          ...value,
+        }}
+      >
+        {children}
+      </HabitsNewActionsContext.Provider>
     );
   };
 
