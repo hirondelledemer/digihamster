@@ -6,24 +6,24 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "../ui/form";
+} from "../../ui/form";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Input } from "../ui/input";
+import { Input } from "../../ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../ui/select";
+} from "../../ui/select";
 import { TIMES_PER_MONTH } from "./constants";
-import { Button } from "../ui/button";
+import { Button } from "../../ui/button";
 import { useLifeAspectsState } from "@/app/utils/hooks/use-life-aspects/state-context";
 import { useHabitsNewActions } from "@/app/utils/hooks/use-habits-new/actions-context";
 import { IHabitWithLogs } from "@/app/utils/types/habit";
-import { Textarea } from "../ui/textarea";
+import { Textarea } from "../../ui/textarea";
 
 const FormSchema = z.object({
   title: z.string().min(1, { message: "This field has to be filled." }),

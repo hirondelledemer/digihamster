@@ -1,6 +1,6 @@
 import React, { FC } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "../ui/sheet";
-import HabitForm, { HabitFormProps } from "../HabitForm/HabitForm";
+import HabitForm, { HabitFormProps } from "../habits/HabitForm/HabitForm";
 
 export interface HabitFormModalProps {
   testId?: string;

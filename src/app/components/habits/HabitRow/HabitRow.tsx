@@ -6,7 +6,7 @@ import { TableCell, TableRow } from "../../ui/table";
 import { toBackendDate } from "#utils/date";
 import { Checkbox } from "../../ui/checkbox";
 import { Button } from "../../ui/button";
-import HabitFormModal from "../../HabitFormModal";
+import HabitFormModal from "../HabitFormModal";
 
 interface HabitRowProps {
   habit: IHabitWithLogs;
