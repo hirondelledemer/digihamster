@@ -1,6 +1,6 @@
 import React, { FC } from "react";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "../ui/sheet";
-import HabitForm, { HabitFormProps } from "../habits/HabitForm/HabitForm";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "../../ui/sheet";
+import HabitForm, { HabitFormProps } from "../HabitForm/HabitForm";
 
 export interface HabitFormModalProps {
   testId?: string;
@@ -9,7 +9,6 @@ export interface HabitFormModalProps {
 }
 
 const HabitFormModal: FC<HabitFormModalProps & HabitFormProps> = ({
-  // TODO: move to habits folder
   testId,
   onClose,
   open,

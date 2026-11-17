@@ -50,8 +50,6 @@ export interface HabitFormEditModeProps extends CommonProps {
 }
 export type HabitFormProps = HabitFormRegularProps | HabitFormEditModeProps;
 
-// TODO: move HabitForm to the habits folder
-// TODO: test this component
 const HabitForm: FC<HabitFormProps> = ({
   testId,
   onDone,
