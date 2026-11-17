@@ -52,8 +52,6 @@ describe("HabitForm", () => {
         ),
       });
 
-      // await userEvent.click(screen.getByRole("button", { name: /save/i }));
-
       await userEvent.type(
         screen.getByRole("textbox", { name: /title/i }),
         " updated"
