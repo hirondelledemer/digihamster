@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { TIMES_PER_MONTH } from "./HabitForm.consts";
+import { TIMES_PER_MONTH } from "./constants";
 import { Button } from "../ui/button";
 import { useLifeAspectsState } from "@/app/utils/hooks/use-life-aspects/state-context";
 import { useHabitsNewActions } from "@/app/utils/hooks/use-habits-new/actions-context";

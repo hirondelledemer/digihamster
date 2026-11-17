@@ -24,7 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/app/components/ui/select";
-import { TIMES_PER_MONTH } from "@/app/components/HabitForm/HabitForm.consts";
+import { TIMES_PER_MONTH } from "@/app/components/HabitForm/constants";
 import { HabitRow } from "../components/habits/HabitRow/HabitRow";
 
 const DAY_COUNT = 6;
