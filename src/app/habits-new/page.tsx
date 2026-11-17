@@ -53,6 +53,7 @@ const NewHabitForm: FC = () => {
       life_aspect_id: Number(lifeAspectId),
       times_per_month: timesPerMonth,
       description: "",
+      encouragement: "",
     });
     setTitle("");
     setLifeAspectId("");

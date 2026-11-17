@@ -6,6 +6,7 @@ export type CreateHabitParams = {
   times_per_month: number;
   life_aspect_id: number;
   description: string;
+  encouragement: string;
 };
 
 export const api = {
@@ -17,7 +18,7 @@ export const api = {
     }),
   addLog: (
     habitId: number,
-    data: { habit_id: number; log_date: string; completed: boolean },
+    data: { habit_id: number; log_date: string; completed: boolean }
   ) => apiClient.post(`/habits/${habitId}/logs`, data),
   updateLog: (habitId: number, logDate: string, data: { completed: boolean }) =>
     apiClient.patch(`/habits/${habitId}/logs/${logDate}`, data),

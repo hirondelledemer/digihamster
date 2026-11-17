@@ -9,6 +9,7 @@ export interface HabitFormModalProps {
 }
 
 const HabitFormModal: FC<HabitFormModalProps & HabitFormProps> = ({
+  // TODO: move to habits folder
   testId,
   onClose,
   open,
@@ -16,7 +17,6 @@ const HabitFormModal: FC<HabitFormModalProps & HabitFormProps> = ({
 }): JSX.Element => {
   return (
     <div data-testid={testId}>
-      {/* <TaskModal open={open} onClose={onClose}> */}
       <Sheet open={open}>
         <SheetContent
           side="left"

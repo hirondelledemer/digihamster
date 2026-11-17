@@ -11,6 +11,7 @@ export interface IHabitWithLogs {
   life_aspect_id: number;
   title: string;
   description: string;
+  encouragement: string;
   times_per_month: number;
   created_at: string;
   logs: HabitLog[];

@@ -23,10 +23,13 @@ import { Button } from "../ui/button";
 import { useLifeAspectsState } from "@/app/utils/hooks/use-life-aspects/state-context";
 import { useHabitsNewActions } from "@/app/utils/hooks/use-habits-new/actions-context";
 import { IHabitWithLogs } from "@/app/utils/types/habit";
+import { Textarea } from "../ui/textarea";
 
 const FormSchema = z.object({
   title: z.string().min(1, { message: "This field has to be filled." }),
-  category: z.number().min(1, { message: "Required" }),
+  description: z.string(),
+  encouragement: z.string(),
+  lifeAspectId: z.number().min(1, { message: "Required" }),
   timesPerMonth: z.number().min(1, { message: "Required" }),
 });
 
@@ -47,7 +50,7 @@ export interface HabitFormEditModeProps extends CommonProps {
 }
 export type HabitFormProps = HabitFormRegularProps | HabitFormEditModeProps;
 
-// TODO: use this
+// TODO: move HabitForm to the habits folder
 const HabitForm: FC<HabitFormProps> = ({
   testId,
   onDone,
@@ -60,8 +63,10 @@ const HabitForm: FC<HabitFormProps> = ({
     if (restProps.editMode) {
       return {
         title: restProps.habit.title || "",
-        category: restProps.habit.life_aspect_id || undefined,
+        lifeAspectId: restProps.habit.life_aspect_id || undefined,
         timesPerMonth: restProps.habit.times_per_month || 0,
+        description: restProps.habit.description || "",
+        encouragement: restProps.habit.encouragement || "",
       };
     }
     return restProps.initialValues;
@@ -71,7 +76,9 @@ const HabitForm: FC<HabitFormProps> = ({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       title: "",
-      category: lifeAspects[0].id,
+      description: "",
+      encouragement: "",
+      lifeAspectId: lifeAspects[0].id,
       timesPerMonth: 0,
       ...getInitialValues(),
     },
@@ -92,15 +99,18 @@ const HabitForm: FC<HabitFormProps> = ({
     if (restProps.editMode) {
       updateHabit(restProps.habit.id, {
         title: values.title,
-        life_aspect_id: values.category,
+        life_aspect_id: values.lifeAspectId,
         times_per_month: values.timesPerMonth,
+        description: values.description,
+        encouragement: values.encouragement,
       });
     } else {
       const habitData = {
         title: values.title,
-        life_aspect_id: values.category,
+        life_aspect_id: values.lifeAspectId,
         times_per_month: values.timesPerMonth,
-        description: "",
+        description: values.description,
+        encouragement: values.encouragement,
       };
       createHabit(habitData);
     }
@@ -126,7 +136,7 @@ const HabitForm: FC<HabitFormProps> = ({
 
         <FormField
           control={form.control}
-          name="category"
+          name="lifeAspectId"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Category</FormLabel>
@@ -153,6 +163,32 @@ const HabitForm: FC<HabitFormProps> = ({
                 </SelectContent>
               </Select>
               <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="description"
+          render={({ field }) => (
+            <FormItem className="flex flex-col">
+              <FormLabel>Description</FormLabel>
+              <FormControl>
+                <Textarea placeholder="description" {...field} />
+              </FormControl>
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="encouragement"
+          render={({ field }) => (
+            <FormItem className="flex flex-col">
+              <FormLabel>Encouragement</FormLabel>
+              <FormControl>
+                <Textarea placeholder="encouragement" {...field} />
+              </FormControl>
             </FormItem>
           )}
         />
