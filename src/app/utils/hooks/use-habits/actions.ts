@@ -1,12 +1,12 @@
 import { IHabitWithLogs } from "../../types/habit";
 
-export interface HabitsNewState {
+export interface HabitsState {
   data: IHabitWithLogs[];
   isLoading: boolean;
   errorMessage?: unknown;
 }
 
-export enum HabitsNewActionType {
+export enum HabitsActionType {
   StartLoading = "START_LOADING",
   FinishLoading = "FINISH_LOADING",
   Error = "ERROR",
@@ -17,34 +17,34 @@ export enum HabitsNewActionType {
 }
 
 export interface StartLoadingAction {
-  type: HabitsNewActionType.StartLoading;
+  type: HabitsActionType.StartLoading;
 }
 export interface FinishLoadingAction {
-  type: HabitsNewActionType.FinishLoading;
+  type: HabitsActionType.FinishLoading;
   payload: { data: IHabitWithLogs[] };
 }
 export interface ErrorAction {
-  type: HabitsNewActionType.Error;
+  type: HabitsActionType.Error;
   payload: { errorMessage: unknown };
 }
 export interface CreateHabitAction {
-  type: HabitsNewActionType.CreateHabit;
+  type: HabitsActionType.CreateHabit;
   payload: { habit: IHabitWithLogs };
 }
 export interface UpdateHabitAction {
-  type: HabitsNewActionType.UpdateHabit;
+  type: HabitsActionType.UpdateHabit;
   payload: { id: number; habit: Partial<IHabitWithLogs> };
 }
 export interface DeleteHabitAction {
-  type: HabitsNewActionType.DeleteHabit;
+  type: HabitsActionType.DeleteHabit;
   payload: { id: number };
 }
 export interface UpsertLogAction {
-  type: HabitsNewActionType.UpsertLog;
+  type: HabitsActionType.UpsertLog;
   payload: { habitId: number; logDate: string; completed: boolean };
 }
 
-export type HabitsNewAction =
+export type HabitsAction =
   | StartLoadingAction
   | FinishLoadingAction
   | ErrorAction

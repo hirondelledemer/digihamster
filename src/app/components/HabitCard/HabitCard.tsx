@@ -11,7 +11,7 @@ import {
   getLifeAspectAssetIcon,
   useHabitLifeAspect,
 } from "@/app/utils/hooks/use-life-aspects/selectors";
-import { useHabitWindow } from "@/app/utils/hooks/use-habits-new/selectors";
+import { useHabitWindow } from "@/app/utils/hooks/use-habits/selectors";
 import { HabitProgress } from "./HabitProgress";
 import { useSetSearchParams } from "@/app/utils/url/search-params";
 import { QUERY_KEYS } from "@/app/utils/url/constants";

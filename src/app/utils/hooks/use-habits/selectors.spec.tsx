@@ -5,7 +5,7 @@ import {
   IRelationship,
   RelationshipEntityType,
 } from "../../types/relationship";
-import { HabitsNewStateContext } from "./state-context";
+import { HabitsStateContext } from "./state-context";
 import { useHabitsGroupedByEvents } from "./selectors";
 import { renderHook } from "@/config/utils/test-utils";
 import { RelationshipsStateContext } from "../use-relationships/state-context";
@@ -14,17 +14,17 @@ describe("selectors", () => {
   describe("useHabitsGroupedByEvents", () => {
     const wrapper = (
       habits: IHabitWithLogs[],
-      relationships: IRelationship[],
+      relationships: IRelationship[]
     ) => {
       const HabitsState = ({ children }: { children: ReactNode }) => (
         <RelationshipsStateContext.Provider
           value={{ data: relationships, isLoading: false }}
         >
-          <HabitsNewStateContext.Provider
+          <HabitsStateContext.Provider
             value={{ data: habits, isLoading: false }}
           >
             {children}
-          </HabitsNewStateContext.Provider>
+          </HabitsStateContext.Provider>
         </RelationshipsStateContext.Provider>
       );
       return HabitsState;
@@ -68,9 +68,7 @@ describe("selectors", () => {
           expect.objectContaining({ id: habits[0].id, event_id: 10 }),
           expect.objectContaining({ id: habits[1].id, event_id: 10 }),
         ],
-        20: [
-          expect.objectContaining({ id: habits[3].id, event_id: 20 }),
-        ],
+        20: [expect.objectContaining({ id: habits[3].id, event_id: 20 })],
       });
     });
 
@@ -79,11 +77,9 @@ describe("selectors", () => {
         <RelationshipsStateContext.Provider
           value={{ data: [], isLoading: false }}
         >
-          <HabitsNewStateContext.Provider
-            value={{ data: [], isLoading: true }}
-          >
+          <HabitsStateContext.Provider value={{ data: [], isLoading: true }}>
             {children}
-          </HabitsNewStateContext.Provider>
+          </HabitsStateContext.Provider>
         </RelationshipsStateContext.Provider>
       );
 
@@ -99,11 +95,9 @@ describe("selectors", () => {
         <RelationshipsStateContext.Provider
           value={{ data: [], isLoading: true }}
         >
-          <HabitsNewStateContext.Provider
-            value={{ data: [], isLoading: false }}
-          >
+          <HabitsStateContext.Provider value={{ data: [], isLoading: false }}>
             {children}
-          </HabitsNewStateContext.Provider>
+          </HabitsStateContext.Provider>
         </RelationshipsStateContext.Provider>
       );
 

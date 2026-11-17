@@ -1,6 +1,6 @@
 import { useJournalEntryById } from "@/app/utils/hooks/use-entry/selectors";
 import { useEventById } from "@/app/utils/hooks/use-events/selectors";
-import { useHabitById } from "@/app/utils/hooks/use-habits-new/selectors";
+import { useHabitById } from "@/app/utils/hooks/use-habits/selectors";
 import { useLocationById } from "@/app/utils/hooks/use-location/selectors";
 import { useNoteById } from "@/app/utils/hooks/use-notes/selectors";
 import { usePersonById } from "@/app/utils/hooks/use-people/selectors";

@@ -1,9 +1,9 @@
 "use client";
 import React, { FC, useState } from "react";
 import { format, subDays } from "date-fns";
-import { HabitsNewContextProvider } from "@/app/utils/hooks/use-habits-new/provider";
-import { useHabitsNewState } from "@/app/utils/hooks/use-habits-new/state-context";
-import { useHabitsNewActions } from "@/app/utils/hooks/use-habits-new/actions-context";
+import { HabitsContextProvider } from "@/app/utils/hooks/use-habits/provider";
+import { useHabitsState } from "@/app/utils/hooks/use-habits/state-context";
+import { useHabitsActions } from "@/app/utils/hooks/use-habits/actions-context";
 import { LifeAspectsContextProvider } from "@/app/utils/hooks/use-life-aspects/provider";
 import { useLifeAspectsState } from "@/app/utils/hooks/use-life-aspects/state-context";
 import { getTodayWithZeroHours } from "@/app/utils/date/now";
@@ -36,7 +36,7 @@ function getDayColumns(today: Date) {
 }
 
 const NewHabitForm: FC = () => {
-  const { createHabit } = useHabitsNewActions();
+  const { createHabit } = useHabitsActions();
   const { data: lifeAspects } = useLifeAspectsState();
   const [title, setTitle] = useState("");
   const [lifeAspectId, setLifeAspectId] = useState("");
@@ -102,8 +102,9 @@ const NewHabitForm: FC = () => {
   );
 };
 
-const HabitsNewTable: FC = () => {
-  const { data, isLoading } = useHabitsNewState();
+const HabitsTable: FC = () => {
+  // TODO: extract to the habits folder
+  const { data, isLoading } = useHabitsState();
   const today = getTodayWithZeroHours();
   const days = getDayColumns(today);
 
@@ -145,12 +146,12 @@ const HabitsNewTable: FC = () => {
   );
 };
 
-export default function HabitsNewPage() {
+export default function HabitsPage() {
   return (
-    <HabitsNewContextProvider>
+    <HabitsContextProvider>
       <LifeAspectsContextProvider>
-        <HabitsNewTable />
+        <HabitsTable />
       </LifeAspectsContextProvider>
-    </HabitsNewContextProvider>
+    </HabitsContextProvider>
   );
 }

@@ -5,7 +5,7 @@ import {
   TooltipTrigger,
 } from "@/app/components/ui/tooltip";
 import { useEventById } from "@/app/utils/hooks/use-events/selectors";
-import { useHabitById } from "@/app/utils/hooks/use-habits-new/selectors";
+import { useHabitById } from "@/app/utils/hooks/use-habits/selectors";
 import { useHabitLifeAspectAssetIcon } from "@/app/utils/hooks/use-life-aspects/selectors";
 import { RelationshipEntityType } from "@/app/utils/types/relationship";
 import { RelationshipNode } from "@/app/utils/hooks/use-relationships/use-relationship-tree";

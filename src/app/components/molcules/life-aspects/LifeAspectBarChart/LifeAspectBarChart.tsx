@@ -3,8 +3,8 @@ import { BarChart } from "@/app/components/molcules/charts/BarChart";
 import { ChartConfig } from "@/app/components/ui/chart";
 import { getTodayWithZeroHours } from "@/app/utils/date/now";
 import { getHabitProgress } from "@/app/utils/habits/habit-progress";
-import { useHabitsNewActions } from "@/app/utils/hooks/use-habits-new/actions-context";
-import { useHabitsNewState } from "@/app/utils/hooks/use-habits-new/state-context";
+import { useHabitsActions } from "@/app/utils/hooks/use-habits/actions-context";
+import { useHabitsState } from "@/app/utils/hooks/use-habits/state-context";
 import { IHabitWithLogs } from "@/app/utils/types/habit";
 import { subDays } from "date-fns";
 import { FC, useCallback } from "react";
@@ -12,8 +12,8 @@ import { FC, useCallback } from "react";
 export const LifeAspectBarChart: FC<{ lifeAspectId: number }> = ({
   lifeAspectId,
 }) => {
-  const { addLog } = useHabitsNewActions();
-  const { data: habits = [] } = useHabitsNewState();
+  const { addLog } = useHabitsActions();
+  const { data: habits = [] } = useHabitsState();
 
   const getHabitsData = useCallback(
     (habits: IHabitWithLogs[]) => {

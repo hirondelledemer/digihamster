@@ -3,7 +3,7 @@ import { cn } from "../../utils";
 import { Checkbox } from "../../ui/checkbox";
 import { CheckedState } from "@radix-ui/react-checkbox";
 import { IHabitWithLogs } from "@/app/utils/types/habit";
-import { useHabitsNewActions } from "@/app/utils/hooks/use-habits-new/actions-context";
+import { useHabitsActions } from "@/app/utils/hooks/use-habits/actions-context";
 import {
   getHabitLogDate,
   getHabitLogForADay,
@@ -16,7 +16,7 @@ interface EventHabitProps {
 }
 
 export const EventHabit: FC<EventHabitProps> = ({ habit, date }) => {
-  const { addLog } = useHabitsNewActions();
+  const { addLog } = useHabitsActions();
 
   const log = getHabitLogForADay(habit, date);
   const isCompleted = log?.completed;

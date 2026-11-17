@@ -1,4 +1,4 @@
-import { useHabitsNewActions } from "@/app/utils/hooks/use-habits-new/actions-context";
+import { useHabitsActions } from "@/app/utils/hooks/use-habits/actions-context";
 import { useLifeAspectsState } from "@/app/utils/hooks/use-life-aspects/state-context";
 import { IHabitWithLogs } from "@/app/utils/types/habit";
 import { FC, useState } from "react";
@@ -14,7 +14,7 @@ interface HabitRowProps {
 }
 
 export const HabitRow: FC<HabitRowProps> = ({ habit, days }) => {
-  const { addLog, deleteHabit } = useHabitsNewActions(); // TODO: rename useHabitsNewActions -> useHabitsActions
+  const { addLog, deleteHabit } = useHabitsActions();
   const { data: lifeAspects } = useLifeAspectsState();
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
 

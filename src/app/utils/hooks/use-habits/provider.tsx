@@ -3,10 +3,10 @@ import { ReactNode, useCallback, useEffect, useReducer } from "react";
 import { useToast } from "@/app/components/ui/use-toast";
 
 import { reducer } from "./reducer";
-import { HabitsNewAction, HabitsNewActionType } from "./actions";
+import { HabitsAction, HabitsActionType } from "./actions";
 import { api, CreateHabitParams } from "./api";
-import { HabitsNewStateContext } from "./state-context";
-import { HabitsNewActionsContext } from "./actions-context";
+import { HabitsStateContext } from "./state-context";
+import { HabitsActionsContext } from "./actions-context";
 import { toBackendDate, toBackendDateTime } from "#utils/date";
 import { getApiErrorMessage } from "../../axios";
 import { now } from "../../date/now";
@@ -14,7 +14,7 @@ import { HabitLog, IHabitWithLogs } from "../../types/habit";
 
 const handleApiError = (
   error: unknown,
-  toast: ReturnType<typeof useToast>["toast"],
+  toast: ReturnType<typeof useToast>["toast"]
 ) => {
   toast({
     title: "Error",
@@ -24,26 +24,26 @@ const handleApiError = (
 };
 
 const fetchHabits = async (
-  dispatch: React.Dispatch<HabitsNewAction>,
-  toast: ReturnType<typeof useToast>["toast"],
+  dispatch: React.Dispatch<HabitsAction>,
+  toast: ReturnType<typeof useToast>["toast"]
 ) => {
   try {
-    dispatch({ type: HabitsNewActionType.StartLoading });
+    dispatch({ type: HabitsActionType.StartLoading });
     const response = await api.getHabits();
     dispatch({
-      type: HabitsNewActionType.FinishLoading,
+      type: HabitsActionType.FinishLoading,
       payload: { data: response.data || [] },
     });
   } catch (err) {
     dispatch({
-      type: HabitsNewActionType.Error,
+      type: HabitsActionType.Error,
       payload: { errorMessage: err },
     });
     handleApiError(err, toast);
   }
 };
 
-export const HabitsNewContextProvider = ({
+export const HabitsContextProvider = ({
   children,
 }: {
   children: ReactNode;
@@ -74,11 +74,12 @@ export const HabitsNewContextProvider = ({
         times_per_month: data.times_per_month,
         life_aspect_id: data.life_aspect_id,
         description: data.description,
+        encouragement: data.encouragement,
         created_at: toBackendDateTime(nowDate),
       };
 
       dispatch({
-        type: HabitsNewActionType.CreateHabit,
+        type: HabitsActionType.CreateHabit,
         payload: { habit: tempHabit },
       });
 
@@ -87,7 +88,7 @@ export const HabitsNewContextProvider = ({
       try {
         const response = await api.createHabit(data);
         dispatch({
-          type: HabitsNewActionType.UpdateHabit,
+          type: HabitsActionType.UpdateHabit,
           payload: { id: tempId, habit: response.data },
         });
         toast({ title: "Success", description: "Habit has been created" });
@@ -95,13 +96,13 @@ export const HabitsNewContextProvider = ({
         handleApiError(e, toast);
       }
     },
-    [toast],
+    [toast]
   );
 
   const updateHabit = useCallback(
     async (id: number, data: Partial<IHabitWithLogs>, onDone?: () => void) => {
       dispatch({
-        type: HabitsNewActionType.UpdateHabit,
+        type: HabitsActionType.UpdateHabit,
         payload: { id, habit: data },
       });
       if (onDone) onDone();
@@ -112,12 +113,12 @@ export const HabitsNewContextProvider = ({
         handleApiError(e, toast);
       }
     },
-    [toast],
+    [toast]
   );
 
   const deleteHabit = useCallback(
     async (id: number, onDone?: () => void) => {
-      dispatch({ type: HabitsNewActionType.DeleteHabit, payload: { id } });
+      dispatch({ type: HabitsActionType.DeleteHabit, payload: { id } });
       if (onDone) onDone();
       try {
         await api.deleteHabit(id);
@@ -126,19 +127,19 @@ export const HabitsNewContextProvider = ({
         handleApiError(e, toast);
       }
     },
-    [toast],
+    [toast]
   );
 
   const addLog = useCallback(
     async (
       habitId: number,
       props: { at: number; completed: boolean; existingLog?: HabitLog },
-      onDone?: () => void,
+      onDone?: () => void
     ) => {
       const logDate = toBackendDate(new Date(props.at));
 
       dispatch({
-        type: HabitsNewActionType.UpsertLog,
+        type: HabitsActionType.UpsertLog,
         payload: { habitId, logDate, completed: props.completed },
       });
 
@@ -161,16 +162,16 @@ export const HabitsNewContextProvider = ({
         handleApiError(e, toast);
       }
     },
-    [toast],
+    [toast]
   );
 
   return (
-    <HabitsNewStateContext.Provider value={state}>
-      <HabitsNewActionsContext.Provider
+    <HabitsStateContext.Provider value={state}>
+      <HabitsActionsContext.Provider
         value={{ createHabit, updateHabit, deleteHabit, addLog }}
       >
         {children}
-      </HabitsNewActionsContext.Provider>
-    </HabitsNewStateContext.Provider>
+      </HabitsActionsContext.Provider>
+    </HabitsStateContext.Provider>
   );
 };

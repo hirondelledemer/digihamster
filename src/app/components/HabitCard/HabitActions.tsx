@@ -8,7 +8,7 @@ import {
 } from "../ui/context-menu";
 import { IconBackspace, IconCheck, IconTrash } from "@tabler/icons-react";
 import { IHabitWithLogs } from "@/app/utils/types/habit";
-import { useHabitsNewActions } from "@/app/utils/hooks/use-habits-new/actions-context";
+import { useHabitsActions } from "@/app/utils/hooks/use-habits/actions-context";
 import {
   getHabitLogDate,
   getHabitLogForADay,
@@ -32,7 +32,7 @@ export const HabitActions: React.FC<HabitActionProps> = ({
   event,
   additionalActions,
 }) => {
-  const { addLog } = useHabitsNewActions();
+  const { addLog } = useHabitsActions();
   const { delete: deleteRelationship } = useRelationshipsActions();
   const relationshipId = useRelationshipIdBetweenEntities({
     sourceId: event.id,

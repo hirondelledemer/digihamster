@@ -21,7 +21,7 @@ import {
 import { TIMES_PER_MONTH } from "./constants";
 import { Button } from "../../ui/button";
 import { useLifeAspectsState } from "@/app/utils/hooks/use-life-aspects/state-context";
-import { useHabitsNewActions } from "@/app/utils/hooks/use-habits-new/actions-context";
+import { useHabitsActions } from "@/app/utils/hooks/use-habits/actions-context";
 import { IHabitWithLogs } from "@/app/utils/types/habit";
 import { Textarea } from "../../ui/textarea";
 
@@ -55,7 +55,7 @@ const HabitForm: FC<HabitFormProps> = ({
   onDone,
   ...restProps
 }): JSX.Element => {
-  const { updateHabit, createHabit, deleteHabit } = useHabitsNewActions();
+  const { updateHabit, createHabit, deleteHabit } = useHabitsActions();
   const { data: lifeAspects } = useLifeAspectsState();
 
   console.log("lifeAspects", lifeAspects);
