@@ -8,6 +8,7 @@ import { RelationshipsActionsContext } from "../hooks/use-relationships/actions-
 import { AttachmentsActionsContext } from "../hooks/use-attachments/actions-context";
 import { LifeAspectsStateContext } from "../hooks/use-life-aspects/state-context";
 import { HabitsActionsContext } from "../hooks/use-habits/actions-context";
+import { TasksStateContext } from "../hooks/use-tasks/state-context";
 
 type Wrapper = (children: ReactNode) => ReactElement;
 
@@ -106,6 +107,25 @@ export const lifeAspectsState = (
       >
         {children}
       </LifeAspectsStateContext.Provider>
+    );
+  };
+
+export const tasksState = (
+  value: Partial<
+    ComponentProps<typeof TasksStateContext.Provider>["value"]
+  > = {}
+): Wrapper =>
+  function TasksStateWrapper(children) {
+    return (
+      <TasksStateContext.Provider
+        value={{
+          data: [],
+          isLoading: false,
+          ...value,
+        }}
+      >
+        {children}
+      </TasksStateContext.Provider>
     );
   };
 

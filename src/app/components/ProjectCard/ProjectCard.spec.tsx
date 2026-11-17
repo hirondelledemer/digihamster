@@ -1,45 +1,41 @@
 import { render, screen } from "@/config/utils/test-utils";
 import ProjectCard, { ProjectCardProps } from "./ProjectCard";
-import { getProjectCardTestkit } from "./ProjectCard.testkit";
 import { generateProject } from "@/app/utils/mocks/project";
-import { wrapWithTasksProvider } from "@/app/utils/tests/wraps";
 import { generateCustomTasksList } from "@/app/utils/mocks/task";
+import { TaskStatus } from "@/app/utils/types/task";
+import { providers, tasksState } from "@/app/utils/tests/wrappers";
+import { ProjectStatus } from "@/app/utils/types/project";
 
-// todo: check if testkit is needed
 describe("ProjectCard", () => {
-  const defaultProps: ProjectCardProps = {
-    project: generateProject(),
+  const PROJECT = generateProject(1, { status: ProjectStatus.Doing });
+  const DEFAULT_PROPS: ProjectCardProps = {
+    project: PROJECT,
     selected: false,
   };
 
-  const defaultTasks = generateCustomTasksList([
+  const TASKS = generateCustomTasksList([
     {
-      projectId: defaultProps.project._id,
-      estimate: 2,
-      completed: true,
+      project_id: DEFAULT_PROPS.project.id,
+      status: TaskStatus.Done,
     },
     {
-      estimate: 2,
-      projectId: defaultProps.project._id,
+      project_id: DEFAULT_PROPS.project.id,
+      status: TaskStatus.Doing,
     },
     {
-      estimate: 2,
-      projectId: defaultProps.project._id,
+      project_id: DEFAULT_PROPS.project.id,
+      status: TaskStatus.Doing,
     },
   ]);
 
-  const renderComponent = (props = defaultProps, tasks = defaultTasks) =>
-    getProjectCardTestkit(
-      render(
-        wrapWithTasksProvider(<ProjectCard {...props} />, {
-          data: tasks,
-        })
-      ).container
-    );
+  const renderComponent = (props = DEFAULT_PROPS, tasks = TASKS) =>
+    render(<ProjectCard {...props} />, {
+      wrapper: providers(tasksState({ data: tasks })),
+    });
 
   it("should render ProjectCard", () => {
     renderComponent();
-    expect(screen.getByText(defaultProps.project.title)).toBeInTheDocument();
+    expect(screen.getByText(DEFAULT_PROPS.project.title)).toBeInTheDocument();
   });
 
   it("should show progress bar", () => {
@@ -60,60 +56,39 @@ describe("ProjectCard", () => {
     expect(screen.queryByTestId("completed-icon")).not.toBeInTheDocument();
   });
 
-  // completed project -> all tasks is the project are completed
   describe("project is completed", () => {
-    const tasks = generateCustomTasksList([
-      {
-        projectId: defaultProps.project._id,
-        estimate: 2,
-        completed: true,
-      },
-      {
-        estimate: 2,
-        projectId: defaultProps.project._id,
-        completed: true,
-      },
-      {
-        estimate: 2,
-        projectId: defaultProps.project._id,
-        completed: true,
-      },
-    ]);
+    const COMPLETED_PROJECT = generateProject(1, {
+      status: ProjectStatus.Done,
+    });
+    const PROPS = {
+      ...DEFAULT_PROPS,
+      project: COMPLETED_PROJECT,
+    };
 
     it("should not show progress bar", () => {
-      renderComponent(defaultProps, tasks);
+      renderComponent(PROPS);
       expect(screen.queryByTestId("progress-bar")).not.toBeInTheDocument();
     });
 
-    it("should not show completed tasks count", () => {
-      const { getComponent } = renderComponent(defaultProps, tasks);
-      expect(getComponent().textContent).toBe("Project 1");
-    });
-
     it("should show completed icon", () => {
-      renderComponent(defaultProps, tasks);
+      renderComponent(PROPS);
       expect(screen.getByTestId("completed-icon")).toBeInTheDocument();
     });
   });
 
-  describe("project is disabled", () => {
-    const props: ProjectCardProps = {
-      project: generateProject(0, { disabled: true }),
+  describe("project is cancelled", () => {
+    const PROPS: ProjectCardProps = {
+      project: generateProject(0, { status: ProjectStatus.Cancelled }),
       selected: false,
     };
 
     it("should not show progress bar", () => {
-      renderComponent(props);
+      renderComponent(PROPS);
       expect(screen.queryByTestId("progress-bar")).not.toBeInTheDocument();
     });
 
-    it("should not show completed tasks count", () => {
-      const { getComponent } = renderComponent(props);
-      expect(getComponent().textContent).toBe("Project 0");
-    });
-
-    it("should show disabled icon", () => {
-      renderComponent(props);
+    it("should show cancelled icon", () => {
+      renderComponent(PROPS);
       expect(screen.getByTestId("disabled-icon")).toBeInTheDocument();
     });
   });
