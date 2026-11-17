@@ -20,6 +20,7 @@ import { HabitsList } from "./HabitsList";
 import { LocationList } from "./LocationList";
 import { AttachmentsList } from "./AttachmentsList";
 import { AttachmentChip } from "./AttachmentChip";
+import { PersonChip } from "./PersonChip";
 
 export interface RteValue {
   title: string;
@@ -33,12 +34,18 @@ export interface RteValue {
 
 const CustomMention = Mention.extend({
   name: "mention",
-}).configure({
-  suggestion: {
-    char: "@",
-    pluginKey: new PluginKey("tagsSuggestion"),
-  },
-});
+})
+  .configure({
+    suggestion: {
+      char: "@",
+      pluginKey: new PluginKey("tagsSuggestion"),
+    },
+  })
+  .extend({
+    addNodeView() {
+      return ReactNodeViewRenderer(PersonChip);
+    },
+  });
 
 const ProjectMention = Mention.extend({
   name: "projectMention",
@@ -121,7 +128,6 @@ const ParamsMention = Mention.extend({
     pluginKey: new PluginKey("paramsSuggestion"),
   },
 });
-
 export function useRte({
   value,
   editable,
@@ -144,9 +150,9 @@ export function useRte({
         placeholder,
       }),
       CustomMention.configure({
-        HTMLAttributes: {
-          class: styles.tag,
-        },
+        // HTMLAttributes: {
+        //   class: styles.tag,
+        // },
         suggestion: getMentionsConfig(MentionList),
       }),
       TaskMention.configure({
