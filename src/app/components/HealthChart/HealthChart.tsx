@@ -7,7 +7,7 @@ import { useHabitsState } from "@/app/utils/hooks/use-habits/state-context";
 import "./style.css";
 import { Button } from "../ui/button";
 import { IconArrowLeft } from "@tabler/icons-react";
-import { RadarChart } from "../molcules/charts/RadarChart";
+import { RadarChart } from "../molecules/charts/RadarChart";
 import {
   getHabitProgress,
   getHabitProgressForLifeAspect,
@@ -15,8 +15,8 @@ import {
 
 import { GardenContainer } from "../Garden/GardenContainer";
 import { useLifeAspectsState } from "@/app/utils/hooks/use-life-aspects/state-context";
-import { RadarChartDataItem } from "@/app/components/molcules/charts/RadarChart/RadarChart";
-import { LifeAspectBarChart } from "@/app/components/molcules/life-aspects/LifeAspectBarChart";
+import { RadarChartDataItem } from "@/app/components/molecules/charts/RadarChart/RadarChart";
+import { LifeAspectBarChart } from "@/app/components/molecules/life-aspects/LifeAspectBarChart";
 
 type HealthChartValueKey = "basePercentage" | "boostedPercentage";
 

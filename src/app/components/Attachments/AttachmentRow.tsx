@@ -3,7 +3,7 @@ import React, { FC } from "react";
 import { Download, FileText, Trash2 } from "lucide-react";
 import { IAttachment } from "@/app/utils/types/attachment";
 import { Button } from "../ui/button";
-import { formatSize } from "../molcules/attachments/AttachmentCard";
+import { formatSize } from "../molecules/attachments/AttachmentCard";
 
 interface AttachmentRowProps {
   attachment: IAttachment;

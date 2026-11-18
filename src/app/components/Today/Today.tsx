@@ -19,7 +19,7 @@ import {
   isCalendarWeatherEntry,
 } from "../CalendarEvent/CalendarEvent.types";
 import useHotKeys from "@/app/utils/hooks/use-hotkeys";
-import { MinimalNote } from "../molcules/notes";
+import { MinimalNote } from "../molecules/notes";
 
 export interface TodayProps {
   testId?: string;

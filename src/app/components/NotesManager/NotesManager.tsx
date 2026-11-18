@@ -12,7 +12,7 @@ import {
 } from "../ui/card";
 import { Button } from "../ui/button";
 import { format } from "date-fns";
-import { MinimalNote } from "../molcules/notes";
+import { MinimalNote } from "../molecules/notes";
 
 export interface NotesManagerProps {
   testId?: string;

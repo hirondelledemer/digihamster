@@ -11,7 +11,7 @@ import { ProjectInfo } from "../ProjectInfo";
 import { ActiveContext } from "../ActiveContext";
 import { ActiveSecondaryContext } from "../ActiveContext/ActiveSecondaryContext";
 import { ActiveLifeAspect } from "../ActiveLifeAspect";
-import { ActivePerson } from "../people/ActivePerson";
+import { ActivePerson } from "../molecules/people/ActivePerson";
 
 export const Home = (): JSX.Element => {
   return (
