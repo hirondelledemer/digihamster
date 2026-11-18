@@ -73,8 +73,8 @@ export const ActiveLifeAspect: FC = (): JSX.Element | null => {
       <SheetContent
         side="right"
         aria-describedby="Task info"
-        onCloseClick={() => setParams("lifeAspectId", null)}
-        onEscapeKeyDown={() => setParams("lifeAspectId", null)}
+        onCloseClick={() => setParams(QUERY_KEYS.lifeAspectId, null)}
+        onEscapeKeyDown={() => setParams(QUERY_KEYS.lifeAspectId, null)}
       >
         <SheetHeader>
           <SheetTitle>{selectedLifeAspect.title}</SheetTitle>

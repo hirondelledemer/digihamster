@@ -13,10 +13,14 @@ import { useSetSearchParams } from "@/app/utils/url/search-params";
 import { QUERY_KEYS } from "@/app/utils/url/constants";
 
 import { usePersonById } from "@/app/utils/hooks/use-people/selectors";
+import { EditableColor } from "../../form/EditableColor/EditableColor";
+import { usePeopleActions } from "@/app/utils/hooks/use-people/actions-context";
 
 export const ActivePerson: FC = (): JSX.Element | null => {
   const searchParams = useSearchParams();
   const setParams = useSetSearchParams();
+
+  const { update } = usePeopleActions();
 
   const personId = searchParams.get(QUERY_KEYS.personId);
 
@@ -31,12 +35,16 @@ export const ActivePerson: FC = (): JSX.Element | null => {
       <SheetContent
         side="right"
         aria-describedby="Task info"
-        onCloseClick={() => setParams("lifeAspectId", null)}
-        onEscapeKeyDown={() => setParams("lifeAspectId", null)}
+        onCloseClick={() => setParams(QUERY_KEYS.personId, null)}
+        onEscapeKeyDown={() => setParams(QUERY_KEYS.personId, null)}
       >
         <SheetHeader>
           <SheetTitle>{selectedPerson.name}</SheetTitle>
         </SheetHeader>
+        <EditableColor
+          color={selectedPerson.color}
+          onSave={(v) => update(selectedPerson.id, { color: v })}
+        />
       </SheetContent>
     </Sheet>
   );
