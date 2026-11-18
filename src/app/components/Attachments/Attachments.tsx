@@ -7,9 +7,9 @@ import { useToast } from "../ui/use-toast";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import AttachmentCard from "../molcules/attachments/AttachmentCard";
+import AttachmentCard from "../molecules/attachments/AttachmentCard";
 import AttachmentRow from "./AttachmentRow";
-import { PreviewDialog } from "../molcules/attachments/PreviewDialog";
+import { PreviewDialog } from "../molecules/attachments/PreviewDialog";
 
 type ViewMode = "list" | "grid";
 

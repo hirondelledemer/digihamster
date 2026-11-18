@@ -18,7 +18,7 @@ import { BoostEntry } from "./components/BoostEntry";
 import { HabitEntry } from "./components/HabitEntry";
 import { QUERY_KEYS } from "@/app/utils/url/constants";
 import { isBoostEntry } from "./utils";
-import { LifeAspectBarChart } from "@/app/components/molcules/life-aspects/LifeAspectBarChart";
+import { LifeAspectBarChart } from "@/app/components/molecules/life-aspects/LifeAspectBarChart";
 
 const MONTH_AGO = subMonths(now(), 1);
 
@@ -72,9 +72,9 @@ export const ActiveLifeAspect: FC = (): JSX.Element | null => {
     <Sheet open>
       <SheetContent
         side="right"
-        aria-describedby="Task info"
-        onCloseClick={() => setParams("lifeAspectId", null)}
-        onEscapeKeyDown={() => setParams("lifeAspectId", null)}
+        aria-describedby="Life aspect info"
+        onCloseClick={() => setParams(QUERY_KEYS.lifeAspectId, null)}
+        onEscapeKeyDown={() => setParams(QUERY_KEYS.lifeAspectId, null)}
       >
         <SheetHeader>
           <SheetTitle>{selectedLifeAspect.title}</SheetTitle>

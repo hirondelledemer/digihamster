@@ -10,7 +10,7 @@ import {
 } from "@/app/components/ui/tooltip";
 import { useNavigator } from "@/app/components/EventRelationships/navigator-context";
 import { RelatedEntityVariant } from "../RelatedEntity/RelatedEntity";
-import { StickyNote } from "@/app/components/molcules/notes";
+import { StickyNote } from "@/app/components/molecules/notes";
 
 export const RelatedNote: FC<{
   id: number;

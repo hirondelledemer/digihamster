@@ -18,7 +18,7 @@ import { RelatedEntity } from "../RelatedEntity";
 import { EntityTypeIcon } from "../../../EntityTypeIcon";
 import { RelatedEntityVariant } from "../RelatedEntity/RelatedEntity";
 import { useAttachmentById } from "@/app/utils/hooks/use-attachments/selectors";
-import { Attachment } from "@/app/components/molcules/attachments/Attachment";
+import { Attachment } from "@/app/components/molecules/attachments/Attachment";
 
 export const RelatedAttachment: FC<{
   id: number;

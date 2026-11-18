@@ -1,6 +1,6 @@
 import React, { FC, useMemo } from "react";
 import { differenceInCalendarDays } from "date-fns";
-import DinosaurIcon from "../molcules/icons/DinosaurIcon";
+import DinosaurIcon from "../molecules/icons/DinosaurIcon";
 import { cn } from "../utils";
 import {
   Tooltip,

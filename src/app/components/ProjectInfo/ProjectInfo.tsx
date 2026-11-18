@@ -29,10 +29,10 @@ import { useTasksActions } from "@/app/utils/hooks/use-tasks/actions-context";
 import { TaskStatus } from "@/app/utils/types/task";
 import { useSetSearchParams } from "@/app/utils/url/search-params";
 import { useSearchParams } from "next/navigation";
-import { MinimalNote } from "../molcules/notes";
+import { MinimalNote } from "../molecules/notes";
 import { useRelevantRelationshipsForEntity } from "@/app/utils/hooks/use-relationships/selectors";
 import { RelationshipEntityType } from "@/app/utils/types/relationship";
-import { Attachment } from "../molcules/attachments/Attachment";
+import { Attachment } from "../molecules/attachments/Attachment";
 
 export interface ProjectInfoProps {
   testId?: string;

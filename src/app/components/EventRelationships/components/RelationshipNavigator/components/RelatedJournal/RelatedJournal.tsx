@@ -8,7 +8,7 @@ import { FC } from "react";
 import { EntityTypeIcon } from "../../../EntityTypeIcon";
 import { Card } from "@/app/components/ui/card";
 import { RelatedEntityVariant } from "../RelatedEntity/RelatedEntity";
-import { MinimalNote } from "@/app/components/molcules/notes";
+import { MinimalNote } from "@/app/components/molecules/notes";
 
 export const RelatedJournal: FC<{
   id: number;
