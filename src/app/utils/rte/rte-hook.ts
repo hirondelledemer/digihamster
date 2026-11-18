@@ -20,7 +20,7 @@ import { HabitsList } from "./HabitsList";
 import { LocationList } from "./LocationList";
 import { AttachmentsList } from "./AttachmentsList";
 import { AttachmentChip } from "./AttachmentChip";
-import { PersonChip } from "./PersonChip";
+import { InteractivePersonChip, PersonChip } from "./PersonChip";
 
 export interface RteValue {
   title: string;
@@ -33,6 +33,7 @@ export interface RteValue {
 }
 
 const CustomMention = Mention.extend({
+  // TODO: rename
   name: "mention",
 })
   .configure({
@@ -43,7 +44,10 @@ const CustomMention = Mention.extend({
   })
   .extend({
     addNodeView() {
-      return ReactNodeViewRenderer(PersonChip);
+      if (this.editor.options.editable) {
+        return ReactNodeViewRenderer(PersonChip);
+      }
+      return ReactNodeViewRenderer(InteractivePersonChip);
     },
   });
 
@@ -150,9 +154,6 @@ export function useRte({
         placeholder,
       }),
       CustomMention.configure({
-        // HTMLAttributes: {
-        //   class: styles.tag,
-        // },
         suggestion: getMentionsConfig(MentionList),
       }),
       TaskMention.configure({
