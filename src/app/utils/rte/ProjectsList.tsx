@@ -48,7 +48,7 @@ export const ProjectsList = forwardRef(
 
     const items = projects
       .filter((project) =>
-        project.title.toLowerCase().startsWith(query.toLowerCase()),
+        project.title.toLowerCase().startsWith(query.toLowerCase())
       )
       .slice(0, 5);
 
@@ -57,7 +57,7 @@ export const ProjectsList = forwardRef(
 
       if (item) {
         command({
-          id: `${item.id}:${item.color}`,
+          id: `${item.id}`,
           label: item.title,
         });
       }
@@ -102,7 +102,7 @@ export const ProjectsList = forwardRef(
         </CardContent>
       </Card>
     );
-  },
+  }
 );
 
 ProjectsList.displayName = "ProjectsList";

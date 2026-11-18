@@ -1,3 +1,4 @@
+import { MENTION_KEYS } from "@/app/utils/rte/constants";
 import { LineKind, parseRelationshipInput } from "./parse-relationship-input";
 
 const text = (value: string) => ({ type: "text", text: value });
@@ -23,9 +24,9 @@ describe("parseRelationshipInput", () => {
       type: "doc",
       content: [
         paragraph(
-          mention("taskMention", "7", "buy grocerries"),
+          mention(MENTION_KEYS.task, "7", "buy grocerries"),
           text(" "),
-          mention("locationMention", "3:#f97316", "shop")
+          mention(MENTION_KEYS.location, "3", "shop")
         ),
       ],
     };
@@ -44,7 +45,7 @@ describe("parseRelationshipInput", () => {
       content: [
         paragraph(
           text("/n here is a note that i need to remember regarding "),
-          mention("mention", "12:#22c55e", "mom")
+          mention(MENTION_KEYS.person, "12", "mom")
         ),
       ],
     };
@@ -59,6 +60,7 @@ describe("parseRelationshipInput", () => {
         locations: [],
         habits: [],
         projects: [],
+        attachments: [],
       },
     ]);
   });
@@ -69,7 +71,7 @@ describe("parseRelationshipInput", () => {
       content: [
         paragraph(
           text("/j this is my thoughs, i need to talk about my "),
-          mention("mention", "12:#22c55e", "mom"),
+          mention(MENTION_KEYS.person, "12", "mom"),
           text(" more")
         ),
       ],
@@ -79,7 +81,9 @@ describe("parseRelationshipInput", () => {
 
     expect(line.kind).toBe(LineKind.Journal);
     expect(line.people).toStrictEqual(["12"]);
-    expect(line.text).toBe("this is my thoughs, i need to talk about my mom more");
+    expect(line.text).toBe(
+      "this is my thoughs, i need to talk about my mom more"
+    );
   });
 
   it("parses every line of a multi line entry and drops the blank ones", () => {
@@ -87,9 +91,9 @@ describe("parseRelationshipInput", () => {
       type: "doc",
       content: [
         paragraph(
-          mention("taskMention", "7", "buy grocerries"),
+          mention(MENTION_KEYS.task, "7", "buy grocerries"),
           text(" "),
-          mention("locationMention", "3:#f97316", "shop")
+          mention(MENTION_KEYS.location, "3", "shop")
         ),
         { type: "paragraph" },
         paragraph(text("/n remember this")),
@@ -156,7 +160,7 @@ describe("parseRelationshipInput", () => {
       type: "doc",
       content: [
         paragraph(text("/n here is my note")),
-        paragraph(mention("locationMention", "3:#f97316", "shop")),
+        paragraph(mention(MENTION_KEYS.location, "3", "shop")),
       ],
     };
 
@@ -173,7 +177,7 @@ describe("parseRelationshipInput", () => {
     const doc = {
       type: "doc",
       content: [
-        paragraph(mention("taskMention", "7", "buy grocerries")),
+        paragraph(mention(MENTION_KEYS.task, "7", "buy grocerries")),
         paragraph(text("some stray thought")),
       ],
     };

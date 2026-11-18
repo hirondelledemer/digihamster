@@ -1,3 +1,4 @@
+import { MENTION_KEYS } from "@/app/utils/rte/constants";
 import { JSONContent } from "@tiptap/react";
 
 /**
@@ -38,17 +39,17 @@ type MentionBucket =
   | "attachments";
 
 /** tiptap node name -> the field its ids land in */
-const MENTION_BUCKETS: Record<string, MentionBucket> = {
-  taskMention: "tasks",
-  mention: "people",
-  locationMention: "locations",
-  habitMention: "habits",
-  projectMention: "projects",
-  attachmentMention: "attachments",
+const MENTION_BUCKETS: Record<
+  (typeof MENTION_KEYS)[keyof typeof MENTION_KEYS],
+  MentionBucket
+> = {
+  [MENTION_KEYS.task]: "tasks",
+  [MENTION_KEYS.person]: "people",
+  [MENTION_KEYS.location]: "locations",
+  [MENTION_KEYS.habit]: "habits",
+  [MENTION_KEYS.project]: "projects",
+  [MENTION_KEYS.attachment]: "attachments",
 };
-
-/** people and locations encode their colour into the mention id: `12:#f97316` */
-const toId = (raw: string): string => `${raw}`.split(":")[0];
 
 const COMMAND = /^\/(n|j)(?:\s+|$)/;
 
@@ -101,7 +102,7 @@ const parseParagraph = (paragraph: JSONContent): ParsedLine | null => {
       }
 
       if (node.attrs?.id !== undefined) {
-        line[bucket].push(toId(node.attrs.id));
+        line[bucket].push(node.attrs.id);
       }
       return node.attrs?.label ?? "";
     })

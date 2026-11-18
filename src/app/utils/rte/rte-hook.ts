@@ -1,25 +1,8 @@
-import {
-  Content,
-  JSONContent,
-  useEditor,
-  ReactNodeViewRenderer,
-} from "@tiptap/react";
-import Mention from "@tiptap/extension-mention";
+import { Content, JSONContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import { reduce } from "remeda";
 import { Placeholder } from "@tiptap/extensions";
-import styles from "./rte-hook.module.scss";
-import { PluginKey } from "@tiptap/pm/state";
-import { getMentionsConfig } from "./suggestions";
-import { MentionList } from "./MentionList";
-import { ProjectsList } from "./ProjectsList";
-import { ParamsList } from "./ParamList";
 import { getRteValue } from "./get-rte-value";
-import { TasksList } from "./TasksList";
-import { HabitsList } from "./HabitsList";
-import { LocationList } from "./LocationList";
-import { AttachmentsList } from "./AttachmentsList";
-import { AttachmentChip } from "./AttachmentChip";
+import { mentionExtensions } from "./extensions";
 
 export interface RteValue {
   title: string;
@@ -30,97 +13,6 @@ export interface RteValue {
   projectId?: string;
   params: string[];
 }
-
-const CustomMention = Mention.extend({
-  name: "mention",
-}).configure({
-  suggestion: {
-    char: "@",
-    pluginKey: new PluginKey("tagsSuggestion"),
-  },
-});
-
-const ProjectMention = Mention.extend({
-  name: "projectMention",
-}).configure({
-  suggestion: {
-    char: "/p ",
-    pluginKey: new PluginKey("projectSuggestion"),
-    allow: ({ editor }) => {
-      const json = editor.getJSON();
-      if (!json || !json.content) {
-        return false;
-      }
-      return (
-        reduce(
-          json.content,
-          (acc: Record<string, object>[], curr: JSONContent) => [
-            ...acc,
-            ...(
-              curr.content?.filter((val) => val.type === "projectMention") || []
-            ).map((mention) => mention!.attrs!),
-          ],
-          []
-        ).length < 1
-      );
-    },
-  },
-});
-
-const TaskMention = Mention.extend({
-  name: "taskMention",
-}).configure({
-  suggestion: {
-    char: "/t ",
-    pluginKey: new PluginKey("taskSuggestion"),
-    allowSpaces: true,
-  },
-});
-
-const LocationMention = Mention.extend({
-  name: "locationMention",
-}).configure({
-  suggestion: {
-    char: "/at ",
-    pluginKey: new PluginKey("locationSuggestion"),
-    allowSpaces: true,
-  },
-});
-
-const HabitMention = Mention.extend({
-  name: "habitMention",
-}).configure({
-  suggestion: {
-    char: "/h ",
-    pluginKey: new PluginKey("habitSuggestion"),
-    allowSpaces: true,
-  },
-});
-
-const AttachmentMention = Mention.extend({
-  name: "attachmentMention",
-})
-  .configure({
-    suggestion: {
-      char: "/a ",
-      pluginKey: new PluginKey("attachmentSuggestion"),
-      allowSpaces: true,
-    },
-  })
-  .extend({
-    addNodeView() {
-      return ReactNodeViewRenderer(AttachmentChip);
-    },
-  });
-
-const ParamsMention = Mention.extend({
-  name: "paramsMention",
-}).configure({
-  suggestion: {
-    char: "$",
-    pluginKey: new PluginKey("paramsSuggestion"),
-  },
-});
 
 export function useRte({
   value,
@@ -143,45 +35,7 @@ export function useRte({
       Placeholder.configure({
         placeholder,
       }),
-      CustomMention.configure({
-        HTMLAttributes: {
-          class: styles.tag,
-        },
-        suggestion: getMentionsConfig(MentionList),
-      }),
-      TaskMention.configure({
-        HTMLAttributes: {
-          class: styles.project,
-        },
-        suggestion: getMentionsConfig(TasksList),
-      }),
-      HabitMention.configure({
-        HTMLAttributes: {
-          class: styles.project,
-        },
-        suggestion: getMentionsConfig(HabitsList),
-      }),
-      AttachmentMention.configure({
-        suggestion: getMentionsConfig(AttachmentsList),
-      }),
-      LocationMention.configure({
-        HTMLAttributes: {
-          class: styles.project,
-        },
-        suggestion: getMentionsConfig(LocationList),
-      }),
-      ProjectMention.configure({
-        HTMLAttributes: {
-          class: styles.project,
-        },
-        suggestion: getMentionsConfig(ProjectsList),
-      }),
-      ParamsMention.configure({
-        HTMLAttributes: {
-          class: styles.param,
-        },
-        suggestion: getMentionsConfig(ParamsList),
-      }),
+      ...mentionExtensions,
     ],
     editorProps: {
       attributes: {

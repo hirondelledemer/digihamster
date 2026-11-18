@@ -1,6 +1,7 @@
 import { JSONContent } from "@tiptap/react";
 import { RteValue } from "./rte-hook";
 import { drop, reduce } from "remeda";
+import { MENTION_KEYS } from "./constants";
 
 interface MentionEntity {
   id: string;
@@ -37,43 +38,39 @@ export const getRteValue: (json: JSONContent) => RteValue = (json) => {
 
   const tags: MentionEntity[] = reduce(
     json.content,
-    getMentionEntity("mention"),
+    getMentionEntity(MENTION_KEYS.person),
     []
   );
 
   const locations: MentionEntity[] = reduce(
     json.content,
-    getMentionEntity("locationMention"),
+    getMentionEntity(MENTION_KEYS.location),
     []
   );
 
   const projects: MentionEntity[] = reduce(
     json.content,
-    getMentionEntity("projectMention"),
+    getMentionEntity(MENTION_KEYS.project),
     []
   );
 
   const tasks: MentionEntity[] = reduce(
     json.content,
-    getMentionEntity("taskMention"),
+    getMentionEntity(MENTION_KEYS.task),
     []
   );
 
   const habits: MentionEntity[] = reduce(
     json.content,
-    getMentionEntity("habitMention"),
+    getMentionEntity(MENTION_KEYS.habit),
     []
   );
 
   const params: MentionEntity[] = reduce(
     json.content,
-    getMentionEntity("paramsMention"),
+    getMentionEntity(MENTION_KEYS.param),
     []
   );
-
-  const regularTags = tags.map((tag) => tag.id.split(":")[0]);
-
-  const locationTags = locations.map((location) => location.id.split(":")[0]);
 
   const titleTextContent = !!json.content[0].content
     ? json.content[0].content![0].text
@@ -87,9 +84,9 @@ export const getRteValue: (json: JSONContent) => RteValue = (json) => {
         ...(
           curr.content?.filter(
             (val) =>
-              val.type !== "projectMention" &&
-              val.type !== "paramsMention" &&
-              val.type !== "taskMention"
+              val.type !== MENTION_KEYS.project &&
+              val.type !== MENTION_KEYS.param &&
+              val.type !== MENTION_KEYS.task
           ) || []
         ).map((content) => content.text || ""),
       ];
@@ -101,13 +98,13 @@ export const getRteValue: (json: JSONContent) => RteValue = (json) => {
 
   return {
     title: titleTextContent || "",
-    tags: regularTags,
+    tags: tags.map((tag) => tag.id),
     tasks: tasks.map((param) => param.id),
-    locations: locationTags, // todo: this might be not needed
+    locations: locations.map((location) => location.id),
     habits: habits.map((param) => param.id),
     textContent,
     contentJSON: json,
-    projectId: projects[0] ? projects[0].id.split(":")[0] : undefined,
+    projectId: projects[0] ? projects[0].id : undefined,
     params: params.map((param) => param.id),
   };
 };

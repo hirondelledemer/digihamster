@@ -13,6 +13,7 @@ import { EVENTS_PATH } from "@/app/utils/hooks/use-events/api";
 import { RELATIONSHIPS_PATH } from "@/app/utils/hooks/use-relationships/api";
 import { RelationshipsContextProvider } from "@/app/utils/hooks/use-relationships/provider";
 import { RelationshipEntityType } from "@/app/utils/types/relationship";
+import { MENTION_KEYS } from "@/app/utils/rte/constants";
 
 describe("CreateEventForm", () => {
   const DEFAULT_PROPS = {
@@ -82,8 +83,8 @@ describe("CreateEventForm", () => {
           type: "paragraph",
           content: [
             {
-              type: "projectMention",
-              attrs: { id: "1:#3b82f6", label: "perfect cat" },
+              type: MENTION_KEYS.project,
+              attrs: { id: "1", label: "perfect cat" },
             },
           ],
         },
@@ -91,7 +92,7 @@ describe("CreateEventForm", () => {
           type: "paragraph",
           content: [
             {
-              type: "taskMention",
+              type: MENTION_KEYS.task,
               attrs: { id: "2", label: "buy cat food" },
             },
           ],
@@ -148,8 +149,8 @@ describe("CreateEventForm", () => {
           type: "paragraph",
           content: [
             {
-              type: "projectMention",
-              attrs: { id: "1:#3b82f6", label: "perfect cat" },
+              type: MENTION_KEYS.project,
+              attrs: { id: "1", label: "perfect cat" },
             },
           ],
         },
@@ -157,7 +158,7 @@ describe("CreateEventForm", () => {
           type: "paragraph",
           content: [
             {
-              type: "habitMention",
+              type: MENTION_KEYS.habit,
               attrs: { id: "2", label: "buy cat food" },
             },
           ],
@@ -217,8 +218,8 @@ describe("CreateEventForm", () => {
           type: "paragraph",
           content: [
             {
-              type: "projectMention",
-              attrs: { id: "1:#3b82f6", label: "perfect cat" },
+              type: MENTION_KEYS.project,
+              attrs: { id: "1", label: "perfect cat" },
             },
           ],
         },
@@ -226,7 +227,7 @@ describe("CreateEventForm", () => {
           type: "paragraph",
           content: [
             {
-              type: "locationMention",
+              type: MENTION_KEYS.location,
               attrs: { id: "2", label: "store" },
             },
           ],
