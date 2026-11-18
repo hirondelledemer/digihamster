@@ -18,6 +18,8 @@ import { FC } from "react";
 import { RelatedEntity } from "../RelatedEntity";
 import { EntityTypeIcon } from "../../../EntityTypeIcon";
 import { RelatedEntityVariant } from "../RelatedEntity/RelatedEntity";
+import { useSetSearchParams } from "@/app/utils/url/search-params";
+import { QUERY_KEYS } from "@/app/utils/url/constants";
 
 export const RelatedLocation: FC<{
   id: number;
@@ -29,6 +31,7 @@ export const RelatedLocation: FC<{
 }> = ({ id, variant, related = [], summary = [] }) => {
   const location = useLocationById(id);
   const { setActiveEntity } = useNavigator();
+  const setParams = useSetSearchParams();
 
   const selectEntity = () =>
     setActiveEntity({
@@ -73,6 +76,10 @@ export const RelatedLocation: FC<{
             <IconMapPin
               size={16}
               color={location.color}
+              className="hover:animate-wiggle cursor-pointer"
+              onClick={() =>
+                setParams(QUERY_KEYS.locationId, location.id.toString())
+              }
               aria-label="location"
             />
             <div style={{ color: location.color }}>{location.title}</div>
