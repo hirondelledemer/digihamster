@@ -7,30 +7,48 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from "@/app/components/ui/context-menu";
+import { FC } from "react";
+import { useSetSearchParams } from "../url/search-params";
+import { QUERY_KEYS } from "../url/constants";
 
-export const InteractivePersonChip: React.FC<NodeViewProps> = ({ node }) => {
+const Chip: FC<NodeViewProps> = ({ node }) => {
   const { id, label } = node.attrs;
-  const person = usePersonById(Number(id));
+  const personId = id.split(":")[0];
+  const person = usePersonById(Number(personId));
 
-  if (!person) {
-    return "unknown person"; // TODO: make is still look good, even if it is an error
-  }
+  return (
+    <NodeViewWrapper
+      as="span"
+      data-mention-id={id}
+      className="text-xs font-semibold inline-flex items-center uppercase tracking-widest border-2 rounded-lg px-1 hover:cursor-pointer hover:font-bold"
+      style={
+        !!person
+          ? { color: person.color, borderColor: person.color }
+          : undefined
+      }
+    >
+      <IconManFilled size={16} />
+      <span>{label ?? id}</span>
+    </NodeViewWrapper>
+  );
+};
+
+export const InteractivePersonChip: FC<NodeViewProps> = ({ node, ...rest }) => {
+  const { id } = node.attrs;
+  const personId = id.split(":")[0];
+
+  const setParams = useSetSearchParams();
 
   return (
     <ContextMenu>
       <ContextMenuTrigger>
-        <NodeViewWrapper
-          as="span"
-          data-mention-id={id}
-          className="text-xs font-semibold inline-flex items-center uppercase tracking-widest border-2 rounded-lg px-1 hover:cursor-pointer hover:font-bold"
-          style={{ color: person.color, borderColor: person.color }}
-        >
-          <IconManFilled size={16} />
-          <span>{label ?? id}</span>
-        </NodeViewWrapper>
+        <Chip node={node} {...rest} />
       </ContextMenuTrigger>
       <ContextMenuContent className="w-64">
-        <ContextMenuItem inset onClick={() => {}}>
+        <ContextMenuItem
+          inset
+          onClick={() => setParams(QUERY_KEYS.personId, personId)}
+        >
           <IconEyeglass />
           Take a closer look
         </ContextMenuItem>
@@ -39,23 +57,6 @@ export const InteractivePersonChip: React.FC<NodeViewProps> = ({ node }) => {
   );
 };
 
-export const PersonChip: React.FC<NodeViewProps> = ({ node }) => {
-  const { id, label } = node.attrs;
-  const person = usePersonById(Number(id));
-
-  if (!person) {
-    return "unknown person"; // TODO: make is still look good, even if it is an error
-  }
-
-  return (
-    <NodeViewWrapper
-      as="span"
-      data-mention-id={id}
-      className="text-xs font-semibold inline-flex items-center uppercase tracking-widest border-2 rounded-lg px-1"
-      style={{ color: person.color, borderColor: person.color }}
-    >
-      <IconManFilled size={16} />
-      <span>{label ?? id}</span>
-    </NodeViewWrapper>
-  );
+export const PersonChip: FC<NodeViewProps> = (props) => {
+  return <Chip {...props} />;
 };
