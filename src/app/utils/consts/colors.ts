@@ -1,24 +1,3 @@
-/**
- * @deprecated The method should not be used
- */
-export const COLORS = [
-  "#2426B3",
-  "#36753B",
-  "#395C35",
-  "#1D4735",
-  "#0E66C9",
-  "#7D3731",
-  "#3571E8",
-  "#925696",
-  "#331A22",
-  "#639DAD",
-  "#75AAE6",
-  "#5c1e1f",
-  "#203d35",
-  "#383c2b",
-  "#7b5a3b",
-];
-
 export const COLORS_V2 = [
   "#ADB5BD",
   "#FF6B6B",
