@@ -11,6 +11,7 @@ import { ProjectInfo } from "../ProjectInfo";
 import { ActiveContext } from "../ActiveContext";
 import { ActiveSecondaryContext } from "../ActiveContext/ActiveSecondaryContext";
 import { ActiveLifeAspect } from "../ActiveLifeAspect";
+import { ActivePerson } from "../people/ActivePerson";
 
 export const Home = (): JSX.Element => {
   return (
@@ -18,6 +19,7 @@ export const Home = (): JSX.Element => {
       <Suspense>
         <ProjectInfo />
         <ActiveLifeAspect />
+        <ActivePerson />s
       </Suspense>
       <ResizablePanel>
         <ResizablePanelGroup direction="vertical">
