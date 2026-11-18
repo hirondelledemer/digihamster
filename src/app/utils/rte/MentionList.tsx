@@ -42,7 +42,7 @@ export const MentionList = forwardRef(
       );
 
       command({
-        id: `${response.data.id}:${response.data.color}`,
+        id: `${response.data.id}`,
         label: response.data.name,
       });
     };
@@ -79,7 +79,7 @@ export const MentionList = forwardRef(
 
       if (item) {
         command({
-          id: `${item.id}:${item.color}`,
+          id: `${item.id}`,
           label: item.name,
         });
       } else {

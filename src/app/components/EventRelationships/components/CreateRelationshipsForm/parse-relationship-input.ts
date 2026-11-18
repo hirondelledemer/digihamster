@@ -47,9 +47,6 @@ const MENTION_BUCKETS: Record<string, MentionBucket> = {
   attachmentMention: "attachments",
 };
 
-/** people and locations encode their colour into the mention id: `12:#f97316` */
-const toId = (raw: string): string => `${raw}`.split(":")[0];
-
 const COMMAND = /^\/(n|j)(?:\s+|$)/;
 
 const hasMentions = (line: ParsedLine): boolean =>
@@ -101,7 +98,7 @@ const parseParagraph = (paragraph: JSONContent): ParsedLine | null => {
       }
 
       if (node.attrs?.id !== undefined) {
-        line[bucket].push(toId(node.attrs.id));
+        line[bucket].push(node.attrs.id);
       }
       return node.attrs?.label ?? "";
     })

@@ -71,10 +71,6 @@ export const getRteValue: (json: JSONContent) => RteValue = (json) => {
     []
   );
 
-  const regularTags = tags.map((tag) => tag.id.split(":")[0]);
-
-  const locationTags = locations.map((location) => location.id.split(":")[0]);
-
   const titleTextContent = !!json.content[0].content
     ? json.content[0].content![0].text
     : "";
@@ -101,13 +97,13 @@ export const getRteValue: (json: JSONContent) => RteValue = (json) => {
 
   return {
     title: titleTextContent || "",
-    tags: regularTags,
+    tags: tags.map((tag) => tag.id),
     tasks: tasks.map((param) => param.id),
-    locations: locationTags, // todo: this might be not needed
+    locations: locations.map((location) => location.id),
     habits: habits.map((param) => param.id),
     textContent,
     contentJSON: json,
-    projectId: projects[0] ? projects[0].id.split(":")[0] : undefined,
+    projectId: projects[0] ? projects[0].id : undefined,
     params: params.map((param) => param.id),
   };
 };

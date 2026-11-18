@@ -10,9 +10,7 @@ import {
 
 export const InteractivePersonChip: React.FC<NodeViewProps> = ({ node }) => {
   const { id, label } = node.attrs;
-  const personId = id.split(":")[0]; // TODO: if we are using PersonChip, I think we can remove the id:color thing alltogether
-  console.log("id", id);
-  const person = usePersonById(Number(personId));
+  const person = usePersonById(Number(id));
 
   if (!person) {
     return "unknown person"; // TODO: make is still look good, even if it is an error
@@ -43,9 +41,7 @@ export const InteractivePersonChip: React.FC<NodeViewProps> = ({ node }) => {
 
 export const PersonChip: React.FC<NodeViewProps> = ({ node }) => {
   const { id, label } = node.attrs;
-  const personId = id.split(":")[0]; // TODO: if we are using PersonChip, I think we can remove the id:color thing alltogether
-  console.log("id", id);
-  const person = usePersonById(Number(personId));
+  const person = usePersonById(Number(id));
 
   if (!person) {
     return "unknown person"; // TODO: make is still look good, even if it is an error
