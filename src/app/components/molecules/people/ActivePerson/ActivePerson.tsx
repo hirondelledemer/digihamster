@@ -9,11 +9,9 @@ import {
 } from "../../../ui/sheet";
 import { useSearchParams } from "next/navigation";
 import { useSetSearchParams } from "@/app/utils/url/search-params";
-
 import { QUERY_KEYS } from "@/app/utils/url/constants";
-
 import { usePersonById } from "@/app/utils/hooks/use-people/selectors";
-import { EditableColor } from "../../form/EditableColor/EditableColor";
+import { EditableColor } from "../../form/EditableColor";
 import { usePeopleActions } from "@/app/utils/hooks/use-people/actions-context";
 
 export const ActivePerson: FC = (): JSX.Element | null => {
@@ -34,7 +32,7 @@ export const ActivePerson: FC = (): JSX.Element | null => {
     <Sheet open>
       <SheetContent
         side="right"
-        aria-describedby="Task info"
+        aria-describedby="Person info"
         onCloseClick={() => setParams(QUERY_KEYS.personId, null)}
         onEscapeKeyDown={() => setParams(QUERY_KEYS.personId, null)}
       >

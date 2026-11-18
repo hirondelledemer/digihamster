@@ -72,7 +72,7 @@ export const ActiveLifeAspect: FC = (): JSX.Element | null => {
     <Sheet open>
       <SheetContent
         side="right"
-        aria-describedby="Task info"
+        aria-describedby="Life aspect info"
         onCloseClick={() => setParams(QUERY_KEYS.lifeAspectId, null)}
         onEscapeKeyDown={() => setParams(QUERY_KEYS.lifeAspectId, null)}
       >
