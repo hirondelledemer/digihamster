@@ -11,7 +11,44 @@ import { FC } from "react";
 import { useSetSearchParams } from "../url/search-params";
 import { QUERY_KEYS } from "../url/constants";
 
-const Chip: FC<NodeViewProps> = ({ node }) => {
+export const InteractivePersonChip: FC<NodeViewProps> = ({ node }) => {
+  const { id, label } = node.attrs;
+  const personId = id.split(":")[0];
+  const person = usePersonById(Number(personId));
+
+  const setParams = useSetSearchParams();
+
+  return (
+    <NodeViewWrapper as="span" data-mention-id={id}>
+      <ContextMenu>
+        <ContextMenuTrigger>
+          <div
+            className="text-xs font-semibold inline-flex items-center uppercase tracking-widest border-2 rounded-lg px-1 hover:cursor-pointer hover:font-bold"
+            style={
+              !!person
+                ? { color: person.color, borderColor: person.color }
+                : undefined
+            }
+          >
+            <IconManFilled size={16} />
+            <span>{label ?? id}</span>
+          </div>
+        </ContextMenuTrigger>
+        <ContextMenuContent className="w-64">
+          <ContextMenuItem
+            inset
+            onClick={() => setParams(QUERY_KEYS.personId, personId)}
+          >
+            <IconEyeglass />
+            Take a closer look
+          </ContextMenuItem>
+        </ContextMenuContent>
+      </ContextMenu>
+    </NodeViewWrapper>
+  );
+};
+
+export const PersonChip: FC<NodeViewProps> = ({ node }) => {
   const { id, label } = node.attrs;
   const personId = id.split(":")[0];
   const person = usePersonById(Number(personId));
@@ -31,32 +68,4 @@ const Chip: FC<NodeViewProps> = ({ node }) => {
       <span>{label ?? id}</span>
     </NodeViewWrapper>
   );
-};
-
-export const InteractivePersonChip: FC<NodeViewProps> = ({ node, ...rest }) => {
-  const { id } = node.attrs;
-  const personId = id.split(":")[0];
-
-  const setParams = useSetSearchParams();
-
-  return (
-    <ContextMenu>
-      <ContextMenuTrigger>
-        <Chip node={node} {...rest} />
-      </ContextMenuTrigger>
-      <ContextMenuContent className="w-64">
-        <ContextMenuItem
-          inset
-          onClick={() => setParams(QUERY_KEYS.personId, personId)}
-        >
-          <IconEyeglass />
-          Take a closer look
-        </ContextMenuItem>
-      </ContextMenuContent>
-    </ContextMenu>
-  );
-};
-
-export const PersonChip: FC<NodeViewProps> = (props) => {
-  return <Chip {...props} />;
 };

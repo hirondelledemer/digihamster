@@ -11,6 +11,8 @@ jest.mock("../common/random-int", () => ({
   getRandomInt: () => 0,
 }));
 
+// TODO: redo the test
+
 describe("MentionList", () => {
   afterEach(() => {
     MockAxios.reset();
