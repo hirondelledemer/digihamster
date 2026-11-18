@@ -21,6 +21,7 @@ import { LocationList } from "./LocationList";
 import { AttachmentsList } from "./AttachmentsList";
 import { AttachmentChip } from "./AttachmentChip";
 import { InteractivePersonChip, PersonChip } from "./PersonChip";
+import { MENTION_KEYS } from "./constants";
 
 export interface RteValue {
   title: string;
@@ -32,9 +33,10 @@ export interface RteValue {
   params: string[];
 }
 
+// TODO: rename to reflect that this is a person mention
+// TODO: move extensions into the different file
 const CustomMention = Mention.extend({
-  // TODO: rename
-  name: "mention",
+  name: MENTION_KEYS.person,
 })
   .configure({
     suggestion: {
@@ -52,7 +54,7 @@ const CustomMention = Mention.extend({
   });
 
 const ProjectMention = Mention.extend({
-  name: "projectMention",
+  name: MENTION_KEYS.project,
 }).configure({
   suggestion: {
     char: "/p ",
@@ -68,7 +70,9 @@ const ProjectMention = Mention.extend({
           (acc: Record<string, object>[], curr: JSONContent) => [
             ...acc,
             ...(
-              curr.content?.filter((val) => val.type === "projectMention") || []
+              curr.content?.filter(
+                (val) => val.type === MENTION_KEYS.project
+              ) || []
             ).map((mention) => mention!.attrs!),
           ],
           []
@@ -79,7 +83,7 @@ const ProjectMention = Mention.extend({
 });
 
 const TaskMention = Mention.extend({
-  name: "taskMention",
+  name: MENTION_KEYS.task,
 }).configure({
   suggestion: {
     char: "/t ",
@@ -89,7 +93,7 @@ const TaskMention = Mention.extend({
 });
 
 const LocationMention = Mention.extend({
-  name: "locationMention",
+  name: MENTION_KEYS.location,
 }).configure({
   suggestion: {
     char: "/at ",
@@ -99,7 +103,7 @@ const LocationMention = Mention.extend({
 });
 
 const HabitMention = Mention.extend({
-  name: "habitMention",
+  name: MENTION_KEYS.habit,
 }).configure({
   suggestion: {
     char: "/h ",
@@ -109,7 +113,7 @@ const HabitMention = Mention.extend({
 });
 
 const AttachmentMention = Mention.extend({
-  name: "attachmentMention",
+  name: MENTION_KEYS.attachment,
 })
   .configure({
     suggestion: {
@@ -125,13 +129,14 @@ const AttachmentMention = Mention.extend({
   });
 
 const ParamsMention = Mention.extend({
-  name: "paramsMention",
+  name: MENTION_KEYS.param,
 }).configure({
   suggestion: {
     char: "$",
     pluginKey: new PluginKey("paramsSuggestion"),
   },
 });
+
 export function useRte({
   value,
   editable,

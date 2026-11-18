@@ -1,6 +1,7 @@
 import { JSONContent } from "@tiptap/react";
 import { RteValue } from "./rte-hook";
 import { drop, reduce } from "remeda";
+import { MENTION_KEYS } from "./constants";
 
 interface MentionEntity {
   id: string;
@@ -37,37 +38,37 @@ export const getRteValue: (json: JSONContent) => RteValue = (json) => {
 
   const tags: MentionEntity[] = reduce(
     json.content,
-    getMentionEntity("mention"),
+    getMentionEntity(MENTION_KEYS.person),
     []
   );
 
   const locations: MentionEntity[] = reduce(
     json.content,
-    getMentionEntity("locationMention"),
+    getMentionEntity(MENTION_KEYS.location),
     []
   );
 
   const projects: MentionEntity[] = reduce(
     json.content,
-    getMentionEntity("projectMention"),
+    getMentionEntity(MENTION_KEYS.project),
     []
   );
 
   const tasks: MentionEntity[] = reduce(
     json.content,
-    getMentionEntity("taskMention"),
+    getMentionEntity(MENTION_KEYS.task),
     []
   );
 
   const habits: MentionEntity[] = reduce(
     json.content,
-    getMentionEntity("habitMention"),
+    getMentionEntity(MENTION_KEYS.habit),
     []
   );
 
   const params: MentionEntity[] = reduce(
     json.content,
-    getMentionEntity("paramsMention"),
+    getMentionEntity(MENTION_KEYS.param),
     []
   );
 
@@ -83,9 +84,9 @@ export const getRteValue: (json: JSONContent) => RteValue = (json) => {
         ...(
           curr.content?.filter(
             (val) =>
-              val.type !== "projectMention" &&
-              val.type !== "paramsMention" &&
-              val.type !== "taskMention"
+              val.type !== MENTION_KEYS.project &&
+              val.type !== MENTION_KEYS.param &&
+              val.type !== MENTION_KEYS.task
           ) || []
         ).map((content) => content.text || ""),
       ];

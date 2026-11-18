@@ -1,3 +1,4 @@
+import { MENTION_KEYS } from "./constants";
 import { getRteValue } from "./get-rte-value";
 
 describe("getRteValue", () => {
@@ -116,7 +117,7 @@ describe("getRteValue", () => {
           type: "paragraph",
           content: [
             {
-              type: "taskMention",
+              type: MENTION_KEYS.task,
               attrs: {
                 id: "1",
                 label: "task 1",
@@ -132,7 +133,7 @@ describe("getRteValue", () => {
           type: "paragraph",
           content: [
             {
-              type: "taskMention",
+              type: MENTION_KEYS.task,
               attrs: {
                 id: "2",
                 label: "task 2",
@@ -190,7 +191,7 @@ describe("getRteValue", () => {
           type: "paragraph",
           content: [
             {
-              type: "habitMention",
+              type: MENTION_KEYS.habit,
               attrs: {
                 id: "1",
                 label: "habit 1",
@@ -206,7 +207,7 @@ describe("getRteValue", () => {
           type: "paragraph",
           content: [
             {
-              type: "habitMention",
+              type: MENTION_KEYS.habit,
               attrs: {
                 id: "2",
                 label: "habit 2",
@@ -251,7 +252,7 @@ describe("getRteValue", () => {
           type: "paragraph",
           content: [
             {
-              type: "paramsMention",
+              type: MENTION_KEYS.param,
               attrs: {
                 id: "active",
                 label: "active",
@@ -262,7 +263,7 @@ describe("getRteValue", () => {
               text: " ",
             },
             {
-              type: "paramsMention",
+              type: MENTION_KEYS.param,
               attrs: {
                 id: "today",
                 label: "today",
@@ -316,9 +317,9 @@ describe("getRteValue", () => {
           type: "paragraph",
           content: [
             {
-              type: "projectMention",
+              type: MENTION_KEYS.project,
               attrs: {
-                id: "65b035101ef79da0a5430d9e:#1D4735",
+                id: "65b035101ef79da0a5430d9e",
                 label: "new project",
               },
             },
@@ -370,9 +371,9 @@ describe("getRteValue", () => {
           type: "paragraph",
           content: [
             {
-              type: "mention",
+              type: MENTION_KEYS.person,
               attrs: {
-                id: "65c6a3d738a23c2c6627d071:#ADB5BD",
+                id: "65c6a3d738a23c2c6627d071",
                 label: "aaa",
               },
             },
@@ -381,9 +382,9 @@ describe("getRteValue", () => {
               text: " ",
             },
             {
-              type: "mention",
+              type: MENTION_KEYS.person,
               attrs: {
-                id: "65c6a43d38a23c2c6627d07c:#FF6B6B",
+                id: "65c6a43d38a23c2c6627d07c",
                 label: "mmm",
               },
             },
