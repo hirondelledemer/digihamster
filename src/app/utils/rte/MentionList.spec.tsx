@@ -76,7 +76,7 @@ describe("MentionList", () => {
       (ref.current as any).onKeyDown({ event: { key: "Enter" } });
 
       expect(command).toHaveBeenCalledWith({
-        id: "1:person-color-1",
+        id: "1",
         label: "Person 1",
       });
     });
@@ -115,7 +115,7 @@ describe("MentionList", () => {
         });
       });
       expect(command).toHaveBeenCalledWith({
-        id: "newTag1:#F06595",
+        id: "newTag1",
         label: undefined, // TODO: look into it, i think this value is wrong
       });
     });

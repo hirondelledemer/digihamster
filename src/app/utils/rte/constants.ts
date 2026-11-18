@@ -6,4 +6,4 @@ export const MENTION_KEYS = {
   habit: "habitMention",
   attachment: "attachmentMention",
   param: "paramsMention",
-};
+} as const;
