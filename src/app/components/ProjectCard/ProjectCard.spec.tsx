@@ -3,8 +3,10 @@ import ProjectCard, { ProjectCardProps } from "./ProjectCard";
 import { generateProject } from "@/app/utils/mocks/project";
 import { generateCustomTasksList } from "@/app/utils/mocks/task";
 import { TaskStatus } from "@/app/utils/types/task";
-import { providers, tasksState } from "@/app/utils/tests/wrappers";
+import { eventsState, providers, tasksState } from "@/app/utils/tests/wrappers";
 import { ProjectStatus } from "@/app/utils/types/project";
+import { generateCustomEventList } from "@/app/utils/mocks/event";
+import { EventStatus, IEvent } from "@/app/utils/types/event";
 
 describe("ProjectCard", () => {
   const PROJECT = generateProject(1, { status: ProjectStatus.Doing });
@@ -28,9 +30,16 @@ describe("ProjectCard", () => {
     },
   ]);
 
-  const renderComponent = (props = DEFAULT_PROPS, tasks = TASKS) =>
+  const renderComponent = (
+    props = DEFAULT_PROPS,
+    tasks = TASKS,
+    events: IEvent[] = []
+  ) =>
     render(<ProjectCard {...props} />, {
-      wrapper: providers(tasksState({ data: tasks })),
+      wrapper: providers(
+        tasksState({ data: tasks }),
+        eventsState({ data: events })
+      ),
     });
 
   it("should render ProjectCard", () => {
@@ -54,6 +63,24 @@ describe("ProjectCard", () => {
   it("should not show 'completed' icon", () => {
     renderComponent();
     expect(screen.queryByTestId("completed-icon")).not.toBeInTheDocument();
+  });
+
+  describe("project has events attached", () => {
+    const EVENTS = generateCustomEventList([
+      { status: EventStatus.Completed, project_id: PROJECT.id },
+    ]);
+
+    it("should show progress bar", () => {
+      renderComponent(DEFAULT_PROPS, TASKS, EVENTS);
+      expect(screen.getByTestId("progress-bar-outer").style.width).toBe("100%");
+      expect(screen.getByTestId("progress-bar-inner").style.width).toBe("50%");
+    });
+
+    it("should show the task and event counters", () => {
+      renderComponent(DEFAULT_PROPS, TASKS, EVENTS);
+      expect(screen.getByText("1/3")).toBeInTheDocument();
+      expect(screen.getByText("1/1")).toBeInTheDocument();
+    });
   });
 
   describe("project is completed", () => {
