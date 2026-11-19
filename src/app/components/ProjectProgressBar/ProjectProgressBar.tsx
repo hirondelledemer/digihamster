@@ -1,5 +1,8 @@
-import { useTasksState } from "@/app/utils/hooks/use-tasks/state-context";
+import { useEventsByProject } from "@/app/utils/hooks/use-events/selectors";
+import { useTasksForProject } from "@/app/utils/hooks/use-tasks/selectors";
+import { EventStatus } from "@/app/utils/types/event";
 import { IProject } from "@/app/utils/types/project";
+import { TaskStatus } from "@/app/utils/types/task";
 import { FC, useMemo } from "react";
 
 export interface ProjectProgressBarProps {
@@ -9,20 +12,23 @@ export interface ProjectProgressBarProps {
 export const ProjectProgressBar: FC<ProjectProgressBarProps> = ({
   project,
 }) => {
-  const { data: tasks } = useTasksState();
+  const tasks = useTasksForProject(project.id);
+  const events = useEventsByProject(project.id);
 
-  const allTasks = useMemo(
-    () => tasks.filter((task) => task.project_id === project.id),
-    [project.id, tasks]
-  );
+  const allTasksCount = tasks.length + events.length;
+
   const activeTaskCount = useMemo(
-    () => allTasks.filter((task) => task.status === "doing").length,
-    [allTasks]
+    () =>
+      tasks.filter((task) => task.status === TaskStatus.Doing).length +
+      events.filter((e) => e.status === EventStatus.Pending).length,
+    [tasks, events]
   );
 
   const completedTaskCount = useMemo(
-    () => allTasks.filter((task) => task.status === "done").length,
-    [allTasks]
+    () =>
+      tasks.filter((task) => task.status === TaskStatus.Done).length +
+      events.filter((e) => e.status !== EventStatus.Pending).length,
+    [tasks, events]
   );
 
   return (
@@ -39,7 +45,7 @@ export const ProjectProgressBar: FC<ProjectProgressBarProps> = ({
         style={{
           height: "100%",
           width: `${
-            ((activeTaskCount + completedTaskCount) / allTasks.length) * 100
+            ((activeTaskCount + completedTaskCount) / allTasksCount) * 100
           }%`,
           background: `repeating-linear-gradient(135deg, ${project.color}, ${project.color} 2px, transparent 2px, transparent 4px)`,
         }}
