@@ -69,11 +69,14 @@ const ProjectCard: FC<ProjectCardProps> = ({
     [tasks]
   );
 
+  // Cancelled and Moved events are no longer relevant, so count as completed
   const completedEventsCount = useMemo(
     () => events.filter((e) => e.status !== EventStatus.Pending).length,
     [events]
   );
+
   const closeProjectForm = () => setProjectModalOpen(false);
+
   return (
     <div data-testid={testId}>
       <ProjectModalForm
@@ -153,7 +156,7 @@ const ProjectCard: FC<ProjectCardProps> = ({
             {project.status === ProjectStatus.Doing && (
               <CardContent className="pb-3 px-3">
                 <ProjectProgressBar
-                  project={project}
+                  color={project.color}
                   completedCount={completedTasksCount + completedEventsCount}
                   allCount={allTasksCount}
                   activeCount={activeTasksCount}

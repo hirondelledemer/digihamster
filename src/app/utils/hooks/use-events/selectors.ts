@@ -79,5 +79,5 @@ export const useEventsByProject = (
     return [];
   }
 
-  return data.filter((event) => event.project_id === projectId) ?? null;
+  return data.filter((event) => event.project_id === projectId);
 };

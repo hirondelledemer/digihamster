@@ -28,8 +28,20 @@ export const EventCard: FC<EventCardProps> = ({ event }): JSX.Element => {
 
   const project = useEventProject(event);
 
+  const getEventStatusColor = () => {
+    if (event.status === EventStatus.Cancelled) {
+      return "repeating-linear-gradient(45deg, hsl(var(--scale-color-1)/0.4), hsl(var(--scale-color-1)/0.5) 3px, hsl(var(--scale-color-1)/0.1) 5px, hsl(var(--scale-color-1)/0.1) 20px)";
+    }
+    if (event.status === EventStatus.Moved) {
+      return "repeating-linear-gradient(45deg, hsl(var(--scale-color-5)/0.1), hsl(var(--scale-color-5)/0.2) 3px, hsl(var(--scale-color-5)/0.1) 5px, hsl(var(--scale-color-5)/0.1) 20px)";
+    }
+
+    return "";
+  };
+
   const baseStyle: CSSProperties = {
     borderColor: project?.color,
+    background: getEventStatusColor(),
   };
 
   return (
@@ -37,7 +49,7 @@ export const EventCard: FC<EventCardProps> = ({ event }): JSX.Element => {
       <Card
         className={cn(
           "p-0 rounded-md w-full",
-          event.status === EventStatus.Completed ? "opacity-40" : ""
+          event.status !== EventStatus.Pending ? "opacity-40" : ""
         )}
         style={baseStyle}
       >
