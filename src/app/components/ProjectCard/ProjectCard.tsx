@@ -9,16 +9,20 @@ import {
 import ProjectModalForm from "../ProjectModalForm";
 import {
   IconArrowRightCircleFilled,
+  IconCalendar,
   IconCircleCheck,
+  IconProgressCheck,
   IconXboxX,
 } from "@tabler/icons-react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { IProject, ProjectStatus } from "@/app/utils/types/project";
-import { useTasksState } from "@/app/utils/hooks/use-tasks/state-context";
 import { TaskStatus } from "@/app/utils/types/task";
 import { ProjectProgressBar } from "../ProjectProgressBar";
 import { useProjectLifeAspectAssetIcon } from "@/app/utils/hooks/use-life-aspects/selectors";
+import { useTasksForProject } from "@/app/utils/hooks/use-tasks/selectors";
+import { useEventsByProject } from "@/app/utils/hooks/use-events/selectors";
+import { EventStatus } from "@/app/utils/types/event";
 
 export interface ProjectCardProps {
   testId?: string;
@@ -33,7 +37,8 @@ const ProjectCard: FC<ProjectCardProps> = ({
   selected,
   onClick,
 }): JSX.Element => {
-  const { data: tasks } = useTasksState();
+  const tasks = useTasksForProject(project.id);
+  const events = useEventsByProject(project.id);
 
   const assetIcon = useProjectLifeAspectAssetIcon(project);
 
@@ -46,19 +51,28 @@ const ProjectCard: FC<ProjectCardProps> = ({
     transition,
   };
 
-  const taskCount = useMemo(
-    () => tasks.filter((t) => t.project_id === project.id).length,
-    [tasks, project]
+  const taskCount = tasks.length;
+
+  const eventsCount = events.length;
+
+  const allTasksCount = tasks.length + events.length;
+
+  const activeTasksCount = useMemo(
+    () =>
+      tasks.filter((task) => task.status === TaskStatus.Doing).length +
+      events.filter((e) => e.status === EventStatus.Pending).length,
+    [tasks, events]
   );
 
   const completedTasksCount = useMemo(
-    () =>
-      tasks.filter(
-        (t) => t.project_id === project.id && t.status === TaskStatus.Done
-      ).length,
-    [tasks, project.id]
+    () => tasks.filter((task) => task.status === TaskStatus.Done).length,
+    [tasks]
   );
 
+  const completedEventsCount = useMemo(
+    () => events.filter((e) => e.status !== EventStatus.Pending).length,
+    [events]
+  );
   const closeProjectForm = () => setProjectModalOpen(false);
   return (
     <div data-testid={testId}>
@@ -83,11 +97,11 @@ const ProjectCard: FC<ProjectCardProps> = ({
             {...listeners}
           >
             <CardHeader className="pb-1 pt-3 px-3" onClick={onClick}>
-              <CardTitle className="font-normal flex items-center justify-between">
-                <div
-                  style={{ color: project?.color }}
-                  className="text-xs uppercase flex items-center justify-between"
-                >
+              <CardTitle
+                className="font-normal flex items-center justify-between"
+                style={{ color: project?.color }}
+              >
+                <div className="text-xs uppercase flex items-center justify-between">
                   {assetIcon} {project.title}
                 </div>
                 <div className="flex">
@@ -101,8 +115,17 @@ const ProjectCard: FC<ProjectCardProps> = ({
                     />
                   )}
                   {project.status === ProjectStatus.Doing && (
-                    <div className="flex items-center text-xs">
-                      {completedTasksCount}/{taskCount}
+                    <div className="flex items-center text-xs gap-2">
+                      {!!eventsCount && (
+                        <div className="flex gap-1 items-center">
+                          <IconCalendar size={12} />
+                          {completedEventsCount}/{eventsCount}
+                        </div>
+                      )}
+                      <div className="flex gap-1 items-center">
+                        <IconProgressCheck size={12} />
+                        {completedTasksCount}/{taskCount}
+                      </div>
                     </div>
                   )}
                   {project.status === ProjectStatus.Cancelled && (
@@ -129,7 +152,12 @@ const ProjectCard: FC<ProjectCardProps> = ({
 
             {project.status === ProjectStatus.Doing && (
               <CardContent className="pb-3 px-3">
-                <ProjectProgressBar project={project} />
+                <ProjectProgressBar
+                  project={project}
+                  completedCount={completedTasksCount + completedEventsCount}
+                  allCount={allTasksCount}
+                  activeCount={activeTasksCount}
+                />
               </CardContent>
             )}
           </Card>

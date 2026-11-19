@@ -1,36 +1,19 @@
-import { useEventsByProject } from "@/app/utils/hooks/use-events/selectors";
-import { useTasksForProject } from "@/app/utils/hooks/use-tasks/selectors";
-import { EventStatus } from "@/app/utils/types/event";
+import { FC } from "react";
 import { IProject } from "@/app/utils/types/project";
-import { TaskStatus } from "@/app/utils/types/task";
-import { FC, useMemo } from "react";
 
 export interface ProjectProgressBarProps {
   project: IProject;
+  activeCount: number;
+  completedCount: number;
+  allCount: number;
 }
 
 export const ProjectProgressBar: FC<ProjectProgressBarProps> = ({
   project,
+  activeCount,
+  completedCount,
+  allCount,
 }) => {
-  const tasks = useTasksForProject(project.id);
-  const events = useEventsByProject(project.id);
-
-  const allTasksCount = tasks.length + events.length;
-
-  const activeTaskCount = useMemo(
-    () =>
-      tasks.filter((task) => task.status === TaskStatus.Doing).length +
-      events.filter((e) => e.status === EventStatus.Pending).length,
-    [tasks, events]
-  );
-
-  const completedTaskCount = useMemo(
-    () =>
-      tasks.filter((task) => task.status === TaskStatus.Done).length +
-      events.filter((e) => e.status !== EventStatus.Pending).length,
-    [tasks, events]
-  );
-
   return (
     <div
       data-testid="progress-bar"
@@ -44,9 +27,7 @@ export const ProjectProgressBar: FC<ProjectProgressBarProps> = ({
         data-testid="progress-bar-outer"
         style={{
           height: "100%",
-          width: `${
-            ((activeTaskCount + completedTaskCount) / allTasksCount) * 100
-          }%`,
+          width: `${((activeCount + completedCount) / allCount) * 100}%`,
           background: `repeating-linear-gradient(135deg, ${project.color}, ${project.color} 2px, transparent 2px, transparent 4px)`,
         }}
       >
@@ -57,8 +38,7 @@ export const ProjectProgressBar: FC<ProjectProgressBarProps> = ({
             backgroundColor: project.color,
 
             width: `${
-              (completedTaskCount / (activeTaskCount + completedTaskCount)) *
-              100
+              (completedCount / (activeCount + completedCount)) * 100
             }%`,
           }}
         />
