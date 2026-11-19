@@ -1,20 +1,20 @@
 import React, { CSSProperties, FC } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "../../../../ui/card";
 import { format } from "date-fns";
-import StaleIndicator from "../StaleIndicator";
+import StaleIndicator from "../../../../StaleIndicator";
 import { DraggableAttributes } from "@dnd-kit/core";
 import { IconCalendar, IconProgressCheck } from "@tabler/icons-react";
-import { useCalendarDate } from "../../utils/hooks/use-calendar-date";
-import { Tooltip, TooltipContent } from "../ui/tooltip";
+import { useCalendarDate } from "../../../../../utils/hooks/use-calendar-date";
+import { Tooltip, TooltipContent } from "../../../../ui/tooltip";
 import { TooltipTrigger } from "@radix-ui/react-tooltip";
 import { useTaskProject } from "@/app/utils/hooks/use-projects/selectors";
 import { ITask, TaskStatus } from "@/app/utils/types/task";
-import { TaskActions } from "../TaskActions";
-import { AdditionalAction } from "../AdditionalActions";
-import { ScheduledIndicator } from "../ScheduledIndicator";
+import { TaskActions } from "../../../../TaskActions";
+import { AdditionalAction } from "../../../../AdditionalActions";
+import { ScheduledIndicator } from "../../../../ScheduledIndicator";
 import { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
 import { useSetSearchParams } from "@/app/utils/url/search-params";
-import { cn } from "../utils";
+import { cn } from "../../../../utils";
 
 export const titleTestId = "TaskCard-title-testid";
 export const cardTestId = "TaskCard-card-testid";

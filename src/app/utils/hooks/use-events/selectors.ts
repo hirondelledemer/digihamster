@@ -69,3 +69,15 @@ export const useEventById = (id: number | null | undefined): IEvent | null => {
 
   return data.find((event) => event.id === id) ?? null;
 };
+
+export const useEventsByProject = (
+  projectId: number | null | undefined
+): IEvent[] => {
+  const { data } = useEventsState();
+
+  if (projectId === null || projectId === undefined) {
+    return [];
+  }
+
+  return data.filter((event) => event.project_id === projectId) ?? null;
+};

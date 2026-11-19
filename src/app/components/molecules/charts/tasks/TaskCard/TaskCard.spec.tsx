@@ -17,14 +17,14 @@ import { ITask, TaskStatus } from "@/app/utils/types/task";
 import { toBackendDateTime } from "#utils/date";
 import { now } from "@/app/utils/date/now";
 import { subDays } from "date-fns";
-import { TooltipProvider } from "../ui/tooltip";
+import { TooltipProvider } from "../../../../ui/tooltip";
 import {
   CalendarDateContextProvider,
   useCalendarDate,
 } from "@/app/utils/hooks/use-calendar-date";
 import { DraggableAttributes } from "@dnd-kit/core";
 
-jest.mock("../../utils/date/now");
+jest.mock("@/app/utils/date/now");
 jest.mock("next/navigation", () => ({
   ...jest.requireActual("next/navigation"),
   useSearchParams: () => ({

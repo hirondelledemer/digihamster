@@ -66,7 +66,7 @@ import axios from "axios";
 import { useJournalEntriesGroupedByEvents } from "@/app/utils/hooks/use-entry/selectors";
 import { CalendarJournalEvent } from "../CalendarJournalEvent";
 
-import TaskCard from "../TaskCard";
+import TaskCard from "../molecules/charts/tasks/TaskCard";
 
 export const now = () => new Date();
 

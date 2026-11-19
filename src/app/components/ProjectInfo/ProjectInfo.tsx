@@ -6,7 +6,7 @@ import CreateTaskForm from "../CreateTaskForm";
 import { ScrollArea } from "../ui/scroll-area";
 import { useProjectById } from "@/app/utils/hooks/use-projects/selectors";
 import { useTasksState } from "@/app/utils/hooks/use-tasks/state-context";
-import { DraggableTaskCard } from "../TaskCard/DraggableTaskCard";
+import { DraggableTaskCard } from "../molecules/charts/tasks/TaskCard/DraggableTaskCard";
 import {
   closestCenter,
   DndContext,
@@ -22,7 +22,7 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { SortableTaskCard } from "../TaskCard/SortableTaskCard";
+import { SortableTaskCard } from "../molecules/charts/tasks/TaskCard/SortableTaskCard";
 import { Switch } from "../ui/switch";
 import { Label } from "../ui/label";
 import { useTasksActions } from "@/app/utils/hooks/use-tasks/actions-context";
@@ -33,6 +33,8 @@ import { MinimalNote } from "../molecules/notes";
 import { useRelevantRelationshipsForEntity } from "@/app/utils/hooks/use-relationships/selectors";
 import { RelationshipEntityType } from "@/app/utils/types/relationship";
 import { Attachment } from "../molecules/attachments/Attachment";
+import { EventCard } from "../molecules/events/EventCard";
+import { useEventsByProject } from "@/app/utils/hooks/use-events/selectors";
 
 export interface ProjectInfoProps {
   testId?: string;
@@ -56,6 +58,7 @@ export const ProjectInfo: FC<ProjectInfoProps> = (): JSX.Element | null => {
   );
 
   const { data: tasks } = useTasksState();
+  const events = useEventsByProject(Number(projectId));
 
   const selectedProject = useProjectById(projectId ? Number(projectId) : null);
 
@@ -120,6 +123,9 @@ export const ProjectInfo: FC<ProjectInfoProps> = (): JSX.Element | null => {
               attachmentRelationships.map((att) => (
                 <Attachment key={att.id} id={att.target_id} />
               ))}
+            {events.map((event) => (
+              <EventCard key={event.id} event={event} />
+            ))}
             <div className="space-x-2 flex items-center">
               <Label>Sort:</Label>
               <Switch
