@@ -2,7 +2,7 @@ import { updateObjById } from "../../common/update-array";
 import { HabitsState, HabitsAction, HabitsActionType } from "./actions";
 import { IHabitWithLogs } from "../../types/habit";
 import { now } from "../../date/now";
-import { toBackendDate } from "#utils/date";
+import { toBackendDate } from "@/utils/date";
 
 export function reducer(state: HabitsState, action: HabitsAction): HabitsState {
   switch (action.type) {

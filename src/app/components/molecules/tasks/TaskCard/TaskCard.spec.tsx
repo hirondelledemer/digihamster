@@ -1,30 +1,29 @@
-import TaskCard, { cardTestId, titleTestId, TaskCardProps } from "./TaskCard";
-import { generateTask } from "@/app/utils/mocks/task";
-import { generateProject } from "@/app/utils/mocks/project";
-import {
-  act,
-  render,
-  screen,
-  fireEvent,
-  waitFor,
-} from "@/config/utils/test-utils";
-
 import mockAxios from "jest-mock-axios";
-import { ProjectsContextProvider } from "@/app/utils/hooks/use-projects/provider";
-import { TasksContextProvider } from "@/app/utils/hooks/use-tasks/provider";
-import { PROJECTS_PATH } from "@/app/utils/hooks/use-projects/api";
-import { ITask, TaskStatus } from "@/app/utils/types/task";
-import { toBackendDateTime } from "#utils/date";
-import { now } from "@/app/utils/date/now";
-import { subDays } from "date-fns";
-import { TooltipProvider } from "../../../../ui/tooltip";
 import {
   CalendarDateContextProvider,
   useCalendarDate,
-} from "@/app/utils/hooks/use-calendar-date";
+} from "@/utils/hooks/use-calendar-date";
+import { generateProject } from "@/utils/mocks/project";
+import { generateTask } from "@/utils/mocks/task";
+import { TaskCard, TaskCardProps } from "@/molecules/tasks/TaskCard";
+import {
+  act,
+  fireEvent,
+  render,
+  waitFor,
+  screen,
+} from "@/config/utils/test-utils";
+import { PROJECTS_PATH } from "@/utils/hooks/use-projects/api";
+import { TooltipProvider } from "@/ui/tooltip";
+import { ProjectsContextProvider } from "@/utils/hooks/use-projects/provider";
+import { TasksContextProvider } from "@/utils/hooks/use-tasks/provider";
+import { ITask, TaskStatus } from "@/utils/types/task";
+import { cardTestId, titleTestId } from "@/molecules/tasks/TaskCard/TaskCard";
+import { now, toBackendDateTime } from "@/utils/date";
+import { subDays } from "date-fns";
 import { DraggableAttributes } from "@dnd-kit/core";
 
-jest.mock("@/app/utils/date/now");
+jest.mock("@/utils/date/now");
 jest.mock("next/navigation", () => ({
   ...jest.requireActual("next/navigation"),
   useSearchParams: () => ({

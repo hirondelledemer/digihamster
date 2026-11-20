@@ -5,7 +5,7 @@ import React, { FC, useMemo } from "react";
 
 import { ScrollArea } from "../ui/scroll-area";
 import { useTasksState } from "@/app/utils/hooks/use-tasks/state-context";
-import { DraggableTaskCard } from "../molecules/charts/tasks/TaskCard/DraggableTaskCard";
+import { DraggableTaskCard } from "../molecules/tasks/TaskCard/DraggableTaskCard";
 import { TaskStatus } from "@/app/utils/types/task";
 
 export const ActiveTaskList: FC = (): JSX.Element | null => {

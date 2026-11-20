@@ -3,7 +3,7 @@ import { useLifeAspectsState } from "@/app/utils/hooks/use-life-aspects/state-co
 import { IHabitWithLogs } from "@/app/utils/types/habit";
 import { FC, useState } from "react";
 import { TableCell, TableRow } from "../../ui/table";
-import { toBackendDate } from "#utils/date";
+import { toBackendDate } from "@/utils/date";
 import { Checkbox } from "../../ui/checkbox";
 import { Button } from "../../ui/button";
 import HabitFormModal from "../HabitFormModal";

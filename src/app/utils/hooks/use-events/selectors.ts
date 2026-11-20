@@ -1,7 +1,7 @@
 "use client";
 import { useMemo } from "react";
 import { isSameDay, isWithinInterval, startOfDay } from "date-fns";
-import { parseBackendDateTime } from "#utils/date";
+import { parseBackendDateTime } from "@/utils/date";
 import { IEvent } from "../../types/event";
 import { now } from "../../date/now";
 import { useEventsState } from "./state-context";

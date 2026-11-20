@@ -1,4 +1,4 @@
-import { toBackendDate } from "#utils/date";
+import { toBackendDate } from "@/utils/date";
 import { IHabitWithLogs } from "../types/habit";
 
 export const getHabitLogForADay = (habit: IHabitWithLogs, date: Date) => {

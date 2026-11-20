@@ -1,6 +1,6 @@
 "use client";
-import { now } from "@/app/utils/date/now";
 import { createContext, ReactNode, useContext, useState } from "react";
+import { now } from "@/utils/date";
 
 interface CalendarDateContextValue {
   selectedDate: Date;

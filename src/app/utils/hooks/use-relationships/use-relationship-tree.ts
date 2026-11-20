@@ -28,7 +28,7 @@ import { IProject } from "../../types/project";
 import { IHabitWithLogs } from "../../types/habit";
 import { useHabitsState } from "../use-habits/state-context";
 import { getHabitLogForADay } from "../../habits/habit-log";
-import { toBackendDate } from "#utils/date";
+import { toBackendDate } from "@/utils/date";
 
 export interface RelationshipNode {
   entity: EntityRef;

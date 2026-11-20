@@ -1,7 +1,7 @@
 import React, { CSSProperties, FC } from "react";
 import { useDraggable } from "@dnd-kit/core";
 import { ITask } from "@/app/utils/types/task";
-import TaskCard from "./TaskCard";
+import { TaskCard } from "./TaskCard";
 
 export const titleTestId = "TaskCard-title-testid";
 export const cardTestId = "TaskCard-card-testid";

@@ -59,14 +59,13 @@ import { useEventsState } from "@/app/utils/hooks/use-events/state-context";
 import { useEventsActions } from "@/app/utils/hooks/use-events/actions-context";
 import { useCalendarDate } from "../../utils/hooks/use-calendar-date";
 import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
-import { parseBackendDate, toBackendDateTime } from "#utils/date";
+import { parseBackendDate, toBackendDateTime } from "@/utils/date";
 import { useTasksState } from "@/app/utils/hooks/use-tasks/state-context";
 import { useTasksActions } from "@/app/utils/hooks/use-tasks/actions-context";
 import axios from "axios";
 import { useJournalEntriesGroupedByEvents } from "@/app/utils/hooks/use-entry/selectors";
 import { CalendarJournalEvent } from "../CalendarJournalEvent";
-
-import TaskCard from "../molecules/charts/tasks/TaskCard";
+import { TaskCard } from "@/molecules/tasks/TaskCard";
 
 export const now = () => new Date();
 

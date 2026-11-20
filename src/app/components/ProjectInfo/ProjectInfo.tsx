@@ -6,7 +6,7 @@ import CreateTaskForm from "../CreateTaskForm";
 import { ScrollArea } from "../ui/scroll-area";
 import { useProjectById } from "@/app/utils/hooks/use-projects/selectors";
 import { useTasksState } from "@/app/utils/hooks/use-tasks/state-context";
-import { DraggableTaskCard } from "../molecules/charts/tasks/TaskCard/DraggableTaskCard";
+import { DraggableTaskCard } from "../molecules/tasks/TaskCard/DraggableTaskCard";
 import {
   closestCenter,
   DndContext,
@@ -22,7 +22,7 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { SortableTaskCard } from "../molecules/charts/tasks/TaskCard/SortableTaskCard";
+import { SortableTaskCard } from "../molecules/tasks/TaskCard/SortableTaskCard";
 import { Switch } from "../ui/switch";
 import { Label } from "../ui/label";
 import { useTasksActions } from "@/app/utils/hooks/use-tasks/actions-context";

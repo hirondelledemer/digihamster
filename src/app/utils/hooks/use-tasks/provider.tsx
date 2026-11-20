@@ -8,7 +8,7 @@ import { TasksStateContext } from "./state-context";
 import { TasksActionsContext } from "./actions-context";
 import { ITask, TaskStatus } from "../../types/task";
 import { now } from "../../date/now";
-import { toBackendDateTime } from "#utils/date";
+import { toBackendDateTime } from "@/utils/date";
 import { getApiErrorMessage } from "../../axios";
 
 const handleApiError = (

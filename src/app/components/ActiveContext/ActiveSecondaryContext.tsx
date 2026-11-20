@@ -9,7 +9,7 @@ import HealthChart from "../HealthChart";
 import { RelationshipNavigator } from "../EventRelationships/components/RelationshipNavigator";
 import { RelationshipEntityType } from "@/app/utils/types/relationship";
 import { ScrollArea } from "@/app/components/ui/scroll-area";
-import { parseBackendDateTime } from "#utils/date";
+import { parseBackendDateTime } from "@/utils/date";
 import { ActiveTaskList } from "../ActiveTaskList";
 
 export const ActiveSecondaryContext: FC = (): JSX.Element | null => {

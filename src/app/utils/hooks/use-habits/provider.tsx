@@ -7,7 +7,7 @@ import { HabitsAction, HabitsActionType } from "./actions";
 import { api, CreateHabitParams } from "./api";
 import { HabitsStateContext } from "./state-context";
 import { HabitsActionsContext } from "./actions-context";
-import { toBackendDate, toBackendDateTime } from "#utils/date";
+import { toBackendDate, toBackendDateTime } from "@/utils/date";
 import { getApiErrorMessage } from "../../axios";
 import { now } from "../../date/now";
 import { HabitLog, IHabitWithLogs } from "../../types/habit";

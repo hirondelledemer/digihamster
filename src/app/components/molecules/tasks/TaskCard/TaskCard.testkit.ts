@@ -1,7 +1,7 @@
 import { fireEvent, within, screen } from "@/config/utils/test-utils";
 import { cardTestId, titleTestId } from "./TaskCard";
-import { getTaskFormTestkit } from "../../../../TaskForm/TaskForm.testkit";
-import { taskFormTestId } from "../../../../TaskForm/TaskForm";
+import { getTaskFormTestkit } from "../../../TaskForm/TaskForm.testkit";
+import { taskFormTestId } from "../../../TaskForm/TaskForm";
 
 /**
  * @deprecated do not use this testkit

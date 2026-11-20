@@ -9,9 +9,8 @@ import { api, CreateNoteParams } from "./api";
 import { NotesStateContext } from "./state-context";
 import { NotesActionsContext } from "./actions-context";
 import { getApiErrorMessage } from "../../axios";
-import { now } from "../../date/now";
 import { INote } from "../../types/note";
-import { toBackendDateTime } from "#utils/date";
+import { toBackendDateTime, now } from "@/utils/date";
 
 const handleApiError = (
   error: unknown,
