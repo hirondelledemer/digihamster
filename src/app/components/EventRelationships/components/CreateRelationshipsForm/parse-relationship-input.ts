@@ -1,4 +1,4 @@
-import { MENTION_KEYS } from "@/app/utils/rte/constants";
+import { MENTION_KEYS } from "@/utils/rte/constants";
 import { JSONContent } from "@tiptap/react";
 
 /**
@@ -38,20 +38,27 @@ type MentionBucket =
   | "projects"
   | "attachments";
 
-/** tiptap node name -> the field its ids land in */
-const MENTION_BUCKETS: Record<
-  (typeof MENTION_KEYS)[keyof typeof MENTION_KEYS],
-  MentionBucket
-> = {
+type MentionNodeType = (typeof MENTION_KEYS)[keyof typeof MENTION_KEYS];
+
+/**
+ * tiptap node name -> the field its ids land in. `null` marks a mention we
+ * recognise but keep nothing from: `$today` is a modifier, not an entity a line
+ * can be related to, and like everywhere else it stays out of the body text.
+ */
+const MENTION_BUCKETS: Record<MentionNodeType, MentionBucket | null> = {
   [MENTION_KEYS.task]: "tasks",
   [MENTION_KEYS.person]: "people",
   [MENTION_KEYS.location]: "locations",
   [MENTION_KEYS.habit]: "habits",
   [MENTION_KEYS.project]: "projects",
   [MENTION_KEYS.attachment]: "attachments",
+  [MENTION_KEYS.param]: null,
 };
 
-const COMMAND = /^\/(n|j)(?:\s+|$)/;
+const isMentionNode = (type: string | undefined): type is MentionNodeType =>
+  !!type && type in MENTION_BUCKETS;
+
+const COMMAND = /^\s*\/(n|j)(?:\s+|$)/;
 
 const hasMentions = (line: ParsedLine): boolean =>
   !!(
@@ -95,14 +102,18 @@ const parseParagraph = (paragraph: JSONContent): ParsedLine | null => {
         return "\n";
       }
 
-      const bucket = node.type ? MENTION_BUCKETS[node.type] : undefined;
-
-      if (!bucket) {
+      if (!isMentionNode(node.type)) {
         return node.text ?? "";
       }
 
+      const bucket = MENTION_BUCKETS[node.type];
+
+      if (!bucket) {
+        return "";
+      }
+
       if (node.attrs?.id !== undefined) {
-        line[bucket].push(node.attrs.id);
+        line[bucket].push(String(node.attrs.id));
       }
       return node.attrs?.label ?? "";
     })
@@ -114,6 +125,7 @@ const parseParagraph = (paragraph: JSONContent): ParsedLine | null => {
   if (command) {
     line.kind = KIND_BY_COMMAND[command[1]];
     line.text = text.slice(command[0].length).trim();
+    line.paragraphs = [stripCommand(paragraph)];
   } else {
     line.text = text;
   }
@@ -125,6 +137,28 @@ const parseParagraph = (paragraph: JSONContent): ParsedLine | null => {
   }
 
   return line;
+};
+
+/**
+ * `line.text` drops the prefix on its own, but the paragraph nodes are stored
+ * verbatim as the note's body — so `/n` has to come off the json too, or it
+ * shows up again the moment the note is read back.
+ */
+const stripCommand = (paragraph: JSONContent): JSONContent => {
+  const [first, ...rest] = paragraph.content ?? [];
+
+  if (!first?.text) {
+    return paragraph;
+  }
+
+  const text = first.text.replace(COMMAND, "");
+
+  return {
+    ...paragraph,
+    // a paragraph opening on `/n` alone leaves an empty text node behind, and
+    // tiptap will not take one
+    content: text ? [{ ...first, text }, ...rest] : rest,
+  };
 };
 
 /** only a note or a journal entry has a body for stray prose to belong to */

@@ -1,4 +1,4 @@
-import { MENTION_KEYS } from "@/app/utils/rte/constants";
+import { MENTION_KEYS } from "@/utils/rte/constants";
 import { LineKind, parseRelationshipInput } from "./parse-relationship-input";
 
 const text = (value: string) => ({ type: "text", text: value });
@@ -54,7 +54,13 @@ describe("parseRelationshipInput", () => {
       {
         kind: LineKind.Note,
         text: "here is a note that i need to remember regarding mom",
-        paragraphs: [doc.content[0]],
+        // the stored json is the line without its command
+        paragraphs: [
+          paragraph(
+            text("here is a note that i need to remember regarding "),
+            mention(MENTION_KEYS.person, "12", "mom")
+          ),
+        ],
         tasks: [],
         people: ["12"],
         locations: [],
@@ -151,7 +157,28 @@ describe("parseRelationshipInput", () => {
     expect(lines[0].kind).toBe(LineKind.Note);
     expect(lines[0].text).toBe("remember to call the bank\nthey close at 5");
     // both paragraphs have to reach the stored json, not just the first
-    expect(lines[0].paragraphs).toStrictEqual(doc.content);
+    expect(lines[0].paragraphs).toStrictEqual([
+      paragraph(text("remember to call the bank")),
+      doc.content[1],
+    ]);
+  });
+
+  it("keeps the command out of the stored json", () => {
+    const doc = {
+      type: "doc",
+      content: [
+        paragraph(text("/j "), mention(MENTION_KEYS.person, "12", "mom")),
+        paragraph(text("/n my note")),
+      ],
+    };
+
+    const lines = parseRelationshipInput(doc);
+
+    // `/j ` was the whole text node: it goes, the mention stays
+    expect(lines[0].paragraphs).toStrictEqual([
+      paragraph(mention(MENTION_KEYS.person, "12", "mom")),
+    ]);
+    expect(lines[1].paragraphs).toStrictEqual([paragraph(text("my note"))]);
   });
 
   it("leaves a mention on its own line attached to the entity", () => {
