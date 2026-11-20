@@ -44,7 +44,7 @@ import { Badge } from "../ui/badge";
 import { IEvent } from "@/app/utils/types/event";
 import { useTasksState } from "@/app/utils/hooks/use-tasks/state-context";
 import { useTasksActions } from "@/app/utils/hooks/use-tasks/actions-context";
-import { SortableTaskCard } from "../TaskCard/SortableTaskCard";
+import { SortableTaskCard } from "../molecules/tasks/TaskCard/SortableTaskCard";
 import CreateTaskForm from "../CreateTaskForm";
 
 export const minimalNoteTestId = "EventForm-minimal-note-testId";

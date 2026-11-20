@@ -1,4 +1,4 @@
-import { toBackendDate } from "#utils/date";
+import { toBackendDate } from "@/utils/date";
 import { BarChart } from "@/app/components/molecules/charts/BarChart";
 import { ChartConfig } from "@/app/components/ui/chart";
 import { getTodayWithZeroHours } from "@/app/utils/date/now";

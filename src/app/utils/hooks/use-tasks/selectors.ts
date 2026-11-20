@@ -19,6 +19,12 @@ export const useTasksForEvent = (eventId: number): ITask[] => {
   return sortInTheEvent(data).filter((task) => task.event_id === eventId);
 };
 
+export const useTasksForProject = (projectId: number): ITask[] => {
+  const { data } = useTasksState();
+
+  return data.filter((task) => task.project_id === projectId);
+};
+
 export const useActiveTasksForProject = (projectId: number): ITask[] => {
   const { data } = useTasksState();
   const sortedTasks = data

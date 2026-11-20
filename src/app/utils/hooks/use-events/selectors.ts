@@ -1,7 +1,7 @@
 "use client";
 import { useMemo } from "react";
 import { isSameDay, isWithinInterval, startOfDay } from "date-fns";
-import { parseBackendDateTime } from "#utils/date";
+import { parseBackendDateTime } from "@/utils/date";
 import { IEvent } from "../../types/event";
 import { now } from "../../date/now";
 import { useEventsState } from "./state-context";
@@ -68,4 +68,16 @@ export const useEventById = (id: number | null | undefined): IEvent | null => {
   }
 
   return data.find((event) => event.id === id) ?? null;
+};
+
+export const useEventsByProject = (
+  projectId: number | null | undefined
+): IEvent[] => {
+  const { data } = useEventsState();
+
+  if (projectId === null || projectId === undefined) {
+    return [];
+  }
+
+  return data.filter((event) => event.project_id === projectId);
 };

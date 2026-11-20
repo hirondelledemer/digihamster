@@ -1,62 +1,58 @@
-import { useTasksState } from "@/app/utils/hooks/use-tasks/state-context";
-import { IProject } from "@/app/utils/types/project";
-import { FC, useMemo } from "react";
+import { FC } from "react";
 
 export interface ProjectProgressBarProps {
-  project: IProject;
+  color: string;
+  activeCount: number;
+  completedCount: number;
+  allCount: number;
 }
 
 export const ProjectProgressBar: FC<ProjectProgressBarProps> = ({
-  project,
+  color,
+  activeCount,
+  completedCount,
+  allCount,
 }) => {
-  const { data: tasks } = useTasksState();
-
-  const allTasks = useMemo(
-    () => tasks.filter((task) => task.project_id === project.id),
-    [project.id, tasks]
-  );
-  const activeTaskCount = useMemo(
-    () => allTasks.filter((task) => task.status === "doing").length,
-    [allTasks]
-  );
-
-  const completedTaskCount = useMemo(
-    () => allTasks.filter((task) => task.status === "done").length,
-    [allTasks]
-  );
-
   return (
     <div
       data-testid="progress-bar"
       className="w-full h-2"
       style={{
-        border: `1px solid ${project.color}`,
+        border: `1px solid ${color}`,
         borderRadius: "3px",
       }}
     >
-      <div
-        data-testid="progress-bar-outer"
-        style={{
-          height: "100%",
-          width: `${
-            ((activeTaskCount + completedTaskCount) / allTasks.length) * 100
-          }%`,
-          background: `repeating-linear-gradient(135deg, ${project.color}, ${project.color} 2px, transparent 2px, transparent 4px)`,
-        }}
-      >
+      {allCount > 0 ? (
         <div
-          data-testid="progress-bar-inner"
+          data-testid="progress-bar-outer"
           style={{
             height: "100%",
-            backgroundColor: project.color,
-
-            width: `${
-              (completedTaskCount / (activeTaskCount + completedTaskCount)) *
-              100
-            }%`,
+            width: `${((activeCount + completedCount) / allCount) * 100}%`,
+            background: `repeating-linear-gradient(135deg, ${color}, ${color} 2px, transparent 2px, transparent 4px)`,
+          }}
+        >
+          <div
+            data-testid="progress-bar-inner"
+            style={{
+              height: "100%",
+              backgroundColor: color,
+              width: `${
+                (completedCount / (activeCount + completedCount)) * 100
+              }%`,
+            }}
+          />
+        </div>
+      ) : (
+        <div
+          data-testid="error-bar"
+          style={{
+            height: "100%",
+            width: `${((activeCount + completedCount) / allCount) * 100}%`,
+            backgroundImage:
+              "linear-gradient(to right, red,orange,yellow,green,blue,indigo,violet)",
           }}
         />
-      </div>
+      )}
     </div>
   );
 };

@@ -28,7 +28,7 @@ import { Textarea } from "../ui/textarea";
 import { useProjectsState } from "@/app/utils/hooks/use-projects/state-context";
 import { useTasksActions } from "@/app/utils/hooks/use-tasks/actions-context";
 import { ITask, TaskStatus } from "@/app/utils/types/task";
-import { toBackendDateTime } from "#utils/date";
+import { toBackendDateTime } from "@/utils/date";
 import { Badge } from "../ui/badge";
 import { ProjectStatus } from "@/app/utils/types/project";
 

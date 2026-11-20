@@ -2,7 +2,7 @@ import { fireEvent, render, screen } from "@/config/utils/test-utils";
 import { ActiveContext, eventTitleTestId } from "./ActiveContext";
 import { generateEvent } from "@/app/utils/mocks/event";
 import { now } from "@/app/utils/date/now";
-import { toBackendDateTime } from "#utils/date";
+import { toBackendDateTime } from "@/utils/date";
 import { addDays, addHours, subHours } from "date-fns";
 import { useSearchParams } from "next/navigation";
 jest.mock("../../utils/date/now");

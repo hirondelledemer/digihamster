@@ -1,6 +1,6 @@
 import { EventStatus, IEvent } from "../../types/event";
 import { now } from "../../date/now";
-import { toBackendDateTime } from "#utils/date";
+import { toBackendDateTime } from "@/utils/date";
 import { createCrudStore } from "../use-crud/create-crud-store";
 import { api, CreateEventParams } from "./api";
 

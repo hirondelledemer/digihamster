@@ -1,4 +1,5 @@
 "use client";
+import { IEvent } from "../../types/event";
 import { IProject } from "../../types/project";
 import { RelationshipEntityType } from "../../types/relationship";
 import { ITask } from "../../types/task";
@@ -19,6 +20,9 @@ export const useProjectById = (
 
 export const useTaskProject = (task: ITask | null): IProject | null =>
   useProjectById(task?.project_id);
+
+export const useEventProject = (event: IEvent | null): IProject | null =>
+  useProjectById(event?.project_id);
 
 export const useTaskProjectColor = (
   task: ITask | null

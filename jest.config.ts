@@ -19,6 +19,10 @@ const config: Config = {
   ],
   moduleNameMapper: {
     // Maps the '@/' alias to your root 'src' or 'app' directory
+    "^@/utils/(.*)$": "<rootDir>/src/app/utils/$1",
+    "^@/molecules/(.*)$": "<rootDir>/src/app/components/molecules/$1",
+    "^@/ui/(.*)$": "<rootDir>/src/app/components/ui/$1",
+    "^@/types/(.*)$": "<rootDir>/src/app/utils/types/$1",
     "^@/(.*)$": "<rootDir>/src/$1",
   },
 };

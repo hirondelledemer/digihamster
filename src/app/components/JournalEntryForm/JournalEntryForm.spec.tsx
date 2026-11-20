@@ -18,7 +18,7 @@ import { RelationshipEntityType } from "@/app/utils/types/relationship";
 import { generateEvent } from "@/app/utils/mocks/event";
 import { IEvent } from "@/app/utils/types/event";
 import { DEFAULT_TEST_DATE } from "@/app/utils/mocks/date";
-import { toBackendDateTime } from "#utils/date";
+import { toBackendDateTime } from "@/utils/date";
 import { addMinutes, subMinutes } from "date-fns";
 
 jest.mock("../../utils/date/now");

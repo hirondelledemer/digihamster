@@ -21,7 +21,7 @@ export const InteractivePersonChip: FC<NodeViewProps> = ({ node }) => {
   return (
     <NodeViewWrapper as="span" data-mention-id={id}>
       <ContextMenu>
-        <ContextMenuTrigger>
+        <ContextMenuTrigger className="inline">
           <div
             className="text-xs font-semibold inline-flex items-center uppercase tracking-widest border-2 rounded-lg px-1 hover:cursor-pointer hover:font-bold"
             style={

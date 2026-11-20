@@ -1,20 +1,19 @@
 import React, { CSSProperties, FC } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { format } from "date-fns";
-import StaleIndicator from "../StaleIndicator";
-import { DraggableAttributes } from "@dnd-kit/core";
-import { IconCalendar, IconProgressCheck } from "@tabler/icons-react";
-import { useCalendarDate } from "../../utils/hooks/use-calendar-date";
-import { Tooltip, TooltipContent } from "../ui/tooltip";
-import { TooltipTrigger } from "@radix-ui/react-tooltip";
-import { useTaskProject } from "@/app/utils/hooks/use-projects/selectors";
-import { ITask, TaskStatus } from "@/app/utils/types/task";
-import { TaskActions } from "../TaskActions";
-import { AdditionalAction } from "../AdditionalActions";
-import { ScheduledIndicator } from "../ScheduledIndicator";
+import { ITask, TaskStatus } from "@/types/task";
 import { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
-import { useSetSearchParams } from "@/app/utils/url/search-params";
-import { cn } from "../utils";
+import { DraggableAttributes } from "@dnd-kit/core";
+import { AdditionalAction } from "@/app/components/AdditionalActions";
+import { useCalendarDate } from "@/utils/hooks/use-calendar-date";
+import { useSetSearchParams } from "@/utils/url/search-params";
+import { useTaskProject } from "@/utils/hooks/use-projects/selectors";
+import { TaskActions } from "@/app/components/TaskActions";
+import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
+import { ScheduledIndicator } from "@/app/components/ScheduledIndicator";
+import { IconCalendar, IconProgressCheck } from "@tabler/icons-react";
+import StaleIndicator from "@/app/components/StaleIndicator";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/ui/tooltip";
+import { format } from "date-fns";
+import { cn } from "@/app/components/utils";
 
 export const titleTestId = "TaskCard-title-testid";
 export const cardTestId = "TaskCard-card-testid";
@@ -35,7 +34,7 @@ export interface TaskCardProps {
 
 export const taskFormTestId = "TaskCard-task-form-test-id";
 
-const TaskCard: FC<TaskCardProps> = ({
+export const TaskCard: FC<TaskCardProps> = ({
   testId,
   task,
   indicateActive,
@@ -134,5 +133,3 @@ const TaskCard: FC<TaskCardProps> = ({
     </div>
   );
 };
-
-export default TaskCard;

@@ -9,7 +9,7 @@ import { api, JournalRequestParams } from "./api";
 import { EntriesStateContext } from "./state-context";
 import { EntriesActionsContext } from "./actions-context";
 import { IJournalEntry } from "../../types/journal-entry";
-import { toBackendDateTime } from "#utils/date";
+import { toBackendDateTime } from "@/utils/date";
 import { now } from "../../date/now";
 import { getApiErrorMessage } from "../../axios";
 

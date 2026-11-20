@@ -1,10 +1,6 @@
 {
   "compilerOptions": {
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -23,9 +19,11 @@
       }
     ],
     "paths": {
-      "@/*": [
-        "./src/*"
-      ]
+      "@/utils/*": ["./src/app/utils/*"],
+      "@/molecules/*": ["./src/app/components/molecules/*"],
+      "@/ui/*": ["./src/app/components/ui/*"],
+      "@/types/*": ["./src/app/utils/types/*"],
+      "@/*": ["./src/*"]
     },
     "target": "ES2017"
   },
@@ -33,10 +31,8 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    ".next/types/**/*.ts"
-, "src/app/utils/hooks/use-life-aspects"  ],
-  "exclude": [
-    "node_modules",
-    "tools"
-  ]
+    ".next/types/**/*.ts",
+    "src/app/utils/hooks/use-life-aspects"
+  ],
+  "exclude": ["node_modules", "tools"]
 }

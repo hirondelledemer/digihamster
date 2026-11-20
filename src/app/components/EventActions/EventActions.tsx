@@ -22,7 +22,7 @@ import {
 import EventForm from "../EditEventForm";
 import { EventStatus, IEvent } from "@/app/utils/types/event";
 import { addDays, format } from "date-fns";
-import { toBackendDateTime } from "#utils/date";
+import { toBackendDateTime } from "@/utils/date";
 import { useTasksActions } from "@/app/utils/hooks/use-tasks/actions-context";
 import { useTasksState } from "@/app/utils/hooks/use-tasks/state-context";
 import { CheckIcon } from "lucide-react";

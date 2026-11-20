@@ -10,6 +10,7 @@ import { LifeAspectsStateContext } from "../hooks/use-life-aspects/state-context
 import { HabitsActionsContext } from "../hooks/use-habits/actions-context";
 import { TasksStateContext } from "../hooks/use-tasks/state-context";
 import { PeopleStateContext } from "../hooks/use-people/state-context";
+import { TooltipProvider } from "@/app/components/ui/tooltip";
 
 type Wrapper = (children: ReactNode) => ReactElement;
 
@@ -170,6 +171,13 @@ export const habitActions = (
     );
   };
 
+export const tooltip = (): Wrapper =>
+  function TooltipWrapper(children) {
+    return <TooltipProvider>{children}</TooltipProvider>;
+  };
+
+const DEFAULT_PROVIDERS = [tooltip()];
+
 /**
  * Combines wrappers into a single `wrapper` for RTL's `render`.
  * The first wrapper is the outermost one.
@@ -177,7 +185,7 @@ export const habitActions = (
 export const providers =
   (...wrappers: Wrapper[]) =>
   ({ children }: { children: ReactNode }) =>
-    wrappers.reduceRight<ReactElement>(
+    [...DEFAULT_PROVIDERS, ...wrappers].reduceRight<ReactElement>(
       (acc, wrap) => wrap(acc),
       <>{children}</>
     );
