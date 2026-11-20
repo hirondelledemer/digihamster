@@ -43,6 +43,16 @@ export interface RelationshipNode {
    * the parent can find the far end, and the walk then uses it as the child.
    */
   edge: ResolvedEdge | null;
+  /**
+   * The entity this node hangs off - the one whose children list it is drawn
+   * in. Null on the root, which hangs off nothing.
+   *
+   * `edge` says how it was reached; this says what from. Depth cannot stand in
+   * for it: every column roots its own tree, so the same location-to-task edge
+   * reads as depth 2 in the event's column and depth 1 in the location's own,
+   * and anything deciding by depth gets opposite answers for one relationship.
+   */
+  parent: EntityRef | null;
   children: RelationshipNode[];
   /**
    * The neighbour types sitting behind this entity, for the row of little
@@ -367,6 +377,7 @@ export const walk = (
     return {
       entity: ref,
       edge,
+      parent: null,
       children: [],
       summary,
       truncated: edges.length > 0,
@@ -385,6 +396,7 @@ export const walk = (
       return {
         entity: resolved.other,
         edge: resolved,
+        parent: ref,
         children: [],
         summary: neighbourTypesOf(resolved.other, childPath, context),
         truncated: false,
@@ -392,13 +404,21 @@ export const walk = (
       };
     }
 
-    // priority narrows the root's neighbours only
-    return walk(resolved.other, resolved, remaining - 1, path, context);
+    // priority narrows the root's neighbours only.
+    //
+    // A walk knows everything about the subtree under it and nothing about
+    // what it was called from, so the parent is filled in here, by the only
+    // side that knows it.
+    return {
+      ...walk(resolved.other, resolved, remaining - 1, path, context),
+      parent: ref,
+    };
   });
 
   return {
     entity: ref,
     edge,
+    parent: null,
     children,
     summary,
     truncated: false,
@@ -433,6 +453,7 @@ export const useRelationshipTree = (
     const empty: RelationshipNode = {
       entity,
       edge: null,
+      parent: null,
       children: [],
       summary: [],
       truncated: false,

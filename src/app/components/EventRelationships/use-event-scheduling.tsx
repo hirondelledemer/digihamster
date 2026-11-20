@@ -1,6 +1,7 @@
 import { AdditionalAction } from "@/app/components/AdditionalActions";
 import { useRelationshipsActions } from "@/app/utils/hooks/use-relationships/actions-context";
 import { useRelationshipBetweenEntities } from "@/app/utils/hooks/use-relationships/selectors";
+import { EntityRef } from "@/app/utils/relationships/edges";
 import { relationshipTypeFor } from "@/app/utils/relationships/relationship-types";
 import { RelationshipEntityType } from "@/app/utils/types/relationship";
 import { IconCalendarPlus } from "@tabler/icons-react";
@@ -11,6 +12,16 @@ export interface EventScheduling {
   eventId: number | null;
   /** the entity already hangs off that event */
   scheduled: boolean;
+  /**
+   * Whether that is worth telling you, which is not the same question.
+   *
+   * A card drawn in the event's own list is in the event by definition - that
+   * is what the list is - so the marker there restates the position it is
+   * sitting in. One step out, on what a location or a project suggests, the
+   * same fact is news: it is how you tell the ones you have already pulled in
+   * from the ones you have not.
+   */
+  showScheduled: boolean;
   /** extra card actions, empty when there is nothing worth offering */
   actions: AdditionalAction[];
 }
@@ -30,7 +41,13 @@ export interface EventScheduling {
  */
 export const useEventScheduling = (
   type: RelationshipEntityType,
-  id: number | undefined
+  id: number | undefined,
+  /**
+   * What the card hangs off, when it was drawn from the tree. Only the marker
+   * reads it; leaving it out means "not the event's own list", which is the
+   * right answer for a card the tree did not place.
+   */
+  parent?: EntityRef | null
 ): EventScheduling => {
   const { entities } = useNavigator();
   const { create } = useRelationshipsActions();
@@ -55,13 +72,26 @@ export const useEventScheduling = (
   const scheduled = !!existing;
   const eventId = event?.id ?? null;
 
+  // the event's own list, as opposed to anywhere else the event's panel got
+  // to - which is the whole of the distinction the marker draws
+  const inEventsOwnList =
+    !!event &&
+    parent?.type === RelationshipEntityType.Event &&
+    parent.id === event.id;
+
   if (!event || scheduled || id === undefined) {
-    return { eventId, scheduled, actions: [] };
+    return {
+      eventId,
+      scheduled,
+      showScheduled: scheduled && !inEventsOwnList,
+      actions: [],
+    };
   }
 
   return {
     eventId,
     scheduled,
+    showScheduled: false,
     actions: [
       {
         label: "Move to the event",

@@ -300,6 +300,49 @@ describe("walk - filtering", () => {
   });
 });
 
+describe("walk - what each node hangs off", () => {
+  // the event's own task, and a task the location it is at suggests. The
+  // marker on a card reads this rather than the depth, because the same
+  // location-to-task edge is drawn at depth 2 here and at depth 1 in the
+  // location's own column.
+  const rows = [
+    rel(1, Type.Event, 5, Type.Task, 1),
+    rel(2, Type.Event, 5, Type.Location, 9),
+    rel(3, Type.Task, 2, Type.Location, 9),
+  ];
+
+  it("leaves the root hanging off nothing", () => {
+    expect(from({ id: 5, type: Type.Event }, rows, 2).parent).toBeNull();
+  });
+
+  it("points a child back at the entity that listed it", () => {
+    const tree = from({ id: 5, type: Type.Event }, rows, 2);
+    const task = tree.children.find((child) => child.entity.type === Type.Task);
+
+    expect(task?.parent).toEqual({ id: 5, type: Type.Event });
+  });
+
+  it("points a grandchild at its own parent, not at the root", () => {
+    const tree = from({ id: 5, type: Type.Event }, rows, 2);
+    const location = tree.children.find(
+      (child) => child.entity.type === Type.Location
+    );
+    const suggested = location?.children.find((child) => child.entity.id === 2);
+
+    expect(suggested?.parent).toEqual({ id: 9, type: Type.Location });
+  });
+
+  // the same edge walked from the location's own column: a different depth
+  // and the same parent, which is the point of carrying it
+  it("gives the same answer whichever column walked it", () => {
+    const tree = from({ id: 9, type: Type.Location }, rows, 2);
+    const suggested = tree.children.find((child) => child.entity.id === 2);
+
+    expect(suggested?.depth).toBe(1);
+    expect(suggested?.parent).toEqual({ id: 9, type: Type.Location });
+  });
+});
+
 describe("walk - what a location opens up to", () => {
   const atTheLocation = [
     rel(1, Type.Event, 5, Type.Location, 9),

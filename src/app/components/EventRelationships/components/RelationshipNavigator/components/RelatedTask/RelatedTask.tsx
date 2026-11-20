@@ -1,6 +1,7 @@
 import { useNavigator } from "@/app/components/EventRelationships/navigator-context";
 import { useTaskProjectColor } from "@/app/utils/hooks/use-projects/selectors";
 import { RelationshipNode } from "@/app/utils/hooks/use-relationships/use-relationship-tree";
+import { EntityRef } from "@/app/utils/relationships/edges";
 import { useTaskById } from "@/app/utils/hooks/use-tasks/selectors";
 import { RelationshipEntityType } from "@/app/utils/types/relationship";
 import { IconCheckbox } from "@tabler/icons-react";
@@ -19,11 +20,17 @@ export const RelatedTask: FC<{
   related?: RelationshipNode[];
   /** neighbour types behind this one, for the hint row of little icons */
   summary?: RelationshipEntityType[];
-}> = ({ id, variant, related = [], summary = [] }) => {
+  /** what this card hangs off, which decides whether the marker is news */
+  parent?: EntityRef | null;
+}> = ({ id, variant, related = [], summary = [], parent }) => {
   const task = useTaskById(id);
   const { main: color } = useTaskProjectColor(task);
   const { setActiveEntity, entities } = useNavigator();
-  const { scheduled } = useEventScheduling(RelationshipEntityType.Task, id);
+  const { showScheduled } = useEventScheduling(
+    RelationshipEntityType.Task,
+    id,
+    parent
+  );
 
   const selectEntity = () =>
     setActiveEntity({
@@ -76,7 +83,7 @@ export const RelatedTask: FC<{
   return (
     <div className="flex">
       <div className="grow">
-        <TaskCard task={task} scheduled={scheduled} />
+        <TaskCard task={task} scheduled={showScheduled} />
         {related
           .filter((child) =>
             matchesView(

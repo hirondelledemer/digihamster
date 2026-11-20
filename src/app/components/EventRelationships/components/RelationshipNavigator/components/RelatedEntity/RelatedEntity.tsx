@@ -25,18 +25,18 @@ export interface RelatedEntityProps {
 }
 
 export const RelatedEntity: FC<RelatedEntityProps> = ({ node, variant }) => {
-  const { entity, children, edge, summary, truncated, depth } = node;
+  const { entity, children, edge, summary, truncated, depth, parent } = node;
 
   const getComponent = () => {
     const props = { id: entity.id, summary, variant };
 
     switch (entity.type) {
       case RelationshipEntityType.Task:
-        return <RelatedTask {...props} related={children} />;
+        return <RelatedTask {...props} related={children} parent={parent} />;
       case RelationshipEntityType.Event:
         return <RelatedEvent {...props} depth={depth} />;
       case RelationshipEntityType.Habit:
-        return <RelatedHabit {...props} related={children} />;
+        return <RelatedHabit {...props} related={children} parent={parent} />;
       case RelationshipEntityType.Journal:
         return <RelatedJournal {...props} related={children} />;
       case RelationshipEntityType.Location:

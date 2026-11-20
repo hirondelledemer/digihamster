@@ -18,7 +18,9 @@ export const ProjectSwitchableTask: FC<{ project: IProject }> = ({
   // whatever the arrows last set
   const index = Math.min(activeTaskIndex, tasks.length - 1);
   const activeTask = tasks[index];
-  const { scheduled, actions } = useEventScheduling(
+  // no parent passed: a task offered under a project is never the event's own
+  // list, so the marker is always worth drawing here
+  const { showScheduled, actions } = useEventScheduling(
     RelationshipEntityType.Task,
     activeTask?.id
   );
@@ -59,7 +61,7 @@ export const ProjectSwitchableTask: FC<{ project: IProject }> = ({
       </div>
       <TaskCard
         task={activeTask}
-        scheduled={scheduled}
+        scheduled={showScheduled}
         additionalActions={actions}
       />
     </div>

@@ -9,6 +9,7 @@ import { useHabitById } from "@/app/utils/hooks/use-habits/selectors";
 import { useHabitLifeAspectAssetIcon } from "@/app/utils/hooks/use-life-aspects/selectors";
 import { RelationshipEntityType } from "@/app/utils/types/relationship";
 import { RelationshipNode } from "@/app/utils/hooks/use-relationships/use-relationship-tree";
+import { EntityRef } from "@/app/utils/relationships/edges";
 import { RelatedEntity } from "../RelatedEntity";
 import { FC } from "react";
 import { EntityTypeIcon } from "../../../EntityTypeIcon";
@@ -24,7 +25,9 @@ export const RelatedHabit: FC<{
   summary?: RelationshipEntityType[];
   /** what was written during it - see VIEWS[Habit].asChild */
   related?: RelationshipNode[];
-}> = ({ id, variant, summary = [], related = [] }) => {
+  /** what this card hangs off, which decides whether the marker is news */
+  parent?: EntityRef | null;
+}> = ({ id, variant, summary = [], related = [], parent }) => {
   const habit = useHabitById(id);
 
   const icon = useHabitLifeAspectAssetIcon(habit);
@@ -33,9 +36,10 @@ export const RelatedHabit: FC<{
 
   // which event the panel hangs off, and whether this habit is in it already,
   // is the same question the task cards ask
-  const { eventId, scheduled, actions } = useEventScheduling(
+  const { eventId, showScheduled, actions } = useEventScheduling(
     RelationshipEntityType.Habit,
-    id
+    id,
+    parent
   );
 
   const event = useEventById(eventId);
@@ -101,7 +105,7 @@ export const RelatedHabit: FC<{
       <HabitCard
         habit={habit}
         event={event}
-        scheduled={scheduled}
+        scheduled={showScheduled}
         additionalActions={actions}
       />
       {related.map((child) => (

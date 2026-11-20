@@ -47,6 +47,8 @@ interface RenderOptions {
   /** what is being offered; a task unless a test says otherwise */
   type?: RelationshipEntityType;
   id?: number;
+  /** what the card hangs off; nothing placed it unless a test says otherwise */
+  parent?: NavigatorItem | null;
 }
 
 const renderScheduling = ({
@@ -55,6 +57,7 @@ const renderScheduling = ({
   relationships = [],
   type = RelationshipEntityType.Task,
   id = TASK_ID,
+  parent = null,
 }: RenderOptions = {}) => {
   const create = jest.fn();
 
@@ -74,7 +77,7 @@ const renderScheduling = ({
 
   return {
     create,
-    ...renderHook(() => useEventScheduling(type, id), { wrapper }),
+    ...renderHook(() => useEventScheduling(type, id, parent), { wrapper }),
   };
 };
 
@@ -127,7 +130,46 @@ describe("useEventScheduling", () => {
       const { result } = renderScheduling(scheduled);
 
       expect(result.current.scheduled).toBe(true);
+      expect(result.current.showScheduled).toBe(true);
       expect(result.current.actions).toEqual([]);
+    });
+
+    // the event's own list is already the statement that the task is in the
+    // event; a marker there is the same fact written twice
+    it("says nothing in the event's own list", () => {
+      const { result } = renderScheduling({ ...scheduled, parent: EVENT });
+
+      expect(result.current.scheduled).toBe(true);
+      expect(result.current.showScheduled).toBe(false);
+    });
+
+    it("marks the same task where the location suggests it", () => {
+      const { result } = renderScheduling({ ...scheduled, parent: LOCATION });
+
+      expect(result.current.showScheduled).toBe(true);
+    });
+
+    // the regression this replaced: a drilled-into location roots its own
+    // tree, so its tasks sit at the same depth as the event's own. Only the
+    // parent tells the two apart.
+    it("marks it however deep the card is drawn", () => {
+      const { result } = renderScheduling({
+        ...scheduled,
+        parent: LOCATION,
+        column: 0,
+      });
+
+      expect(result.current.showScheduled).toBe(true);
+    });
+
+    // another event's list is somewhere else, however the panel got there
+    it("marks it under an event other than the one opened", () => {
+      const { result } = renderScheduling({
+        ...scheduled,
+        parent: { id: 99, type: RelationshipEntityType.Event },
+      });
+
+      expect(result.current.showScheduled).toBe(true);
     });
 
     // either end may have written the row, so the marker cannot assume the
@@ -141,6 +183,10 @@ describe("useEventScheduling", () => {
 
       expect(result.current.scheduled).toBe(true);
     });
+  });
+
+  it("marks nothing that is not in the event yet", () => {
+    expect(renderScheduling().result.current.showScheduled).toBe(false);
   });
 
   describe("a habit kept at the location", () => {
@@ -179,7 +225,19 @@ describe("useEventScheduling", () => {
       });
 
       expect(result.current.scheduled).toBe(true);
+      expect(result.current.showScheduled).toBe(true);
       expect(result.current.actions).toEqual([]);
+    });
+
+    // the same rule as the tasks: the event's own habit list says it already
+    it("is not marked in the event's own list", () => {
+      const { result } = renderScheduling({
+        ...habit,
+        relationships: [relates(1, EVENT, habit)],
+        parent: EVENT,
+      });
+
+      expect(result.current.showScheduled).toBe(false);
     });
   });
 
