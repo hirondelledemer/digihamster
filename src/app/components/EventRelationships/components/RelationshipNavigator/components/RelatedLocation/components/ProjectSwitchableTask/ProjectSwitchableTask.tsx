@@ -1,4 +1,4 @@
-import TaskCard from "@/app/components/molecules/tasks/TaskCard";
+import { TaskCard } from "@/app/components/molecules/tasks/TaskCard";
 import { useActiveTasksForProject } from "@/app/utils/hooks/use-tasks/selectors";
 import { IProject } from "@/app/utils/types/project";
 import { Button } from "@base-ui/react";

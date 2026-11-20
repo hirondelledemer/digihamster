@@ -6,7 +6,7 @@ import { RelationshipEntityType } from "@/app/utils/types/relationship";
 import { IconCheckbox } from "@tabler/icons-react";
 import { FC } from "react";
 import { EntityTypeIcon } from "../../../EntityTypeIcon";
-import TaskCard from "@/app/components/molecules/tasks/TaskCard";
+import { TaskCard } from "@/app/components/molecules/tasks/TaskCard";
 import { useEventScheduling } from "@/app/components/EventRelationships/use-event-scheduling";
 import { RelatedEntity } from "../RelatedEntity";
 import { matchesView } from "@/app/utils/relationships/edges";

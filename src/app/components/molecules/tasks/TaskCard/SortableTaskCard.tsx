@@ -1,7 +1,7 @@
 import React, { CSSProperties, FC } from "react";
 import { ITask } from "@/app/utils/types/task";
 import { useSortable } from "@dnd-kit/sortable";
-import TaskCard from "./TaskCard";
+import { TaskCard } from "./TaskCard";
 import { CSS } from "@dnd-kit/utilities";
 
 export const titleTestId = "TaskCard-title-testid";
