@@ -1,20 +1,18 @@
 "use client";
 
 import React, { FC, useMemo, useRef } from "react";
-
-import { CalendarEventEntry } from "./CalendarEvent.types";
-
-import { useEventProjectColor } from "@/app/utils/hooks/use-projects/selectors";
-import { EventActions } from "../EventActions";
-import { format } from "date-fns";
-import { EventStatus } from "@/app/utils/types/event";
-import { cn } from "../utils";
-import { useDroppable } from "@dnd-kit/core";
-import { useRouter } from "next/navigation";
-import { RelationshipEntityType } from "@/app/utils/types/relationship";
-import { RelatedEntity } from "../EventRelationships/components/RelationshipNavigator/components/RelatedEntity/RelatedEntity";
-import { useRelationshipTree } from "../../utils/hooks/use-relationships/use-relationship-tree";
 import { useSelectedEvent } from "@/app/components/ActiveContext/use-selected-event";
+import { CalendarEventEntry } from "@/app/components/CalendarEvent/CalendarEvent.types";
+import { EventActions } from "@/app/components/EventActions";
+import { RelatedEntity } from "@/app/components/EventRelationships/components/RelationshipNavigator/components/RelatedEntity";
+import { cn } from "@/app/components/utils";
+import { useEventProjectColor } from "@/utils/hooks/use-projects/selectors";
+import { useRelationshipTree } from "@/utils/hooks/use-relationships/use-relationship-tree";
+import { EventStatus } from "@/utils/types/event";
+import { RelationshipEntityType } from "@/utils/types/relationship";
+import { useDroppable } from "@dnd-kit/core";
+import { format } from "date-fns";
+import { useRouter } from "next/navigation";
 
 const stripes = (colorVar: string, from: number, to: number) =>
   `repeating-linear-gradient(45deg, hsl(var(${colorVar})/${from}), hsl(var(${colorVar})/${to}) 3px, hsl(var(${colorVar})/0.1) 5px, hsl(var(${colorVar})/0.1) 20px)`;
