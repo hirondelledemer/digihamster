@@ -15,8 +15,8 @@ import { format } from "date-fns";
 import { useRouter } from "next/navigation";
 
 interface StatusStyle {
-  /** classes on the event block itself */
-  container: string;
+  /** what the status looks like, whether or not it is receded */
+  container?: string;
   /** classes on the title */
   title?: string;
   /** a glyph rendered before the title */
@@ -27,35 +27,33 @@ interface StatusStyle {
 
 /**
  * An event that is no longer relevant recedes instead of being decorated:
- * it loses its colour and most of its contrast, and gets both back on
- * hover, when it is being looked at on purpose.
+ * it loses its colour and most of its contrast. `opacity` and `filter`
+ * apply to the whole subtree, so nothing drawn inside a receded event can
+ * stay at full strength - the recede is lifted as a whole instead, whenever
+ * the event is being looked at on purpose.
  */
 const INACTIVE = "opacity-50 saturate-0 hover:opacity-100 hover:saturate-100";
 
 /**
  * An outlined event has no surface of its own, which is fine until it is
- * hovered: it grows over its neighbours and they would show through, so it
- * takes an opaque background for as long as it is expanded.
+ * expanded over its neighbours and they show through, so it takes an opaque
+ * background for as long as it is being looked at.
  */
-const OUTLINED = cn(
-  INACTIVE,
-  "border-dashed bg-transparent hover:bg-[var(--event-surface)]"
-);
+const OUTLINE_SURFACE = "bg-transparent hover:bg-[var(--event-surface)]";
 
 /** statuses that are not listed here are drawn as a plain, active event */
 const STATUS_STYLES: Partial<Record<EventStatus, StatusStyle>> = {
   [EventStatus.Completed]: {
-    container: INACTIVE,
     marker: "\u{2705}",
     filled: true,
   },
   [EventStatus.Cancelled]: {
-    container: OUTLINED,
+    container: "border-dashed",
     title: "line-through",
     filled: false,
   },
   [EventStatus.Moved]: {
-    container: OUTLINED,
+    container: "border-dashed",
     // the description already carries the date it moved to
     marker: "\u{27B2}",
     filled: false,
@@ -109,6 +107,7 @@ const CalendarEvent: FC<CalendarEventProps> = ({
 
   const status = STATUS_STYLES[event.resource.event.status];
   const isOutlined = status ? !status.filled : false;
+  const isSelected = event.resource.id === selectedEvent?.id;
 
   const content = useMemo(() => {
     return (
@@ -143,7 +142,7 @@ const CalendarEvent: FC<CalendarEventProps> = ({
   ]);
 
   const getBorderColor = () => {
-    if (event.resource.id === selectedEvent?.id) {
+    if (isSelected) {
       return "hsl(var(--primary))";
     }
     // an outlined block has no fill behind it, so the border carries it
@@ -174,7 +173,14 @@ const CalendarEvent: FC<CalendarEventProps> = ({
       }
       className={cn(
         "h-full cursor-pointer rounded-lg relative p-1 border-2",
-        status?.container
+        status?.container,
+        // a selected event is being looked at on purpose, so it is shown at
+        // full strength, the same way a hovered one is - otherwise the
+        // primary border that marks the selection would be greyed out along
+        // with everything else and the selection would not be visible
+        status && !isSelected && INACTIVE,
+        isOutlined &&
+          (isSelected ? "bg-[var(--event-surface)]" : OUTLINE_SURFACE)
       )}
       onClick={() =>
         router.push(`/?eventId=${event.resource.event.id}`, undefined)
