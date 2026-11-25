@@ -14,6 +14,7 @@ import { useRouter } from "next/navigation";
 import { RelationshipEntityType } from "@/app/utils/types/relationship";
 import { RelatedEntity } from "../EventRelationships/components/RelationshipNavigator/components/RelatedEntity/RelatedEntity";
 import { useRelationshipTree } from "../../utils/hooks/use-relationships/use-relationship-tree";
+import { useSelectedEvent } from "@/app/components/ActiveContext/use-selected-event";
 
 export interface CalendarEventProps {
   event: CalendarEventEntry;
@@ -24,6 +25,7 @@ const CalendarEvent: FC<CalendarEventProps> = ({
 }): JSX.Element | null => {
   const containerRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+  const selectedEvent = useSelectedEvent();
 
   const handleMouseEnter = () => {
     const el = containerRef.current;
@@ -94,6 +96,16 @@ const CalendarEvent: FC<CalendarEventProps> = ({
     return "";
   };
 
+  const getBackgroundColor = () => {
+    if (event.resource.id === selectedEvent?.id) {
+      return "hsl(var(--primary))";
+    }
+    if (projectColor) {
+      return projectColor;
+    }
+    return "hsl(var(--primary)/0.5)";
+  };
+
   return (
     <div
       ref={containerRef}
@@ -101,7 +113,7 @@ const CalendarEvent: FC<CalendarEventProps> = ({
       onMouseLeave={handleMouseLeave}
       style={{
         backgroundColor: projectColor || "#29221f",
-        border: `2px solid ${projectColor || "hsl(var(--primary)/0.5)"}`,
+        border: `2px solid ${getBackgroundColor()}`,
       }}
       className={cn(
         "h-full cursor-pointer rounded-lg relative",
