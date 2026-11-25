@@ -14,3 +14,12 @@ export interface IProject {
   created_at: string;
   status: ProjectStatus;
 }
+
+export interface IProjectColor {
+  /** the project colour as configured */
+  main: string;
+  /** the same colour as a translucent tint, for backgrounds */
+  dimmed: string;
+  /** the same tint over the card surface, opaque, so it hides what is behind */
+  solid: string;
+}

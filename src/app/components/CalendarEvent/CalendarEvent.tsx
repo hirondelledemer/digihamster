@@ -1,19 +1,64 @@
 "use client";
 
-import React, { FC, useMemo, useRef } from "react";
-
-import { CalendarEventEntry } from "./CalendarEvent.types";
-
-import { useProjectById } from "@/app/utils/hooks/use-projects/selectors";
-import { EventActions } from "../EventActions";
-import { format } from "date-fns";
-import { EventStatus } from "@/app/utils/types/event";
-import { cn } from "../utils";
+import React, { CSSProperties, FC, useMemo, useRef } from "react";
+import { useSelectedEvent } from "@/app/components/ActiveContext/use-selected-event";
+import { CalendarEventEntry } from "@/app/components/CalendarEvent/CalendarEvent.types";
+import { EventActions } from "@/app/components/EventActions";
+import { RelatedEntity } from "@/app/components/EventRelationships/components/RelationshipNavigator/components/RelatedEntity";
+import { cn } from "@/app/components/utils";
+import { useEventProjectColor } from "@/utils/hooks/use-projects/selectors";
+import { useRelationshipTree } from "@/utils/hooks/use-relationships/use-relationship-tree";
+import { EventStatus } from "@/utils/types/event";
+import { RelationshipEntityType } from "@/utils/types/relationship";
 import { useDroppable } from "@dnd-kit/core";
+import { format } from "date-fns";
 import { useRouter } from "next/navigation";
-import { RelationshipEntityType } from "@/app/utils/types/relationship";
-import { RelatedEntity } from "../EventRelationships/components/RelationshipNavigator/components/RelatedEntity/RelatedEntity";
-import { useRelationshipTree } from "../../utils/hooks/use-relationships/use-relationship-tree";
+
+interface StatusStyle {
+  /** what the status looks like, whether or not it is receded */
+  container?: string;
+  /** classes on the title */
+  title?: string;
+  /** a glyph rendered before the title */
+  marker?: string;
+  /** a filled block is still happening, an outlined one is not */
+  filled: boolean;
+}
+
+/**
+ * An event that is no longer relevant recedes instead of being decorated:
+ * it loses its colour and most of its contrast. `opacity` and `filter`
+ * apply to the whole subtree, so nothing drawn inside a receded event can
+ * stay at full strength - the recede is lifted as a whole instead, whenever
+ * the event is being looked at on purpose.
+ */
+const INACTIVE = "opacity-50 saturate-0 hover:opacity-100 hover:saturate-100";
+
+/**
+ * An outlined event has no surface of its own, which is fine until it is
+ * expanded over its neighbours and they show through, so it takes an opaque
+ * background for as long as it is being looked at.
+ */
+const OUTLINE_SURFACE = "bg-transparent hover:bg-[var(--event-surface)]";
+
+/** statuses that are not listed here are drawn as a plain, active event */
+const STATUS_STYLES: Partial<Record<EventStatus, StatusStyle>> = {
+  [EventStatus.Completed]: {
+    marker: "\u{2705}",
+    filled: true,
+  },
+  [EventStatus.Cancelled]: {
+    container: "border-dashed",
+    title: "line-through",
+    filled: false,
+  },
+  [EventStatus.Moved]: {
+    container: "border-dashed",
+    // the description already carries the date it moved to
+    marker: "\u{27B2}",
+    filled: false,
+  },
+};
 
 export interface CalendarEventProps {
   event: CalendarEventEntry;
@@ -24,6 +69,7 @@ const CalendarEvent: FC<CalendarEventProps> = ({
 }): JSX.Element | null => {
   const containerRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+  const selectedEvent = useSelectedEvent();
 
   const handleMouseEnter = () => {
     const el = containerRef.current;
@@ -43,7 +89,11 @@ const CalendarEvent: FC<CalendarEventProps> = ({
     el.style.overflow = "hidden";
   };
 
-  const project = useProjectById(event.resource.event.project_id);
+  const {
+    main: projectColor,
+    dimmed: projectTint,
+    solid: projectSurface,
+  } = useEventProjectColor(event.resource.event);
 
   const { isOver, setNodeRef } = useDroppable({
     id: event.resource.id,
@@ -55,14 +105,23 @@ const CalendarEvent: FC<CalendarEventProps> = ({
     { depth: 1, on: event.start }
   );
 
+  const status = STATUS_STYLES[event.resource.event.status];
+  const isOutlined = status ? !status.filled : false;
+  const isSelected = event.resource.id === selectedEvent?.id;
+
   const content = useMemo(() => {
     return (
       <div className="pb-5 h-fit">
         <div className="italic">
-          <div>{event.title}</div>
+          <div className={status?.title}>
+            {status?.marker && (
+              <span className="pr-1 not-italic">{status.marker}</span>
+            )}
+            {event.title}
+          </div>
           <div className="text-xs">{event.resource.event.description}</div>
 
-          <div className="flex space-between pt-2 gap-2">
+          <div className="flex pt-2 gap-2">
             {related.map((child) => (
               <RelatedEntity
                 key={child.edge?.id ?? child.entity.id}
@@ -74,24 +133,24 @@ const CalendarEvent: FC<CalendarEventProps> = ({
         </div>
       </div>
     );
-  }, [event.resource.event.description, event.title, related]);
+  }, [
+    event.resource.event.description,
+    event.title,
+    related,
+    status?.marker,
+    status?.title,
+  ]);
 
-  const projectColor = project
-    ? `color-mix(in srgb, ${project.color} 20%, transparent)`
-    : "";
-
-  const getEventStatusColor = () => {
-    if (event.resource.event.status === EventStatus.Completed) {
-      return "repeating-linear-gradient(45deg, hsl(var(--scale-color-10)/0.4), hsl(var(--scale-color-10)/0.5) 3px, hsl(var(--scale-color-10)/0.1) 5px, hsl(var(--scale-color-10)/0.1) 20px)";
+  const getBorderColor = () => {
+    if (isSelected) {
+      return "hsl(var(--primary))";
     }
-    if (event.resource.event.status === EventStatus.Cancelled) {
-      return "repeating-linear-gradient(45deg, hsl(var(--scale-color-1)/0.4), hsl(var(--scale-color-1)/0.5) 3px, hsl(var(--scale-color-1)/0.1) 5px, hsl(var(--scale-color-1)/0.1) 20px)";
+    // an outlined block has no fill behind it, so the border carries it
+    // alone and needs the full strength colour to stay visible
+    if (isOutlined) {
+      return projectColor || "hsl(var(--primary))";
     }
-    if (event.resource.event.status === EventStatus.Moved) {
-      return "repeating-linear-gradient(45deg, hsl(var(--scale-color-5)/0.1), hsl(var(--scale-color-5)/0.2) 3px, hsl(var(--scale-color-5)/0.1) 5px, hsl(var(--scale-color-5)/0.1) 20px)";
-    }
-
-    return "";
+    return projectTint || "hsl(var(--primary)/0.5)";
   };
 
   return (
@@ -99,13 +158,29 @@ const CalendarEvent: FC<CalendarEventProps> = ({
       ref={containerRef}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      style={{
-        backgroundColor: projectColor || "#29221f",
-        border: `2px solid ${projectColor || "hsl(var(--primary)/0.5)"}`,
-      }}
+      style={
+        {
+          // an outlined event is left to the classes, an inline background
+          // would win over the hover rule that gives it its surface back
+          ...(isOutlined
+            ? {}
+            : { backgroundColor: projectTint || "hsl(var(--card))" }),
+          "--event-surface": projectSurface || "hsl(var(--card))",
+          // the width and the style stay in classes too, an inline `border`
+          // shorthand would win over `border-dashed`
+          borderColor: getBorderColor(),
+        } as CSSProperties
+      }
       className={cn(
-        "h-full cursor-pointer rounded-lg relative",
-        isOver ? "" : "p-1"
+        "h-full cursor-pointer rounded-lg relative p-1 border-2",
+        status?.container,
+        // a selected event is being looked at on purpose, so it is shown at
+        // full strength, the same way a hovered one is - otherwise the
+        // primary border that marks the selection would be greyed out along
+        // with everything else and the selection would not be visible
+        status && !isSelected && INACTIVE,
+        isOutlined &&
+          (isSelected ? "bg-[var(--event-surface)]" : OUTLINE_SURFACE)
       )}
       onClick={() =>
         router.push(`/?eventId=${event.resource.event.id}`, undefined)
@@ -113,27 +188,17 @@ const CalendarEvent: FC<CalendarEventProps> = ({
     >
       <div
         ref={setNodeRef}
-        className={cn(
-          isOver ? "border-2 border-primary rounded-lg h-full w-full p-1" : ""
-        )}
+        // a ring instead of a border, so hovering a dragged event over the
+        // slot highlights it without reflowing the content
+        className={cn(isOver && "ring-2 ring-primary rounded-lg h-full w-full")}
       >
-        <EventActions event={event.resource.event}>
-          {event.resource.event.status !== EventStatus.Pending && (
-            <div
-              className="h-full absolute top-0 bottom-0 left-0 right-0 rounded-md m-[1px]"
-              style={{
-                background: getEventStatusColor(),
-              }}
-            />
-          )}
-        </EventActions>
-        <div className="text-xs absolute top-[-20px]">
+        <div className="text-xs absolute -top-5">
           {format(event.start, "HH:mm")}
         </div>
         <EventActions event={event.resource.event} triggerClassName="h-full">
           {content}
         </EventActions>
-        <div className="text-xs absolute bottom-[-20px]">
+        <div className="text-xs absolute -bottom-5">
           {event.end && format(event.end, "HH:mm")}
         </div>
       </div>

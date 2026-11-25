@@ -1,6 +1,6 @@
 "use client";
 import { IEvent } from "../../types/event";
-import { IProject } from "../../types/project";
+import { IProject, IProjectColor } from "../../types/project";
 import { RelationshipEntityType } from "../../types/relationship";
 import { ITask } from "../../types/task";
 import { useRelationshipsState } from "../use-relationships/state-context";
@@ -24,23 +24,26 @@ export const useTaskProject = (task: ITask | null): IProject | null =>
 export const useEventProject = (event: IEvent | null): IProject | null =>
   useProjectById(event?.project_id);
 
-export const useTaskProjectColor = (
-  task: ITask | null
-): { main: string; dimmed: string } => {
-  const color = useTaskProject(task)?.color;
+const EMPTY_COLOR: IProjectColor = { main: "", dimmed: "", solid: "" };
 
-  if (!color) {
-    return {
-      main: "",
-      dimmed: "",
-    };
-  }
+const toProjectColor = (
+  color: string | undefined,
+  tint: number
+): IProjectColor =>
+  color
+    ? {
+        main: color,
+        dimmed: `color-mix(in srgb, ${color} ${tint}%, transparent)`,
+        solid: `color-mix(in srgb, ${color} ${tint}%, hsl(var(--card)))`,
+      }
+    : EMPTY_COLOR;
 
-  return {
-    main: color,
-    dimmed: `color-mix(in srgb, ${color} 10%, transparent)`,
-  };
-};
+export const useTaskProjectColor = (task: ITask | null): IProjectColor =>
+  toProjectColor(useTaskProject(task)?.color, 10);
+
+/** events are tinted stronger than tasks, they are the larger surface */
+export const useEventProjectColor = (event: IEvent | null): IProjectColor =>
+  toProjectColor(useEventProject(event)?.color, 20);
 
 export const useProjectsForTheEventByLocation = (
   eventId: number
