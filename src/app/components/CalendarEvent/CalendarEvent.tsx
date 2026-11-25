@@ -4,7 +4,7 @@ import React, { FC, useMemo, useRef } from "react";
 
 import { CalendarEventEntry } from "./CalendarEvent.types";
 
-import { useProjectById } from "@/app/utils/hooks/use-projects/selectors";
+import { useEventProjectColor } from "@/app/utils/hooks/use-projects/selectors";
 import { EventActions } from "../EventActions";
 import { format } from "date-fns";
 import { EventStatus } from "@/app/utils/types/event";
@@ -15,6 +15,17 @@ import { RelationshipEntityType } from "@/app/utils/types/relationship";
 import { RelatedEntity } from "../EventRelationships/components/RelationshipNavigator/components/RelatedEntity/RelatedEntity";
 import { useRelationshipTree } from "../../utils/hooks/use-relationships/use-relationship-tree";
 import { useSelectedEvent } from "@/app/components/ActiveContext/use-selected-event";
+
+const stripes = (colorVar: string, from: number, to: number) =>
+  `repeating-linear-gradient(45deg, hsl(var(${colorVar})/${from}), hsl(var(${colorVar})/${to}) 3px, hsl(var(${colorVar})/0.1) 5px, hsl(var(${colorVar})/0.1) 20px)`;
+
+/** statuses that are not listed here are drawn without an overlay */
+const STATUS_STRIPES: Partial<Record<EventStatus, string>> = {
+  [EventStatus.Completed]: stripes("--scale-color-10", 0.4, 0.5),
+  [EventStatus.Cancelled]: stripes("--scale-color-1", 0.4, 0.5),
+  // moved events stay subtler, they are still to be acted on
+  [EventStatus.Moved]: stripes("--scale-color-5", 0.1, 0.2),
+};
 
 export interface CalendarEventProps {
   event: CalendarEventEntry;
@@ -45,7 +56,7 @@ const CalendarEvent: FC<CalendarEventProps> = ({
     el.style.overflow = "hidden";
   };
 
-  const project = useProjectById(event.resource.event.project_id);
+  const { dimmed: projectColor } = useEventProjectColor(event.resource.event);
 
   const { isOver, setNodeRef } = useDroppable({
     id: event.resource.id,
@@ -64,7 +75,7 @@ const CalendarEvent: FC<CalendarEventProps> = ({
           <div>{event.title}</div>
           <div className="text-xs">{event.resource.event.description}</div>
 
-          <div className="flex space-between pt-2 gap-2">
+          <div className="flex pt-2 gap-2">
             {related.map((child) => (
               <RelatedEntity
                 key={child.edge?.id ?? child.entity.id}
@@ -78,25 +89,9 @@ const CalendarEvent: FC<CalendarEventProps> = ({
     );
   }, [event.resource.event.description, event.title, related]);
 
-  const projectColor = project
-    ? `color-mix(in srgb, ${project.color} 20%, transparent)`
-    : "";
+  const statusStripes = STATUS_STRIPES[event.resource.event.status];
 
-  const getEventStatusColor = () => {
-    if (event.resource.event.status === EventStatus.Completed) {
-      return "repeating-linear-gradient(45deg, hsl(var(--scale-color-10)/0.4), hsl(var(--scale-color-10)/0.5) 3px, hsl(var(--scale-color-10)/0.1) 5px, hsl(var(--scale-color-10)/0.1) 20px)";
-    }
-    if (event.resource.event.status === EventStatus.Cancelled) {
-      return "repeating-linear-gradient(45deg, hsl(var(--scale-color-1)/0.4), hsl(var(--scale-color-1)/0.5) 3px, hsl(var(--scale-color-1)/0.1) 5px, hsl(var(--scale-color-1)/0.1) 20px)";
-    }
-    if (event.resource.event.status === EventStatus.Moved) {
-      return "repeating-linear-gradient(45deg, hsl(var(--scale-color-5)/0.1), hsl(var(--scale-color-5)/0.2) 3px, hsl(var(--scale-color-5)/0.1) 5px, hsl(var(--scale-color-5)/0.1) 20px)";
-    }
-
-    return "";
-  };
-
-  const getBackgroundColor = () => {
+  const getBorderColor = () => {
     if (event.resource.id === selectedEvent?.id) {
       return "hsl(var(--primary))";
     }
@@ -112,40 +107,37 @@ const CalendarEvent: FC<CalendarEventProps> = ({
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       style={{
-        backgroundColor: projectColor || "#29221f",
-        border: `2px solid ${getBackgroundColor()}`,
+        backgroundColor: projectColor || "hsl(var(--card))",
+        border: `2px solid ${getBorderColor()}`,
       }}
-      className={cn(
-        "h-full cursor-pointer rounded-lg relative",
-        isOver ? "" : "p-1"
-      )}
+      className="h-full cursor-pointer rounded-lg relative p-1"
       onClick={() =>
         router.push(`/?eventId=${event.resource.event.id}`, undefined)
       }
     >
       <div
         ref={setNodeRef}
-        className={cn(
-          isOver ? "border-2 border-primary rounded-lg h-full w-full p-1" : ""
-        )}
+        // a ring instead of a border, so hovering a dragged event over the
+        // slot highlights it without reflowing the content
+        className={cn(isOver && "ring-2 ring-primary rounded-lg h-full w-full")}
       >
         <EventActions event={event.resource.event}>
-          {event.resource.event.status !== EventStatus.Pending && (
+          {statusStripes && (
             <div
-              className="h-full absolute top-0 bottom-0 left-0 right-0 rounded-md m-[1px]"
+              className="absolute inset-0 rounded-md m-px"
               style={{
-                background: getEventStatusColor(),
+                background: statusStripes,
               }}
             />
           )}
         </EventActions>
-        <div className="text-xs absolute top-[-20px]">
+        <div className="text-xs absolute -top-5">
           {format(event.start, "HH:mm")}
         </div>
         <EventActions event={event.resource.event} triggerClassName="h-full">
           {content}
         </EventActions>
-        <div className="text-xs absolute bottom-[-20px]">
+        <div className="text-xs absolute -bottom-5">
           {event.end && format(event.end, "HH:mm")}
         </div>
       </div>
