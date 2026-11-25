@@ -24,7 +24,7 @@ export const useTaskProject = (task: ITask | null): IProject | null =>
 export const useEventProject = (event: IEvent | null): IProject | null =>
   useProjectById(event?.project_id);
 
-const EMPTY_COLOR: IProjectColor = { main: "", dimmed: "" };
+const EMPTY_COLOR: IProjectColor = { main: "", dimmed: "", solid: "" };
 
 const toProjectColor = (
   color: string | undefined,
@@ -34,6 +34,7 @@ const toProjectColor = (
     ? {
         main: color,
         dimmed: `color-mix(in srgb, ${color} ${tint}%, transparent)`,
+        solid: `color-mix(in srgb, ${color} ${tint}%, hsl(var(--card)))`,
       }
     : EMPTY_COLOR;
 
