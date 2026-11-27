@@ -6,3 +6,4 @@ export const HOME = "/";
 export const HABITS = "/habits";
 export const PROJECTS = "/projects";
 export const WIKI = "/wiki";
+export const TIME_SPACES = "/time-spaces";

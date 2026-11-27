@@ -13,6 +13,7 @@ import { ActiveSecondaryContext } from "../ActiveContext/ActiveSecondaryContext"
 import { ActiveLifeAspect } from "../ActiveLifeAspect";
 import { ActivePerson } from "../molecules/people/ActivePerson";
 import { ActiveLocation } from "../molecules/locations/ActiveLocation/ActiveLocation";
+import { ActiveTimeSpaces } from "../molecules/time-spaces/ActiveTimeSpaces";
 
 export const Home = (): JSX.Element => {
   return (
@@ -49,6 +50,7 @@ export const Home = (): JSX.Element => {
           </div>
 
           <div className="p-6 w-[50%]">
+            <ActiveTimeSpaces />
             <Suspense>
               <ActiveSecondaryContext />
             </Suspense>
